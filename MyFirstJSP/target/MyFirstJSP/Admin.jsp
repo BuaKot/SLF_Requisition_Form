@@ -1,189 +1,205 @@
 <%@ page isELIgnored="false" %>
-    <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-        <!DOCTYPE html>
-        <html lang="th">
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html lang="th">
 
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>IT Requisition - Admin</title>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Requisition - Admin (Responsive)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * { box-sizing: border-box; }
 
-            <style>
-                body {
-                    font-family: 'Sarabun', sans-serif;
-                    margin: 0;
-                    padding: 0;
-                    background-color: #ffffff;
-                    height: 100vh;
-                }
+        body {
+            font-family: 'Sarabun', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-                .sticky-bar {
-                    position: sticky;
-                    top: 0;
-                    background: white;
-                    width: 100%;
-                    height: 70px;
-                    border-bottom: 5px solid #3272BB;
-                    display: flex;
-                    align-items: center;
-                    padding: 0 20px;
-                    z-index: 100;
-                }
+        /* Navigation Bar */
+        .sticky-bar {
+            position: sticky;
+            top: 0;
+            background: white;
+            width: 100%;
+            height: 70px;
+            border-bottom: 5px solid #3272BB;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 100;
+        }
 
-                .sidebar {
-                    height: 100%;
-                    width: 0;
-                    position: fixed;
-                    z-index: 1000;
-                    top: 0;
-                    left: 0;
-                    background-color: #3272BB;
-                    overflow-x: hidden;
-                    transition: 0.5s;
-                    padding-top: 60px;
-                }
+        .header-logos { 
+            display: flex; 
+            align-items: center; 
+            gap: clamp(5px, 2vw, 20px); 
+            margin-left: 15px;
+        }
+        .header-logos img { height: clamp(30px, 8vw, 45px); }
 
-                .sidebar a {
-                    padding: 15px 32px;
-                    text-decoration: none;
-                    font-size: 20px;
-                    color: white;
-                    display: block;
-                    transition: 0.3s;
-                }
+        /* Sidebar - ปรับให้ยืดหยุ่นตามหน้าจอ */
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1001;
+            top: 0;
+            left: 0;
+            background-color: #3272BB;
+            overflow-x: hidden;
+            transition: 0.4s;
+            padding-top: 60px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+        }
 
-                .sidebar .closebtn {
-                    position: absolute;
-                    top: 10px;
-                    right: 25px;
-                    font-size: 36px;
-                }
+        .sidebar a {
+            padding: 15px 32px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            color: white;
+            display: block;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
 
-                .banner {
-                    background: #C3EAFF;
-                    padding: 40px 20px;
-                    text-align: center;
-                    color: #003366;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                }
+        .sidebar a:hover { background: rgba(255,255,255,0.1); }
 
-                .banner h1 {
-                    margin: 0;
-                    font-size: 24px;
-                }
+        /* Banner - ปรับตัวหนังสือให้สมดุล */
+        .banner {
+            background: #C3EAFF;
+            padding: clamp(20px, 6vw, 40px) 15px;
+            text-align: center;
+            color: #003366;
+        }
 
-                .banner h2 {
-                    margin: 10px 0 0;
-                    font-size: 18px;
-                    font-weight: normal;
-                }
+        .banner h1 { font-size: clamp(1.1rem, 4vw, 1.5rem); margin: 0; line-height: 1.2; }
+        .banner h2 { font-size: clamp(0.9rem, 3vw, 1.1rem); margin-top: 10px; font-weight: normal; }
 
-                .admin-grid {
-                    display: flex;
-                    flex-wrap: wrap;
-                    justify-content: center;
-                    gap: 40px;
-                    margin-top: 50px;
-                    padding: 20px;
-                }
+        /* Grid System - Responsive หัวใจสำคัญ */
+        .admin-grid {
+            display: grid;
+            /* ปรับขนาดกล่องขั้นต่ำเป็น 260px เพื่อให้ลงตัวในมือถือส่วนใหญ่ */
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
+            gap: clamp(15px, 4vw, 30px);
+            padding: 30px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+        }
 
-                .card {
-                    border: solid 2px #3272BB;
-                    border-radius: 15px;
-                    padding: 30px;
-                    text-align: center;
-                    cursor: pointer;
-                    transition: 0.3s;
-                    width: 250px;
-                    background: white;
-                }
+        /* Card Design - ปรับขนาด Icons และ Padding */
+        .card {
+            background: white;
+            border: 3px solid #3272BB;
+            border-radius: 20px;
+            padding: clamp(20px, 5vw, 40px);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: clamp(280px, 50vh, 360px);
+        }
 
-                .card:hover {
-                    transform: translateY(-10px);
-                    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-                }
+        .card:hover {
+            background-color: #f8fcff;
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(50, 114, 187, 0.15);
+        }
 
-                .card i {
-                    font-size: 80px;
-                    color: #3272BB;
-                    display: block;
-                    margin-bottom: 20px;
-                }
+        .card i {
+            font-size: clamp(60px, 15vw, 90px);
+            color: #3272BB;
+            margin-bottom: 20px;
+        }
 
-                .card p {
-                    font-weight: bold;
-                    font-size: 18px;
-                    color: #333;
-                    margin: 0;
-                }
-            </style>
-        </head>
+        .card p {
+            font-weight: bold;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: #333;
+            margin: 0;
+            line-height: 1.3;
+        }
 
-        <body>
-            <div id="mySidebar" class="sidebar">
-                <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
-                <a href="#"><i class="fa fa-home"></i> หน้าหลัก</a>
-                <a href="#"><i class="fa fa-file-alt"></i> รายการคำขอ</a>
-                <a href="#"><i class="fa fa-user-cog"></i> ตั้งค่าผู้ใช้งาน</a>
-                <a href="#"><i class="fa fa-sign-out-alt"></i> ออกจากระบบ</a>
-            </div>
+        /* ปรับแต่งส่วนติดต่อ */
+        .contact-info p { margin: 0; white-space: nowrap; }
 
-            <div class='sticky-bar'>
-                <i id="menuBtn" class="fa fa-bars" onclick="toggleNav()"
-                    style="font-size:30px; cursor:pointer; color:#3272BB;"></i>
+        /* Media Query สำหรับหน้าจอจิ๋ว */
+        @media (max-width: 400px) {
+            .admin-grid { grid-template-columns: 1fr; padding: 20px 15px; }
+            .card { min-height: 250px; }
+            .sidebar { width: 0; } /* ปรับ JavaScript คุม width แทน */
+        }
+    </style>
+</head>
 
-                <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo"
-                    style="height: 48px; margin-left: 20px;">
-                <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo"
-                    style="height: 48px; margin-left: 10px;">
+<body>
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" style="font-size:2.5rem; padding: 0 20px;" onclick="toggleNav()">&times;</a>
+        <a href="#"><i class="fa fa-home"></i> หน้าหลัก</a>
+        <a href="#"><i class="fa fa-history"></i> ประวัติรายการ</a>
+        <a href="#"><i class="fa fa-info-circle"></i> ช่วยเหลือ</a>
+    </div>
 
-                <div style="margin-left:auto; display:flex; align-items:center">
-                    <i class='fa fa-circle-user' style='font-size:24px; color:#3272BB;'></i>
-                    <p style='margin-left: 10px; font-size: 16px; color:#333;'>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-                </div>
-            </div>
+    <div class='sticky-bar'>
+        <i class="fa fa-bars" onclick="toggleNav()" style="font-size:1.8rem; cursor:pointer; color:#333; padding: 10px;"></i>
+        <div class="header-logos">
+            <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
+            <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
+        </div>
+        <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
+            <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
+            <p style='margin-left: 8px; font-size: 0.9rem;'>ติดต่อ 411</p>
+        </div>
+    </div>
 
-            <div class="banner">
-                <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
-                <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
-            </div>
+    <div class="banner">
+        <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
+        <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
+    </div>
 
-            <div class="admin-grid">
-                <a href="${pageContext.request.contextPath}/DirectorApprove.jsp" style="text-decoration: none;">
-                    <div class="card">
-                        <i class="fa-regular fa-circle-user"></i>
-                        <p>ผู้อำนวยการฝ่าย</p>
-                    </div>
-                </a>
+    <div class="admin-grid">
+        <div class="card" onclick="location.href='${pageContext.request.contextPath}/DirectorApprove.jsp'">
+            <i class="fa-regular fa-circle-user"></i>
+            <p>ผู้อำนวยการฝ่าย</p>
+        </div>
 
-                <a href="${pageContext.request.contextPath}/TechnicalApprove.jsp" style="text-decoration: none;">
-                    <div class="card">
-                        <i class="fa-solid fa-screwdriver-wrench"></i>
-                        <p>ความเห็นและการอนุมัติเชิงเทคนิค</p>
-                    </div>
-                </a>
+        <div class="card" onclick="location.href='${pageContext.request.contextPath}/TechnicalApprove.jsp'">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+            <p>ความเห็นและการอนุมัติเชิงเทคนิค</p>
+        </div>
 
-                <a href="${pageContext.request.contextPath}/ITDirectorApprove.jsp" style="text-decoration: none;">
-                    <div class="card">
-                        <i class="fa-regular fa-circle-user"></i>
-                        <p>ผู้อำนวยการฝ่าย<br>เทคโนโลยีสารสนเทศ</p>
-                    </div>
-                </a>
-            </div>
+        <div class="card" onclick="location.href='${pageContext.request.contextPath}/ITDirectorApprove.jsp'">
+            <i class="fa-regular fa-circle-user"></i>
+            <p>ผู้อำนวยการฝ่าย<br>เทคโนโลยีสารสนเทศ</p>
+        </div>
+    </div>
 
-            <script>
-                function toggleNav() {
-                    var sidebar = document.getElementById("mySidebar");
-                    if (sidebar.style.width === "250px") {
-                        sidebar.style.width = "0";
-                    } else {
-                        sidebar.style.width = "250px";
-                    }
-                }
-            </script>
-        </body>
+    <script>
+        function toggleNav() {
+            var sidebar = document.getElementById("mySidebar");
+            // ใช้คำนวณหน้าจอเบื้องต้น ถ้าจอมือถือเล็กให้กว้างขึ้น
+            var openWidth = (window.innerWidth < 400) ? "80%" : "250px";
+            sidebar.style.width = (sidebar.style.width === openWidth) ? "0" : openWidth;
+        }
 
-        </html>
+        // ปิด Sidebar เมื่อคลิกข้างนอก
+        window.onclick = function(event) {
+            var sidebar = document.getElementById("mySidebar");
+            if (event.target == sidebar) {
+                sidebar.style.width = "0";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -159,7 +159,7 @@
             <i class="fa fa-chevron-left"></i> กลับหน้าหลัก
         </a>
 
-        <div class="requisition-item" onclick="location.href='RequisitionDetail.jsp'">
+        <div class="requisition-item" onclick="location.href='RequisitionDetail_Comment.jsp'">
             <div class="req-number">ใบขอดำเนินการที่ 1</div>
             <div class="req-details">
                 <b>ชื่อ :</b> ธนภัทร กาญจนรุจิวุฒิ &nbsp;&nbsp; <b>ฝ่าย :</b> บริหารหนี้ 2 &nbsp;&nbsp; 
@@ -171,7 +171,7 @@
             </div>
         </div>
 
-        <div class="requisition-item" onclick="location.href='RequisitionDetail.jsp'">
+        <div class="requisition-item" onclick="location.href='RequisitionDetail_Comment.jsp'">
             <div class="req-number">ใบขอดำเนินการที่ 2</div>
             <div class="req-details">
                 <b>ชื่อ :</b> ธนภัทร กาญจนรุจิวุฒิ &nbsp;&nbsp; <b>ฝ่าย :</b> บริหารหนี้ 2 &nbsp;&nbsp; 
@@ -183,7 +183,7 @@
             </div>
         </div>
 
-        <div class="requisition-item" onclick="location.href='RequisitionDetail.jsp'">
+        <div class="requisition-item" onclick="location.href='RequisitionDetail_Comment.jsp'">
             <div class="req-number">ใบขอดำเนินการที่ 3</div>
             <div class="req-details">
                 <b>รายละเอียด :</b> context (คลิกเพื่อดูรายละเอียดเพิ่มเติม)

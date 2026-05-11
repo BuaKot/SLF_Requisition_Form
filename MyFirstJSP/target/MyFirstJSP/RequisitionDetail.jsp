@@ -76,9 +76,6 @@
         <a href="DirectorApprove.jsp" style="text-decoration:none; color:#333;">
             <i class="fa fa-arrow-left"></i> กลับ
         </a>
-        <a href="TechnicalApprove.jsp" style="text-decoration:none; color:#333;">
-            <i class="fa fa-arrow-left"></i> กลับ
-        </a>
         <div style="margin-left:auto; display:flex; align-items:center;">
             <span style="font-size:0.8rem; margin-right:10px;">สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</span>
             <i class="fa fa-circle-user" style="font-size:24px;"></i>

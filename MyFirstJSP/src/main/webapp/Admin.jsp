@@ -1,7 +1,7 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,24 +11,27 @@
 </head>
 <body>
 
-    <div id="mySidebar" class="sidebar">
+    <nav id="mySidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
-        <a href="index.jsp">Home</a>
-        <a href="#">ประวัติการขอ</a>
-        <a href="#">ออกจากระบบ</a>
-    </div>
+        <a href="${pageContext.request.contextPath}/index.jsp"><i class="fa fa-home"></i> Home</a>
+        <a href="#"><i class="fa fa-history"></i> ประวัติรายการ</a>
+        <div class="sidebar-footer">
+            <a href="#"><i class="fa fa-sign-out-alt"></i> ออกจากระบบ</a>
+        </div>
+    </nav>
 
     <div id="main">
-        <div class="sticky-bar">
+        <header class="sticky-bar">
             <i class="fa fa-bars" onclick="toggleNav()" style="font-size:28px; cursor:pointer;"></i>
-            <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF" style="height: 48px; margin-left: 15px;">
-            <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF" style="height: 48px; margin-left: 10px;">
             
-            <div style="margin-left: auto; display: flex; align-items: center;">
-                <p style="margin-right: 15px;">สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-                <i class="fa-solid fa-circle-user" style="font-size: 30px;"></i>
+            <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo" style="height: 48px; margin-left: 15px;">
+            <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo" style="height: 48px; margin-left: 10px;">
+            
+            <div class="user-info">
+                <span>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</span>
+                <i class="fa-solid fa-circle-user" style="font-size: 28px; color: #666;"></i>
             </div>
-        </div>
+        </header>
 
         <div class="blue-title">
             <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
@@ -42,8 +45,10 @@
             </div>
 
             <div class="admin-card" onclick="location.href='it_review.jsp'">
-                <i class="fa-solid fa-window-restore"></i>
-                <i class="fa-solid fa-wrench" style="font-size: 30px; margin-top: -45px; margin-left: 40px; background: white; border-radius: 50%;"></i>
+                <div class="icon-stack">
+                    <i class="fa-solid fa-window-maximize"></i>
+                    <i class="fa-solid fa-wrench sub-icon"></i>
+                </div>
                 <p>ความเห็นและการอนุมัติเชิงเทคนิค</p>
             </div>
 

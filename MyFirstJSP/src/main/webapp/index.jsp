@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <meta charset="UTF-8">
+    <title>home</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
@@ -37,12 +38,13 @@
 
 <div class="options-div">
 
-    <div class='option-box'>
-        <div class='option-pic'>
-            <i class="fa fa-plus"></i>
-        </div >
-        <h1>New Form</h1>
+    <a href="${pageContext.request.contextPath}/form.jsp" class="option-box option-box-link">
+    <div class="option-pic">
+        <i class="fa fa-plus"></i>
     </div>
+    <h1>New Form</h1>
+</a>
+
 
     <div class='option-box'>
         <div class='option-pic'>

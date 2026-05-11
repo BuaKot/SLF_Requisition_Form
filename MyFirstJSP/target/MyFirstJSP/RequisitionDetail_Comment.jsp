@@ -258,19 +258,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-grid" style="margin-top: 15px;">
-                        <div class="form-group">
-                            <label>ผลการพิจารณา :</label>
-                            <select>
-                                <option value="approve">อนุมัติ / เห็นสมควร</option>
-                                <option value="reject">ไม่อนุมัติ / ส่งกลับแก้ไข</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>ลงชื่อ (Digital Signature) :</label>
-                            <input type="text" placeholder="ชื่อ-นามสกุล ผู้อำนวยการ" style="background: #eefbff;">
-                        </div>
-                    </div>
             </div>
             <div class="btn-group">
                 <button type="button" class="btn btn-reject" onclick="alert('ส่งกลับแก้ไข')">ส่งกลับ</button>

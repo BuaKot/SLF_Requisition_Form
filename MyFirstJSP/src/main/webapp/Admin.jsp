@@ -165,7 +165,7 @@
 
     <div class="banner">
         <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
-        <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
+        <h1>ใบขอให้ดำเนินการ / Requisition Form</h1>
     </div>
 
     <div class="admin-grid">

@@ -154,18 +154,18 @@
     <div class='sticky-bar'>
         <i class="fa fa-bars" onclick="toggleNav()" style="font-size:1.8rem; cursor:pointer; color:#333; padding: 10px;"></i>
         <div class="header-logos">
-            <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
             <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
+            <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
         </div>
         <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
             <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
-            <p style='margin-left: 8px; font-size: 0.9rem;'>ติดต่อ 411</p>
+            <p style='margin-left: 8px; font-size: 0.9rem;'>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
         </div>
     </div>
 
     <div class="banner">
         <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
-        <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
+        <h1>ใบขอให้ดำเนินการ / Requisition Form</h1>
     </div>
 
     <div class="admin-grid">

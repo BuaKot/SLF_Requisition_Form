@@ -14,9 +14,10 @@
   <a href="#">Home</a>
   <a href="#">Services</a>
   <a href="#">Contact</a>
+  <a href='#' class='admin-tab'><i class='fa fa-circle-user' style='font-size:36px;padding-left:0px;padding-right:25%'></i>Admin</a>
 </div>
 
-
+<div id=main>
 <div class='sticky-bar'>
     <i id="menuBtn" class="fa fa-bars" onclick="toggleNav()" style="font-size:36px; cursor:pointer; padding-left:5px; padding-right:5px;"></i>
     </i><img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo" style="height: 48px; padding-left: 10px; padding-right: 5px">
@@ -52,15 +53,25 @@
 
 </div>
 
+</div>
+
 
 <script>
 function toggleNav() {
   var sidebar = document.getElementById("mySidebar");
+  var main = document.getElementById("main");
   
   if (sidebar.style.width === "250px") {
+    // Return to normal
     sidebar.style.width = "0";
+    main.style.marginLeft = "0";
+    main.style.width = "100%";
   } else {
+    // Shrink the main area
     sidebar.style.width = "250px";
+    main.style.marginLeft = "250px";
+    // This is the magic line:
+    main.style.width = "calc(100% - 250px)"; 
   }
 }
 </script>

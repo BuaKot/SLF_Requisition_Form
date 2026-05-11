@@ -230,37 +230,53 @@
                             <textarea rows="4">ปัจจุบันดำเนินการผ่านระบบ Manual และบันทึกใน Excel...</textarea>
                         </div>
                     </div>
-                    <div class="section-box full-width" style="background-color: #f9f9f9;">
+                    <div class="section-box full-width" style="background-color: #ffffff; border: 2px solid #000000;">
                         <h3
-                            style="margin-top: 0; color: #3272BB; font-size: 1.1rem; border-bottom: 1px solid #3272BB; padding-bottom: 5px;">
-                            ความเห็นและการอนุมัติ (ผู้อำนวยการฝ่าย)
+                            style="margin-top: 0; color: #000000; font-size: 1.1rem; font-weight: bold; margin-bottom: 15px;">
+                            ความเห็นและการอนุมัติเชิงเทคนิค
                         </h3>
 
-                        <div class="form-group full-width" style="margin-top: 15px;">
-                            <label>ความเห็นเพิ่มเติม :</label>
-                            <textarea rows="3" placeholder="ระบุความเห็นของผู้อำนวยการฝ่ายที่นี่..."></textarea>
+                        <div class="form-group full-width">
+                            <textarea rows="4"
+                                style="width: 100%; border: 1px solid #3272BB; border-radius: 5px; padding: 10px;"
+                                placeholder="ระบุความเห็นเชิงเทคนิคที่นี่..."></textarea>
                         </div>
 
-                        <div class="form-grid" style="margin-top: 15px;">
+                        <div class="form-grid"
+                            style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                             <div class="form-group">
-                                <label>ผลการพิจารณา :</label>
-                                <select>
-                                    <option value="approve">อนุมัติ / เห็นสมควร</option>
-                                    <option value="reject">ไม่อนุมัติ / ส่งกลับแก้ไข</option>
+                                <label style="font-weight: bold;">ผลการพิจารณา :</label>
+                                <select style="padding: 8px; border: 1px solid #3272BB; border-radius: 5px;">
+                                    <option value="pass">ผ่านเกณฑ์ทางเทคนิค</option>
+                                    <option value="not-pass">ไม่ผ่านเกณฑ์ / ต้องปรับปรุงข้อกำหนด</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>ลงชื่อ (Digital Signature) :</label>
-                                <input type="text" placeholder="ชื่อ-นามสกุล ผู้อำนวยการ" style="background: #eefbff;">
+                                <label style="font-weight: bold;">ผู้ตรวจสอบเชิงเทคนิค :</label>
+                                <input type="text" placeholder="ระบุชื่อผู้ตรวจสอบ"
+                                    style="padding: 8px; border: 1px solid #3272BB; border-radius: 5px;">
                             </div>
                         </div>
                     </div>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-reject" onclick="alert('ส่งกลับแก้ไข')">ส่งกลับ</button>
-                        <button type="button" class="btn btn-approve"
-                            onclick="alert('อนุมัติเรียบร้อย')">อนุมัติ</button>
+                    <div class="form-grid" style="margin-top: 15px;">
+                        <div class="form-group">
+                            <label>ผลการพิจารณา :</label>
+                            <select>
+                                <option value="approve">อนุมัติ / เห็นสมควร</option>
+                                <option value="reject">ไม่อนุมัติ / ส่งกลับแก้ไข</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>ลงชื่อ (Digital Signature) :</label>
+                            <input type="text" placeholder="ชื่อ-นามสกุล ผู้อำนวยการ" style="background: #eefbff;">
+                        </div>
                     </div>
-                </form>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-reject" onclick="alert('ส่งกลับแก้ไข')">ส่งกลับ</button>
+                <button type="button" class="btn btn-approve" onclick="alert('อนุมัติเรียบร้อย')">อนุมัติ</button>
+            </div>
+            </form>
             </div>
 
         </body>

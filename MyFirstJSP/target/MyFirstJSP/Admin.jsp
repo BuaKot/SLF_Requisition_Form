@@ -183,6 +183,11 @@
             <i class="fa-regular fa-circle-user"></i>
             <p>ผู้อำนวยการฝ่าย<br>เทคโนโลยีสารสนเทศ</p>
         </div>
+
+        <div class="card" onclick="location.href='${pageContext.request.contextPath}/Process.jsp'">
+            <i class="fa-regular fa-circle-user"></i>
+            <p>รายละเอียดการดำเนินการ</p>
+        </div>
     </div>
 
     <script>

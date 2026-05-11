@@ -2,13 +2,17 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ผู้อำนวยการฝ่าย - รายการใบคำขอ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Sarabun', sans-serif;
             margin: 0;
@@ -16,7 +20,7 @@
             background-color: #ffffff;
         }
 
-        /* Header & Banner เหมือนหน้าแรกเพื่อความต่อเนื่อง */
+        /* Header & Banner */
         .sticky-bar {
             position: sticky;
             top: 0;
@@ -38,8 +42,16 @@
             border-bottom: 1px solid #ddd;
         }
 
-        .banner h1 { font-size: clamp(16px, 4vw, 22px); margin: 0; }
-        .banner h2 { font-size: clamp(14px, 3vw, 16px); margin: 5px 0 0; font-weight: normal; }
+        .banner h1 {
+            font-size: clamp(16px, 4vw, 22px);
+            margin: 0;
+        }
+
+        .banner h2 {
+            font-size: clamp(14px, 3vw, 16px);
+            margin: 5px 0 0;
+            font-weight: normal;
+        }
 
         /* Container สำหรับรายการ */
         .list-container {
@@ -48,7 +60,7 @@
             padding: 0 15px;
         }
 
-        /* การจัด Layout ของแต่ละแถวให้เหมือนในรูปภาพ */
+        /* การจัด Layout ของแต่ละแถว */
         .requisition-item {
             display: flex;
             align-items: center;
@@ -59,9 +71,14 @@
             gap: 15px;
             background: white;
             transition: 0.2s;
+            cursor: pointer; /* เปลี่ยนเมาส์เป็นรูปมือเมื่อชี้ */
         }
 
-        .requisition-item:hover { transform: scale(1.01); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .requisition-item:hover {
+            transform: scale(1.01);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-color: #3272BB; /* เปลี่ยนสีขอบเมื่อ hover */
+        }
 
         /* เลขที่ใบคำขอ (ด้านซ้ายสุด) */
         .req-number {
@@ -69,7 +86,7 @@
             border: 1px solid #333;
             border-radius: 10px;
             padding: 10px;
-            min-width: 130px;
+            min-width: 140px;
             text-align: center;
             font-weight: bold;
             font-size: 14px;
@@ -82,15 +99,18 @@
             line-height: 1.6;
         }
 
-        .req-details b { color: #003366; }
+        .req-details b {
+            color: #003366;
+        }
 
         /* ไอคอนสถานะ (ด้านขวาสุด) */
         .status-icon {
             font-size: 30px;
             padding-right: 10px;
         }
-        .status-success { color: #28a745; } /* สีเขียว */
-        .status-pending { color: #ffc107; } /* สีเหลือง */
+
+        .status-success { color: #28a745; }
+        .status-pending { color: #ffc107; }
 
         /* ปุ่มย้อนกลับ */
         .back-btn {
@@ -103,12 +123,20 @@
 
         /* Responsive สำหรับมือถือ */
         @media (max-width: 600px) {
-            .requisition-item { flex-direction: column; align-items: flex-start; }
-            .req-number { width: 100%; }
-            .status-icon { align-self: flex-end; }
+            .requisition-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .req-number {
+                width: 100%;
+            }
+            .status-icon {
+                align-self: flex-end;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <div class='sticky-bar'>
@@ -127,12 +155,15 @@
     </div>
 
     <div class="list-container">
-        <a href="${pageContext.request.contextPath}/Admin.jsp" class="back-btn"><i class="fa fa-chevron-left"></i> กลับหน้าหลัก</a>
+        <a href="${pageContext.request.contextPath}/Admin.jsp" class="back-btn">
+            <i class="fa fa-chevron-left"></i> กลับหน้าหลัก
+        </a>
 
-        <div class="requisition-item">
+        <div class="requisition-item" onclick="location.href='RequisitionDetail.jsp'">
             <div class="req-number">ใบขอดำเนินการที่ 1</div>
             <div class="req-details">
-                <b>ชื่อ :</b> ธนภัทร กาญจนรุจิวุฒิ &nbsp;&nbsp; <b>ฝ่าย :</b> บริหารหนี้ 2 &nbsp;&nbsp; <b>ส่วน :</b> ----- &nbsp;&nbsp; <b>Deadline :</b> 16/01/2569<br>
+                <b>ชื่อ :</b> ธนภัทร กาญจนรุจิวุฒิ &nbsp;&nbsp; <b>ฝ่าย :</b> บริหารหนี้ 2 &nbsp;&nbsp; 
+                <b>ส่วน :</b> ----- &nbsp;&nbsp; <b>Deadline :</b> 16/01/2569<br>
                 <b>รายละเอียด :</b> พัฒนาระบบลงทะเบียนขอผ่อนผันการชำระเงินกองทุน กรณีผู้กู้ยืมเป็นผู้ประสบอุทกภัย
             </div>
             <div class="status-icon status-success">
@@ -140,10 +171,11 @@
             </div>
         </div>
 
-        <div class="requisition-item">
+        <div class="requisition-item" onclick="location.href='RequisitionDetail.jsp'">
             <div class="req-number">ใบขอดำเนินการที่ 2</div>
             <div class="req-details">
-                <b>ชื่อ :</b> ธนภัทร กาญจนรุจิวุฒิ &nbsp;&nbsp; <b>ฝ่าย :</b> บริหารหนี้ 2 &nbsp;&nbsp; <b>ส่วน :</b> ----- &nbsp;&nbsp; <b>Deadline :</b> 16/01/2569<br>
+                <b>ชื่อ :</b> ธนภัทร กาญจนรุจิวุฒิ &nbsp;&nbsp; <b>ฝ่าย :</b> บริหารหนี้ 2 &nbsp;&nbsp; 
+                <b>ส่วน :</b> ----- &nbsp;&nbsp; <b>Deadline :</b> 16/01/2569<br>
                 <b>รายละเอียด :</b> ชื่อหัวข้อความต้องการ
             </div>
             <div class="status-icon status-pending">
@@ -151,9 +183,11 @@
             </div>
         </div>
 
-        <div class="requisition-item">
+        <div class="requisition-item" onclick="location.href='RequisitionDetail.jsp'">
             <div class="req-number">ใบขอดำเนินการที่ 3</div>
-            <div class="req-details">context</div>
+            <div class="req-details">
+                <b>รายละเอียด :</b> context (คลิกเพื่อดูรายละเอียดเพิ่มเติม)
+            </div>
             <div class="status-icon status-success">
                 <i class="fa-solid fa-circle-check"></i>
             </div>

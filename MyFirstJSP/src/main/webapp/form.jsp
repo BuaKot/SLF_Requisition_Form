@@ -36,7 +36,7 @@
     <h2 style='margin-block-start: 0.1em; margin-block-end: 0.1em;'>ใบขอให้ดำเนินการ / Requisition Form</h2>
 </div>
 
-<!-- Form section -->
+<!-- Form section1 -->
     <div class="form-page">
         <div class="form-card">
             <h3 class="form-title">แบบฟอร์มบันทึกข้อมูล</h3>
@@ -106,7 +106,100 @@
             </form>
         </div>
     </div>
+<!-- Form section2 -->
+<div class="request-page">
 
+    <div class="request-header-box">
+        <div class="request-header-left">
+            <div class="request-title-row">
+                <label for="requestTitle">ชื่อความต้องการ :</label>
+                <input type="text" id="requestTitle" name="requestTitle">
+            </div>
+
+            <div class="request-date-row">
+                <span>ภายในวันที่ :</span>
+                <span>8/9/2569 ( x วัน )</span>
+            </div>
+        </div>
+
+        <div class="request-header-icons">
+            <i class="fa-regular fa-trash-can delete-icon"></i>
+            <i class="fa-solid fa-expand expand-icon"></i>
+        </div>
+    </div>
+
+    <div class="request-detail-box">
+
+        <div class="request-grid">
+
+            <div class="request-inline-group">
+                <label for="requestType">ประเภทคำขอ</label>
+                <select id="requestType" name="requestType" class="select-placeholder">
+                    <option value="" disabled selected hidden>Please select</option>
+                    <option value="ขอติดตั้งโปรแกรม">ขอติดตั้งโปรแกรม</option>
+                    <option value="ขอสิทธิ์ใช้อินเตอร์เน็ต">ขอสิทธิ์ใช้อินเตอร์เน็ต</option>
+                    <option value="ขอใช้สิทธิ์เก็บข้อมูล">ขอใช้สิทธิ์เก็บข้อมูล</option>
+                    <option value="ขอเปลี่ยน Password">ขอเปลี่ยน Password</option>
+                    <option value="แจ้งปัญหาการใช้งาน">แจ้งปัญหาการใช้งาน</option>
+                    <option value="ขอให้พัฒนาโปรแกรม">ขอให้พัฒนาโปรแกรม</option>
+                    <option value="ขอให้จัดหลักสูตร">ขอให้จัดหลักสูตร</option>
+                    <option value="ขอยืมอุปกรณ์ไอที">ขอยืมอุปกรณ์ไอที</option>
+                    <option value="อื่น ๆ">อื่น ๆ</option>
+                </select>
+            </div>
+
+            <div class="request-inline-group">
+                <label for="programName">ชื่อโปรแกรม :</label>
+                <input type="text" id="programName" name="programName">
+            </div>
+
+            <div class="request-empty-space"></div>
+
+            <div class="request-inline-group">
+                <label for="requestDate">ภายในวันที่ :</label>
+                <input type="text" id="requestDate" name="requestDate">
+            </div>
+
+        </div>
+
+        <div class="request-full-width">
+            <label for="objective">วัตถุประสงค์ / ความต้องการ</label>
+            <textarea 
+                id="objective" 
+                name="objective" 
+                placeholder="โปรดระบุความต้องการ"
+            ></textarea>
+        </div>
+
+        <div class="request-full-width">
+            <label for="currentMethod">วิธีการเดิมในปัจจุบัน</label>
+            <textarea 
+                id="currentMethod" 
+                name="currentMethod" 
+                placeholder="โปรดระบุวิธีการเดิมในปัจจุบัน"
+            ></textarea>
+        </div>
+
+        <div class="request-save-actions">
+            <button type="button" class="btn-cancel-small">Cancel</button>
+            <button type="button" class="btn-save-small">Save</button>
+        </div>
+
+    </div>
+
+    <div class="add-request-wrap">
+        <button type="button" class="add-request-btn">
+            <i class="fa-solid fa-plus"></i>
+            เพิ่มความต้องการ
+        </button>
+    </div>
+
+</div>
+
+<div class="bottom-form-actions">
+    <a href="${pageContext.request.contextPath}/form.jsp" class="btn-secondary">Cancel</a>
+    <button type="submit" class="btn-primary">Continue</button>
+</div>
 
 </div>
 <script>

@@ -3,22 +3,19 @@
 <html>
 <head>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <meta charset="UTF-8">
-    <title>home</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <!-- The Sidebar -->
 <div id="mySidebar" class="sidebar">
   <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
-  <a href="#">Home</a>
-  <a href="#">Services</a>
-  <a href="#">Contact</a>
+  <a href="#" style='font-size:20px'>ใบขอการดำเนินการ</a>
   <a href='#' class='admin-tab'><i class='fa fa-circle-user' style='font-size:36px;padding-left:0px;padding-right:25%'></i>Admin</a>
 </div>
 
-<div id=main>
+<div id='main'>
 <div class='sticky-bar'>
     <i id="menuBtn" class="fa fa-bars" onclick="toggleNav()" style="font-size:36px; cursor:pointer; padding-left:5px; padding-right:5px;"></i>
     </i><img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo" style="height: 48px; padding-left: 10px; padding-right: 5px">
@@ -44,7 +41,6 @@
     </div>
     <h1>New Form</h1>
 </a>
-
 
     <div class='option-box'>
         <div class='option-pic'>

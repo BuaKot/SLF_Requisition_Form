@@ -132,13 +132,13 @@
     </div>
 
     <div class='sticky-bar'>
-        <i class="fa fa-bars" onclick="toggleNav()" style="font-size:28px; cursor:pointer; color:#3272BB;"></i>
-        <div class="header-logos" style="margin-left: 15px;">
+        <i class="fa fa-bars" onclick="toggleNav()" style="font-size:28px; cursor:pointer; color:#333;"></i>
+        <div class="header-logos" style="margin-left: 25px;">
             <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF">
             <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF">
         </div>
         <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
-            <i class='fa fa-circle-user' style='font-size:20px; color:#3272BB;'></i>
+            <i class='fa fa-circle-user' style='font-size:20px; color:#333;'></i>
             <p style='margin-left: 8px; font-size: 14px;'>ติดต่อ 411</p>
         </div>
     </div>

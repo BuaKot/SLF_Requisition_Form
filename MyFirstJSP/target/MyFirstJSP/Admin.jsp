@@ -152,21 +152,21 @@
             </div>
 
             <div class="admin-grid">
-                <a href="DirectorApprove.jsp" style="text-decoration: none;">
+                <a href="${pageContext.request.contextPath}/DirectorApprove.jsp" style="text-decoration: none;">
                     <div class="card">
                         <i class="fa-regular fa-circle-user"></i>
                         <p>ผู้อำนวยการฝ่าย</p>
                     </div>
                 </a>
 
-                <a href="TechnicalApprove.jsp" style="text-decoration: none;">
+                <a href="${pageContext.request.contextPath}/TechnicalApprove.jsp" style="text-decoration: none;">
                     <div class="card">
                         <i class="fa-solid fa-screwdriver-wrench"></i>
                         <p>ความเห็นและการอนุมัติเชิงเทคนิค</p>
                     </div>
                 </a>
 
-                <a href="ITDirectorApprove.jsp" style="text-decoration: none;">
+                <a href="${pageContext.request.contextPath}/ITDirectorApprove.jsp" style="text-decoration: none;">
                     <div class="card">
                         <i class="fa-regular fa-circle-user"></i>
                         <p>ผู้อำนวยการฝ่าย<br>เทคโนโลยีสารสนเทศ</p>

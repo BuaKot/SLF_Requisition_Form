@@ -1,5 +1,6 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <html>
 <head>
     <meta charset="UTF-8">
@@ -34,7 +35,7 @@
   <a href='#' class='admin-tab'><i class='fa fa-circle-user' style='font-size:36px;padding-left:0px;padding-right:25%'></i>Admin</a>
 </div>
 
-<div id=main>
+<div id='main'>
 <!-- Sticky Bar (Header) -->
 <div class='sticky-bar'>
     <i id="menuBtn" class="fa fa-bars" onclick="toggleNav()" style="font-size:36px; cursor:pointer; padding-left:5px; padding-right:5px;"></i>
@@ -129,6 +130,18 @@
 
     </section>
 
+    <!-- Confirm Popup -->
+<div id="confirmPopup" class="popup-overlay">
+    <div class="popup-box">
+        <h3>ยืนยันผล</h3>
+        <p>คุณต้องการยืนยันผลรายการนี้ใช่หรือไม่?</p>
+        <div class="popup-buttons">
+            <button id="popupConfirm" class="popup-confirm-btn">ยืนยัน</button>
+            <button onclick="closePopup()" class="popup-cancel-btn">ยกเลิก</button>
+        </div>
+    </div>
+</div>
+
 </div>
 
 
@@ -151,5 +164,46 @@ function toggleNav() {
     main.style.width = "calc(100% - 250px)"; 
   }
 }
+</script>
+
+<script>
+let currentButton = null;
+
+function toggleNav() {
+  var sidebar = document.getElementById("mySidebar");
+  var main = document.getElementById("main");
+  
+  if (sidebar.style.width === "250px") {
+    sidebar.style.width = "0";
+    main.style.marginLeft = "0";
+    main.style.width = "100%";
+  } else {
+    sidebar.style.width = "250px";
+    main.style.marginLeft = "250px";
+    main.style.width = "calc(100% - 250px)";
+  }
+}
+
+/* Open popup when click confirm button */
+document.querySelectorAll(".confirm-btn").forEach(button => {
+    button.addEventListener("click", function() {
+        currentButton = this;
+        document.getElementById("confirmPopup").style.display = "flex";
+    });
+});
+
+/* Close popup */
+function closePopup() {
+    document.getElementById("confirmPopup").style.display = "none";
+}
+
+/* Final confirm */
+document.getElementById("popupConfirm").addEventListener("click", function() {
+    if (currentButton) {
+        currentButton.innerText = "ยืนยันแล้ว";
+        currentButton.classList.add("confirmed");
+    }
+    closePopup();
+});
 </script>
 </html>

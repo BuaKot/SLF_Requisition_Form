@@ -1,0 +1,121 @@
+/* การตั้งค่าพื้นฐาน */
+body {
+    font-family: 'Sarabun', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+    transition: margin-left .5s;
+}
+
+/* Sidebar ส่วนด้านซ้าย */
+.sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    background-color: #1e3a8a;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.sidebar a {
+    padding: 15px 25px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #e0f2fe;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.sidebar .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+}
+
+/* Sticky Bar ด้านบน (โลโก้ + เมนู) */
+.sticky-bar {
+    background-color: white;
+    display: flex;
+    align-items: center;
+    padding: 5px 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.sticky-bar img {
+    margin: 0 10px;
+}
+
+/* แถบสีฟ้าหัวข้อ */
+.blue-title {
+    text-align: center;
+    padding: 15px;
+    background-color: #e0f2fe;
+    border-bottom: 2px solid #3b82f6;
+}
+
+.blue-title h1 {
+    margin: 0;
+    font-size: 22px;
+    color: #1e3a8a;
+}
+
+.blue-title h2 {
+    margin: 5px 0 0 0;
+    font-size: 18px;
+    color: #1e3a8a;
+}
+
+/* ส่วนของ Admin Card Selection */
+.admin-container { 
+    display: flex; 
+    justify-content: center; 
+    flex-wrap: wrap; /* รองรับมือถือ */
+    gap: 30px; 
+    margin-top: 50px; 
+    padding: 20px;
+}
+
+.admin-card {
+    background: white;
+    border: 2px solid #3b82f6;
+    border-radius: 15px;
+    padding: 40px 20px;
+    text-align: center;
+    width: 240px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.admin-card:hover {
+    transform: translateY(-8px);
+    background-color: #f8fafc;
+    box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+    border-color: #1d4ed8;
+}
+
+.admin-card i {
+    font-size: 55px;
+    color: #1e3a8a;
+    margin-bottom: 15px;
+}
+
+.admin-card p {
+    font-weight: bold;
+    color: #1e3a8a;
+    font-size: 16px;
+    margin: 0;
+}

@@ -24,7 +24,7 @@
         <header class="sticky-bar">
             <i class="fa fa-bars" onclick="toggleNav()" style="font-size:28px; cursor:pointer;"></i>
             
-            <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo" style="height: 48px; margin-left: 15px;">
+            <img src="${pageContext.request.contextPath}/webapp/images/MoF.png" alt="MoF Logo" style="height: 48px; margin-left: 15px;">
             <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo" style="height: 48px; margin-left: 10px;">
             
             <div class="user-info">

@@ -1,10 +1,4 @@
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 /*Home Start*/
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 @font-face {
     font-family: 'DBHelvethaica';
     src: url("fonts/DB\ HelvethaicaMon\ X\ Bd\ v3.2.ttf") format('ttf');
@@ -83,8 +77,6 @@ html, body{
 }
 
 /* The sidebar menu */
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 /* Sidebar stays mostly the same, but remove z-index if you want it to push */
 .sidebar {
   height: 100%;
@@ -119,34 +111,6 @@ html, body{
   border: solid #3272BB 2px;
   border-radius: 10px;
   text-align: center;
-=======
-=======
->>>>>>> Stashed changes
-.sidebar {
-  height: 100%;
-  width: 0; /* Initially hidden */
-  position: fixed;
-  z-index: 1000; /* Stays on top of everything */
-  top: 0;
-  left: 0;
-  background-color: #3272BB; /* Matching your theme blue */
-  overflow-x: hidden;
-  transition: 0.5s; /* Smooth sliding effect */
-  padding-top: 60px;
-}
-
-/* Sidebar links */
-.sidebar a {
-  padding: 8px 8px 8px 32px;
-  text-decoration: none;
-  font-size: 25px;
-  color: white;
-  display: block;
-  transition: 0.3s;
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 }
 
 /* Close button position */
@@ -155,8 +119,6 @@ html, body{
   top: 0;
   right: 25px;
   font-size: 36px;
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
   margin: 4px 2px;
   margin-left: 50px;
   background: none;
@@ -178,11 +140,3 @@ html, body{
 }
 
 /*Home End*/
-=======
-  margin-left: 50px;
-}
->>>>>>> Stashed changes
-=======
-  margin-left: 50px;
-}
->>>>>>> Stashed changes

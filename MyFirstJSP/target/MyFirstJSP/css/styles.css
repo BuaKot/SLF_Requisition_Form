@@ -55,8 +55,15 @@ html, body{
     height: 440px;
     width: 100%;        /* Default to full width on mobile */
     max-width: 400px;   /* Won't grow larger than 400px */
-    margin: 20px;       /* Simplified margin */
+    margin: 35px;       /* Simplified margin */
     border-radius: 20px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.option-box:hover{
+    background-color: #f8fcff;
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(50, 114, 187, 0.15);
 }
 
 .option-box-link {
@@ -95,6 +102,7 @@ html, body{
   overflow-x: hidden;
   transition: 0.5s; /* Smooth transition */
   padding-top: 60px;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.2);
 }
 
 /* The main content container */

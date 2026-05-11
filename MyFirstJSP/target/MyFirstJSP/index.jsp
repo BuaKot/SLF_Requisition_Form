@@ -15,7 +15,7 @@
   <a href='#' class='admin-tab'><i class='fa fa-circle-user' style='font-size:36px;padding-left:0px;padding-right:25%'></i>Admin</a>
 </div>
 
-<div id=main>
+<div id='main'>
 <div class='sticky-bar'>
     <i id="menuBtn" class="fa fa-bars" onclick="toggleNav()" style="font-size:36px; cursor:pointer; padding-left:5px; padding-right:5px;"></i>
     </i><img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo" style="height: 48px; padding-left: 10px; padding-right: 5px">
@@ -35,12 +35,12 @@
 
 <div class="options-div">
 
-    <div class='option-box'>
-        <div class='option-pic'>
-            <i class="fa fa-plus"></i>
-        </div >
-        <h1>New Form</h1>
+    <a href="${pageContext.request.contextPath}/form.jsp" class="option-box option-box-link">
+    <div class="option-pic">
+        <i class="fa fa-plus"></i>
     </div>
+    <h1>New Form</h1>
+</a>
 
     <div class='option-box'>
         <div class='option-pic'>

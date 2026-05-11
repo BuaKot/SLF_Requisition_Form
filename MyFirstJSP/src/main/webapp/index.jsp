@@ -35,12 +35,12 @@
 
 <div class="options-div">
 
-    <div class='option-box'>
-        <div class='option-pic'>
-            <i class="fa fa-plus"></i>
-        </div >
-        <h1>New Form</h1>
+    <a href="${pageContext.request.contextPath}/form.jsp" class="option-box option-box-link">
+    <div class="option-pic">
+        <i class="fa fa-plus"></i>
     </div>
+    <h1>New Form</h1>
+</a>
 
     <div class='option-box'>
         <div class='option-pic'>

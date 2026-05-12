@@ -58,13 +58,22 @@ html, body{
     margin: 35px;       /* Simplified margin */
     border-radius: 20px;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+<<<<<<< Updated upstream
 }
 
 .option-box:hover{
     background-color: #f8fcff;
     transform: translateY(-8px);
     box-shadow: 0 12px 24px rgba(50, 114, 187, 0.15);
+=======
+>>>>>>> Stashed changes
 }
+
+.option-box:hover {
+            background-color: #f8fcff;
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(50, 114, 187, 0.15);
+        }
 
 .option-box-link {
     text-decoration: none;

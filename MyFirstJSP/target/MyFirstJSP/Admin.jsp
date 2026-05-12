@@ -84,7 +84,7 @@
                     background: #C3EAFF;
                     padding: clamp(20px, 6vw, 40px) 15px;
                     text-align: center;
-                    color: #3272BB;
+                    color: #003366;
                 }
 
                 .banner h1 {

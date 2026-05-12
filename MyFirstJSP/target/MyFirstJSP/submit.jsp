@@ -24,10 +24,10 @@
 <!-- The Sidebar -->
 <div id="mySidebar" class="sidebar">
   <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
-  <a href="#">Home</a>
-  <a href="#">Services</a>
-  <a href="#">Contact</a>
-  <a href='#' class='admin-tab'><i class='fa fa-circle-user' style='font-size:36px;padding-left:0px;padding-right:25%'></i>Admin</a>
+  <a href="${pageContext.request.contextPath}" style='font-size:20px'>Home</a>
+  <a href="${pageContext.request.contextPath}/submit.jsp" style='font-size:20px'>Submitted Forms</a>
+  <a href="${pageContext.request.contextPath}/form.jsp" style='font-size:20px'>New Form</a>
+  <a href='${pageContext.request.contextPath}/Admin.jsp' class='admin-tab'><i class='fa fa-circle-user' style='font-size:36px;padding-left:0px;padding-right:25%'></i>Admin</a>
 </div>
 
 <div id='main'>
@@ -43,8 +43,8 @@
 </div>
 
 <div class ='blue-title'>
-    <h1 style='margin-block-start: 0.1em; margin-block-end: 0.1em;'>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</h1>
-    <h2 style='margin-block-start: 0.1em; margin-block-end: 0.1em;'>ใบขอให้ดำเนินการ / Requisition Form</h2>
+    <h1 style='margin-block-start: 0.1em; margin-block-end: 0.1em;color:#003366'>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</h1>
+    <h2 style='margin-block-start: 0.1em; margin-block-end: 0.1em;color:#003366'>ใบขอให้ดำเนินการ / Requisition Form</h2>
 </div>
 
     <!-- Progress Header -->

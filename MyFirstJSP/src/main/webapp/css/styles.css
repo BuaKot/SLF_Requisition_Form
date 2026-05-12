@@ -15,11 +15,12 @@
     top: 0;
     background: white;
     width: 100%;
-    height: 10%;
+    height: 70px;
     border-bottom: 5px solid #3272BB;
     align-items: center;
     display:flex;
     padding-left: 20px;
+    z-index: 999;
 }
 html, body{
     margin: 0px;
@@ -40,6 +41,18 @@ html, body{
     flex-direction: column;
 }
 
+.blue-title h1{
+    margin-block-start: 0.1em;
+    margin-block-end: 0.1em;
+    color:#003366;
+}
+
+.blue-title h2{
+    margin-block-start: 0.1em;
+    margin-block-end: 0.1em;
+    color:#003366;
+}
+
 .options-div {
     display: flex;
     flex-direction: row;
@@ -58,20 +71,21 @@ html, body{
     margin: 35px;       /* Simplified margin */
     border-radius: 20px;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    
 }
 
 .option-box:hover{
     background-color: #f8fcff;
     transform: translateY(-8px);
     box-shadow: 0 12px 24px rgba(50, 114, 187, 0.15);
+    border-color: #003366;
 }
 
-.option-box:hover {
-            background-color: #f8fcff;
-            transform: translateY(-8px);
-            box-shadow: 0 12px 24px rgba(50, 114, 187, 0.15);
-        }
-
+.option-box:active {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(50, 114, 187, 0.1);
+}
 .option-box-link {
     text-decoration: none;
     color: inherit;
@@ -86,6 +100,13 @@ html, body{
     margin-bottom: 50px;
     font-size: 200px;
 }
+
+.option-pic:hover i{
+    color: #003366;
+    transform: scale(1.1);
+    transition: all 0.3s ease;
+}
+
 .sticky-bar p {
     margin: 0;
     font-size: 18px;

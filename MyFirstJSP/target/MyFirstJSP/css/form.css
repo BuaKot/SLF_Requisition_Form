@@ -1,12 +1,19 @@
-/* Form Start */
+/* =========================================================
+   1) User Information Form Layout
+   ========================================================= */
 
 .form-page {
     width: 100%;
     padding: 25px 40px 50px 40px;
     display: flex;
     justify-content: center;
+    position: relative;
+    z-index: 1;
 }
 
+textarea, select, input, button{
+    border-radius: 10px;
+}
 .form-card {
     width: 100%;
     max-width: 1100px;
@@ -51,13 +58,30 @@
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
     border-color: #1f5fa8;
 }
 
 .form-group select {
     cursor: pointer;
 }
+
+.form-group textarea {
+    width: 100%;
+    min-height: 120px;
+    border: 2px solid #3272BB;
+    padding: 12px;
+    font-size: 18px;
+    font-family: 'DBHelvethaica', sans-serif;
+    resize: vertical;
+    outline: none;
+}
+
+
+/* =========================================================
+   2) Date Input Icon
+   ========================================================= */
 
 .input-icon {
     position: relative;
@@ -77,6 +101,11 @@
     font-size: 18px;
     pointer-events: none;
 }
+
+
+/* =========================================================
+   3) General Buttons
+   ========================================================= */
 
 .form-actions {
     margin-top: 35px;
@@ -98,6 +127,7 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    border-radius: 10px;
 }
 
 .btn-primary {
@@ -119,27 +149,439 @@
     background-color: #EAF5FF;
 }
 
-/* กรณีช่องที่ต้องการกินเต็ม 2 คอลัมน์ */
+.btn-cancel-small,
+.btn-save-small {
+    width: 110px;
+    height: 36px;
+    font-size: 16px;
+    font-family: 'DBHelvethaica', sans-serif;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.btn-cancel-small {
+    background-color: white;
+    color: #4F6BEF;
+    border: 1px solid #4F6BEF;
+}
+
+.btn-save-small {
+    background-color: #4F6BEF;
+    color: white;
+    border: 1px solid #4F6BEF;
+}
+
+
+/* =========================================================
+   4) Utility Classes
+   ========================================================= */
+
+.required-star {
+    color: red;
+}
+
+.select-placeholder {
+    color: #777;
+}
+
+.select-placeholder option {
+    color: black;
+}
+
 .full-width {
     grid-column: 1 / -1;
 }
 
-.form-group textarea {
+
+/* =========================================================
+   5) Request Page Container
+   ========================================================= */
+
+.request-page {
     width: 100%;
-    min-height: 120px;
+    padding: 20px 32px 40px 32px;
+    position: relative;
+    z-index: 1;
+}
+
+.request-item {
+    width: 100%;
     border: 2px solid #3272BB;
-    padding: 12px;
+    padding: 14px 20px 22px 20px;
+    margin-bottom: 18px;
+    background-color: white;
+    border-radius: 10px;
+}
+
+/* Old wrapper support: keep them invisible if they still exist in HTML */
+.request-header-box,
+.request-detail-box {
+    width: 100%;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* =========================================================
+   6) Request Header
+   ========================================================= */
+
+/* This prevents duplicated borders if old HTML still has these wrappers */
+.request-header-section {
+    width: 100%;
+    margin: 0 0 22px 0;
+
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 24px;
+    align-items: center;
+}
+
+/* Invisible left layout box */
+.request-header-left {
+    width: 100%;
+    display: grid;
+    grid-template-rows: auto auto;
+    row-gap: 14px;
+}
+
+/* Left form rows */
+.request-title-row,
+.request-date-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.request-title-row label,
+.request-date-row label {
+    font-size: 18px;
+    white-space: nowrap;
+}
+
+.request-title-row input {
+    width: 420px;
+    height: 36px;
+    border: 2px solid #3272BB;
+    padding: 0 10px;
     font-size: 18px;
     font-family: 'DBHelvethaica', sans-serif;
-    resize: vertical;
     outline: none;
 }
 
-.form-group textarea:focus {
-    border-color: #1f5fa8;
+.request-date-row {
+    font-size: 18px;
 }
 
-/* Responsive */
+.request-date-row input {
+    width: 200px;
+    height: 36px;
+    border: 2px solid #3272BB;
+    padding: 0 10px;
+    font-size: 18px;
+    font-family: 'DBHelvethaica', sans-serif;
+    outline: none;
+}
+
+/* Invisible right layout box */
+.request-header-icons {
+    display: grid;
+    grid-template-rows: auto auto;
+    row-gap: 22px;
+    justify-items: center;
+    align-items: right;
+    font-size: 24px;
+}
+
+/* =========================================================
+   7) Request Header Icons
+   ========================================================= */
+
+.expand-icon {
+    color: black;
+    cursor: pointer;
+}
+
+.request-zoom-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 24px;
+    cursor: pointer;
+    align-items: right;
+    margin-left: auto;
+    color: black;
+}
+
+.request-delete-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 24px;
+    cursor: pointer;
+    align-items: right;
+    margin-left: auto;
+}
+
+.request-delete-btn:not(:disabled),
+.request-delete-btn:not(:disabled) i {
+    color: red;
+}
+
+.request-delete-btn:disabled,
+.request-delete-btn:disabled i {
+    color: #999;
+    cursor: not-allowed;
+}
+
+.request-delete-btn i {
+    pointer-events: none;
+}
+
+/* Legacy delete icon support */
+.delete-icon {
+    color: red;
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   8) Request Detail Grid
+   ========================================================= */
+
+.request-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.55fr;
+    column-gap: 40px;
+    row-gap: 18px;
+    align-items: start;
+    margin-bottom: 18px;
+}
+
+.request-inline-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.request-inline-group label {
+    font-size: 18px;
+    margin-right: 8px;
+    white-space: nowrap;
+    color: black;
+}
+
+.request-inline-group select,
+.request-inline-group input {
+    height: 40px;
+    border: 2px solid #3272BB;
+    padding: 0 10px;
+    font-size: 18px;
+    font-family: 'DBHelvethaica', sans-serif;
+    outline: none;
+    background-color: white;
+}
+
+.request-inline-group select {
+    width: 100%;
+    cursor: pointer;
+}
+
+.request-inline-group input {
+    width: 100%;
+}
+
+.request-empty-space {
+    visibility: hidden;
+}
+
+
+/* =========================================================
+   9) Request Full Width Fields
+   ========================================================= */
+
+.request-full-width {
+    width: 100%;
+    margin-bottom: 14px;
+}
+
+.request-full-width label {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 6px;
+    color: black;
+}
+
+.request-full-width textarea {
+    width: 100%;
+    height: 130px;
+    border: 2px solid #3272BB;
+    padding: 10px;
+    font-size: 18px;
+    font-family: 'DBHelvethaica', sans-serif;
+    outline: none;
+    resize: none;
+}
+
+.request-full-width textarea::placeholder {
+    color: #777;
+}
+
+
+
+/* =========================================================
+   10) Other Request Field
+   ========================================================= */
+
+.other-request-box {
+    display: none;
+}
+
+.other-request-box input {
+    width: 100%;
+    height: 40px;
+    border: 2px solid #3272BB;
+    padding: 0 10px;
+    font-size: 18px;
+    font-family: 'DBHelvethaica', sans-serif;
+    outline: none;
+}
+
+.other-request-box input::placeholder {
+    color: #777;
+}
+
+
+/* =========================================================
+   11) Server Permission Section
+   ========================================================= */
+
+.server-permission-box {
+    display: none;
+    width: 100%;
+    border: 2px solid #3272BB;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+}
+
+.server-permission-title {
+    font-size: 22px;
+    font-weight: normal;
+    margin: 0 0 14px 0;
+    color: black;
+}
+
+.server-input-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.server-input-row label {
+    font-size: 18px;
+    width: 110px;
+    white-space: nowrap;
+}
+
+.server-input-row input {
+    width: 100%;
+    height: 40px;
+    border: 2px solid #3272BB;
+    padding: 0 10px;
+    font-size: 18px;
+    font-family: 'DBHelvethaica', sans-serif;
+    outline: none;
+}
+
+.server-input-row input::placeholder {
+    color: #777;
+}
+
+.sub-folder-row {
+    margin-top: 8px;
+}
+
+
+/* =========================================================
+   12) Permission Checkboxes
+   ========================================================= */
+
+.permission-checkbox-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 28px;
+    align-items: center;
+    margin: 4px 0 16px 122px;
+}
+
+.permission-checkbox-row label {
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.permission-checkbox-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   13) Add Request Button
+   ========================================================= */
+
+.add-request-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 14px;
+}
+
+.add-request-btn {
+    height: 40px;
+    padding: 0 14px;
+    background-color: white;
+    border: 2px solid #3272BB;
+    font-size: 18px;
+    font-family: 'DBHelvethaica', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.add-request-btn i {
+    border: 2px solid black;
+    border-radius: 50%;
+    padding: 3px;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   14) Bottom Page Actions
+   ========================================================= */
+
+.bottom-form-actions {
+    width: 100%;
+    padding: 25px 32px 20px 32px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.bottom-form-actions .btn-primary,
+.bottom-form-actions .btn-secondary {
+    min-width: 120px;
+}
+
+
+/* =========================================================
+   15) Responsive Layout
+   ========================================================= */
+
 @media (max-width: 900px) {
     .form-page {
         padding: 20px;
@@ -163,16 +605,87 @@
     .btn-secondary {
         width: 100%;
     }
+
+    .request-page {
+        padding: 16px;
+    }
+
+    .request-header-section {
+    grid-template-columns: 1fr;
+    row-gap: 15px;
+    }
+
+    .request-header-left {
+        width: 100%;
+    }
+
+    .request-header-icons {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        gap: 16px;
+    }
+
+    .request-title-row,
+    .request-date-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .request-title-row input,
+    .request-date-row input {
+        width: 100%;
+    }
+
+    .request-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .request-inline-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .request-inline-group label {
+        margin-bottom: 6px;
+    }
+
+    .request-empty-space {
+        display: none;
+    }
+
+    .server-input-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .server-input-row label {
+        width: auto;
+    }
+
+    .permission-checkbox-row {
+        margin-left: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .bottom-form-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .bottom-form-actions .btn-primary,
+    .bottom-form-actions .btn-secondary {
+        width: 100%;
+    }
 }
 
-.required-star {
-    color: red;
-}
-.select-placeholder {
-    color: #777;
-}
+/* =========================================================
+   Program Name Field
+   ========================================================= */
 
-.select-placeholder option {
-    color: black;
+.program-name-box {
+    display: none;
 }
-/* Form End */

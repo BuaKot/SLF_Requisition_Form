@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายละเอียดการดำเนินการ - รายการใบคำขอ</title>
+    <title>ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ - รายการใบคำขอ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
@@ -20,7 +20,6 @@
             background-color: #ffffff;
         }
 
-        /* Header & Banner */
         .sticky-bar {
             position: sticky;
             top: 0;
@@ -53,14 +52,12 @@
             font-weight: normal;
         }
 
-        /* Container สำหรับรายการ */
         .list-container {
             max-width: 1000px;
             margin: 20px auto;
             padding: 0 15px;
         }
 
-        /* การจัด Layout ของแต่ละแถว */
         .requisition-item {
             display: flex;
             align-items: center;
@@ -71,16 +68,15 @@
             gap: 15px;
             background: white;
             transition: 0.2s;
-            cursor: pointer; /* เปลี่ยนเมาส์เป็นรูปมือเมื่อชี้ */
+            cursor: pointer;
         }
 
         .requisition-item:hover {
             transform: scale(1.01);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-color: #3272BB; /* เปลี่ยนสีขอบเมื่อ hover */
+            border-color: #3272BB;
         }
 
-        /* เลขที่ใบคำขอ (ด้านซ้ายสุด) */
         .req-number {
             background: #f5f5f5;
             border: 1px solid #333;
@@ -92,7 +88,6 @@
             font-size: 14px;
         }
 
-        /* ข้อมูลรายละเอียด (ตรงกลาง) */
         .req-details {
             flex-grow: 1;
             font-size: 14px;
@@ -103,7 +98,6 @@
             color: #003366;
         }
 
-        /* ไอคอนสถานะ (ด้านขวาสุด) */
         .status-icon {
             font-size: 30px;
             padding-right: 10px;
@@ -112,7 +106,6 @@
         .status-success { color: #28a745; }
         .status-pending { color: #ffc107; }
 
-        /* ปุ่มย้อนกลับ */
         .back-btn {
             display: inline-block;
             margin-bottom: 15px;
@@ -121,7 +114,6 @@
             font-weight: bold;
         }
 
-        /* Responsive สำหรับมือถือ */
         @media (max-width: 600px) {
             .requisition-item {
                 flex-direction: column;
@@ -159,10 +151,10 @@
             <i class="fa fa-chevron-left"></i> กลับหน้าหลัก
         </a>
 
-        <div class="requisition-item" onclick="location.href='RequisitionDetail_Comment.jsp'">
+        <div class="requisition-item" onclick="location.href='RequisitionDetail_Process.jsp'">
             <div class="req-number">ใบขอดำเนินการที่ 1</div>
             <div class="req-details">
-                <b>ชื่อ :</b> ธนภัทร กาญจนรุจิวุฒิ &nbsp;&nbsp; <b>ฝ่าย :</b> บริหารหนี้ 2 &nbsp;&nbsp; 
+                <b>ชื่อ :</b> ธนภัทร กาญจนรุจิวุฒิ &nbsp;&nbsp; <b>ฝ่าย :</b> บริหารหนี้ 2 &nbsp;&nbsp;
                 <b>ส่วน :</b> ----- &nbsp;&nbsp; <b>Deadline :</b> 16/01/2569<br>
                 <b>รายละเอียด :</b> พัฒนาระบบลงทะเบียนขอผ่อนผันการชำระเงินกองทุน กรณีผู้กู้ยืมเป็นผู้ประสบอุทกภัย
             </div>
@@ -171,10 +163,10 @@
             </div>
         </div>
 
-        <div class="requisition-item" onclick="location.href='RequisitionDetail_Comment.jsp'">
+        <div class="requisition-item" onclick="location.href='RequisitionDetail_Process.jsp'">
             <div class="req-number">ใบขอดำเนินการที่ 2</div>
             <div class="req-details">
-                <b>ชื่อ :</b> ธนภัทร กาญจนรุจิวุฒิ &nbsp;&nbsp; <b>ฝ่าย :</b> บริหารหนี้ 2 &nbsp;&nbsp; 
+                <b>ชื่อ :</b> ธนภัทร กาญจนรุจิวุฒิ &nbsp;&nbsp; <b>ฝ่าย :</b> บริหารหนี้ 2 &nbsp;&nbsp;
                 <b>ส่วน :</b> ----- &nbsp;&nbsp; <b>Deadline :</b> 16/01/2569<br>
                 <b>รายละเอียด :</b> ชื่อหัวข้อความต้องการ
             </div>
@@ -183,7 +175,7 @@
             </div>
         </div>
 
-        <div class="requisition-item" onclick="location.href='RequisitionDetail_Comment.jsp'">
+        <div class="requisition-item" onclick="location.href='RequisitionDetail_Process.jsp'">
             <div class="req-number">ใบขอดำเนินการที่ 3</div>
             <div class="req-details">
                 <b>รายละเอียด :</b> context (คลิกเพื่อดูรายละเอียดเพิ่มเติม)

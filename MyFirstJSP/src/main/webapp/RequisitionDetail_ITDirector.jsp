@@ -73,7 +73,7 @@
 <body>
 
     <div class="sticky-bar">
-        <a href="DirectorApprove.jsp" style="text-decoration:none; color:#333;">
+        <a href="ITDirectorApprove.jsp" style="text-decoration:none; color:#333;">
             <i class="fa fa-arrow-left"></i> กลับ
         </a>
         <div style="margin-left:auto; display:flex; align-items:center;">
@@ -149,6 +149,22 @@
                     <textarea rows="4">ปัจจุบันดำเนินการผ่านระบบ Manual และบันทึกใน Excel...</textarea>
                 </div>
             </div>
+            <div class="section-box full-width" style="background-color: #ffffff; border: 2px solid #000000;">
+                        <h3
+                            style="margin-top: 0; color: #000000; font-size: 1.1rem; font-weight: bold; margin-bottom: 15px;">
+                            ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ
+                        </h3>
+
+
+                        <div class="form-grid"
+                            style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="form-group">
+                                <label style="font-weight: bold;">ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ :</label>
+                                <input type="text" placeholder="ระบุชื่อ :"
+                                    style="padding: 8px; border: 1px solid #3272BB; border-radius: 5px;">
+                            </div>
+                        </div>
+                    </div>
 
             <div class="btn-group">
                 <button type="button" class="btn btn-reject" onclick="alert('ส่งกลับแก้ไข')">ส่งกลับ</button>

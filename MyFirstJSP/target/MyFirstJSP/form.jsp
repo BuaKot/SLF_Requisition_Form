@@ -10,12 +10,11 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
 </head>
 
-<!-- The Sidebar -->
 <div id="mySidebar" class="sidebar">
   <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
-  <a href="${pageContext.request.contextPath}" style='font-size:20px'>Home</a>
-  <a href="${pageContext.request.contextPath}/submit.jsp" style='font-size:20px'>Submitted Forms</a>
-  <a href="${pageContext.request.contextPath}/form.jsp" style='font-size:20px'>New Form</a>
+  <a href="${pageContext.request.contextPath}" style='font-size:20px'>หน้าหลัก</a>
+  <a href="${pageContext.request.contextPath}/submit.jsp" style='font-size:20px'>ฟอร์มที่ส่งแล้ว</a>
+  <a href="${pageContext.request.contextPath}/form.jsp" style='font-size:20px'>สร้างฟอร์มใหม่</a>
   <a href='${pageContext.request.contextPath}/Admin.jsp' class='admin-tab'><i class='fa fa-circle-user' style='font-size:36px;padding-left:0px;padding-right:25%'></i>Admin</a>
 </div>
 
@@ -287,7 +286,7 @@
 
 <div class="bottom-form-actions">
     <a href="${pageContext.request.contextPath}/index.jsp" class="btn-secondary">ย้อนกลับ</a>
-    <button type="submit" class="btn-primary">ยืนยันการส่ง</button>
+    <a href="${pageContext.request.contextPath}/submit.jsp" type="submit" class="btn-primary">ยืนยันการส่ง</a>
 </div>
 
 </div>

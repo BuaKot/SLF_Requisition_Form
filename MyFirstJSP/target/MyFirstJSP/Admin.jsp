@@ -72,7 +72,7 @@
 
         .sidebar a:hover { background: rgba(255,255,255,0.1); }
 
-        /* Banner - ปรับตัวหนังสือให้สมดุล */
+        /* Banner - ปรับตัวหนังสือ */
         .banner {
             background: #C3EAFF;
             padding: clamp(20px, 6vw, 40px) 15px;
@@ -83,35 +83,29 @@
         .banner h1 { font-size: clamp(1.1rem, 4vw, 1.5rem); margin: 0; line-height: 1.2; }
         .banner h2 { font-size: clamp(0.9rem, 3vw, 1.1rem); margin-top: 10px; font-weight: normal; }
 
-        /* Grid System - Responsive หัวใจสำคัญ */
+        /* Grid System - Responsive */
         .admin-grid {
             display: grid;
-            /* ปรับขนาดกล่องขั้นต่ำเป็น 260px เพื่อให้ลงตัวในมือถือส่วนใหญ่ */
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
-            gap: clamp(15px, 4vw, 30px);
-            padding: 30px 20px;
-            max-width: 1100px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+            gap: 20px;
+            padding: 40px 20px;
+            max-width: 1300px;
             margin: 0 auto;
-            width: 100%;
         }
 
-        /* Card Design - ปรับขนาด Icons และ Padding */
+        /* Card Design */
         .card {
             background: white;
             border: 3px solid #3272BB;
             border-radius: 20px;
-            padding: clamp(20px, 5vw, 40px);
+            padding: 30px 15px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: clamp(280px, 50vh, 360px);
-        }
-
-        .card:hover {
             background-color: #f8fcff;
             transform: translateY(-8px);
             box-shadow: 0 12px 24px rgba(50, 114, 187, 0.15);
@@ -131,14 +125,12 @@
             line-height: 1.3;
         }
 
-        /* ปรับแต่งส่วนติดต่อ */
         .contact-info p { margin: 0; white-space: nowrap; }
 
-        /* Media Query สำหรับหน้าจอจิ๋ว */
         @media (max-width: 400px) {
             .admin-grid { grid-template-columns: 1fr; padding: 20px 15px; }
             .card { min-height: 250px; }
-            .sidebar { width: 0; } /* ปรับ JavaScript คุม width แทน */
+            .sidebar { width: 0; } 
         }
     </style>
 </head>
@@ -193,12 +185,11 @@
     <script>
         function toggleNav() {
             var sidebar = document.getElementById("mySidebar");
-            // ใช้คำนวณหน้าจอเบื้องต้น ถ้าจอมือถือเล็กให้กว้างขึ้น
             var openWidth = (window.innerWidth < 400) ? "80%" : "250px";
             sidebar.style.width = (sidebar.style.width === openWidth) ? "0" : openWidth;
         }
 
-        // ปิด Sidebar เมื่อคลิกข้างนอก
+
         window.onclick = function(event) {
             var sidebar = document.getElementById("mySidebar");
             if (event.target == sidebar) {

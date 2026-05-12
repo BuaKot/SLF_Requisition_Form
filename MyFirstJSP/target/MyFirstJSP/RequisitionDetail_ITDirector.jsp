@@ -73,7 +73,7 @@
 <body>
 
     <div class="sticky-bar">
-        <a href="DirectorApprove.jsp" style="text-decoration:none; color:#333;">
+        <a href="ITDirectorApprove.jsp" style="text-decoration:none; color:#333;">
             <i class="fa fa-arrow-left"></i> กลับ
         </a>
         <div style="margin-left:auto; display:flex; align-items:center;">

@@ -239,14 +239,11 @@
                         <div class="form-group full-width">
                             <textarea rows="4"
                                 style="width: 100%; border: 1px solid #3272BB; border-radius: 5px; padding: 10px;"
-                                placeholder="ระบุความเห็นเชิงเทคนิคที่นี่..."></textarea>
+                                placeholder="การดำเนินการ"></textarea>
                         </div>
 
                         <div class="form-grid"
                             style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div class="form-group">
-                                <label style="font-weight: bold;">ผลการพิจารณา :</label>
-                            </div>
                             <div class="form-group">
                                 <label style="font-weight: bold;">ผู้ตรวจสอบเชิงเทคนิค :</label>
                                 <input type="text" placeholder="ระบุชื่อผู้ตรวจสอบ"

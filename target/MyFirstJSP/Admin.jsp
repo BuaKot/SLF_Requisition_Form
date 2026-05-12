@@ -83,7 +83,6 @@
         .banner h1 { font-size: clamp(1.1rem, 4vw, 1.5rem); margin: 0; line-height: 1.2; }
         .banner h2 { font-size: clamp(0.9rem, 3vw, 1.1rem); margin-top: 10px; font-weight: normal; }
 
-<<<<<<< HEAD
         /* Grid System - Responsive หัวใจสำคัญ */
         .admin-grid {
             display: grid;
@@ -92,33 +91,16 @@
             gap: clamp(15px, 4vw, 30px);
             padding: 30px 20px;
             max-width: 1100px;
-=======
-        /* Grid System - 2x2 layout */
-        .admin-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: clamp(15px, 3vw, 25px);
-            padding: clamp(20px, 4vw, 40px);
-            max-width: 750px;
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
             margin: 0 auto;
             width: 100%;
         }
 
-<<<<<<< HEAD
         /* Card Design - ปรับขนาด Icons และ Padding */
-=======
-        /* Card Design */
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
         .card {
             background: white;
             border: 3px solid #3272BB;
             border-radius: 20px;
-<<<<<<< HEAD
             padding: clamp(20px, 5vw, 40px);
-=======
-            padding: clamp(20px, 4vw, 35px);
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
             text-align: center;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -126,38 +108,23 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-<<<<<<< HEAD
             min-height: clamp(280px, 50vh, 360px);
-=======
-            min-height: clamp(220px, 30vh, 280px);
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
         }
 
         .card:hover {
             background-color: #f8fcff;
-<<<<<<< HEAD
             transform: translateY(-8px);
-=======
-            transform: translateY(-6px);
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
             box-shadow: 0 12px 24px rgba(50, 114, 187, 0.15);
         }
 
         .card i {
-<<<<<<< HEAD
             font-size: clamp(60px, 15vw, 90px);
             color: #3272BB;
             margin-bottom: 20px;
-=======
-            font-size: clamp(50px, 10vw, 75px);
-            color: #3272BB;
-            margin-bottom: 16px;
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
         }
 
         .card p {
             font-weight: bold;
-<<<<<<< HEAD
             font-size: clamp(1rem, 2.5vw, 1.2rem);
             color: #333;
             margin: 0;
@@ -172,19 +139,6 @@
             .admin-grid { grid-template-columns: 1fr; padding: 20px 15px; }
             .card { min-height: 250px; }
             .sidebar { width: 0; } /* ปรับ JavaScript คุม width แทน */
-=======
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
-            color: #333;
-            margin: 0;
-            line-height: 1.4;
-        }
-
-        .contact-info p { margin: 0; white-space: nowrap; }
-
-        @media (max-width: 500px) {
-            .admin-grid { grid-template-columns: 1fr; padding: 20px 15px; }
-            .card { min-height: 200px; }
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
         }
     </style>
 </head>
@@ -229,14 +183,6 @@
             <i class="fa-regular fa-circle-user"></i>
             <p>ผู้อำนวยการฝ่าย<br>เทคโนโลยีสารสนเทศ</p>
         </div>
-<<<<<<< HEAD
-=======
-
-        <div class="card" onclick="location.href='${pageContext.request.contextPath}/OperationDetail.jsp'">
-            <i class="fa-solid fa-screwdriver-wrench"></i>
-            <p>รายละเอียดการดำเนินการ</p>
-        </div>
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
     </div>
 
     <script>

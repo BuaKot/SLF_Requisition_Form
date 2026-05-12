@@ -102,10 +102,10 @@
                 /* Grid System - Responsive */
                 .admin-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-                    gap: 20px;
+                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                    gap: 25px;
                     padding: 40px 20px;
-                    max-width: 1300px;
+                    max-width: 1400px;
                     margin: 0 auto;
                 }
 
@@ -118,7 +118,7 @@
                     text-align: center;
                     cursor: pointer;
 
-                
+
                     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
                     display: flex;
@@ -130,7 +130,7 @@
                 }
 
                 .card:hover {
-                    
+
                     transform: translateY(-10px);
                     box-shadow: 0 15px 30px rgba(50, 114, 187, 0.2);
                     border-color: #003366;
@@ -141,12 +141,28 @@
                     box-shadow: 0 5px 10px rgba(50, 114, 187, 0.1);
                 }
 
-                
+
                 .card:hover i {
                     color: #003366;
                     transform: scale(1.1);
-                    
+
                     transition: all 0.3s ease;
+                }
+
+                .card i {
+                    font-size: 90px;
+                    color: #3272BB;
+                    margin-bottom: 20px;
+                    transition: all 0.3s ease;
+                }
+
+                /* ขนาดข้อความ */
+                .card p {
+                    font-weight: bold;
+                    font-size: 20px;
+                    color: #003366;
+                    margin: 0;
+                    line-height: 1.3;
                 }
 
                 .contact-info p {

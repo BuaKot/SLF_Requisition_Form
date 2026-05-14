@@ -1,3 +1,4 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
@@ -60,10 +61,6 @@
                 <label for="section">ส่วน</label>
                 <select id="section" name="section">
                     <option value="">ไม่ระบุ</option>
-                    <option value="ส่วน 1">ส่วน 1</option>
-                    <option value="ส่วน 2">ส่วน 2</option>
-                    <option value="ส่วน 3">ส่วน 3</option>
-                    <option value="ส่วน 4">ส่วน 4</option>
                 </select>
             </div>
 
@@ -71,10 +68,9 @@
                 <label for="department">ฝ่าย <span class="required-star">*</span></label>
                 <select id="department" name="department" class="select-placeholder" required>
                     <option value="" disabled selected hidden>โปรดเลือกฝ่าย</option>
-                    <option value="กู้ยืม">กู้ยืม</option>
-                    <option value="บริหารหนี้ 1">บริหารหนี้ 1</option>
-                    <option value="บริหารหนี้ 2">บริหารหนี้ 2</option>
-                    <option value="ทรัพยากรบุคคล">ทรัพยากรบุคคล</option>
+                    <c:forEach var="dept" items="${departments}">
+                        <option value="${dept.deptId}">${dept.deptName}</option>
+                    </c:forEach>
                 </select>
             </div>
 
@@ -133,15 +129,9 @@
                             <label>ประเภทคำขอ<span class="required-star">*</span></label>
                             <select name="requestType[]" class="select-placeholder request-type-select" required>
                                 <option value="" disabled selected hidden>Please select</option>
-                                <option value="ขอติดตั้งโปรแกรม">ขอติดตั้งโปรแกรม</option>
-                                <option value="ขอสิทธิ์ใช้อินเตอร์เน็ต">ขอสิทธิ์ใช้อินเตอร์เน็ต</option>
-                                <option value="ขอใช้สิทธิ์เก็บข้อมูล">ขอใช้สิทธิ์เก็บข้อมูล</option>
-                                <option value="ขอเปลี่ยน Password">ขอเปลี่ยน Password</option>
-                                <option value="แจ้งปัญหาการใช้งาน">แจ้งปัญหาการใช้งาน</option>
-                                <option value="ขอให้พัฒนาโปรแกรม">ขอให้พัฒนาโปรแกรม</option>
-                                <option value="ขอให้จัดหลักสูตร">ขอให้จัดหลักสูตร</option>
-                                <option value="ขอยืมอุปกรณ์ไอที">ขอยืมอุปกรณ์ไอที</option>
-                                <option value="อื่น ๆ">อื่น ๆ</option>
+                                <c:forEach var="type" items="${requestTypes}">
+                                    <option value="${type.typeId}">${type.typeName}</option>
+                                </c:forEach>
                             </select>
                         </div>
 
@@ -408,7 +398,11 @@ function handleRequestTypeChange(select) {
     const item = select.closest(".request-item");
     if (!item) return;
 
+    // Get the displayed Thai name of the selected type
+    var selectedText = select.options[select.selectedIndex].text;
+
     const otherRequestBox = item.querySelector(".other-request-box");
+
     const otherRequestInput = item.querySelector('input[name="otherRequest[]"]');
 
     const serverPermissionBox = item.querySelector(".server-permission-box");
@@ -422,10 +416,8 @@ function handleRequestTypeChange(select) {
     updateSelectColor(select);
 
     if (programNameBox && programNameInput) {
-        if (
-            select.value === "ขอติดตั้งโปรแกรม" ||
-            select.value === "ขอให้พัฒนาโปรแกรม"
-        ) {
+        if (selectedText === "ขอติดตั้งโปรแกรม" || selectedText === "ขอให้พัฒนาโปรแกรม") 
+        {
             programNameBox.style.display = "flex";
             programNameInput.required = true;
         } else {
@@ -436,7 +428,7 @@ function handleRequestTypeChange(select) {
     }
 
     if (otherRequestBox && otherRequestInput) {
-        if (select.value === "อื่น ๆ") {
+        if (selectedText === "อื่น ๆ") {
             otherRequestBox.style.display = "flex";
             otherRequestInput.required = true;
         } else {
@@ -447,7 +439,7 @@ function handleRequestTypeChange(select) {
     }
 
     if (serverPermissionBox && serverNameInput && serverFolderInput && subFolderInput) {
-        if (select.value === "ขอใช้สิทธิ์เก็บข้อมูล") {
+        if (selectedText === "ขอใช้สิทธิ์เก็บข้อมูล") {
             serverPermissionBox.style.display = "flex";
             serverNameInput.required = true;
             serverFolderInput.required = true;
@@ -597,6 +589,47 @@ if (requisitionForm) {
         }
     });
 }
+</script>
+
+<script>
+// Build a map of deptId -> list of {id, name}
+var sectionsByDept = {};
+<c:forEach var="sec" items="${allSections}">
+    if (!sectionsByDept[${sec.deptId}]) {
+        sectionsByDept[${sec.deptId}] = [];
+    }
+    sectionsByDept[${sec.deptId}].push({id: ${sec.secId}, name: "${sec.secName}"});
+</c:forEach>
+
+var sectionSelect = document.getElementById("section");
+var departmentSelect = document.getElementById("department");
+
+function populateSections(deptId) {
+    // Remove all options except the first default "ไม่ระบุ"
+    sectionSelect.innerHTML = '<option value="">ไม่ระบุ</option>';
+    if (deptId && sectionsByDept[deptId]) {
+        sectionsByDept[deptId].forEach(function(sec) {
+            var opt = document.createElement("option");
+            opt.value = sec.id;
+            opt.textContent = sec.name;
+            sectionSelect.appendChild(opt);
+        });
+    }
+}
+
+// Listen for department changes
+if (departmentSelect) {
+    departmentSelect.addEventListener("change", function() {
+        populateSections(this.value);
+    });
+}
+
+// On page load, clear sections (department not yet selected)
+window.addEventListener("load", function() {
+    // Your existing onload stuff will run first, then this
+    // Ensure the section list is empty initially
+    populateSections(null);
+});
 </script>
 
 </body>

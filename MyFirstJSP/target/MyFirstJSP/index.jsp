@@ -13,7 +13,7 @@
   <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
   <a href="${pageContext.request.contextPath}" style='font-size:20px'>หน้าหลัก</a>
   <a href="${pageContext.request.contextPath}/submit.jsp" style='font-size:20px'>ฟอร์มที่ส่งแล้ว</a>
-  <a href="${pageContext.request.contextPath}/form.jsp" style='font-size:20px'>สร้างฟอร์มใหม่</a>
+  <a href="${pageContext.request.contextPath}/newForm" style='font-size:20px'>สร้างฟอร์มใหม่</a>
   <a href='${pageContext.request.contextPath}/Admin.jsp' class='admin-tab'><i class='fa fa-circle-user' style='font-size:36px;padding-left:0px;padding-right:25%'></i>Admin</a>
 </div>
 

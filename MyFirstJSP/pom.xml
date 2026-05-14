@@ -27,9 +27,14 @@
     <scope>provided</scope>
 </dependency>
 <dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>jstl</artifactId>
+    <version>1.2</version>
+</dependency>
+<dependency>
     <groupId>com.oracle.database.jdbc</groupId>
     <artifactId>ojdbc8</artifactId>
-    <version>21.9.0.0</version> <!-- check with your Oracle version; 19.x or 21.x is fine -->
+    <version>21.9.0.0</version>
 </dependency>
   </dependencies>
   <build>

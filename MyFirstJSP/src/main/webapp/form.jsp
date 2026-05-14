@@ -42,7 +42,7 @@
 </div>
 
 <div class="form-container">
-    <form action="${pageContext.request.contextPath}/submit.jsp" method="post">
+    <form action="${pageContext.request.contextPath}/submitRequest" method="post">
 
         <div class="form-grid">
 
@@ -131,7 +131,7 @@
 
                         <div class="form-group">
                             <label>ประเภทคำขอ<span class="required-star">*</span></label>
-                            <select name="requestType" class="select-placeholder request-type-select" required>
+                            <select name="requestType[]" class="select-placeholder request-type-select" required>
                                 <option value="" disabled selected hidden>Please select</option>
                                 <option value="ขอติดตั้งโปรแกรม">ขอติดตั้งโปรแกรม</option>
                                 <option value="ขอสิทธิ์ใช้อินเตอร์เน็ต">ขอสิทธิ์ใช้อินเตอร์เน็ต</option>
@@ -147,7 +147,7 @@
 
                         <div class="form-group program-name-box">
                             <label>ชื่อโปรแกรม :<span class="required-star">*</span></label>
-                            <input type="text" name="programName" required>
+                            <input type="text" name="programName[]" required>
                         </div>
 
                         <div class="form-group full-width server-permission-box">
@@ -156,7 +156,7 @@
                             <div class="server-input-row">
                                 <input
                                     type="text"
-                                    name="serverName"
+                                    name="serverName[]"
                                     placeholder="โปรดระบุ Server"
                                     required
                                 >
@@ -166,34 +166,34 @@
                                 <label>Folder :</label>
                                 <input
                                     type="text"
-                                    name="serverFolder"
+                                    name="serverFolder[]"
                                     placeholder="โปรดระบุ Folder"
                                 >
                             </div>
 
                             <div class="permission-checkbox-row">
                                 <label>
-                                    <input type="checkbox" name="folderPermission" value="Full control">
+                                    <input type="checkbox" name="folderPermission[]" value="Full control">
                                     Full control
                                 </label>
 
                                 <label>
-                                    <input type="checkbox" name="folderPermission" value="Modify">
+                                    <input type="checkbox" name="folderPermission[]" value="Modify">
                                     Modify
                                 </label>
 
                                 <label>
-                                    <input type="checkbox" name="folderPermission" value="Read & Execute">
+                                    <input type="checkbox" name="folderPermission[]" value="Read & Execute">
                                     Read & Execute
                                 </label>
 
                                 <label>
-                                    <input type="checkbox" name="folderPermission" value="Read">
+                                    <input type="checkbox" name="folderPermission[]" value="Read">
                                     Read
                                 </label>
 
                                 <label>
-                                    <input type="checkbox" name="folderPermission" value="Write">
+                                    <input type="checkbox" name="folderPermission[]" value="Write">
                                     Write
                                 </label>
                             </div>
@@ -202,34 +202,34 @@
                                 <label>Sub Folder :</label>
                                 <input
                                     type="text"
-                                    name="subFolder"
+                                    name="subFolder[]"
                                     placeholder="โปรดระบุ Sub Folder"
                                 >
                             </div>
 
                             <div class="permission-checkbox-row">
                                 <label>
-                                    <input type="checkbox" name="subFolderPermission" value="Full control">
+                                    <input type="checkbox" name="subFolderPermission[]" value="Full control">
                                     Full control
                                 </label>
 
                                 <label>
-                                    <input type="checkbox" name="subFolderPermission" value="Modify">
+                                    <input type="checkbox" name="subFolderPermission[]" value="Modify">
                                     Modify
                                 </label>
 
                                 <label>
-                                    <input type="checkbox" name="subFolderPermission" value="Read & Execute">
+                                    <input type="checkbox" name="subFolderPermission[]" value="Read & Execute">
                                     Read & Execute
                                 </label>
 
                                 <label>
-                                    <input type="checkbox" name="subFolderPermission" value="Read">
+                                    <input type="checkbox" name="subFolderPermission[]" value="Read">
                                     Read
                                 </label>
 
                                 <label>
-                                    <input type="checkbox" name="subFolderPermission" value="Write">
+                                    <input type="checkbox" name="subFolderPermission[]" value="Write">
                                     Write
                                 </label>
                             </div>
@@ -239,7 +239,7 @@
                             <label>โปรดระบุ</label>
                             <input
                                 type="text"
-                                name="otherRequest"
+                                name="otherRequest[]"
                                 placeholder="โปรดระบุประเภทคำขอ"
                             >
                         </div>
@@ -247,7 +247,7 @@
                         <div class="form-group full-width">
                             <label>วัตถุประสงค์ / ความต้องการ <span class="required-star">*</span></label>
                             <textarea
-                                name="objective"
+                                name="objective[]"
                                 placeholder="โปรดระบุความต้องการ"
                                 required
                             ></textarea>
@@ -256,7 +256,7 @@
                         <div class="form-group full-width">
                             <label>วิธีการเดิมในปัจจุบัน</label>
                             <textarea
-                                name="currentMethod"
+                                name="currentMethod[]"
                                 placeholder="โปรดระบุวิธีการเดิมในปัจจุบัน"
                             ></textarea>
                         </div>
@@ -396,7 +396,7 @@ function resetRequestItem(item) {
 
 function initAllRequestTypeDisplays() {
     document.querySelectorAll(".request-item").forEach(function (item) {
-        const select = item.querySelector('select[name="requestType"]');
+        const select = item.querySelector('select[name="requestType[]"]');
 
         if (select) {
             handleRequestTypeChange(select);
@@ -409,15 +409,15 @@ function handleRequestTypeChange(select) {
     if (!item) return;
 
     const otherRequestBox = item.querySelector(".other-request-box");
-    const otherRequestInput = item.querySelector('input[name="otherRequest"]');
+    const otherRequestInput = item.querySelector('input[name="otherRequest[]"]');
 
     const serverPermissionBox = item.querySelector(".server-permission-box");
-    const serverNameInput = item.querySelector('input[name="serverName"]');
-    const serverFolderInput = item.querySelector('input[name="serverFolder"]');
-    const subFolderInput = item.querySelector('input[name="subFolder"]');
+    const serverNameInput = item.querySelector('input[name="serverName[]"]');
+    const serverFolderInput = item.querySelector('input[name="serverFolder[]"]');
+    const subFolderInput = item.querySelector('input[name="subFolder[]"]');
 
     const programNameBox = item.querySelector(".program-name-box");
-    const programNameInput = item.querySelector('input[name="programName"]');
+    const programNameInput = item.querySelector('input[name="programName[]"]');
 
     updateSelectColor(select);
 
@@ -462,11 +462,11 @@ function handleRequestTypeChange(select) {
             serverFolderInput.value = "";
             subFolderInput.value = "";
 
-            item.querySelectorAll('input[name="folderPermission"]').forEach(function (checkbox) {
+            item.querySelectorAll('input[name="folderPermission[]"]').forEach(function (checkbox) {
                 checkbox.checked = false;
             });
 
-            item.querySelectorAll('input[name="subFolderPermission"]').forEach(function (checkbox) {
+            item.querySelectorAll('input[name="subFolderPermission[]"]').forEach(function (checkbox) {
                 checkbox.checked = false;
             });
         }
@@ -512,7 +512,7 @@ if (addRequestBtn && requestsContainer) {
     });
 
     requestsContainer.addEventListener("change", function (event) {
-        if (event.target.matches('select[name="requestType"]')) {
+        if (event.target.matches('select[name="requestType[]"]')) {
             handleRequestTypeChange(event.target);
         }
 
@@ -572,8 +572,11 @@ if (requisitionForm) {
         document.querySelectorAll(".request-item").forEach(function (item, index) {
             const requestNumber = index + 1;
 
-            const requestTypeInput = item.querySelector('select[name="requestType"]');
-            const objectiveInput = item.querySelector('textarea[name="objective"]');
+            const requestTypeInput = item.querySelector('select[name="requestType[]"]');
+            const objectiveInput = item.querySelector('textarea[name="objective[]"]');
+
+            // Add this debug line:
+            console.log("Checking Request Row: " + requestNumber, "Value is:", objectiveInput.value);
 
             if (!requestTypeInput || requestTypeInput.value.trim() === "") {
                 missingFields.push("ประเภทคำขอ ช่องคำขอที่ " + requestNumber);

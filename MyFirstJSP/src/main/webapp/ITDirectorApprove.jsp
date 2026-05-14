@@ -8,6 +8,7 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ - รายการใบคำขอ</title>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
             <style>
                 * {
                     box-sizing: border-box;
@@ -20,37 +21,25 @@
                     background-color: #ffffff;
                 }
 
-                .sticky-bar {
-                    position: sticky;
-                    top: 0;
-                    background: white;
-                    width: 100%;
-                    height: 65px;
-                    border-bottom: 5px solid #3272BB;
-                    display: flex;
-                    align-items: center;
-                    padding: 0 15px;
-                    z-index: 100;
-                }
-
                 .banner {
                     background: #C3EAFF;
-                    padding: 20px 10px;
+                    padding: clamp(20px, 6vw, 40px) 15px;
                     text-align: center;
                     color: #003366;
-                    border-bottom: 1px solid #ddd;
                 }
 
                 .banner h1 {
-                    font-size: clamp(16px, 4vw, 22px);
+                    font-size: clamp(1.1rem, 4vw, 1.5rem);
                     margin: 0;
+                    line-height: 1.2;
                 }
 
                 .banner h2 {
-                    font-size: clamp(14px, 3vw, 16px);
-                    margin: 5px 0 0;
+                    font-size: clamp(0.9rem, 3vw, 1.1rem);
+                    margin-top: 10px;
                     font-weight: normal;
                 }
+
 
                 .list-container {
                     max-width: 1000px;
@@ -79,19 +68,24 @@
 
                 .req-number {
                     background: #f5f5f5;
-                    border: 1px solid #333;
-                    border-radius: 10px;
-                    padding: 10px;
-                    min-width: 140px;
+                    border: 2px solid #333;
+                    border-radius: 12px;
+                    padding: 15px 20px;
+                    min-width: 200px;
                     text-align: center;
                     font-weight: bold;
-                    font-size: 14px;
+                    font-size: 18px;
+                    color: #333;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
 
                 .req-details {
                     flex-grow: 1;
-                    font-size: 14px;
-                    line-height: 1.6;
+                    font-size: 16px;
+                    line-height: 1.8;
+                    padding-left: 10px;
                 }
 
                 .req-details b {
@@ -99,8 +93,8 @@
                 }
 
                 .status-icon {
-                    font-size: 30px;
-                    padding-right: 10px;
+                    font-size: 40px;
+                    padding-right: 15px;
                 }
 
                 .status-success {
@@ -112,11 +106,24 @@
                 }
 
                 .back-btn {
-                    display: inline-block;
-                    margin-bottom: 15px;
+                    display: inline-flex;
+                    align-items: center;
+                    margin-bottom: 20px;
                     text-decoration: none;
                     color: #3272BB;
                     font-weight: bold;
+                    font-size: 1.2rem;
+                    gap: 10px;
+                    transition: 0.3s;
+                }
+
+                .back-btn i {
+                    font-size: 1.4rem;
+                }
+
+                .back-btn:hover {
+                    color: #003366;
+                    transform: translateX(-5px);
                 }
 
                 @media (max-width: 600px) {
@@ -142,15 +149,15 @@
                 <a href="${pageContext.request.contextPath}/Admin.jsp" style="color:#333; text-decoration:none;">
                     <i class="fa fa-arrow-left" style="font-size:24px;"></i>
                 </a>
-                <div style="margin-left:auto; display:flex; align-items:center">
-                    <p style='font-size: 14px; margin:0;'>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-                    <i class='fa fa-circle-user' style='font-size:24px; margin-left:10px;'></i>
+                <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
+                    <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
+                    <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
                 </div>
             </div>
 
             <div class="banner">
                 <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
-                <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
+                <h1>ใบขอให้ดำเนินการ / Requisition Form</h1>
             </div>
 
             <div class="list-container">

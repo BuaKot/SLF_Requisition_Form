@@ -22,9 +22,9 @@
     <i id="menuBtn" class="fa fa-bars" onclick="toggleNav()" style="font-size:36px; cursor:pointer; padding-left:5px; padding-right:5px;"></i>
     </i><img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo" style="height: 48px; padding-left: 10px; padding-right: 5px">
     </i><img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo" style="height: 48px; padding-left: 5px; padding-right: 5px">
-    <div style="margin-left:auto;display:flex;align-items:center">
-        <i class='fa fa-circle-user' style='font-size:24px;padding-left:10px;padding-right:0px'></i>
-        <p style='margin-left: 5px;margin-right: 15px'>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+    <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
+                    <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
+                    <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
     </div>
 </div>
 

@@ -19,6 +19,7 @@
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/4.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/4.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
 </head>
 
 <!-- The Sidebar -->
@@ -66,7 +67,7 @@
 
     <div class="header-item">
         <i class="fi fi-bs-user"></i>
-        <span>ผู้อำนวยการฝ่าย</span>
+        <span>ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ</span>
     </div>
 
     <div class="header-item">
@@ -83,53 +84,77 @@
     <!-- Request Table -->
     <section class="request-list">
 
-    <%
-        String[][] statusData = {
-    {"green","green","yellow","yellow"},
-    {"green","green","green","green"},
-    {"yellow","yellow","yellow","yellow"},
-    {"green","yellow","yellow","yellow"},
-    {"yellow","yellow","yellow","yellow"}
-};
+<%
+    /* 
+       MOCK DATA:
+       green  = อนุมัติแล้ว
+       yellow = รอดำเนินการ
+       red    = ไม่อนุมัติ / ส่งกลับ
+    */
+    String[][] statusData = {
+        {"green","green","yellow","yellow"},
+        {"green","green","green","green"},
+        {"yellow","yellow","yellow","yellow"},
+        {"green","red","green","green"},
+        {"red","yellow","yellow","yellow"}
+    };
 
-        for(int i = 0; i < statusData.length; i++) {
-    %>
+    for(int i = 0; i < statusData.length; i++) {
+%>
 
-    <div class="request-row">
+<div class="request-row">
 
     <!-- 1) Request Button -->
     <div class="request-col">
-        <button class="request-btn">
-            ใบขอดำเนินการที่ <%= i + 1 %>
-        </button>
+        <a href="detail.jsp?id=<%= i + 1 %>">
+            <button class="request-btn">
+                ใบขอดำเนินการที่ <%= i + 1 %>
+            </button>
+        </a>
     </div>
 
     <!-- 2) Director 1 -->
     <div class="status-col">
-        <i class="<%= statusData[i][0].equals("green") 
-            ? "fi fi-sr-user-trust status-green" 
-            : "fi fi-sr-pending status-yellow" %>"></i>
+        <i class="<%= 
+            statusData[i][0].equals("green") 
+                ? "fi fi-sr-user-trust status-green" 
+                : statusData[i][0].equals("red")
+                    ? "fi fi-sr-user-forbidden-alt status-red"
+                    : "fi fi-sr-pending status-yellow" 
+        %>"></i>
     </div>
 
     <!-- 3) Technical -->
     <div class="status-col">
-        <i class="<%= statusData[i][1].equals("green") 
-            ? "fi fi-sr-user-trust status-green" 
-            : "fi fi-sr-pending status-yellow" %>"></i>
+        <i class="<%= 
+            statusData[i][1].equals("green") 
+                ? "fi fi-sr-user-trust status-green" 
+                : statusData[i][1].equals("red")
+                    ? "fi fi-sr-user-forbidden-alt status-red"
+                    : "fi fi-sr-pending status-yellow" 
+        %>"></i>
     </div>
 
     <!-- 4) Director 2 -->
     <div class="status-col">
-        <i class="<%= statusData[i][2].equals("green") 
-            ? "fi fi-sr-user-trust status-green" 
-            : "fi fi-sr-pending status-yellow" %>"></i>
+        <i class="<%= 
+            statusData[i][2].equals("green") 
+                ? "fi fi-sr-user-trust status-green" 
+                : statusData[i][2].equals("red")
+                    ? "fi fi-sr-user-forbidden-alt status-red"
+                    : "fi fi-sr-pending status-yellow" 
+        %>"></i>
     </div>
 
     <!-- 5) Process Step -->
     <div class="status-col">
-        <i class="<%= statusData[i][3].equals("green") 
-            ? "fi fi-sr-user-trust status-green" 
-            : "fi fi-sr-pending status-yellow" %>"></i>
+        <i class="<%= 
+            statusData[i][3].equals("green") 
+                ? "fi fi-sr-user-trust status-green" 
+                : statusData[i][3].equals("red")
+                    ? "fi fi-sr-user-forbidden-alt status-red"
+                    : "fi fi-sr-pending status-yellow" 
+        %>"></i>
     </div>
 
     <!-- 6) Confirm -->
@@ -139,9 +164,10 @@
 
 </div>
 
-    <% } %>
+<% } %>
 
 </section>
+
 
 
 </div>
@@ -254,14 +280,12 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (currentButton) {
-            currentButton.innerText = "ยืนยันแล้ว";
-            currentButton.classList.add("confirmed");
-            currentButton.disabled = true;
-            currentButton.style.cursor = "not-allowed";
-            currentButton.setAttribute("data-detail", detail);
-            currentButton.style.background = '#45a049'
-            currentButton.style.color = 'white'
-        }
+    currentButton.innerText = "ยืนยันแล้ว";
+    currentButton.classList.add("confirmed");
+    currentButton.disabled = true;
+    currentButton.style.cursor = "not-allowed";
+    currentButton.setAttribute("data-detail", detail);
+}
 
         closePopup();
     });
@@ -276,6 +300,12 @@ function closePopup() {
     if (detailBox) {
         detailBox.value = "";
     }
+}
+</script>
+
+<script>
+function goToDetail(id) {
+    window.location.href = "detail.jsp?id=" + id;
 }
 </script>
 </html>

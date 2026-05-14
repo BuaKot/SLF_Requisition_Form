@@ -22,6 +22,25 @@
     padding-left: 20px;
     z-index: 999;
 }
+
+.sticky-bar p{
+    font-size: 0.9rem;
+    margin-left: 5px;
+    margin-right: 15px;
+}
+
+.sticky-bar span{
+    font-size: 0.9rem;
+    margin-left: 5px;
+    margin-right: 15px;
+}
+
+.contact-info {
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+}
+
 html, body{
     margin: 0px;
     padding: 0;
@@ -32,7 +51,7 @@ html, body{
 
 .blue-title {
     background: #C3EAFF;
-    height: 12%;
+    height: 100px;
     width: 100%;
     justify-content: center;
     align-items:center;
@@ -105,11 +124,6 @@ html, body{
     color: #003366;
     transform: scale(1.1);
     transition: all 0.3s ease;
-}
-
-.sticky-bar p {
-    margin: 0;
-    font-size: 18px;
 }
 
 /* ปรับ icon menu */

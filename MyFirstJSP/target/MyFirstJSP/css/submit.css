@@ -134,6 +134,10 @@ body {
     color: #f4b400;
 }
 
+.status-red {
+    color: #e53935;
+}
+
 /* Confirm Column */
 .confirm-col {
     display: flex;
@@ -142,12 +146,14 @@ body {
 }
 
 .confirm-btn {
-    border: 2px solid #666;
-    background: white;
+    background: #e4a000;
+    color: #ffffff;
+    border: none; 
+    outline: none; 
+    box-shadow: none; 
     border-radius: 8px;
     padding: 10px 25px;
     font-size: 16px;
-    color: #e4a000;
     font-family: 'DBHelvethaica', sans-serif;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -157,6 +163,15 @@ body {
     background: #fff5d7;
 }
 
+.confirm-btn.confirmed {
+    background: #2dbb00;
+    color: white;
+    border: 2px solid #2dbb00;
+}
+
+.confirm-btn.confirmed:hover {
+    background: #2dbb00;
+}
 /* ================= RESPONSIVE ================= */
 @media (max-width: 1200px) {
     .title-section h1 {

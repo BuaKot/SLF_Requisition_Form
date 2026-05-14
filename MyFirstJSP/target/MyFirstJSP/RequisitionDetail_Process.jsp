@@ -8,6 +8,7 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>รายละเอียดใบขอให้ดำเนินการ</title>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
             <style>
                 * {
                     box-sizing: border-box;
@@ -19,38 +20,26 @@
                     background-color: #f4f7f9;
                 }
 
-                /* Header Bar */
-                .sticky-bar {
-                    position: sticky;
-                    top: 0;
-                    background: white;
-                    height: 60px;
-                    border-bottom: 4px solid #3272BB;
-                    display: flex;
-                    align-items: center;
-                    padding: 0 20px;
-                    z-index: 1000;
-                }
-
                 /* Banner */
                 .banner {
                     background: #C3EAFF;
-                    padding: 15px;
+                    padding: clamp(20px, 6vw, 40px) 15px;
                     text-align: center;
                     color: #003366;
-                    border-bottom: 1px solid #b2d8ed;
                 }
 
                 .banner h1 {
-                    font-size: 1.2rem;
+                    font-size: clamp(1.1rem, 4vw, 1.5rem);
                     margin: 0;
+                    line-height: 1.2;
                 }
 
                 .banner h2 {
-                    font-size: 1rem;
-                    margin: 5px 0 0;
+                    font-size: clamp(0.9rem, 3vw, 1.1rem);
+                    margin-top: 10px;
                     font-weight: normal;
                 }
+
 
                 /* Form Container */
                 .form-container {
@@ -156,22 +145,22 @@
                 <a href="Process.jsp" style="text-decoration:none; color:#333;">
                     <i class="fa fa-arrow-left"></i> กลับ
                 </a>
-                <div style="margin-left:auto; display:flex; align-items:center;">
-                    <span style="font-size:0.8rem; margin-right:10px;">สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</span>
-                    <i class="fa fa-circle-user" style="font-size:24px;"></i>
+                <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
+                    <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
+                    <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
                 </div>
             </div>
 
             <div class="banner">
                 <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
-                <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
+                <h1>ใบขอให้ดำเนินการ / Requisition Form</h1>
             </div>
 
             <div class="form-container">
                 <form>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label>ชื่อ-นามสกุล</label>
+                            <label>ชื่อ-นามสกุล <span style="color:red">*</span></label>
                             <input type="text" value="ธนภัทร กาญจนรุจิวุฒิ" readonly>
                         </div>
                         <div class="form-group">
@@ -179,55 +168,47 @@
                             <input type="text" value="บริหารหนี้ 2" readonly>
                         </div>
                         <div class="form-group">
-                            <label>ฝ่าย</label>
+                            <label>ฝ่าย <span style="color:red">*</span></label>
                             <input type="text" value="ฝ่ายบริหารหนี้" readonly>
                         </div>
                         <div class="form-group">
-                            <label>เบอร์ต่อ</label>
+                            <label>เบอร์ต่อ <span style="color:red">*</span></label>
                             <input type="text" value="411" readonly>
                         </div>
                         <div class="form-group">
-                            <label>วันที่</label>
+                            <label>วันที่ <span style="color:red">*</span></label>
                             <input type="date" value="2026-05-11" readonly>
                         </div>
                         <div class="form-group">
-                            <label>ความต้องการ</label>
-                            <select disabled>
-                                <option>พัฒนาโปรแกรมใหม่</option>
-                            </select>
+                            <label>Deadline <span style="color:red">*</span></label>
+                            <input type="text" value="2026-05-15" readonly>
                         </div>
-
-                        <div class="section-box full-width">
-                            <div class="form-group" style="margin-bottom:15px;">
-                                <label>ชื่อหัวข้อความต้องการ :</label>
-                                <input type="text" value="ระบบลงทะเบียนขอผ่อนผันการชำระเงินกองทุน">
-                            </div>
-                            <div class="form-group">
-                                <label>ภายในวันที่ :</label>
-                                <input type="text" value="16/01/2569 (X วัน)">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>ประเภทคำขอ</label>
-                            <select disabled>
-                                <option>เร่งด่วน</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>ชื่อโปรแกรม (ถ้ามี)</label>
-                            <input type="text" value="SLF-Relief System">
-                        </div>
-
                         <div class="form-group full-width">
-                            <label>วัตถุประสงค์ / ความต้องการ</label>
-                            <textarea
-                                rows="4">เพื่อช่วยเหลือกองทุนเงินให้กู้ยืมเพื่อการศึกษา กรณีผู้กู้ยืมเป็นผู้ประสบอุทกภัย...</textarea>
+                            <label>ชื่อหัวข้อความต้องการ :</label>
+                            <input type="text" value="ระบบลงทะเบียนขอผ่อนผันการชำระเงินกองทุน" readonly>
                         </div>
+                    </div>
 
-                        <div class="form-group full-width">
-                            <label>วิธีการดำเนินการปัจจุบัน</label>
-                            <textarea rows="4">ปัจจุบันดำเนินการผ่านระบบ Manual และบันทึกใน Excel...</textarea>
+                    <div class="section-box-main">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label>ประเภทคำขอ</label>
+                                <select disabled>
+                                    <option>แจ้งปัญหาการใช้งาน</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>วัตถุประสงค์ / ความต้องการ</label>
+                                <textarea rows="5"
+                                    readonly>เพื่อช่วยเหลือกองทุนเงินให้กู้ยืมเพื่อการศึกษา กรณีผู้กู้ยืมเป็นผู้ประสบอุทกภัย...</textarea>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>วิธีการดำเนินการปัจจุบัน</label>
+                                <textarea rows="4"
+                                    readonly>ปัจจุบันดำเนินการผ่านระบบ Manual และบันทึกใน Excel...</textarea>
+                            </div>
                         </div>
                     </div>
                     <div class="section-box full-width" style="background-color: #ffffff; border: 2px solid #000000;">

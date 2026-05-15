@@ -35,20 +35,20 @@
                 /* Banner */
                 .banner {
                     background: #C3EAFF;
-                    padding: 15px;
+                    padding: clamp(20px, 6vw, 40px) 15px;
                     text-align: center;
                     color: #003366;
-                    border-bottom: 1px solid #b2d8ed;
                 }
 
                 .banner h1 {
-                    font-size: 1.2rem;
+                    font-size: clamp(1.1rem, 4vw, 1.5rem);
                     margin: 0;
+                    line-height: 1.2;
                 }
 
                 .banner h2 {
-                    font-size: 1rem;
-                    margin: 5px 0 0;
+                    font-size: clamp(0.9rem, 3vw, 1.1rem);
+                    margin-top: 10px;
                     font-weight: normal;
                 }
 
@@ -106,9 +106,17 @@
                 /* Button Group */
                 .btn-group {
                     display: flex;
+                    /* จัดเรียงแบบแนวนอน */
                     justify-content: center;
+                    /* จัดให้อยู่กึ่งกลางแนวนอน */
+                    align-items: center;
+                    /* จัดให้อยู่กึ่งกลางแนวตั้ง (ถ้าจำเป็น) */
                     gap: 20px;
-                    margin-top: 30px;
+                    /* ระยะห่างระหว่างปุ่มแดงกับเขียว */
+                    margin-top: 25px;
+                    /* ระยะห่างจากช่องกรอกชื่อด้านบน */
+                    width: 100%;
+                    /* ให้กลุ่มปุ่มขยายเต็มความกว้างกล่องเพื่อหาจุดกึ่งกลาง */
                 }
 
                 .btn {
@@ -137,6 +145,7 @@
                     transform: translateY(-2px);
                 }
 
+
                 /* Responsive */
                 @media (max-width: 768px) {
                     .form-grid {
@@ -156,22 +165,22 @@
                 <a href="TechnicalApprove.jsp" style="text-decoration:none; color:#333;">
                     <i class="fa fa-arrow-left"></i> กลับ
                 </a>
-                <div style="margin-left:auto; display:flex; align-items:center;">
-                    <span style="font-size:0.8rem; margin-right:10px;">สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</span>
-                    <i class="fa fa-circle-user" style="font-size:24px;"></i>
+                <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
+                    <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
+                    <p style='margin-left: 8px; font-size: 0.9rem;'>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
                 </div>
             </div>
 
             <div class="banner">
                 <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
-                <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
+                <h1>ใบขอให้ดำเนินการ / Requisition Form</h1>
             </div>
 
             <div class="form-container">
                 <form>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label>ชื่อ-นามสกุล</label>
+                            <label>ชื่อ-นามสกุล <span style="color:red">*</span></label>
                             <input type="text" value="ธนภัทร กาญจนรุจิวุฒิ" readonly>
                         </div>
                         <div class="form-group">
@@ -179,69 +188,60 @@
                             <input type="text" value="บริหารหนี้ 2" readonly>
                         </div>
                         <div class="form-group">
-                            <label>ฝ่าย</label>
+                            <label>ฝ่าย <span style="color:red">*</span></label>
                             <input type="text" value="ฝ่ายบริหารหนี้" readonly>
                         </div>
                         <div class="form-group">
-                            <label>เบอร์ต่อ</label>
+                            <label>เบอร์ต่อ <span style="color:red">*</span></label>
                             <input type="text" value="411" readonly>
                         </div>
                         <div class="form-group">
-                            <label>วันที่</label>
+                            <label>วันที่ <span style="color:red">*</span></label>
                             <input type="date" value="2026-05-11" readonly>
                         </div>
                         <div class="form-group">
-                            <label>ความต้องการ</label>
-                            <select disabled>
-                                <option>พัฒนาโปรแกรมใหม่</option>
-                            </select>
+                            <label>Deadline <span style="color:red">*</span></label>
+                            <input type="text" value="2026-05-15" readonly>
                         </div>
-
-                        <div class="section-box full-width">
-                            <div class="form-group" style="margin-bottom:15px;">
-                                <label>ชื่อหัวข้อความต้องการ :</label>
-                                <input type="text" value="ระบบลงทะเบียนขอผ่อนผันการชำระเงินกองทุน">
-                            </div>
-                            <div class="form-group">
-                                <label>ภายในวันที่ :</label>
-                                <input type="text" value="16/01/2569 (X วัน)">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>ประเภทคำขอ</label>
-                            <select disabled>
-                                <option>เร่งด่วน</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>ชื่อโปรแกรม (ถ้ามี)</label>
-                            <input type="text" value="SLF-Relief System">
-                        </div>
-
                         <div class="form-group full-width">
-                            <label>วัตถุประสงค์ / ความต้องการ</label>
-                            <textarea
-                                rows="4">เพื่อช่วยเหลือกองทุนเงินให้กู้ยืมเพื่อการศึกษา กรณีผู้กู้ยืมเป็นผู้ประสบอุทกภัย...</textarea>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label>วิธีการดำเนินการปัจจุบัน</label>
-                            <textarea rows="4">ปัจจุบันดำเนินการผ่านระบบ Manual และบันทึกใน Excel...</textarea>
+                            <label>ชื่อหัวข้อความต้องการ :</label>
+                            <input type="text" value="ระบบลงทะเบียนขอผ่อนผันการชำระเงินกองทุน" readonly>
                         </div>
                     </div>
-                    <div class="section-box full-width" style="background-color: #ffffff; border: 2px solid #000000;">
-                        <h3
-                            style="margin-top: 0; color: #000000; font-size: 1.1rem; font-weight: bold; margin-bottom: 15px;">
-                            ความเห็นและการอนุมัติเชิงเทคนิค
-                        </h3>
 
+                    <div class="section-box-main">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label>ประเภทคำขอ</label>
+                                <select disabled>
+                                    <option>แจ้งปัญหาการใช้งาน</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>วัตถุประสงค์ / ความต้องการ</label>
+                                <textarea rows="5"
+                                    readonly>เพื่อช่วยเหลือกองทุนเงินให้กู้ยืมเพื่อการศึกษา กรณีผู้กู้ยืมเป็นผู้ประสบอุทกภัย...</textarea>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>วิธีการดำเนินการปัจจุบัน</label>
+                                <textarea rows="4"
+                                    readonly>ปัจจุบันดำเนินการผ่านระบบ Manual และบันทึกใน Excel...</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-box full-width"
+                        style="background-color: #ffffff; border: 2px solid #000000; margin-top:30px;">
+                        <h3
+                            style="margin-top: 0; color: #3272BB; font-size: 1.1rem; font-weight: bold; margin-bottom: 15px;">
+                            ความเห็นและการอนุมัติเชิงเทคนิค</h3>
                         <div class="form-group full-width">
                             <textarea rows="4"
                                 style="width: 100%; border: 1px solid #3272BB; border-radius: 5px; padding: 10px;"
                                 placeholder="ระบุความเห็นเชิงเทคนิคที่นี่..."></textarea>
                         </div>
-
                         <div class="form-grid"
                             style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                             <div class="form-group">
@@ -256,12 +256,23 @@
                                 <input type="text" placeholder="ระบุชื่อผู้ตรวจสอบ"
                                     style="padding: 8px; border: 1px solid #3272BB; border-radius: 5px;">
                             </div>
+                            <div class="form-group">
+                                <label style="font-weight: bold;">ผู้ดำเนินการ :</label>
+                                <input type="text" placeholder="ระบุชื่อดำเนินการ"
+                                    style="padding: 8px; border: 1px solid #3272BB; border-radius: 5px;">
+                            </div>
                         </div>
                     </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-reject" onclick="alert('ส่งกลับแก้ไข')">ส่งกลับ</button>
+                        <button type="button" class="btn btn-approve"
+                            onclick="alert('อนุมัติเรียบร้อย')">อนุมัติ</button>
+                    </div>
+                </form>
             </div>
-            <div class="btn-group">
-                <button type="button" class="btn btn-reject" onclick="alert('ส่งกลับแก้ไข')">ส่งกลับ</button>
-                <button type="button" class="btn btn-approve" onclick="alert('อนุมัติเรียบร้อย')">อนุมัติ</button>
+            </div>
+            </div>
             </div>
             </form>
             </div>

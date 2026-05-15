@@ -1,6 +1,8 @@
 com\slf\model\Employee.class
 com\slf\controller\LoginProcessorServlet.class
 com\slf\model\RequisitionForm.class
+com\slf\dao\OracleRequisitionDAO.class
+com\slf\controller\LogoutServlet.class
 com\slf\controller\LoadLoginServlet.class
 com\slf\controller\SubmitRequestServlet.class
 com\slf\dao\LookupDAO.class

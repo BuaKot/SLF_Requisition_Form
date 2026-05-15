@@ -53,6 +53,8 @@
                     type="text"
                     id="name"
                     name="name"
+                    value="${loggedInEmployee.empName}"
+                    readonly
                     required
                 >
             </div>
@@ -76,15 +78,7 @@
 
             <div class="form-group">
                 <label for="phone">เบอร์ต่อ <span class="required-star">*</span></label>
-                <input
-                    type="text"
-                    id="phone"
-                    name="phone"
-                    inputmode="numeric"
-                    pattern="[0-9]*"
-                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                    required
-                >
+                <input type="text" id="phone" name="phone" value="${loggedInEmployee.phone}" readonly required>
             </div>
 
             <div class="form-group">
@@ -630,6 +624,20 @@ window.addEventListener("load", function() {
     // Ensure the section list is empty initially
     populateSections(null);
 });
+</script>
+<script>
+    // Pre-select department and section on page load using the passed IDs
+    window.addEventListener("load", function() {
+        var empDeptId = ${empDeptId};   // from request attribute
+        var empSecId = ${empSectionId}; // from request attribute
+
+        if (empDeptId && departmentSelect) {
+            departmentSelect.value = empDeptId; // set the dropdown value
+            populateSections(empDeptId);        // fill the section dropdown
+            // After sections are populated, select the right section
+            sectionSelect.value = empSecId;
+        }
+    });
 </script>
 
 </body>

@@ -95,4 +95,23 @@ public class LookupDAO {
         }
         return null;
     }
+    public Section getSectionById(int secId) throws SQLException {
+        String sql = "SELECT SECID, DEPTID, SECNAME, SECTIONHEAD_EMPID FROM SECTION WHERE SECID = ?";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, secId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Section(
+                        rs.getInt("SECID"),
+                        rs.getString("SECNAME"),
+                        rs.getInt("DEPTID"),
+                        rs.getString("SECTIONHEAD_EMPID")
+                    );
+                }
+            }
+        }
+        return null;
+    }
+    
 }

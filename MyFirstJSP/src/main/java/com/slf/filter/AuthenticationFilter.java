@@ -22,7 +22,8 @@ public class AuthenticationFilter implements Filter {
             || path.startsWith("/css/")         // your stylesheets
             || path.startsWith("/images/")      // your logos
             || path.startsWith("/js/")          // any JavaScript files
-            || path.startsWith("/fonts/")) {    // fonts if you have 'em
+            || path.startsWith("/fonts/")
+            || path.startsWith("/logout")) {    // fonts if you have 'em
             chain.doFilter(req, res); // Let 'em through
             return;
         }

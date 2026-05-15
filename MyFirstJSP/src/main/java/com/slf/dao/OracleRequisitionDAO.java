@@ -6,9 +6,36 @@ import com.slf.model.RequestItem;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
+import java.util.List;
 
 public class OracleRequisitionDAO implements RequisitionDAO {
+    private int getServerAccessTypeId(Connection conn) throws SQLException {
+        String sql = "SELECT TYPEID FROM REQUESTTYPE WHERE TYPENAME = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "ขอใช้สิทธิ์เก็บข้อมูล"); // the exact Thai name
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("TYPEID");
+                }
+            }
+        }
+        return -1; // not found
+    }
+    private void setPermissionValues(PreparedStatement ps, List<String> permissions) throws SQLException {
+        boolean fullControl = permissions != null && permissions.contains("Full control");
+        boolean modify = permissions != null && permissions.contains("Modify");
+        boolean readExecute = permissions != null && permissions.contains("Read & Execute");
+        boolean read = permissions != null && permissions.contains("Read");
+        boolean write = permissions != null && permissions.contains("Write");
+
+        ps.setInt(4, fullControl ? 1 : 0);
+        ps.setInt(5, modify ? 1 : 0);
+        ps.setInt(6, readExecute ? 1 : 0);
+        ps.setInt(7, read ? 1 : 0);
+        ps.setInt(8, write ? 1 : 0);
+    }
 
     @Override
     public void save(RequisitionForm form) throws Exception {
@@ -79,6 +106,45 @@ public class OracleRequisitionDAO implements RequisitionDAO {
                     itemStmt.executeUpdate();
                 }
                 System.out.println("Items inserted: " + form.getItems().size());
+            }
+            // ---- Insert server permissions for items that are server access requests ----
+            int serverAccessTypeId = getServerAccessTypeId(conn);
+            if (serverAccessTypeId != -1 && form.getItems() != null) {
+                String permSQL =
+                    "INSERT INTO PERMISSIONDETAILS " +
+                    "(FORMID, ISROOT, PATH, HASFULLCONTROL, HASMODIFY, HASREADEXECUTE, HASREAD, HASWRITE) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+                try (PreparedStatement permStmt = conn.prepareStatement(permSQL)) {
+                    for (RequestItem item : form.getItems()) {
+                        if (item.getRequestTypeId() != serverAccessTypeId) continue;
+                        if (item.getServerName() == null || item.getServerName().trim().isEmpty()) continue;
+
+                        // Build base path: server name + folder
+                        String serverName = item.getServerName().trim();
+                        String folder = item.getServerFolder();
+                        if (folder == null) folder = "";
+                        String basePath = "\\\\" + serverName + "\\" + folder.replace("/", "\\");
+
+                        // 1) Main folder (ISROOT = 1)
+                        permStmt.setInt(1, formId);
+                        permStmt.setInt(2, 1);  // ISROOT = 1 (main folder)
+                        permStmt.setString(3, basePath);
+                        setPermissionValues(permStmt, item.getFolderPermissions());
+                        permStmt.executeUpdate();
+
+                        // 2) Sub folder (ISROOT = 0) – only if subFolder is not empty
+                        String subFolder = item.getSubFolder();
+                        if (subFolder != null && !subFolder.trim().isEmpty()) {
+                            String subPath = basePath + "\\" + subFolder.trim().replace("/", "\\");
+                            permStmt.setInt(1, formId);
+                            permStmt.setInt(2, 0);  // ISROOT = 0
+                            permStmt.setString(3, subPath);
+                            setPermissionValues(permStmt, item.getSubFolderPermissions());
+                            permStmt.executeUpdate();
+                        }
+                    }
+                }
             }
 
             // 4. Commit transaction

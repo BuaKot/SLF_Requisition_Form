@@ -53,9 +53,9 @@
 </head>
 <body>
 
-<div class="blue-title" style="background-color:#e6f0ff; padding: 20px; text-align:center;">
-    <h1 style="margin:0; color:#003366;">ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</h1>
-    <h2 style="margin:0; color:#003366;">ใบขอให้ดำเนินการ / Requisition Form</h2>
+<div class="blue-title">
+    <h1 style='margin-block-start: 0.1em; margin-block-end: 0.1em;color:#003366;'>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</h1>
+    <h2 style='margin-block-start: 0.1em; margin-block-end: 0.1em;color:#003366;'>ใบขอให้ดำเนินการ / Requisition Form</h2>
 </div>
 
 <div class="login-container">

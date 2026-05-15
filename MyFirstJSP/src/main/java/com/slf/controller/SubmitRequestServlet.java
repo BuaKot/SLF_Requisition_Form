@@ -3,7 +3,6 @@ package com.slf.controller;
 import com.slf.model.RequisitionForm;
 import com.slf.model.RequestItem;
 import com.slf.dao.RequisitionDAO;
-import com.slf.dao.MockRequisitionDAO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,25 +12,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.servlet.http.HttpSession;
 import java.util.List;
+import com.slf.dao.OracleRequisitionDAO;
 
 @WebServlet("/submitRequest")   // This maps the URL to this servlet
 public class SubmitRequestServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        
-        HttpSession session = request.getSession();
-        if (session.getAttribute("loggedInEmpId") == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
-            return;
-        }
-    }
-
-    
 
     // For now, use mock DAO; later you'll swap with OracleRequisitionDAO
-    private RequisitionDAO requisitionDAO = new MockRequisitionDAO();
+    private RequisitionDAO requisitionDAO = new OracleRequisitionDAO();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

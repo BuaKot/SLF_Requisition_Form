@@ -422,7 +422,7 @@ function handleRequestTypeChange(select) {
     }
 
     if (otherRequestBox && otherRequestInput) {
-        if (selectedText === "อื่น ๆ") {
+        if (selectedText === "อื่นๆ") {
             otherRequestBox.style.display = "flex";
             otherRequestInput.required = true;
         } else {

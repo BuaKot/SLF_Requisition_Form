@@ -6,17 +6,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Requisition - Admin (Responsive)</title>
+    <title>IT Requisition - Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
+
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Sarabun', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #ffffff;
+            background-color: #f4f7f9;
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
@@ -35,17 +38,28 @@
             align-items: center;
             padding: 0 15px;
             z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .header-logos { 
-            display: flex; 
-            align-items: center; 
-            gap: clamp(5px, 2vw, 20px); 
+        .header-logos {
+            display: flex;
+            align-items: center;
+            gap: 15px;
             margin-left: 15px;
         }
-        .header-logos img { height: clamp(30px, 8vw, 45px); }
 
-        /* Sidebar - ปรับให้ยืดหยุ่นตามหน้าจอ */
+        .header-logos img {
+            height: clamp(30px, 8vw, 45px);
+        }
+
+        .contact-info {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            color: #333;
+        }
+
+        /* Sidebar */
         .sidebar {
             height: 100%;
             width: 0;
@@ -57,155 +71,110 @@
             overflow-x: hidden;
             transition: 0.4s;
             padding-top: 60px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
         }
 
         .sidebar a {
             padding: 15px 32px;
             text-decoration: none;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: white;
             display: block;
-            white-space: nowrap;
-            transition: 0.2s;
+            transition: 0.3s;
         }
 
-        .sidebar a:hover { background: rgba(255,255,255,0.1); }
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
 
-        /* Banner - ปรับตัวหนังสือให้สมดุล */
+        /* Banner */
         .banner {
             background: #C3EAFF;
-            padding: clamp(20px, 6vw, 40px) 15px;
+            padding: 30px 15px;
             text-align: center;
             color: #003366;
         }
 
-        .banner h1 { font-size: clamp(1.1rem, 4vw, 1.5rem); margin: 0; line-height: 1.2; }
-        .banner h2 { font-size: clamp(0.9rem, 3vw, 1.1rem); margin-top: 10px; font-weight: normal; }
+        .banner h1 {
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            margin: 5px 0;
+        }
 
-<<<<<<< HEAD
-        /* Grid System - Responsive หัวใจสำคัญ */
+        /* Grid System */
         .admin-grid {
             display: grid;
-            /* ปรับขนาดกล่องขั้นต่ำเป็น 260px เพื่อให้ลงตัวในมือถือส่วนใหญ่ */
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
-            gap: clamp(15px, 4vw, 30px);
-            padding: 30px 20px;
-            max-width: 1100px;
-=======
-        /* Grid System - 2x2 layout */
-        .admin-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: clamp(15px, 3vw, 25px);
-            padding: clamp(20px, 4vw, 40px);
-            max-width: 750px;
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 40px 20px;
+            max-width: 1000px;
             margin: 0 auto;
             width: 100%;
         }
 
-<<<<<<< HEAD
-        /* Card Design - ปรับขนาด Icons และ Padding */
-=======
         /* Card Design */
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
         .card {
             background: white;
-            border: 3px solid #3272BB;
-            border-radius: 20px;
-<<<<<<< HEAD
-            padding: clamp(20px, 5vw, 40px);
-=======
-            padding: clamp(20px, 4vw, 35px);
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
+            border: 2px solid #3272BB;
+            border-radius: 15px;
+            padding: 35px 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-<<<<<<< HEAD
-            min-height: clamp(280px, 50vh, 360px);
-=======
-            min-height: clamp(220px, 30vh, 280px);
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
+            min-height: 250px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
         .card:hover {
-            background-color: #f8fcff;
-<<<<<<< HEAD
             transform: translateY(-8px);
-=======
-            transform: translateY(-6px);
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
-            box-shadow: 0 12px 24px rgba(50, 114, 187, 0.15);
+            box-shadow: 0 12px 20px rgba(50, 114, 187, 0.2);
+            background-color: #fdfdfd;
         }
 
         .card i {
-<<<<<<< HEAD
-            font-size: clamp(60px, 15vw, 90px);
+            font-size: 60px;
             color: #3272BB;
             margin-bottom: 20px;
-=======
-            font-size: clamp(50px, 10vw, 75px);
-            color: #3272BB;
-            margin-bottom: 16px;
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
         }
 
         .card p {
             font-weight: bold;
-<<<<<<< HEAD
-            font-size: clamp(1rem, 2.5vw, 1.2rem);
-            color: #333;
-            margin: 0;
-            line-height: 1.3;
-        }
-
-        /* ปรับแต่งส่วนติดต่อ */
-        .contact-info p { margin: 0; white-space: nowrap; }
-
-        /* Media Query สำหรับหน้าจอจิ๋ว */
-        @media (max-width: 400px) {
-            .admin-grid { grid-template-columns: 1fr; padding: 20px 15px; }
-            .card { min-height: 250px; }
-            .sidebar { width: 0; } /* ปรับ JavaScript คุม width แทน */
-=======
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-size: 1.1rem;
             color: #333;
             margin: 0;
             line-height: 1.4;
         }
 
-        .contact-info p { margin: 0; white-space: nowrap; }
-
-        @media (max-width: 500px) {
-            .admin-grid { grid-template-columns: 1fr; padding: 20px 15px; }
-            .card { min-height: 200px; }
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
+        @media (max-width: 600px) {
+            .contact-info p {
+                display: none; /* ซ่อนข้อความในมือถือเพื่อไม่ให้เบียดโลโก้ */
+            }
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
     <div id="mySidebar" class="sidebar">
-        <a href="javascript:void(0)" style="font-size:2.5rem; padding: 0 20px;" onclick="toggleNav()">&times;</a>
+        <a href="javascript:void(0)" style="font-size:2.5rem; position:absolute; top:10px; right:25px;" onclick="toggleNav()">&times;</a>
         <a href="#"><i class="fa fa-home"></i> หน้าหลัก</a>
         <a href="#"><i class="fa fa-history"></i> ประวัติรายการ</a>
         <a href="#"><i class="fa fa-info-circle"></i> ช่วยเหลือ</a>
     </div>
 
     <div class='sticky-bar'>
-        <i class="fa fa-bars" onclick="toggleNav()" style="font-size:1.8rem; cursor:pointer; color:#333; padding: 10px;"></i>
+        <i class="fa fa-bars" onclick="toggleNav()" style="font-size:1.5rem; cursor:pointer; color:#333; padding: 10px;"></i>
         <div class="header-logos">
             <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
             <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
         </div>
-        <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
-            <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
-            <p style='margin-left: 8px; font-size: 0.9rem;'>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+        <div class="contact-info">
+            <i class='fa fa-circle-user' style='font-size:1.4rem; margin-right: 8px;'></i>
+            <p style='font-size: 0.9rem;'>สอบถามเพิ่มเติม ติดต่อ 411</p>
         </div>
     </div>
 
@@ -229,29 +198,20 @@
             <i class="fa-regular fa-circle-user"></i>
             <p>ผู้อำนวยการฝ่าย<br>เทคโนโลยีสารสนเทศ</p>
         </div>
-<<<<<<< HEAD
-=======
 
         <div class="card" onclick="location.href='${pageContext.request.contextPath}/OperationDetail.jsp'">
             <i class="fa-solid fa-screwdriver-wrench"></i>
             <p>รายละเอียดการดำเนินการ</p>
         </div>
->>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
     </div>
 
     <script>
         function toggleNav() {
             var sidebar = document.getElementById("mySidebar");
-            // ใช้คำนวณหน้าจอเบื้องต้น ถ้าจอมือถือเล็กให้กว้างขึ้น
-            var openWidth = (window.innerWidth < 400) ? "80%" : "250px";
-            sidebar.style.width = (sidebar.style.width === openWidth) ? "0" : openWidth;
-        }
-
-        // ปิด Sidebar เมื่อคลิกข้างนอก
-        window.onclick = function(event) {
-            var sidebar = document.getElementById("mySidebar");
-            if (event.target == sidebar) {
+            if (sidebar.style.width === "250px" || sidebar.style.width === "80%") {
                 sidebar.style.width = "0";
+            } else {
+                sidebar.style.width = (window.innerWidth < 500) ? "80%" : "250px";
             }
         }
     </script>

@@ -26,7 +26,7 @@
             ResultSet rs = null;
             try {
                 conn = DBConnection.getConnection();
-                String sql = "SELECT id, name FROM DIRECTOR";
+                String sql = "SELECT id, name FROM your_table_name"; // <-- เปลี่ยน your_table_name เป็นชื่อตารางของคุณ
                 stmt = conn.createStatement();
                 rs = stmt.executeQuery(sql);
 

@@ -20,7 +20,7 @@
   <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
   <a href="${pageContext.request.contextPath}" style='font-size:20px'>หน้าหลัก</a>
   <a href="${pageContext.request.contextPath}/submit.jsp" style='font-size:20px'>ฟอร์มที่ส่งแล้ว</a>
-  <a href="${pageContext.request.contextPath}/form.jsp" style='font-size:20px'>สร้างฟอร์มใหม่</a>
+  <a href="${pageContext.request.contextPath}/" style='font-size:20px'>สร้างฟอร์มใหม่</a>
   <a href='${pageContext.request.contextPath}/Admin.jsp' class='admin-tab'><i class='fa fa-circle-user' style='font-size:36px;padding-left:0px;padding-right:25%'></i>Admin</a>
 </div>
 
@@ -58,19 +58,19 @@
             </div>
 
             <div class="form-group">
-                <label for="section">ส่วน</label>
-                <select id="section" name="section">
-                    <option value="">ไม่ระบุ</option>
-                </select>
-            </div>
-
-            <div class="form-group">
                 <label for="department">ฝ่าย <span class="required-star">*</span></label>
                 <select id="department" name="department" class="select-placeholder" required>
                     <option value="" disabled selected hidden>โปรดเลือกฝ่าย</option>
                     <c:forEach var="dept" items="${departments}">
                         <option value="${dept.deptId}">${dept.deptName}</option>
                     </c:forEach>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="section">ส่วน</label>
+                <select id="section" name="section">
+                    <option value="">ไม่ระบุ</option>
                 </select>
             </div>
 

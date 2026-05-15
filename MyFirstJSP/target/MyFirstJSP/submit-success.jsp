@@ -11,7 +11,7 @@
     <div style="text-align:center; margin-top:100px;">
         <h1>ส่งคำขอเรียบร้อยแล้ว</h1>
         <p>คำขอของคุณถูกบันทึกเข้าสู่ระบบ</p>
-        <a href="${pageContext.request.contextPath}/form.jsp">สร้างคำขอใหม่</a> |
+        <a href="${pageContext.request.contextPath}/newForm">สร้างคำขอใหม่</a> |
         <a href="${pageContext.request.contextPath}/">กลับหน้าหลัก</a>
     </div>
 </body>

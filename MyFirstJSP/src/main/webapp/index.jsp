@@ -37,7 +37,7 @@
 
 <div class="options-div">
 
-    <a href="${pageContext.request.contextPath}/form.jsp" class="option-box option-box-link">
+    <a href="${pageContext.request.contextPath}/newForm" class="option-box option-box-link">
     <div class="option-pic">
         <i class="fa fa-plus" style ='color:#3272BB'></i>
     </div>

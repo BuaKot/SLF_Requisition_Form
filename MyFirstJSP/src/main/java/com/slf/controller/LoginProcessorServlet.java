@@ -29,7 +29,7 @@ public class LoginProcessorServlet extends HttpServlet {
                 session.setAttribute("loggedInEmpId", emp.getEmpId());
                 session.setAttribute("loggedInEmpName", emp.getEmpName());
                 // Redirect to the main page (the dashboard or new form)
-                response.sendRedirect(request.getContextPath() + "/newForm");
+                response.sendRedirect(request.getContextPath());
             } else {
                 // Employee not found, redirect back to login
                 response.sendRedirect(request.getContextPath() + "/login?error=1");

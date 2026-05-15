@@ -1,4 +1,7 @@
+com\slf\model\Employee.class
+com\slf\controller\LoginProcessorServlet.class
 com\slf\model\RequisitionForm.class
+com\slf\controller\LoadLoginServlet.class
 com\slf\controller\SubmitRequestServlet.class
 com\slf\dao\LookupDAO.class
 com\slf\model\Department.class
@@ -6,6 +9,7 @@ com\slf\model\Section.class
 com\slf\model\RequestType.class
 com\slf\dao\DBConnection.class
 com\slf\dao\MockRequisitionDAO.class
+com\slf\filter\AuthenticationFilter.class
 com\slf\controller\LoadFormServlet.class
 com\slf\model\RequestItem.class
 com\slf\dao\RequisitionDAO.class

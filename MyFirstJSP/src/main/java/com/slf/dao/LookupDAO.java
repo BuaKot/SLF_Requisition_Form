@@ -5,6 +5,25 @@ import java.sql.*;
 import java.util.*;
 
 public class LookupDAO {
+    
+    public List<Employee> getAllEmployees() throws SQLException {
+        List<Employee> list = new ArrayList<>();
+        String sql = "SELECT EMPID, EMPNAME, POSITION, SECID, PHONE FROM EMPLOYEE ORDER BY EMPID";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Employee emp = new Employee();
+                emp.setEmpId(rs.getInt("EMPID"));
+                emp.setEmpName(rs.getString("EMPNAME"));
+                emp.setPosition(rs.getString("POSITION"));
+                emp.setSecId(rs.getInt("SECID"));
+                emp.setPhone(rs.getString("PHONE"));
+                list.add(emp);
+            }
+        }
+        return list;
+    }
 
     public List<RequestType> getAllRequestTypes() throws SQLException {
         List<RequestType> list = new ArrayList<>();
@@ -56,5 +75,24 @@ public class LookupDAO {
             }
         }
         return list;
+    }
+    public Employee findEmployeeById(int empId) throws SQLException {
+        String sql = "SELECT EMPID, EMPNAME, POSITION, SECID, PHONE FROM EMPLOYEE WHERE EMPID = ?";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, empId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Employee emp = new Employee();
+                    emp.setEmpId(rs.getInt("EMPID"));
+                    emp.setEmpName(rs.getString("EMPNAME"));
+                    emp.setPosition(rs.getString("POSITION"));
+                    emp.setSecId(rs.getInt("SECID"));
+                    emp.setPhone(rs.getString("PHONE"));
+                    return emp;
+                }
+            }
+        }
+        return null;
     }
 }

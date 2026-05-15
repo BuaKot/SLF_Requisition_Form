@@ -13,10 +13,22 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @WebServlet("/submitRequest")   // This maps the URL to this servlet
 public class SubmitRequestServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        
+        HttpSession session = request.getSession();
+        if (session.getAttribute("loggedInEmpId") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+    }
+
+    
 
     // For now, use mock DAO; later you'll swap with OracleRequisitionDAO
     private RequisitionDAO requisitionDAO = new MockRequisitionDAO();

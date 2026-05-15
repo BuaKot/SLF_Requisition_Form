@@ -7,6 +7,7 @@ import com.slf.dao.RequisitionDAO;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -23,28 +24,35 @@ public class SubmitRequestServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        
+        
+        HttpSession session = request.getSession();
+        Integer empID = (Integer) session.getAttribute("loggedInEmpId");
+        if (empID == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
 
         // Set character encoding to handle Thai UTF-8 properly
         request.setCharacterEncoding("UTF-8");
 
         // 1. Read the header fields
         RequisitionForm form = new RequisitionForm();
-        form.setName(request.getParameter("name"));
+        form.setEmpID(empID);
         form.setSection(request.getParameter("section"));
-        form.setDepartment(request.getParameter("department"));
-        form.setPhone(request.getParameter("phone"));
         form.setDate(request.getParameter("date"));
         form.setDeadline(request.getParameter("deadline"));
         form.setRequestTopic(request.getParameter("requestTopic"));
 
         // 2. Read the item arrays
         String[] types = request.getParameterValues("requestType[]");
-        if (types == null) types = new String[0]; // avoid null
+        if (types == null) types = new String[0];
 
         List<RequestItem> items = new ArrayList<>();
         for (int i = 0; i < types.length; i++) {
             RequestItem item = new RequestItem();
-            item.setRequestType(types[i]);
+            item.setRequestTypeId(Integer.parseInt(types[i]));
             // For optional arrays, use helper method to get index safely
             item.setProgramName(getParamValue(request, "programName[]", i));
             item.setServerName(getParamValue(request, "serverName[]", i));

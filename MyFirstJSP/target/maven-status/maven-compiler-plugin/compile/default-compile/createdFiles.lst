@@ -10,7 +10,6 @@ com\slf\model\Department.class
 com\slf\model\Section.class
 com\slf\model\RequestType.class
 com\slf\dao\DBConnection.class
-com\slf\dao\MockRequisitionDAO.class
 com\slf\filter\AuthenticationFilter.class
 com\slf\controller\LoadFormServlet.class
 com\slf\model\RequestItem.class

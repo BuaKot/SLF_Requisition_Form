@@ -3,7 +3,7 @@ package com.slf.model;
 import java.util.List;
 
 public class RequestItem {
-    private String requestType;
+    private int requestTypeId;
     private String programName;
     private String serverName;
     private String serverFolder;
@@ -15,12 +15,12 @@ public class RequestItem {
     private String currentMethod;
 
     // Getters and setters
-    public String getRequestType() {
-        return requestType;
+    public int getRequestTypeId() {
+        return requestTypeId;
     }
 
-    public void setRequestType(String requestType) {
-        this.requestType = requestType;
+    public void setRequestTypeId(int requestTypeId) {
+        this.requestTypeId = requestTypeId;
     }
 
     public String getProgramName() {

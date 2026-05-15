@@ -11,6 +11,7 @@ public class RequisitionForm {
     private String deadline;
     private String requestTopic;
     private List<RequestItem> items;
+    private int empID;
 
     // generate getters and setters (or use IDE)
     public String getName() { return name; }
@@ -57,6 +58,13 @@ public class RequisitionForm {
         this.requestTopic = requestTopic;
     }
     public void setItems(List<RequestItem> items) { this.items = items; }
+    
+    public int getEmpID() {
+        return empID;
+    }
+    public void setEmpID(int empID) {
+        this.empID = empID;
+    }
 
 
 }

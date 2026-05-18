@@ -69,7 +69,7 @@ public class SubmitRequestServlet extends HttpServlet {
                 item.setFolderPermissions(Arrays.asList(folderPerms));
             }
             String[] subPerms = request.getParameterValues("subFolderPermission[]");
-            if (subPerms != null) {
+            if (subPerms != null) { 
                 item.setSubFolderPermissions(Arrays.asList(subPerms));
             }
 

@@ -7,6 +7,7 @@ e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\src\main\java\com\slf\
 e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\src\main\java\com\slf\dao\LookupDAO.java
 e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\src\main\java\com\slf\dao\OracleRequisitionDAO.java
 e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\src\main\java\com\slf\dao\RequisitionDAO.java
+e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\src\main\java\com\slf\dao\TechnicalApprovalDAO.java
 e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\src\main\java\com\slf\filter\AuthenticationFilter.java
 e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\src\main\java\com\slf\model\Department.java
 e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\src\main\java\com\slf\model\Employee.java
@@ -14,3 +15,4 @@ e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\src\main\java\com\slf\
 e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\src\main\java\com\slf\model\RequestType.java
 e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\src\main\java\com\slf\model\RequisitionForm.java
 e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\src\main\java\com\slf\model\Section.java
+e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\src\main\java\com\slf\model\TechnicalApprovalForm.java

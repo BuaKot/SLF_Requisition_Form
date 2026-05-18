@@ -267,7 +267,7 @@ try {
                  FORM BUTTON
             =============================== -->
             <div class="request-col">
-                <a href="detail.jsp?formId=<%= formId %>" style="text-decoration:none;">
+                <a href="detail.jsp?id=<%= formId %>" style="text-decoration:none;">
                     <button type="button" class="request-btn">
                         <%= title %> ที่ <%= formId %>
                     </button>

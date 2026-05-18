@@ -4,7 +4,9 @@ com\slf\model\RequisitionForm.class
 com\slf\dao\OracleRequisitionDAO.class
 com\slf\controller\LogoutServlet.class
 com\slf\controller\LoadLoginServlet.class
+com\slf\model\TechnicalApprovalForm.class
 com\slf\controller\SubmitRequestServlet.class
+com\slf\dao\TechnicalApprovalDAO.class
 com\slf\dao\LookupDAO.class
 com\slf\model\Department.class
 com\slf\model\Section.class

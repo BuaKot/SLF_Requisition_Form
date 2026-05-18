@@ -150,41 +150,73 @@
         <a href="${pageContext.request.contextPath}/Admin.jsp" class="back-btn">
             <i class="fa fa-chevron-left"></i> กลับหน้าหลัก
         </a>
+    <%
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    
+    try {
+        conn = DBConnection.getConnection();
+        
+        String sql = "SELECT a.APPROVALID, e.EMPNAME, a.APPROVALSTATUS, " +
+             "r.TITLEFORM, r.DEADLINE, r.ASSIGN_SECID " +
+             "FROM APPROVALINFO a " +
+             "JOIN EMPLOYEE e ON a.REQUESTID = e.EMPID " + 
+             "LEFT JOIN REQUISITIONFORM r ON a.REQUESTID = r.FORMID " +
+             "ORDER BY a.APPROVALID DESC";
 
-        <div class="requisition-item" onclick="location.href='RequisitionDetail.jsp'">
-            <div class="req-number">ใบขอดำเนินการที่ 1</div>
-            <div class="req-details">
-                <b>ชื่อ :</b> ธนภัทร กาญจนรุจิวุฒิ &nbsp;&nbsp; <b>ฝ่าย :</b> บริหารหนี้ 2 &nbsp;&nbsp;
-                <b>ส่วน :</b> ----- &nbsp;&nbsp; <b>Deadline :</b> 16/01/2569<br>
-                <b>รายละเอียด :</b> พัฒนาระบบลงทะเบียนขอผ่อนผันการชำระเงินกองทุน กรณีผู้กู้ยืมเป็นผู้ประสบอุทกภัย
+        pstmt = conn.prepareStatement(sql);
+        rs = pstmt.executeQuery();
+
+        if (rs != null) {
+            while (rs.next()) {
+                String appId = rs.getString("APPROVALID");
+                String name = rs.getString("EMPNAME");
+                String status = rs.getString("APPROVALSTATUS");
+                String title = rs.getString("TITLEFORM");
+                Date deadline = rs.getDate("DEADLINE");
+                String section = rs.getString("ASSIGN_SECID");
+                String formattedDate = (deadline != null) ? sdf.format(deadline) : "---";
+%>
+    <div class="requisition-card" onclick="location.href='Detail.jsp?id=<%= appId %>'">
+        <div class="card-id-box">ใบขอให้ดำเนินการที่ <%= appId %></div>
+        
+        <div class="card-info">
+            <div class="info-row">
+                <div class="info-item"><b>ชื่อ :</b> <%= name %></div>
+                <div class="info-item"><b>ฝ่าย :</b> ไอที</div>
+                <div class="info-item"><b>ส่วน :</b> <%= (section != null ? section : "-----") %></div>
+                <div class="info-item"><b>Deadline :</b> <%= formattedDate %></div>
             </div>
-            <div class="status-icon status-success">
-                <i class="fa-solid fa-circle-check"></i>
-            </div>
+            <div><b>รายละเอียด :</b> <%= (title != null ? title : "คลิกเพื่อดูรายละเอียด") %></div>
         </div>
-
-        <div class="requisition-item" onclick="location.href='RequisitionDetail.jsp'">
-            <div class="req-number">ใบขอดำเนินการที่ 2</div>
-            <div class="req-details">
-                <b>ชื่อ :</b> ธนภัทร กาญจนรุจิวุฒิ &nbsp;&nbsp; <b>ฝ่าย :</b> บริหารหนี้ 2 &nbsp;&nbsp;
-                <b>ส่วน :</b> ----- &nbsp;&nbsp; <b>Deadline :</b> 16/01/2569<br>
-                <b>รายละเอียด :</b> ชื่อหัวข้อความต้องการ
-            </div>
-            <div class="status-icon status-pending">
-                <i class="fa-solid fa-clock-rotate-left"></i>
-            </div>
+        
+        <div class="status-icon">
+            <% if ("Approved".equalsIgnoreCase(status)) { %>
+                <i class="fa-solid fa-circle-check" style="color: #28a745; font-size: 35px;"></i>
+            <% } else { %>
+                <i class="fa-solid fa-circle-dot" style="color: #ffc107; font-size: 35px;"></i>
+            <% } %>
         </div>
-
-        <div class="requisition-item" onclick="location.href='RequisitionDetail.jsp'">
-            <div class="req-number">ใบขอดำเนินการที่ 3</div>
-            <div class="req-details">
-                <b>รายละเอียด :</b> context (คลิกเพื่อดูรายละเอียดเพิ่มเติม)
-            </div>
-            <div class="status-icon status-success">
-                <i class="fa-solid fa-circle-check"></i>
-            </div>
-        </div>
-
+    </div>
+<%
+            }
+        } else {
+            out.println("<p style='text-align:center;'>--- ไม่พบรายการข้อมูล ---</p>");
+        }
+    } catch (Exception e) {
+        out.println("<div style='color:red; background:white; padding:15px; border:1px solid red;'>");
+        out.println("<b>ตรวจพบข้อผิดพลาด:</b> " + e.getMessage());
+        out.println("</div>");
+    } finally {
+        // ปิดทรัพยากรอย่างปลอดภัย
+        if (rs != null) try { rs.close(); } catch(Exception ignore) {}
+        if (pstmt != null) try { pstmt.close(); } catch(Exception ignore) {}
+        if (conn != null) try { conn.close(); } catch(Exception ignore) {}
+    }
+%>
+    
     </div>
 
 </body>

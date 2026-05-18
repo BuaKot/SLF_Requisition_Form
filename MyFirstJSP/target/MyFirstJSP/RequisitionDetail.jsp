@@ -1,249 +1,81 @@
-<%@ page isELIgnored="false" %>
-    <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-        <!DOCTYPE html>
-        <html lang="th">
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.sql.*, com.util.DBConnection, java.text.SimpleDateFormat" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #f4f7f9; }
+        .form-container { max-width: 800px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; border: 1px solid #ccc; }
+        .blue-box { border: 2px solid #3272BB; padding: 20px; border-radius: 8px; margin: 15px 0; }
+        input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #3272BB; border-radius: 4px; background: #fdfdfd; }
+        label { font-weight: bold; display: block; margin-top: 10px; }
+    </style>
+</head>
+<body>
 
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>รายละเอียดใบขอให้ดำเนินการ</title>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-            <style>
-                * {
-                    box-sizing: border-box;
-                }
+<%
+    String id = request.getParameter("id");
+    String empName="", section="", title="", objective="", currentProcess="", deadline="";
 
-                body {
-                    font-family: 'Sarabun', sans-serif;
-                    margin: 0;
-                    background-color: #f4f7f9;
-                }
+    try (Connection conn = DBConnection.getConnection()) {
+        String sql = "SELECT r.*, e.EMPNAME FROM REQUISITIONFORM r LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID WHERE r.FORMID = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, id);
+        ResultSet rs = pstmt.executeQuery();
 
-                /* Header Bar */
-                .sticky-bar {
-                    position: sticky;
-                    top: 0;
-                    background: white;
-                    height: 60px;
-                    border-bottom: 4px solid #3272BB;
-                    display: flex;
-                    align-items: center;
-                    padding: 0 20px;
-                    z-index: 1000;
-                }
+        if (rs.next()) {
+            empName = rs.getString("EMPNAME");
+            section = rs.getString("ASSIGN_SECID");
+            title = rs.getString("TITLEFORM");
+            objective = rs.getString("OBJECTIVE");
+            currentProcess = rs.getString("CURRENT_PROCESS");
+            deadline = (rs.getDate("DEADLINE") != null) ? new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("DEADLINE")) : "";
+        }
+%>
 
-                /* Banner */
-                .banner {
-                    background: #C3EAFF;
-                    padding: clamp(20px, 6vw, 40px) 15px;
-                    text-align: center;
-                    color: #003366;
-                }
+<div class="form-container">
+    <h2 style="text-align:center;">ใบคำขอเลขที่: <%= id %></h2>
+    
+    <form action="ApproveServlet" method="POST">
+        <input type="hidden" name="formId" value="<%= id %>">
 
-                .banner h1 {
-                    font-size: clamp(1.1rem, 4vw, 1.5rem);
-                    margin: 0;
-                    line-height: 1.2;
-                }
+        <label>ชื่อ-นามสกุล:</label>
+        <input type="text" value="<%= (empName != null) ? empName : "ไม่พบข้อมูล" %>" readonly>
 
-                .banner h2 {
-                    font-size: clamp(0.9rem, 3vw, 1.1rem);
-                    margin-top: 10px;
-                    font-weight: normal;
-                }
+        <label>ส่วนงาน:</label>
+        <input type="text" value="<%= section %>" readonly>
 
-                /* Form Container */
-                .form-container {
-                    max-width: 900px;
-                    margin: 20px auto;
-                    background: white;
-                    padding: 30px;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-                }
+        <div class="blue-box">
+            <label>หัวข้อความต้องการ:</label>
+            <input type="text" value="<%= title %>" readonly>
+            
+            <label>ภายในวันที่:</label>
+            <input type="text" value="<%= deadline %>" readonly>
+        </div>
 
-                /* Grid System สำหรับฟอร์ม */
-                .form-grid {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 20px;
-                    margin-bottom: 20px;
-                }
+        <label>วัตถุประสงค์:</label>
+        <textarea rows="4" readonly><%= objective %></textarea>
 
-                .form-group {
-                    display: flex;
-                    flex-direction: column;
-                }
+        <label>วิธีการปัจจุบัน:</label>
+        <textarea rows="3" readonly><%= currentProcess %></textarea>
 
-                .form-group label {
-                    font-weight: bold;
-                    margin-bottom: 8px;
-                    font-size: 0.9rem;
-                    color: #333;
-                }
-
-                .form-group input,
-                .form-group select,
-                .form-group textarea {
-                    padding: 10px;
-                    border: 1px solid #3272BB;
-                    border-radius: 5px;
-                    font-size: 14px;
-                }
-
-                .full-width {
-                    grid-column: span 2;
-                }
-
-                /* Section Box (ช่องสีน้ำเงินรอบหัวข้อความต้องการ) */
-                .section-box {
-                    border: 2px solid #3272BB;
-                    border-radius: 10px;
-                    padding: 20px;
-                    margin-bottom: 25px;
-                }
-
-                /* Button Group */
-                .btn-group {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    gap: 20px;
-                    margin-top: 25px;
-                    width: 100%;
-                }
-
-                .btn {
-                    padding: 12px 40px;
-                    border: none;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    font-weight: bold;
-                    font-size: 1rem;
-                    transition: 0.3s;
-                    color: white;
-                }
-
-                .btn-reject {
-                    background-color: #CC0000;
-                }
-
-                /* สีแดง */
-                .btn-approve {
-                    background-color: #00A859;
-                }
-
-                /* สีเขียว */
-                .btn:hover {
-                    opacity: 0.8;
-                    transform: translateY(-2px);
-                }
-
-                /* Responsive */
-                @media (max-width: 768px) {
-                    .form-grid {
-                        grid-template-columns: 1fr;
-                    }
-
-                    .full-width {
-                        grid-column: span 1;
-                    }
-                }
-            </style>
-        </head>
-
-        <body>
-
-            <div class="sticky-bar">
-                <a href="DirectorApprove.jsp" style="text-decoration:none; color:#333;">
-                    <i class="fa fa-arrow-left"></i> กลับ
-                </a>
-                <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
-                    <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
-                    <p style='margin-left: 8px; font-size: 0.9rem;'>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-                </div>
+        <div style="margin-top:20px; padding-top:20px; border-top:1px solid #eee;">
+            <label>ความเห็นผู้อำนวยการ:</label>
+            <input type="text" name="comment" required placeholder="ใส่ความเห็นที่นี่...">
+            
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button type="submit" name="action" value="approve" style="background:green; color:white; padding:10px 20px; flex:1; cursor:pointer;">อนุมัติ</button>
+                <button type="submit" name="action" value="reject" style="background:red; color:white; padding:10px 20px; flex:1; cursor:pointer;">ส่งกลับ</button>
             </div>
+        </div>
+    </form>
+</div>
 
-            <div class="banner">
-                <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
-                <h1>ใบขอให้ดำเนินการ / Requisition Form</h1>
-            </div>
-
-            <div class="form-container">
-                <form>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>ชื่อ-นามสกุล <span style="color:red">*</span></label>
-                            <input type="text" value="ธนภัทร กาญจนรุจิวุฒิ" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>ส่วน</label>
-                            <input type="text" value="บริหารหนี้ 2" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>ฝ่าย <span style="color:red">*</span></label>
-                            <input type="text" value="ฝ่ายบริหารหนี้" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>เบอร์ต่อ <span style="color:red">*</span></label>
-                            <input type="text" value="411" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>วันที่ <span style="color:red">*</span></label>
-                            <input type="date" value="2026-05-11" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Deadline <span style="color:red">*</span></label>
-                            <input type="text" value="2026-05-15" readonly>
-                        </div>
-                        <div class="form-group full-width">
-                            <label>ชื่อหัวข้อความต้องการ :</label>
-                            <input type="text" value="ระบบลงทะเบียนขอผ่อนผันการชำระเงินกองทุน" readonly>
-                        </div>
-                    </div>
-
-                    <div class="section-box-main">
-                        <div class="form-grid">
-                            <div class="form-group full-width">
-                                <label>ประเภทคำขอ</label>
-                                <select disabled>
-                                    <option>แจ้งปัญหาการใช้งาน</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group full-width">
-                                <label>วัตถุประสงค์ / ความต้องการ</label>
-                                <textarea rows="5"
-                                    readonly>เพื่อช่วยเหลือกองทุนเงินให้กู้ยืมเพื่อการศึกษา กรณีผู้กู้ยืมเป็นผู้ประสบอุทกภัย...</textarea>
-                            </div>
-
-                            <div class="form-group full-width">
-                                <label>วิธีการดำเนินการปัจจุบัน</label>
-                                <textarea rows="4"
-                                    readonly>ปัจจุบันดำเนินการผ่านระบบ Manual และบันทึกใน Excel...</textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section-box full-width">
-                        <h3 style="font-size: 1rem; margin-bottom: 15px; font-weight: bold;">
-                            ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ</h3>
-
-                        <div class="form-group">
-                            <label>ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ :</label>
-                            <input type="text" placeholder="ระบุชื่อ :">
-                        </div>
-                    </div>
-
-            </div>
-            <div class="btn-group">
-                <button type="button" class="btn btn-reject" onclick="alert('ส่งกลับแก้ไข')">ส่งกลับ</button>
-                <button type="button" class="btn btn-approve" onclick="alert('อนุมัติเรียบร้อย')">อนุมัติ</button>
-            </div>
-
-            </form>
-            </div>
-
-        </body>
-
-        </html>
+<%
+    } catch (Exception e) {
+        out.println("Error: " + e.getMessage());
+    }
+%>
+</body>
+</html>

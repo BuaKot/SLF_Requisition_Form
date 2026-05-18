@@ -11,9 +11,9 @@
 <!-- The Sidebar -->
 <div id="mySidebar" class="sidebar">
   <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
-  <a href="${pageContext.request.contextPath}" style='font-size:20px'>Home</a>
-  <a href="${pageContext.request.contextPath}/submit.jsp" style='font-size:20px'>Submitted Forms</a>
-  <a href="${pageContext.request.contextPath}/form.jsp" style='font-size:20px'>New Form</a>
+  <a href="${pageContext.request.contextPath}" style='font-size:20px'>หน้าหลัก</a>
+  <a href="${pageContext.request.contextPath}/submit.jsp" style='font-size:20px'>ฟอร์มที่ส่งแล้ว</a>
+  <a href="${pageContext.request.contextPath}/newForm" style='font-size:20px'>สร้างฟอร์มใหม่</a>
   <a href='${pageContext.request.contextPath}/Admin.jsp' class='admin-tab'><i class='fa fa-circle-user' style='font-size:36px;padding-left:0px;padding-right:25%'></i>Admin</a>
 </div>
 
@@ -22,32 +22,34 @@
     <i id="menuBtn" class="fa fa-bars" onclick="toggleNav()" style="font-size:36px; cursor:pointer; padding-left:5px; padding-right:5px;"></i>
     </i><img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo" style="height: 48px; padding-left: 10px; padding-right: 5px">
     </i><img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo" style="height: 48px; padding-left: 5px; padding-right: 5px">
-    <div style="margin-left:auto;display:flex;align-items:center">
-        <i class='fa fa-circle-user' style='font-size:24px;padding-left:10px;padding-right:0px'></i>
-        <p style='margin-left: 5px;margin-right: 15px'>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+    <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
+                    <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
+                    <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
     </div>
 </div>
 
 
 <div class ='blue-title'>
-    <h1 style='margin-block-start: 0.1em; margin-block-end: 0.1em;'>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</h1>
-    <h2 style='margin-block-start: 0.1em; margin-block-end: 0.1em;'>ใบขอให้ดำเนินการ / Requisition Form</h2>
+    <h1 style='margin-block-start: 0.1em; margin-block-end: 0.1em;color:#003366;'>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</h1>
+    <h2 style='margin-block-start: 0.1em; margin-block-end: 0.1em;color:#003366;'>ใบขอให้ดำเนินการ / Requisition Form</h2>
 </div>
 
 
 <div class="options-div">
 
-    <a href="${pageContext.request.contextPath}/form.jsp" class="option-box option-box-link">
+    <a href="${pageContext.request.contextPath}/newForm" class="option-box option-box-link">
     <div class="option-pic">
-        <i class="fa fa-plus" style='color:#3272BB'></i>
+        <i class="fa fa-plus" style ='color:#3272BB'></i>
     </div>
-    <h1>New Form</h1>
+    <h1>สร้างฟอร์มใหม่</h1>
 </a>
     <a href="${pageContext.request.contextPath}/submit.jsp" class="option-box option-box-link">
+    
         <div class='option-pic'>
-            <i class="fa fa-paper-plane" style='color:#3272BB'></i>
+            <i class="fa fa-paper-plane" style ='color:#3272BB'></i>
         </div>
-        <h1>Submitted Forms</h1>
+        <h1>ฟอร์มที่ส่งแล้ว</h1>
+    
     </a>
 
 </div>

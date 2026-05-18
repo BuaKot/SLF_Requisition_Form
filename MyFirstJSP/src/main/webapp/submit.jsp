@@ -136,10 +136,7 @@
 <section class="request-list">
 
 <%
-/* ===============================
-   REQUEST LIST (STATE_STEP +/-)
-   4 STEP SYSTEM
-================================ */
+
 try {
 
     Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -177,6 +174,7 @@ try {
         "WHERE RF.EMPID = ? " +
         "ORDER BY RF.FORMID DESC";
 
+    
     pstmt = conn.prepareStatement(sql);
     pstmt.setInt(1, empid);
 
@@ -257,9 +255,7 @@ try {
         /*
          * ยืนยันผลได้เมื่อผ่าน STEP 4 เท่านั้น
          */
-        boolean canConfirm = (stateStep == 4);
-
-%>
+        boolean canConfirm = (stateStep == 4); %>
 
         <div class="request-row">
 

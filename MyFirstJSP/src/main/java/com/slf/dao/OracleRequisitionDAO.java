@@ -146,6 +146,17 @@ public class OracleRequisitionDAO implements RequisitionDAO {
                     }
                 }
             }
+            String approvalSQL =
+                "INSERT INTO APPROVALINFO (STATE_STEP, FORMID, REVIEWER_EMPID) " +
+                "VALUES (0, ?, ?)";
+
+            try (PreparedStatement approvalStmt = conn.prepareStatement(approvalSQL)) {
+                approvalStmt.setInt(1, formId);
+                // Set reviewer to the employee who submitted the form (the requestor)
+                approvalStmt.setInt(2, form.getEmpID());
+                approvalStmt.executeUpdate();
+                System.out.println("APPROVALINFO row inserted for FORMID=" + formId + ", STATE_STEP=0");
+            }
 
             // 4. Commit transaction
             conn.commit();

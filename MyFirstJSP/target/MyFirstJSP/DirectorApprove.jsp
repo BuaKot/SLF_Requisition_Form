@@ -1,6 +1,6 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.sql.*, com.util.DBConnection, java.text.SimpleDateFormat" %>
+<%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat" %>
 <!DOCTYPE html>
 <html lang="th">
 <head>

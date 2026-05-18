@@ -260,6 +260,7 @@
             
             <form action="SubmitApprovalServlet" method="post">
                 <input type="hidden" name="formId" value="<%= formId %>">
+                <input type="hidden" name="redirectPage" value="TechnicalApprove.jsp">
 
                 <div class="form-grid">
                     <div class="form-group">
@@ -345,6 +346,63 @@
             
         <% } %>
     </div>
+    <!-- zennnne แก้ -->
+<script>
+function getByteLength(str) {
+    return new TextEncoder().encode(str).length;
+}
+
+function attachCounters() {
+    document.querySelectorAll("[data-maxbytes]").forEach(function (el) {
+        if (el.dataset.counterAttached) return;
+        el.dataset.counterAttached = "1";
+
+        var max = parseInt(el.dataset.maxbytes);
+        var counter = document.createElement("span");
+        counter.className = "byte-counter";
+        el.parentNode.insertBefore(counter, el.nextSibling);
+
+        function update() {
+            var used = getByteLength(el.value);
+            counter.textContent = used + " / " + max + " bytes";
+            if (used > max) {
+                counter.classList.add("over-limit");
+                el.classList.add("input-over-limit");
+            } else {
+                counter.classList.remove("over-limit");
+                el.classList.remove("input-over-limit");
+            }
+        }
+
+        el.addEventListener("input", update);
+        update();
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    attachCounters();
+
+    var form = document.querySelector("form");
+    if (form) {
+        form.addEventListener("submit", function (event) {
+            var overLimit = [];
+            document.querySelectorAll("[data-maxbytes]").forEach(function (el) {
+                var max = parseInt(el.dataset.maxbytes);
+                if (getByteLength(el.value) > max) {
+                    var group = el.closest(".form-group");
+                    var label = group && group.querySelector("label");
+                    overLimit.push(label ? label.textContent.replace(/[*]/g, "").trim() : el.name);
+                }
+            });
+            if (overLimit.length > 0) {
+                event.preventDefault();
+                alert("ข้อมูลเกินขนาดที่กำหนด :\n- " + overLimit.join("\n- "));
+            }
+        });
+    }
+});
+</script>
+<!-- zennnne แก้ -->
 
 </body>
 </html>

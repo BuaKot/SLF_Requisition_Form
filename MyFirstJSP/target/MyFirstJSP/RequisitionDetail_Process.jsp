@@ -260,6 +260,7 @@
             
             <form action="SubmitApprovalServlet" method="post">
                 <input type="hidden" name="formId" value="<%= formId %>">
+                <input type="hidden" name="redirectPage" value="Process.jsp">
 
                 <div class="form-grid">
                     <div class="form-group">

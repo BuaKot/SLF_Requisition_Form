@@ -310,6 +310,11 @@
                             <label>วิธีการดำเนินการปัจจุบัน</label>
                             <textarea rows="3" readonly><%= currentProcess %></textarea>
                         </div>
+
+                        <div class="form-group full-width">
+                            <label>หมายเหตุ (ความเห็น)</label>
+                            <textarea name="comment" rows="3" placeholder="ระบุเหตุผล..."></textarea>
+                        </div>
                     </div>
                 </div>
 

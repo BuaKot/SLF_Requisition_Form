@@ -227,29 +227,40 @@
     try {
         conn = DBConnection.getConnection();
         
-        String sql = "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, r.ASSIGN_SECID " +
-                     "FROM REQUISITIONFORM r " +
-                     "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " + 
-                     "ORDER BY r.FORMID DESC"; 
+        String sql = 
+                "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, " +
+                "s.SECNAME AS SECTION_NAME, d.DEPTNAME AS DEPARTMENT_NAME " +
+                "FROM REQUISITIONFORM r " +
+                "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
+                "LEFT JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
+                "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+                "WHERE (SELECT ai.STATE_STEP " +
+                "       FROM APPROVALINFO ai " +
+                "       WHERE ai.FORMID = r.FORMID " +
+                "       ORDER BY ai.APPROVALID DESC " +
+                "       FETCH FIRST 1 ROWS ONLY) = 0 " +
+                "ORDER BY r.FORMID DESC";
 
         pstmt = conn.prepareStatement(sql);
         rs = pstmt.executeQuery();
 
         while (rs.next()) {
             String formId = rs.getString("FORMID") != null ? rs.getString("FORMID").trim() : "";
-            
+            String departmentName = rs.getString("DEPARTMENT_NAME") != null ? rs.getString("DEPARTMENT_NAME") : "-";
             String empName = rs.getString("EMPNAME") != null ? rs.getString("EMPNAME") : "-";
-            String sectionName = rs.getString("ASSIGN_SECID") != null ? rs.getString("ASSIGN_SECID") : "-";
+            String sectionName = rs.getString("SECTION_NAME") != null ? rs.getString("SECTION_NAME") : "-";
             String deadline = rs.getDate("DEADLINE") != null ? sdf.format(rs.getDate("DEADLINE")) : "-";
             String titleForm = rs.getString("TITLEFORM") != null ? rs.getString("TITLEFORM") : "-";
 %>
+
     <div class="requisition-card" onclick="location.href='RequisitionDetail.jsp?id=<%= formId %>'">
         <div class="card-id-box">ใบขอให้ดำเนินการที่ <%= formId %></div>
 
         <div class="card-info">
             <div class="info-row">
                 <div class="info-item"><b>ชื่อ :</b> <%= empName %></div>
-                <div class="info-item"><b>ฝ่าย :</b> - </div> <div class="info-item"><b>ส่วน :</b> <%= sectionName %></div>
+                <div class="info-item"><b>ฝ่าย :</b> <%= departmentName %></div>
+                <div class="info-item"><b>ส่วน :</b> <%= sectionName %></div>
                 <div class="info-item"><b>Deadline :</b> <%= deadline %></div>
             </div>
             <div class="detail-line"><b>รายละเอียด :</b> <%= titleForm %></div>

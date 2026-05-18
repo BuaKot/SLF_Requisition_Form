@@ -10,6 +10,13 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
+    <!-- zennnne แก้ -->
+    <style>
+        .byte-counter { font-size: 0.75rem; color: #888; display: block; text-align: right; margin-top: 2px; width: 100%; order: 999; flex-basis: 100%; }
+        .byte-counter.over-limit { color: #cc0000; font-weight: bold; }
+        .input-over-limit { border-color: #cc0000 !important; outline: 1px solid #cc0000; }
+    </style>
+    <!-- zennnne แก้ -->
 
 </head>
 
@@ -102,6 +109,7 @@
                     name="requestTopic"
                     value="ระบบลงทะเบียนขอผ่อนผันการชำระเงินกองทุน"
                     required
+                    data-maxbytes="255"
                 >
             </div>
 
@@ -131,7 +139,7 @@
 
                         <div class="form-group program-name-box">
                             <label>ชื่อโปรแกรม :<span class="required-star">*</span></label>
-                            <input type="text" name="programName[]" required>
+                            <input type="text" name="programName[]" required data-maxbytes="500">
                         </div>
 
                         <div class="form-group full-width server-permission-box">
@@ -143,6 +151,7 @@
                                     name="serverName[]"
                                     placeholder="โปรดระบุ Server"
                                     required
+                                    data-maxbytes="500"
                                 >
                             </div>
 
@@ -152,6 +161,7 @@
                                     type="text"
                                     name="serverFolder[]"
                                     placeholder="โปรดระบุ Folder"
+                                    data-maxbytes="500"
                                 >
                             </div>
 
@@ -188,6 +198,7 @@
                                     type="text"
                                     name="subFolder[]"
                                     placeholder="โปรดระบุ Sub Folder"
+                                    data-maxbytes="500"
                                 >
                             </div>
 
@@ -225,6 +236,7 @@
                                 type="text"
                                 name="otherRequest[]"
                                 placeholder="โปรดระบุประเภทคำขอ"
+                                data-maxbytes="500"
                             >
                         </div>
 
@@ -234,6 +246,7 @@
                                 name="objective[]"
                                 placeholder="โปรดระบุความต้องการ"
                                 required
+                                data-maxbytes="1000"
                             ></textarea>
                         </div>
 
@@ -242,6 +255,7 @@
                             <textarea
                                 name="currentMethod[]"
                                 placeholder="โปรดระบุวิธีการเดิมในปัจจุบัน"
+                                data-maxbytes="1000"
                             ></textarea>
                         </div>
 
@@ -296,12 +310,46 @@ function updateRequestHeaders() {
     });
 }
 
+// zennnne แก้
+function getByteLength(str) {
+    return new TextEncoder().encode(str).length;
+}
+
+function attachCounters(root) {
+    (root || document).querySelectorAll("[data-maxbytes]").forEach(function (el) {
+        if (el.dataset.counterAttached) return;
+        el.dataset.counterAttached = "1";
+
+        var max = parseInt(el.dataset.maxbytes);
+        var counter = document.createElement("span");
+        counter.className = "byte-counter";
+        el.parentNode.insertBefore(counter, el.nextSibling);
+
+        function update() {
+            var used = getByteLength(el.value);
+            counter.textContent = used + " / " + max + " bytes";
+            if (used > max) {
+                counter.classList.add("over-limit");
+                el.classList.add("input-over-limit");
+            } else {
+                counter.classList.remove("over-limit");
+                el.classList.remove("input-over-limit");
+            }
+        }
+
+        el.addEventListener("input", update);
+        update();
+    });
+}
+// zennnne แก้
+
 window.addEventListener("load", function () {
     setTodayDate();
     initPlaceholderSelects();
     initAllRequestTypeDisplays();
     updateDeleteButtons();
     updateRequestHeaders();
+    attachCounters();
 });
 
 function setTodayDate() {
@@ -346,6 +394,13 @@ function updateDeleteButtons() {
 }
 
 function resetRequestItem(item) {
+    // zennnne แก้
+    item.querySelectorAll(".byte-counter").forEach(function (c) { c.remove(); });
+    item.querySelectorAll("[data-counter-attached]").forEach(function (el) {
+        el.removeAttribute("data-counter-attached");
+    });
+    // zennnne แก้
+
     item.querySelectorAll("input").forEach(function (input) {
         if (input.type === "checkbox") {
             input.checked = false;
@@ -473,6 +528,7 @@ if (addRequestBtn && requestsContainer) {
         resetRequestItem(newItem);
 
         requestsContainer.appendChild(newItem);
+        attachCounters(newItem); // zennnne แก้
         updateDeleteButtons();
         updateRequestHeaders();
     });
@@ -580,7 +636,25 @@ if (requisitionForm) {
                 "กรุณากรอกข้อมูลในช่อง :\n- " +
                 missingFields.join("\n- ")
             );
+            return;
         }
+
+        // zennnne แก้
+        var overLimitFields = [];
+        document.querySelectorAll("[data-maxbytes]").forEach(function (el) {
+            var max = parseInt(el.dataset.maxbytes);
+            if (getByteLength(el.value) > max) {
+                var group = el.closest(".form-group");
+                var label = group && group.querySelector("label");
+                overLimitFields.push(label ? label.textContent.replace(/[*]/g, "").trim() : el.name);
+            }
+        });
+
+        if (overLimitFields.length > 0) {
+            event.preventDefault();
+            alert("ข้อมูลเกินขนาดที่กำหนด :\n- " + overLimitFields.join("\n- "));
+        }
+        // zennnne แก้
     });
 }
 </script>

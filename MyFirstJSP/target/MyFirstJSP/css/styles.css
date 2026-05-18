@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/*Home Start*/
+>>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
 @font-face {
     font-family: 'DBHelvethaica';
     src: url("fonts/DB\ HelvethaicaMon\ X\ Bd\ v3.2.ttf") format('ttf');
@@ -55,6 +59,16 @@ html, body{
     width: 100%;        /* Default to full width on mobile */
     max-width: 400px;   /* Won't grow larger than 400px */
     margin: 20px;       /* Simplified margin */
+<<<<<<< HEAD
+=======
+    border-radius: 20px;
+}
+
+.option-box-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+>>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
 }
 
 .option-pic{
@@ -76,6 +90,7 @@ html, body{
 }
 
 /* The sidebar menu */
+<<<<<<< HEAD
 .sidebar {
   height: 100%;
   width: 0; /* Initially hidden */
@@ -97,6 +112,42 @@ html, body{
   color: white;
   display: block;
   transition: 0.3s;
+=======
+/* Sidebar stays mostly the same, but remove z-index if you want it to push */
+.sidebar {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #C3EAFF;
+  overflow-x: hidden;
+  transition: 0.5s; /* Smooth transition */
+  padding-top: 60px;
+}
+
+/* The main content container */
+#main {
+  transition: all .5s; /* Smoothly animate margin AND width */
+  width: 100%;         /* Default full width */
+  margin-left: 0;
+}
+
+/* Sidebar links */
+.sidebar a {
+  padding: 8px 8px 8px 8px;
+  text-decoration: none;
+  font-size: 25px;
+  color: black;
+  display: block;
+  transition: 0.3s;
+  background-color: white;
+  margin: 10px 24px;
+  cursor: pointer;
+  border: solid #3272BB 2px;
+  border-radius: 10px;
+  text-align: center;
+>>>>>>> a53e7a274200e1946f38236140b633bbc646deb4
 }
 
 /* Close button position */
@@ -105,5 +156,29 @@ html, body{
   top: 0;
   right: 25px;
   font-size: 36px;
+<<<<<<< HEAD
   margin-left: 50px;
 }
+=======
+  margin: 4px 2px;
+  margin-left: 50px;
+  background: none;
+  border: none;
+}
+
+.sidebar .admin-tab{
+  position: absolute;
+  bottom: 0;
+  background-color: #3272BB;
+  color: white;
+  border: none;
+  border-radius: 0px;
+  padding: 12px 12px;
+  margin: 0px 0px;
+  width: 100%;
+  display:flex;
+  align-items: center;
+}
+
+/*Home End*/
+>>>>>>> a53e7a274200e1946f38236140b633bbc646deb4

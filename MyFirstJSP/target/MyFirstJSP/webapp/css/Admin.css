@@ -1,0 +1,26 @@
+body { font-family: 'Sarabun', sans-serif; margin: 0; padding: 0; text-align: center; }
+
+.sticky-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 20px; border-bottom: 2px solid #0056b3;
+}
+.header-left { display: flex; align-items: center; gap: 15px; }
+.header-left img { height: 45px; }
+.fa-bars { font-size: 24px; cursor: pointer; }
+
+.blue-banner {
+    background-color: #e3f2fd; padding: 20px;
+    color: #003366; border-bottom: 1px solid #b3d7ff;
+}
+.blue-banner h1 { font-size: 22px; margin: 0; }
+.blue-banner h2 { font-size: 18px; margin: 5px 0 0; font-weight: normal; }
+
+.admin-grid {
+    display: flex; justify-content: center; gap: 50px; margin-top: 80px;
+}
+.card { cursor: pointer; transition: 0.3s; width: 200px; }
+.card:hover { transform: scale(1.05); }
+.icon-main { font-size: 80px; color: #333; margin-bottom: 15px; }
+
+.icon-stack { position: relative; font-size: 80px; display: inline-block; margin-bottom: 15px; }
+.icon-sub { position: absolute; font-size: 30px; bottom: 10px; right: 10px; background: white; border-radius: 50%; }

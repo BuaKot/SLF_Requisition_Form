@@ -337,7 +337,7 @@
                     ความเห็นและการอนุมัติเชิงเทคนิค
                 </h3>
                 <div class="form-group full-width">
-                    <textarea name="directorComment" rows="4" data-maxbytes="500" style="width: 100%; border: 1px solid #3272BB; border-radius: 5px; padding: 10px;" placeholder="ระบุความเห็นและบันทึกข้อความที่นี่..."></textarea>
+                    <textarea name="comment" rows="4" data-maxbytes="500" style="width: 100%; border: 1px solid #3272BB; border-radius: 5px; padding: 10px;" placeholder="ระบุความเห็นและบันทึกข้อความที่นี่..."></textarea>
                 </div>
                 <div class="form-grid" style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div class="form-group">

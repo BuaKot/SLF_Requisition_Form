@@ -80,6 +80,29 @@ public class SubmitApprovalServlet extends HttpServlet {
                 return;
             }
 
+            if (currentStep == 0) {
+                String directorSql =
+                    "SELECT d.DEPTHEAD_EMPID " +
+                    "FROM REQUISITIONFORM r " +
+                    "JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
+                    "JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+                    "WHERE r.FORMID = ?";
+                try (PreparedStatement psDirector = conn.prepareStatement(directorSql)) {
+                    psDirector.setInt(1, formId);
+                    try (ResultSet directorRs = psDirector.executeQuery()) {
+                        if (!directorRs.next()) {
+                            response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=not_found");
+                            return;
+                        }
+                        String deptHeadEmpId = directorRs.getString("DEPTHEAD_EMPID");
+                        if (deptHeadEmpId == null || !deptHeadEmpId.trim().equals(String.valueOf(reviewerEmpId))) {
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Only the department director can approve this step");
+                            return;
+                        }
+                    }
+                }
+            }
+
             // 5. Calculate the new state step
             int newStep;
             if ("approve".equalsIgnoreCase(action)) {

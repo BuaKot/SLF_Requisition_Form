@@ -108,8 +108,8 @@
             <input type="text" name="EMPID" required placeholder="กรอกรหัสพนักงาน">
         </div>
         <div class="input-group">
-            <label>รหัสแผนก (SECID)</label>
-            <input type="password" name="SECID" required placeholder="กรอกรหัสแผนก">
+            <label>รหัส)</label>
+            <input type="password" name="PASSWORD" required placeholder="กรอกรหัสแผนก">
         </div>
         <button type="submit" class="btn-login">เข้าสู่ระบบ</button>
     </form>

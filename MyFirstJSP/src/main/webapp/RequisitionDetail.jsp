@@ -12,6 +12,7 @@
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
+    String loggedInEmpId = empObj.toString().trim();
 
     // ----- 1. Grab the form ID -----
     String formId = request.getParameter("id");
@@ -26,6 +27,7 @@
     String empName = "", sectionName = "", departmentName = "", phone = "";
     String reqDate = "", deadlineDate = "", titleForm = "";
     boolean hasData = false;
+    boolean canApproveDirectorStep = false;
     List<Map<String, String>> requestItems = new ArrayList<>();
     List<Map<String, Object>> permissions = new ArrayList<>();
 
@@ -41,7 +43,12 @@
 
             // ----- Header -----
             String sql = "SELECT r.FORMID, e.EMPNAME, e.PHONE, s.SECNAME, d.DEPTNAME, " +
-                         "r.TITLEFORM, r.REQUESTDATE, r.DEADLINE " +
+                         "d.DEPTHEAD_EMPID, r.TITLEFORM, r.REQUESTDATE, r.DEADLINE, " +
+                         "NVL((SELECT ai.STATE_STEP " +
+                         "     FROM APPROVALINFO ai " +
+                         "     WHERE ai.FORMID = r.FORMID " +
+                         "     ORDER BY ai.APPROVALID DESC " +
+                         "     FETCH FIRST 1 ROWS ONLY), 0) AS STATE_STEP " +
                          "FROM REQUISITIONFORM r " +
                          "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
                          "LEFT JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
@@ -67,6 +74,11 @@
                 } else {
                     reqDate = "-";
                 }
+                String deptHeadEmpId = rs.getString("DEPTHEAD_EMPID");
+                int stateStep = rs.getInt("STATE_STEP");
+                canApproveDirectorStep = deptHeadEmpId != null
+                    && deptHeadEmpId.trim().equals(loggedInEmpId)
+                    && stateStep == 0;
             }
             closeQuietly(rs, pstmt);
 
@@ -191,6 +203,10 @@
     <% if (!hasData) { %>
         <div style="text-align: center; color: #CC0000; padding: 30px; font-weight: bold;">
             ❌ ไม่พบข้อมูลใบขอให้ดำเนินการเลขที่ "<%= formId %>" ในระบบฐานข้อมูล
+        </div>
+    <% } else if (!canApproveDirectorStep) { %>
+        <div style="text-align: center; color: #CC0000; padding: 30px; font-weight: bold;">
+            คุณไม่มีสิทธิ์อนุมัติใบขอให้ดำเนินการนี้ หรือใบขอนี้ไม่ได้อยู่ในขั้นตอนผู้อำนวยการฝ่ายแล้ว
         </div>
     <% } else { %>
 
@@ -318,12 +334,12 @@
 
                             <div class="form-group full-width">
                                 <label>วัตถุประสงค์ / ความต้องการ</label>
-                                <textarea rows="4" readonly><%= item.get("objective") %></textarea>
+                                <textarea style="resize: none;" rows="4" readonly><%= item.get("objective") %></textarea>
                             </div>
 
                             <div class="form-group full-width">
                                 <label>วิธีการดำเนินการปัจจุบัน</label>
-                                <textarea rows="3" readonly><%= item.get("currentMethod") %></textarea>
+                                <textarea style="resize: none;" rows="3" readonly><%= item.get("currentMethod") %></textarea>
                             </div>
                         </div>
                     </div>
@@ -333,7 +349,7 @@
             <!-- Comment textarea for the approver -->
             <div class="form-group full-width" style="margin-top: 20px;">
                 <label>หมายเหตุ / ความเห็น</label>
-                <textarea name="comment" rows="3" placeholder="ระบุเหตุผล (ถ้ามี)..."></textarea>
+                <textarea style="resize: none;" name="comment" rows="3" placeholder="ระบุเหตุผล (ถ้ามี)..."></textarea>
             </div>
 
             <div class="btn-group">

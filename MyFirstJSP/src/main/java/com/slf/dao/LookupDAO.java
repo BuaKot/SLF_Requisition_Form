@@ -113,13 +113,13 @@ public class LookupDAO {
         }
         return null;
     }
-    
-    public Employee findEmployeeByEmpIdAndSecId(int empId, int secId) throws SQLException {
-    String sql = "SELECT EMPID, EMPNAME, POSITION, SECID, PHONE FROM EMPLOYEE WHERE EMPID = ? AND SECID = ?";
+
+    public Employee findEmployeeByEmpIdAndPasssword(int empId, String password) throws SQLException {
+    String sql = "SELECT EMPID, EMPNAME, POSITION, SECID, PHONE FROM EMPLOYEE WHERE EMPID = ? AND PASSWORD = ?";
     try (Connection conn = DBConnection.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {
         ps.setInt(1, empId);
-        ps.setInt(2, secId);
+        ps.setString(2, password);
         try (ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 Employee emp = new Employee();

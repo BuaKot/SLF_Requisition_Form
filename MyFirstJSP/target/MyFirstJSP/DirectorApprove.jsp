@@ -219,6 +219,16 @@
     </a>
 
 <%
+    Object directorEmpObj = session.getAttribute("loggedInEmpId");
+    if (directorEmpObj == null) {
+        directorEmpObj = session.getAttribute("empid");
+    }
+    if (directorEmpObj == null) {
+        response.sendRedirect(request.getContextPath() + "/login");
+        return;
+    }
+    int directorEmpId = Integer.parseInt(directorEmpObj.toString());
+
     Connection conn = null;
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -239,9 +249,11 @@
                 "       WHERE ai.FORMID = r.FORMID " +
                 "       ORDER BY ai.APPROVALID DESC " +
                 "       FETCH FIRST 1 ROWS ONLY) = 0 " +
+                "AND d.DEPTHEAD_EMPID = ? " +
                 "ORDER BY r.FORMID DESC";
 
         pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, directorEmpId);
         rs = pstmt.executeQuery();
 
         while (rs.next()) {

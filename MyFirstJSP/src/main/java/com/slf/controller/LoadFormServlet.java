@@ -43,8 +43,7 @@ public class LoadFormServlet extends HttpServlet {
                 // The user has no section – they are a department head or similar.
                 // Store a message in the session and redirect to the home page.
                 session.setAttribute("formDeniedMessage",
-                        "ท่านไม่มีส่วนงานที่สังกัด หรือเป็นหัวหน้าฝ่ายที่ไม่มีส่วนงาน\n" +
-                        "กรุณาให้ผู้ใต้บังคับบัญชาเป็นผู้สร้างใบขอให้ดำเนินการแทน");
+    "ท่านไม่มีส่วนงานที่สังกัด หรือเป็นหัวหน้าฝ่ายที่ไม่มีส่วนงาน กรุณาให้ผู้ใต้บังคับบัญชาเป็นผู้สร้างใบขอให้ดำเนินการแทน");
                 response.sendRedirect(request.getContextPath() + "/");
                 return;
             }

@@ -17,7 +17,8 @@ import java.sql.SQLException;
 public class LoadFormServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
+
         HttpSession session = request.getSession();
         Integer empId = (Integer) session.getAttribute("loggedInEmpId");
         if (empId == null) {
@@ -27,18 +28,32 @@ public class LoadFormServlet extends HttpServlet {
 
         LookupDAO dao = new LookupDAO();
         try {
-            // 1. Fetch the logged-in employee
+            // 1. Fetch the logged‑in employee
             Employee emp = dao.findEmployeeById(empId);
             request.setAttribute("loggedInEmployee", emp);
 
-            // 2. Fetch the employee's section to get their department
-            //    We'll need a new DAO method: getSectionById(secId) that returns Section with deptId.
-            Section empSection = dao.getSectionById(emp.getSecId());
-            int empDeptId = empSection.getDeptId();   // the department ID
-            request.setAttribute("empDeptId", empDeptId);
-            request.setAttribute("empSectionId", emp.getSecId());
+            // 2. Check whether the employee belongs to a section
+            int secId = emp.getSecId();   // 0 if the database column is NULL
+            Section empSection = null;
+            if (secId != 0) {
+                empSection = dao.getSectionById(secId);
+            }
 
-            // 3. Load all the dropdown lookups as before
+            if (secId == 0 || empSection == null) {
+                // The user has no section – they are a department head or similar.
+                // Store a message in the session and redirect to the home page.
+                session.setAttribute("formDeniedMessage",
+                        "ท่านไม่มีส่วนงานที่สังกัด หรือเป็นหัวหน้าฝ่ายที่ไม่มีส่วนงาน\n" +
+                        "กรุณาให้ผู้ใต้บังคับบัญชาเป็นผู้สร้างใบขอให้ดำเนินการแทน");
+                response.sendRedirect(request.getContextPath() + "/");
+                return;
+            }
+
+            // 3. The employee has a section – load the department and lookups
+            int empDeptId = empSection.getDeptId();
+            request.setAttribute("empDeptId", empDeptId);
+            request.setAttribute("empSectionId", secId);
+
             request.setAttribute("requestTypes", dao.getAllRequestTypes());
             request.setAttribute("departments", dao.getAllDepartments());
             request.setAttribute("allSections", dao.getAllSections());

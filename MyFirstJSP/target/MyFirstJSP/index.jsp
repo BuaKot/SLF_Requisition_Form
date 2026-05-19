@@ -74,6 +74,17 @@ function toggleNav() {
     main.style.width = "calc(100% - 250px)"; 
   }
 }
+<%
+    String msg = (String) session.getAttribute("formDeniedMessage");
+    if (msg != null) {
+        session.removeAttribute("formDeniedMessage");
+%>
+<script>
+    alert("<%= msg.replace("\"", "\\\"") %>");
+</script>
+<%
+    }
+%>
 </script>
 </body>
 </html>

@@ -228,18 +228,18 @@
         conn = DBConnection.getConnection();
         
         String sql = 
-                "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, " +
-                "s.SECNAME AS SECTION_NAME, d.DEPTNAME AS DEPARTMENT_NAME " +
-                "FROM REQUISITIONFORM r " +
-                "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
-                "LEFT JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
-                "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
-                "WHERE (SELECT ai.STATE_STEP " +
-                "       FROM APPROVALINFO ai " +
-                "       WHERE ai.FORMID = r.FORMID " +
-                "       ORDER BY ai.APPROVALID DESC " +
-                "       FETCH FIRST 1 ROWS ONLY) = 2 " +
-                "ORDER BY r.FORMID DESC";
+            "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, " +
+            "s.SECNAME AS SECTION_NAME, d.DEPTNAME AS DEPARTMENT_NAME " +
+            "FROM REQUISITIONFORM r " +
+            "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
+            "LEFT JOIN SECTION s ON e.SECID = s.SECID " +
+            "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+            "WHERE (SELECT ai.STATE_STEP " +
+            "       FROM APPROVALINFO ai " +
+            "       WHERE ai.FORMID = r.FORMID " +
+            "       ORDER BY ai.APPROVALID DESC " +
+            "       FETCH FIRST 1 ROWS ONLY) = 2 " +
+            "ORDER BY r.FORMID DESC";
 
         pstmt = conn.prepareStatement(sql);
         rs = pstmt.executeQuery();

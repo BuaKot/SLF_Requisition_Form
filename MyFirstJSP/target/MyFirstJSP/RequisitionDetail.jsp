@@ -1,8 +1,19 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat" %>
+<%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat, java.util.*" %>
+
 <%
-    // 🛠️ 1. ดักรับพารามิเตอร์ ID ที่ส่งมาจากหน้ารายการรวม
+    // ----- Session Check -----
+    Object empObj = session.getAttribute("loggedInEmpId");
+    if (empObj == null) {
+        empObj = session.getAttribute("empid");
+    }
+    if (empObj == null) {
+        response.sendRedirect(request.getContextPath() + "/login");
+        return;
+    }
+
+    // ----- 1. Grab the form ID -----
     String formId = request.getParameter("id");
     if (formId == null || formId.trim().isEmpty()) {
         formId = request.getParameter("formId");
@@ -11,322 +22,328 @@
         formId = formId.trim();
     }
 
-    // 🛠️ 2. เตรียมตัวแปรสำหรับพักข้อมูลมารอหยอดลงใน UI
-    String empName = "";
-    String sectionName = "";
-    String departmentName = "ฝ่ายบริหารหนี้"; // ตั้ง Default ไว้ก่อนถ้าหากใน DB ไม่มีคอลัมน์นี้ครับ
-    String phone = "411";
-    String reqDate = "";
-    String deadlineDate = "";
-    String titleForm = "";
-    String objective = "";
-    String currentProcess = "";
+    // ----- 2. Data holders -----
+    String empName = "", sectionName = "", departmentName = "", phone = "";
+    String reqDate = "", deadlineDate = "", titleForm = "";
     boolean hasData = false;
+    List<Map<String, String>> requestItems = new ArrayList<>();
+    List<Map<String, Object>> permissions = new ArrayList<>();
 
     Connection conn = null;
     PreparedStatement pstmt = null;
     ResultSet rs = null;
-    SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd"); // สำหรับใส่ใน <input type="date">
-    SimpleDateFormat sdfDisplay = new SimpleDateFormat("dd/MM/yyyy"); // สำหรับแสดงผลข้อความทั่วไป
+    SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd");
+    SimpleDateFormat sdfDisplay = new SimpleDateFormat("dd/MM/yyyy");
 
     try {
         if (formId != null && !formId.isEmpty()) {
             conn = DBConnection.getConnection();
-            
-            // ดึงข้อมูลเชื่อมตาราง REQUISITIONFORM และ EMPLOYEE ตามโครงสร้างดั้งเดิมของคุณ
-            String sql = "SELECT r.FORMID, e.EMPNAME, r.ASSIGN_SECID, r.TITLEFORM, r.DEADLINE " +
+
+            // ----- Header -----
+            String sql = "SELECT r.FORMID, e.EMPNAME, e.PHONE, s.SECNAME, d.DEPTNAME, " +
+                         "r.TITLEFORM, r.REQUESTDATE, r.DEADLINE " +
                          "FROM REQUISITIONFORM r " +
                          "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
+                         "LEFT JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
+                         "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
                          "WHERE r.FORMID = ?";
-                         
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, formId);
             rs = pstmt.executeQuery();
-            
             if (rs.next()) {
                 hasData = true;
-                empName = rs.getString("EMPNAME") != null ? rs.getString("EMPNAME") : "-";
-                sectionName = rs.getString("ASSIGN_SECID") != null ? rs.getString("ASSIGN_SECID") : "-";
-                titleForm = rs.getString("TITLEFORM") != null ? rs.getString("TITLEFORM") : "-";
-                
-                // แปลงฟอร์แมตวันที่ให้อยู่ในรูปแบบที่ถูกต้องเพื่อนำไปใส่ใน Value
+                empName = nvl(rs.getString("EMPNAME"));
+                sectionName = nvl(rs.getString("SECNAME"));
+                departmentName = nvl(rs.getString("DEPTNAME"));
+                phone = nvl(rs.getString("PHONE"));
+                titleForm = nvl(rs.getString("TITLEFORM"));
                 if (rs.getDate("DEADLINE") != null) {
                     deadlineDate = sdfDisplay.format(rs.getDate("DEADLINE"));
                 } else {
                     deadlineDate = "-";
                 }
-                
-                // สำหรับฟิลด์ วันที่ยื่นคำขอ ปัจจุบันให้ดึงเป็นวันปัจจุบันรอไว้ก่อน
-                reqDate = sdfInput.format(new java.util.Date());
-                
-                // รายละเอียดจำลองเพิ่มเติมในกรณีที่ยังไม่มี Field แยกในตารางหลัก
-                objective = "เพื่อช่วยเหลือกองทุนเงินให้กู้ยืมเพื่อการศึกษา กรณีผู้กู้ยืมเป็นผู้ประสบอุทกภัย หรือภัยพิบัติต่างๆ ตามที่คณะกรรมการกำหนด";
-                currentProcess = "ปัจจุบันดำเนินการผ่านระบบ Manual และบันทึกข้อมูลในไฟล์ Microsoft Excel ทำให้เกิดความล่าช้า";
+                if (rs.getDate("REQUESTDATE") != null) {
+                    reqDate = sdfInput.format(rs.getDate("REQUESTDATE"));
+                } else {
+                    reqDate = "-";
+                }
+            }
+            closeQuietly(rs, pstmt);
+
+            // ----- Request items -----
+            if (hasData) {
+                String itemSql =
+                    "SELECT req.REQUESTID, req.TYPEID, rt.TYPENAME, req.OTHERDETAILS_OR_PROGRAM, " +
+                    "req.DETAILOBJECTIVE, req.CURRENTMETHOD " +
+                    "FROM REQUEST req " +
+                    "LEFT JOIN REQUESTTYPE rt ON req.TYPEID = rt.TYPEID " +
+                    "WHERE req.FORMID = ? ORDER BY req.REQUESTID";
+                pstmt = conn.prepareStatement(itemSql);
+                pstmt.setString(1, formId);
+                rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    Map<String, String> item = new HashMap<>();
+                    item.put("typeName", nvl(rs.getString("TYPENAME")));
+                    item.put("typeDetail", nvl(rs.getString("OTHERDETAILS_OR_PROGRAM")));
+                    item.put("objective", nvl(rs.getString("DETAILOBJECTIVE")));
+                    item.put("currentMethod", nvl(rs.getString("CURRENTMETHOD")));
+                    requestItems.add(item);
+                }
+                closeQuietly(rs, pstmt);
+
+                // ----- Permissions -----
+                String permSql =
+                    "SELECT ISROOT, PATH, HASFULLCONTROL, HASMODIFY, HASREADEXECUTE, HASREAD, HASWRITE " +
+                    "FROM PERMISSIONDETAILS WHERE FORMID = ? ORDER BY ISROOT DESC, PATH";
+                pstmt = conn.prepareStatement(permSql);
+                pstmt.setString(1, formId);
+                rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    Map<String, Object> perm = new HashMap<>();
+                    perm.put("isRoot", rs.getInt("ISROOT"));
+                    perm.put("path", rs.getString("PATH"));
+                    perm.put("full", rs.getInt("HASFULLCONTROL"));
+                    perm.put("modify", rs.getInt("HASMODIFY"));
+                    perm.put("readExec", rs.getInt("HASREADEXECUTE"));
+                    perm.put("read", rs.getInt("HASREAD"));
+                    perm.put("write", rs.getInt("HASWRITE"));
+                    permissions.add(perm);
+                }
             }
         }
     } catch (Exception e) {
         System.out.println("Error Loading Form Details: " + e.getMessage());
     } finally {
-        if (rs != null) rs.close();
-        if (pstmt != null) pstmt.close();
-        if (conn != null) conn.close();
+        closeQuietly(rs, pstmt, conn);
     }
 %>
+<%!
+    // Small helper to avoid null strings
+    private String nvl(String s) {
+        return (s == null || s.trim().isEmpty()) ? "-" : s.trim();
+    }
+    private void closeQuietly(AutoCloseable... resources) {
+        for (AutoCloseable r : resources) {
+            if (r != null) {
+                try { r.close(); } catch (Exception ignored) {}
+            }
+        }
+    }
+%>
+
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>รายละเอียดใบขอให้ดำเนินการ (ID: <%= (formId != null) ? formId : "-" %>)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Sarabun', sans-serif;
-            margin: 0;
-            background-color: #f4f7f9;
-        }
-
-        /* Header Bar */
-        .sticky-bar {
-            position: sticky;
-            top: 0;
-            background: white;
-            height: 60px;
-            border-bottom: 4px solid #3272BB;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            z-index: 1000;
-        }
-
-        .sticky-bar a {
-            text-decoration: none; 
-            color: #333;
-            font-weight: bold;
-        }
-
-        /* Banner */
-        .banner {
-            background: #C3EAFF;
-            padding: clamp(20px, 6vw, 40px) 15px;
-            text-align: center;
-            color: #003366;
-        }
-
-        .banner h1 {
-            font-size: clamp(1.1rem, 4vw, 1.5rem);
-            margin: 0;
-            line-height: 1.2;
-        }
-
-        /* Form Container */
-        .form-container {
-            max-width: 900px;
-            margin: 20px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Grid System สำหรับฟอร์ม */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            font-weight: bold;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-            color: #333;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 10px;
-            border: 1px solid #3272BB;
-            border-radius: 5px;
-            font-size: 14px;
-            background-color: #ffffff;
-        }
-
-        /* สไตล์สำหรับฟิลด์ที่ห้ามแก้ (Readonly) */
-        .form-group input[readonly],
-        .form-group textarea[readonly],
-        .form-group select[disabled] {
-            background-color: #f8fafc;
-            border-color: #cbd5e1;
-            color: #475569;
-        }
-
-        .full-width {
-            grid-column: span 2;
-        }
-
-        /* Section Box (ช่องกรอกความเห็นของกรรมการ) */
-        .section-box {
-            border: 2px solid #3272BB;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        /* Button Group */
-        .btn-group {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            margin-top: 25px;
-            width: 100%;
-        }
-
-        .btn {
-            padding: 12px 40px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: 0.3s;
-            color: white;
-        }
-
-        .btn-reject {
-            background-color: #CC0000;
-        }
-
-        .btn-approve {
-            background-color: #00A859;
-        }
-
-        .btn:hover {
-            opacity: 0.8;
-            transform: translateY(-2px);
-        }
-
-        /* Responsive */
+        /* ... keep all the existing CSS from your friend's version ... */
+        * { box-sizing: border-box; }
+        body { font-family: 'Sarabun', sans-serif; margin: 0; background-color: #f4f7f9; }
+        .sticky-bar { position: sticky; top: 0; background: white; height: 60px; border-bottom: 4px solid #3272BB; display: flex; align-items: center; padding: 0 20px; z-index: 1000; }
+        .sticky-bar a { text-decoration: none; color: #333; font-weight: bold; }
+        .banner { background: #C3EAFF; padding: clamp(20px, 6vw, 40px) 15px; text-align: center; color: #003366; }
+        .banner h1 { font-size: clamp(1.1rem, 4vw, 1.5rem); margin: 0; line-height: 1.2; }
+        .form-container { max-width: 900px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-weight: bold; margin-bottom: 8px; font-size: 0.9rem; color: #333; }
+        .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid #3272BB; border-radius: 5px; font-size: 14px; background-color: #ffffff; }
+        .form-group input[readonly], .form-group textarea[readonly], .form-group select[disabled] { background-color: #f8fafc; border-color: #cbd5e1; color: #475569; }
+        .full-width { grid-column: span 2; }
+        .item-block { border: 1px solid #3272BB; border-radius: 10px; padding: 15px; margin-bottom: 16px; background: #ffffff; }
+        .permission-checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+        .permission-checkbox-row label { display: inline-flex; align-items: center; gap: 5px; font-weight: normal; }
+        .permission-checkbox-row input[type="checkbox"] { width: auto; }
+        .server-permission-box { border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; margin-top: 12px; background: #f8fafc; }
+        .server-input-row { display: flex; flex-direction: column; margin-bottom: 10px; }
+        .btn-group { display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 25px; width: 100%; }
+        .btn { padding: 12px 40px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.3s; color: white; }
+        .btn-reject { background-color: #CC0000; }
+        .btn-approve { background-color: #00A859; }
+        .btn:hover { opacity: 0.8; transform: translateY(-2px); }
         @media (max-width: 768px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .full-width {
-                grid-column: span 1;
-            }
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
         }
     </style>
 </head>
-
 <body>
 
-    <div class="sticky-bar">
-        <a href="DirectorApprove.jsp">
-            <i class="fa fa-arrow-left"></i> กลับหน้ารายการ
-        </a>
-        <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
-            <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
-            <p style='margin-left: 8px; font-size: 0.9rem; margin-top:0; margin-bottom:0;'>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+<div class="sticky-bar">
+    <a href="DirectorApprove.jsp">
+        <i class="fa fa-arrow-left"></i> กลับหน้ารายการ
+    </a>
+    <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
+        <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
+        <p style='margin-left: 8px; font-size: 0.9rem; margin-top:0; margin-bottom:0;'>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+    </div>
+</div>
+
+<div class="banner">
+    <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
+    <h1 style="margin-top: 5px;">ใบขอให้ดำเนินการ / Requisition Form (ใบที่: <%= (formId != null) ? formId : "-" %>)</h1>
+</div>
+
+<div class="form-container">
+    <% if (!hasData) { %>
+        <div style="text-align: center; color: #CC0000; padding: 30px; font-weight: bold;">
+            ❌ ไม่พบข้อมูลใบขอให้ดำเนินการเลขที่ "<%= formId %>" ในระบบฐานข้อมูล
         </div>
-    </div>
+    <% } else { %>
 
-    <div class="banner">
-        <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
-        <h1 style="margin-top: 5px;">ใบขอให้ดำเนินการ / Requisition Form (ใบที่: <%= (formId != null) ? formId : "-" %>)</h1>
-    </div>
+        <!-- ⚡ The form now posts to SubmitApprovalServlet -->
+        <form action="${pageContext.request.contextPath}/SubmitApprovalServlet" method="post">
+            <input type="hidden" name="formId" value="<%= formId %>">
+            <input type="hidden" name="redirectPage" value="DirectorApprove.jsp">
 
-    <div class="form-container">
-        
-        <% if (!hasData) { %>
-            <div style="text-align: center; color: #CC0000; padding: 30px; font-weight: bold;">
-                ❌ ไม่พบข้อมูลใบขอให้ดำเนินการเลขที่ "<%= formId %>" ในระบบฐานข้อมูล
+            <!-- Header fields (readonly) -->
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>ชื่อ-นามสกุล <span style="color:red">*</span></label>
+                    <input type="text" value="<%= empName %>" readonly>
+                </div>
+                <div class="form-group">
+                    <label>ส่วน</label>
+                    <input type="text" value="<%= sectionName %>" readonly>
+                </div>
+                <div class="form-group">
+                    <label>ฝ่าย <span style="color:red">*</span></label>
+                    <input type="text" value="<%= departmentName %>" readonly>
+                </div>
+                <div class="form-group">
+                    <label>เบอร์ต่อ <span style="color:red">*</span></label>
+                    <input type="text" value="<%= phone %>" readonly>
+                </div>
+                <div class="form-group">
+                    <label>วันที่ <span style="color:red">*</span></label>
+                    <input type="date" value="<%= reqDate %>" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Deadline <span style="color:red">*</span></label>
+                    <input type="text" value="<%= deadlineDate %>" readonly>
+                </div>
+                <div class="form-group full-width">
+                    <label>ชื่อหัวข้อความต้องการ :</label>
+                    <input type="text" value="<%= titleForm %>" readonly>
+                </div>
             </div>
-        <% } else { %>
-            
-            <form action="SubmitApprovalServlet" method="post">
-                <input type="hidden" name="formId" value="<%= formId %>">
 
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>ชื่อ-นามสกุล <span style="color:red">*</span></label>
-                        <input type="text" value="<%= empName %>" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>ส่วน</label>
-                        <input type="text" value="<%= sectionName %>" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>ฝ่าย <span style="color:red">*</span></label>
-                        <input type="text" value="<%= departmentName %>" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>เบอร์ต่อ <span style="color:red">*</span></label>
-                        <input type="text" value="<%= phone %>" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>วันที่ <span style="color:red">*</span></label>
-                        <input type="date" value="<%= reqDate %>" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>Deadline <span style="color:red">*</span></label>
-                        <input type="text" value="<%= deadlineDate %>" readonly>
-                    </div>
+            <!-- Request items & permissions (same as your friend's) -->
+            <div class="section-box-main">
+                <% if (requestItems.isEmpty()) { %>
                     <div class="form-group full-width">
-                        <label>ชื่อหัวข้อความต้องการ :</label>
-                        <input type="text" value="<%= titleForm %>" readonly>
+                        <input type="text" value="ไม่พบรายการคำขอ" readonly>
                     </div>
-                </div>
+                <% } else {
+                    for (Map<String, String> item : requestItems) {
+                        String typeName = item.get("typeName");
+                        String typeDetail = item.get("typeDetail");
+                        boolean isProgram = typeName != null && (typeName.contains("ติดตั้งโปรแกรม") || typeName.contains("พัฒนาโปรแกรม"));
+                        boolean isServer = typeName != null && typeName.contains("สิทธิ์") && typeName.contains("ข้อมูล");
+                        boolean isOther = typeName != null && typeName.contains("อื่น");
+                %>
+                    <div class="item-block">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label>ประเภทคำขอ</label>
+                                <input type="text" value="<%= typeName %>" readonly>
+                            </div>
 
-                <div class="section-box-main">
-                    <div class="form-grid">
-                        <div class="form-group full-width">
-                            <label>ประเภทคำขอ</label>
-                            <select disabled>
-                                <option>แจ้งปัญหาการใช้งาน / ขอพัฒนาปรับปรุงระบบ</option>
-                            </select>
-                        </div>
+                            <% if (isProgram) { %>
+                                <div class="form-group full-width">
+                                    <label>ชื่อโปรแกรม</label>
+                                    <input type="text" value="<%= typeDetail %>" readonly>
+                                </div>
+                            <% } else if (isOther) { %>
+                                <div class="form-group full-width">
+                                    <label>โปรดระบุ</label>
+                                    <input type="text" value="<%= typeDetail %>" readonly>
+                                </div>
+                            <% } %>
 
-                        <div class="form-group full-width">
-                            <label>วัตถุประสงค์ / ความต้องการ</label>
-                            <textarea rows="4" readonly><%= objective %></textarea>
-                        </div>
+                            <% if (isServer) { %>
+                                <div class="form-group full-width">
+                                    <label>โปรดระบุ Server</label>
+                                    <input type="text" value="<%= typeDetail %>" readonly>
+                                </div>
 
-                        <div class="form-group full-width">
-                            <label>วิธีการดำเนินการปัจจุบัน</label>
-                            <textarea rows="3" readonly><%= currentProcess %></textarea>
-                        </div>
+                                <div class="form-group full-width server-permission-box">
+                                    <h3 class="server-permission-title">รายละเอียดการขอใช้สิทธิ์เก็บข้อมูล</h3>
+                                    <% if (permissions.isEmpty()) { %>
+                                        <input type="text" value="ไม่พบข้อมูลสิทธิ์ใน PERMISSIONDETAILS" readonly>
+                                    <% } else {
+                                        for (Map<String, Object> permission : permissions) {
+                                            String path = (String) permission.get("path");
+                                            String serverName = "";
+                                            String folderName = "";
+                                            if (path != null && path.startsWith("\\\\")) {
+                                                String noPrefix = path.substring(2);
+                                                int slashIdx = noPrefix.indexOf("\\");
+                                                if (slashIdx > 0) {
+                                                    serverName = noPrefix.substring(0, slashIdx);
+                                                    folderName = noPrefix.substring(slashIdx + 1);
+                                                } else {
+                                                    serverName = noPrefix;
+                                                }
+                                            }
+                                            boolean full = ((Integer) permission.get("full")) == 1;
+                                            boolean modify = ((Integer) permission.get("modify")) == 1;
+                                            boolean readExec = ((Integer) permission.get("readExec")) == 1;
+                                            boolean read = ((Integer) permission.get("read")) == 1;
+                                            boolean write = ((Integer) permission.get("write")) == 1;
+                                    %>
+                                        <div style="margin-bottom: 16px;">
+                                            <div class="server-input-row">
+                                                <label>Server :</label>
+                                                <input type="text" value="<%= serverName %>" readonly>
+                                            </div>
+                                            <div class="server-input-row">
+                                                <label>Folder :</label>
+                                                <input type="text" value="<%= folderName %>" readonly>
+                                            </div>
+                                            <div class="permission-checkbox-row">
+                                                <label><input type="checkbox" <%= full ? "checked" : "" %> disabled> Full control</label>
+                                                <label><input type="checkbox" <%= modify ? "checked" : "" %> disabled> Modify</label>
+                                                <label><input type="checkbox" <%= readExec ? "checked" : "" %> disabled> Read & Execute</label>
+                                                <label><input type="checkbox" <%= read ? "checked" : "" %> disabled> Read</label>
+                                                <label><input type="checkbox" <%= write ? "checked" : "" %> disabled> Write</label>
+                                            </div>
+                                        </div>
+                                    <% } } %>
+                                </div>
+                            <% } %>
 
-                        <div class="form-group full-width">
-                            <label>หมายเหตุ (ความเห็น)</label>
-                            <textarea name="comment" rows="3" placeholder="ระบุเหตุผล..."></textarea>
+                            <div class="form-group full-width">
+                                <label>วัตถุประสงค์ / ความต้องการ</label>
+                                <textarea rows="4" readonly><%= item.get("objective") %></textarea>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>วิธีการดำเนินการปัจจุบัน</label>
+                                <textarea rows="3" readonly><%= item.get("currentMethod") %></textarea>
+                            </div>
                         </div>
                     </div>
-                </div>
+                <% } } %>
+            </div>
 
+            <!-- Comment textarea for the approver -->
+            <div class="form-group full-width" style="margin-top: 20px;">
+                <label>หมายเหตุ / ความเห็น</label>
+                <textarea name="comment" rows="3" placeholder="ระบุเหตุผล (ถ้ามี)..."></textarea>
+            </div>
 
-                <div class="btn-group">
-                    <button type="submit" name="action" value="reject" class="btn btn-reject">ส่งกลับ</button>
-                    <button type="submit" name="action" value="approve" class="btn btn-approve">อนุมัติ</button>
-                </div>
-            </form>
-            
-        <% } %>
-    </div>
+            <div class="btn-group">
+                <button type="submit" name="action" value="reject" class="btn btn-reject">ไม่อนุมัติ</button>
+                <button type="submit" name="action" value="approve" class="btn btn-approve">อนุมัติ</button>
+            </div>
+        </form>
+
+    <% } %>
+</div>
 
 </body>
 </html>

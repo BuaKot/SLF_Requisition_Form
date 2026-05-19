@@ -253,7 +253,7 @@
             String titleForm = rs.getString("TITLEFORM") != null ? rs.getString("TITLEFORM") : "-";
 %>
 
-    <div class="requisition-card" onclick="location.href='RequisitionDetail.jsp?id=<%= formId %>'">
+    <div class="requisition-card" onclick="location.href='RequisitionDetail_Process.jsp?id=<%= formId %>'">
         <div class="card-id-box">ใบขอให้ดำเนินการที่ <%= formId %></div>
 
         <div class="card-info">

@@ -146,6 +146,7 @@
                             <h3 class="server-permission-title">กรณีขอใช้สิทธิ์เก็บข้อมูลใน Server</h3>
 
                             <div class="server-input-row">
+                                <label>Server :</label>
                                 <input
                                     type="text"
                                     name="serverName[]"

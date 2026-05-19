@@ -158,13 +158,14 @@
         .sticky-bar a { text-decoration: none; color: #333; font-weight: bold; }
         .banner { background: #C3EAFF; padding: clamp(20px, 6vw, 40px) 15px; text-align: center; color: #003366; }
         .banner h1 { font-size: clamp(1.1rem, 4vw, 1.5rem); margin: 0; line-height: 1.2; }
-        .form-container { max-width: 900px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .form-group { display: flex; flex-direction: column; }
+        .form-container { width: min(900px, calc(100% - 32px)); margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow-x: hidden; }
+        .form-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; min-width: 0; }
         .form-group label { font-weight: bold; margin-bottom: 8px; font-size: 0.9rem; color: #333; }
-        .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid #3272BB; border-radius: 5px; font-size: 14px; background-color: #ffffff; }
+        .form-group input, .form-group select, .form-group textarea { display: block; width: 100%; max-width: 100%; min-width: 0; padding: 10px; border: 1px solid #3272BB; border-radius: 5px; font-size: 14px; background-color: #ffffff; }
         .form-group input[readonly], .form-group textarea[readonly], .form-group select[disabled] { background-color: #f8fafc; border-color: #cbd5e1; color: #475569; }
         .full-width { grid-column: span 2; }
+        form, .section-box-main, .item-block, .server-permission-box { width: 100%; max-width: 100%; min-width: 0; }
         .item-block { border: 1px solid #3272BB; border-radius: 10px; padding: 15px; margin-bottom: 16px; background: #ffffff; }
         .permission-checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
         .permission-checkbox-row label { display: inline-flex; align-items: center; gap: 5px; font-weight: normal; }

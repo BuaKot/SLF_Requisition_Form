@@ -116,8 +116,8 @@ public class SubmitApprovalServlet extends HttpServlet {
 
             // 6. Insert the new approval row
             String insertSql = "INSERT INTO APPROVALINFO " +
-                               "(STATE_STEP, FORMID, REVIEWER_EMPID, IT_COMMENT) " +
-                               "VALUES (?, ?, ?, ?)";
+                               "(STATE_STEP, FORMID, REVIEWER_EMPID, IT_COMMENT, APPROVED_DATE) " +
+                               "VALUES (?, ?, ?, ?, SYSTIMESTAMP)";
             psInsert = conn.prepareStatement(insertSql);
             psInsert.setInt(1, newStep);
             psInsert.setInt(2, formId);

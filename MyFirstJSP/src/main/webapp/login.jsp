@@ -99,7 +99,7 @@
     <h2><i class="fa-solid fa-lock" style="color:#3272BB; margin-right:10px;"></i>เข้าสู่ระบบพนักงาน</h2>
     
     <% if (request.getParameter("error") != null) { %>
-        <div class="error-msg">รหัสพนักงานหรือรหัสแผนกไม่ถูกต้อง</div>
+        <div class="error-msg">รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง</div>
     <% } %>
 
     <form action="${pageContext.request.contextPath}/processLogin" method="POST">
@@ -108,8 +108,8 @@
             <input type="text" name="EMPID" required placeholder="กรอกรหัสพนักงาน">
         </div>
         <div class="input-group">
-            <label>รหัส)</label>
-            <input type="password" name="PASSWORD" required placeholder="กรอกรหัสแผนก">
+            <label>รหัส</label>
+            <input type="password" name="PASSWORD" required placeholder="กรอกรหัสผ่าน">
         </div>
         <button type="submit" class="btn-login">เข้าสู่ระบบ</button>
     </form>

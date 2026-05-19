@@ -327,27 +327,35 @@ try {
                  FINAL CONFIRM BUTTON
             =============================== -->
             <div class="confirm-col">
-                <button class="confirm-btn
-                    <%= stateStep < 0 ? " rejected-btn" : "" %>
-                    <%= isConfirmed ? " confirmed" : "" %>"
-                    data-formid="<%= formId %>"
 
-                    <% if (!canConfirm) { %>
-                        disabled
-                        style="cursor:not-allowed;"
-                    <% } %>>
+                <!-- zennnne แก้ -->
+                <% if (stateStep < 0) { %>
+                    <a href="${pageContext.request.contextPath}/editForm?formId=<%= formId %>"
+                       style="text-decoration:none;">
+                        <button type="button" class="confirm-btn edit-btn">แก้ไขฟอร์ม</button>
+                    </a>
+                <% } else { %>
+                <!-- zennnne แก้ -->
 
-                    <%=
-                        stateStep < 0
-                            ? "ไม่ผ่าน"
-                            : isConfirmed
+                    <button class="confirm-btn<%= isConfirmed ? " confirmed" : "" %>"
+                        data-formid="<%= formId %>"
+                        <% if (!canConfirm) { %>
+                            disabled
+                            style="cursor:not-allowed;"
+                        <% } %>>
+                        <%=
+                            isConfirmed
                                 ? "ยืนยันผลแล้ว"
                                 : canConfirm
                                     ? "ยืนยันผลตรวจรับ"
                                     : "รอดำเนินการ"
-                    %>
+                        %>
+                    </button>
 
-                </button>
+                <!-- zennnne แก้ -->
+                <% } %>
+                <!-- zennnne แก้ -->
+
             </div>
 
         </div>
@@ -446,6 +454,10 @@ function toggleNav() {
 document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelectorAll(".confirm-btn").forEach(button => {
+
+        // zennnne แก้
+        if (button.closest("a")) return; // edit-btn อยู่ใน <a> ให้ navigate ปกติ
+        // zennnne แก้
 
         button.addEventListener("click", function () {
 

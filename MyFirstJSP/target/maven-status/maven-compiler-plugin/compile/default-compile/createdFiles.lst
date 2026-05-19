@@ -8,6 +8,7 @@ com\slf\filter\AuthenticationFilter.class
 com\slf\model\RequestItem.class
 com\slf\controller\LoginProcessorServlet.class
 com\slf\model\RequisitionForm.class
+com\slf\controller\EditFormServlet.class
 com\slf\controller\LogoutServlet.class
 com\slf\controller\LoadLoginServlet.class
 com\slf\controller\SubmitRequestServlet.class

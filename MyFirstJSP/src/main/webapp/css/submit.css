@@ -172,6 +172,17 @@ body {
 .confirm-btn.confirmed:hover {
     background: #2dbb00;
 }
+
+/* zennnne แก้ */
+.edit-btn {
+    background: #3272BB;
+    color: #ffffff;
+}
+
+.edit-btn:hover {
+    background: #255a99;
+}
+/* zennnne แก้ */
 /* ================= RESPONSIVE ================= */
 @media (max-width: 1200px) {
     .title-section h1 {

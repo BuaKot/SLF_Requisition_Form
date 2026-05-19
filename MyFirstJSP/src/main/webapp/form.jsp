@@ -715,5 +715,121 @@ window.addEventListener("load", function() {
     });
 </script>
 
+<!-- zennnne แก้ -->
+<%-- Prefill block: runs only when coming from EditFormServlet --%>
+<c:if test="${not empty prefillJson}">
+<script>
+(function () {
+
+    function applyPrefill(data) {
+        // 1. requestTopic
+        var rt = document.getElementById("requestTopic");
+        if (rt && data.titleForm) rt.value = data.titleForm;
+
+        // 2. deadline
+        var dl = document.getElementById("deadline");
+        if (dl && data.deadline) dl.value = data.deadline;
+
+        // 3. department → populate sections → select section
+        if (data.deptId && typeof departmentSelect !== "undefined" && departmentSelect) {
+            departmentSelect.value = data.deptId;
+            if (typeof populateSections === "function") {
+                populateSections(data.deptId);
+            }
+            if (data.sectionId && typeof sectionSelect !== "undefined" && sectionSelect) {
+                sectionSelect.value = data.sectionId;
+            }
+        }
+
+        // 4. Items
+        if (!data.items || data.items.length === 0) return;
+        var container = document.getElementById("requestsContainer");
+        if (!container) return;
+        var firstItem = container.querySelector(".request-item");
+        if (!firstItem) return;
+
+        data.items.forEach(function (itemData, idx) {
+            var el;
+            if (idx === 0) {
+                el = firstItem;
+            } else {
+                el = firstItem.cloneNode(true);
+                if (typeof resetRequestItem === "function") resetRequestItem(el);
+                container.appendChild(el);
+                if (typeof attachCounters === "function") attachCounters(el);
+            }
+            fillRequestItem(el, itemData);
+        });
+
+        if (typeof updateDeleteButtons === "function") updateDeleteButtons();
+        if (typeof updateRequestHeaders === "function") updateRequestHeaders();
+    }
+
+    function fillRequestItem(el, data) {
+        // Set request type → triggers show/hide of sub-boxes
+        var typeSelect = el.querySelector('select[name="requestType[]"]');
+        if (typeSelect) {
+            typeSelect.value = data.typeId;
+            if (typeof handleRequestTypeChange === "function") {
+                handleRequestTypeChange(typeSelect);
+            }
+            if (typeof updateSelectColor === "function") {
+                updateSelectColor(typeSelect);
+            }
+        }
+
+        // programName (โปรแกรม) or otherRequest (อื่นๆ) both map to programOrOther
+        var progInput = el.querySelector('input[name="programName[]"]');
+        if (progInput) progInput.value = data.programOrOther || "";
+
+        var otherInput = el.querySelector('input[name="otherRequest[]"]');
+        if (otherInput) otherInput.value = data.programOrOther || "";
+
+        // objective + currentMethod
+        var objTA = el.querySelector('textarea[name="objective[]"]');
+        if (objTA) objTA.value = data.objective || "";
+
+        var cmTA = el.querySelector('textarea[name="currentMethod[]"]');
+        if (cmTA) cmTA.value = data.currentMethod || "";
+
+        // Server fields
+        var snInput = el.querySelector('input[name="serverName[]"]');
+        if (snInput) snInput.value = data.serverName || "";
+
+        var sfInput = el.querySelector('input[name="serverFolder[]"]');
+        if (sfInput) sfInput.value = data.serverFolder || "";
+
+        var subInput = el.querySelector('input[name="subFolder[]"]');
+        if (subInput) subInput.value = data.subFolder || "";
+
+        // Folder checkboxes
+        if (data.folderPerms) {
+            el.querySelectorAll('input[name="folderPermission[]"]').forEach(function (cb) {
+                cb.checked = data.folderPerms.indexOf(cb.value) >= 0;
+            });
+        }
+
+        // Sub-folder checkboxes
+        if (data.subFolderPerms) {
+            el.querySelectorAll('input[name="subFolderPermission[]"]').forEach(function (cb) {
+                cb.checked = data.subFolderPerms.indexOf(cb.value) >= 0;
+            });
+        }
+
+        // Refresh byte counters
+        el.querySelectorAll("[data-maxbytes]").forEach(function (input) {
+            input.dispatchEvent(new Event("input"));
+        });
+    }
+
+    window.addEventListener("load", function () {
+        applyPrefill(${prefillJson});
+    });
+
+}());
+</script>
+</c:if>
+<!-- zennnne แก้ -->
+
 </body>
 </html>

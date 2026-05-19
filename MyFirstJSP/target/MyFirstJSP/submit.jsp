@@ -255,7 +255,8 @@ try {
         /*
          * ยืนยันผลได้เมื่อผ่าน STEP 4 เท่านั้น
          */
-        boolean canConfirm = (stateStep == 4); %>
+        boolean canConfirm = (stateStep == 4);
+        boolean isConfirmed = (stateStep >= 5); %>
 
         <div class="request-row">
 
@@ -327,7 +328,8 @@ try {
             =============================== -->
             <div class="confirm-col">
                 <button class="confirm-btn
-                    <%= stateStep < 0 ? " rejected-btn" : "" %>"
+                    <%= stateStep < 0 ? " rejected-btn" : "" %>
+                    <%= isConfirmed ? " confirmed" : "" %>"
                     data-formid="<%= formId %>"
 
                     <% if (!canConfirm) { %>
@@ -338,9 +340,11 @@ try {
                     <%=
                         stateStep < 0
                             ? "ไม่ผ่าน"
-                            : canConfirm
-                                ? "ยืนยันผล"
-                                : "รอดำเนินการ"
+                            : isConfirmed
+                                ? "ยืนยันผลแล้ว"
+                                : canConfirm
+                                    ? "ยืนยันผลตรวจรับ"
+                                    : "รอดำเนินการ"
                     %>
 
                 </button>
@@ -422,6 +426,7 @@ try {
 
 <script>
 let currentButton = null;
+const contextPath = "<%= request.getContextPath() %>";
 
 function toggleNav() {
     var sidebar = document.getElementById("mySidebar");
@@ -466,12 +471,28 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (currentButton) {
-            currentButton.innerText = "ยืนยันแล้ว";
-            currentButton.disabled = true;
-            currentButton.classList.add("confirmed");
-        }
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = contextPath + "/SubmitApprovalServlet";
 
-        closePopup();
+            const fields = {
+                formId: currentButton.dataset.formid,
+                action: "approve",
+                redirectPage: "submit.jsp",
+                comment: detail
+            };
+
+            Object.keys(fields).forEach(function (name) {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = name;
+                input.value = fields[name];
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        }
     });
 
 });

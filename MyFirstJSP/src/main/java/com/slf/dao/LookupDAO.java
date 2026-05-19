@@ -114,4 +114,24 @@ public class LookupDAO {
         return null;
     }
     
+    public Employee findEmployeeByEmpIdAndSecId(int empId, int secId) throws SQLException {
+    String sql = "SELECT EMPID, EMPNAME, POSITION, SECID, PHONE FROM EMPLOYEE WHERE EMPID = ? AND SECID = ?";
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, empId);
+        ps.setInt(2, secId);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                Employee emp = new Employee();
+                emp.setEmpId(rs.getInt("EMPID"));
+                emp.setEmpName(rs.getString("EMPNAME"));
+                emp.setPosition(rs.getString("POSITION"));
+                emp.setSecId(rs.getInt("SECID"));
+                emp.setPhone(rs.getString("PHONE"));
+                return emp;
+            }
+        }
+    }
+    return null;
+}
 }

@@ -14,26 +14,35 @@ import java.sql.SQLException;
 @WebServlet("/processLogin")
 public class LoginProcessorServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String empIdStr = request.getParameter("empId");
-        if (empIdStr == null || empIdStr.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/login");
+        throws ServletException, IOException {
+        String empIdStr = request.getParameter("EMPID");
+        String secIdStr = request.getParameter("SECID");
+
+        if (empIdStr == null || secIdStr == null || empIdStr.trim().isEmpty() || secIdStr.trim().isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/login?error=1");
             return;
         }
-        int empId = Integer.parseInt(empIdStr.trim());
-        LookupDAO dao = new LookupDAO();
+
         try {
-            Employee emp = dao.findEmployeeById(empId); // we need this method
+            int empId = Integer.parseInt(empIdStr.trim());
+            int secId = Integer.parseInt(secIdStr.trim());
+
+            LookupDAO dao = new LookupDAO();
+            Employee emp = dao.findEmployeeByEmpIdAndSecId(empId, secId);
+
             if (emp != null) {
                 HttpSession session = request.getSession();
+                // Standard session keys used by the filter and your other pages
                 session.setAttribute("loggedInEmpId", emp.getEmpId());
                 session.setAttribute("loggedInEmpName", emp.getEmpName());
-                // Redirect to the main page (the dashboard or new form)
-                response.sendRedirect(request.getContextPath());
+                // Backwards compatibility for pages that check "empid" or "emp_id"
+                session.setAttribute("empid", emp.getEmpId());
+                response.sendRedirect(request.getContextPath() + "/");
             } else {
-                // Employee not found, redirect back to login
                 response.sendRedirect(request.getContextPath() + "/login?error=1");
             }
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/login?error=1");
         } catch (SQLException e) {
             throw new ServletException(e);
         }

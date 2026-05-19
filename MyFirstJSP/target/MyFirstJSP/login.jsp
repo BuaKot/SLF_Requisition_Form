@@ -1,4 +1,3 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
@@ -6,72 +5,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เข้าสู่ระบบ</title>
+    <title>เข้าสู่ระบบพนักงาน</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: #f4f6f9;
+            background-color: #f4f7f6;
             margin: 0;
             padding: 0;
         }
-        .login-container {
-            max-width: 500px;
-            margin: 80px auto;
-            background: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .blue-title {
+            background-color: #e6f0ff;
+            padding: 20px;
             text-align: center;
         }
-        .login-container h1 {
-            margin-bottom: 20px;
+        .blue-title h1, .blue-title h2 {
+            margin: 0;
             color: #003366;
         }
-        .login-container select {
+        .login-box {
+            background: white;
+            border: 3px solid #3272BB;
+            border-radius: 20px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 400px;
+            margin: 50px auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .login-box h2 {
+            color: #003366;
+            margin-bottom: 25px;
+            font-size: 1.6rem;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 5px;
+        }
+        .input-group input {
             width: 100%;
             padding: 12px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-bottom: 20px;
+            border: 2px solid #3272BB;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
         }
-        .login-container button {
-            background-color: #003366;
+        .input-group input:focus {
+            border-color: #003366;
+        }
+        .btn-login {
+            width: 100%;
+            background: #3272BB;
             color: white;
             border: none;
-            padding: 12px 30px;
-            font-size: 16px;
-            border-radius: 4px;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
             cursor: pointer;
+            transition: 0.2s;
         }
-        .login-container button:hover {
-            background-color: #0055a5;
+        .btn-login:hover {
+            background: #003366;
+        }
+        .error-msg {
+            color: #e74c3c;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .contact-info {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #555;
         }
     </style>
 </head>
 <body>
 
 <div class="blue-title">
-    <h1 style='margin-block-start: 0.1em; margin-block-end: 0.1em;color:#003366;'>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</h1>
-    <h2 style='margin-block-start: 0.1em; margin-block-end: 0.1em;color:#003366;'>ใบขอให้ดำเนินการ / Requisition Form</h2>
+    <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</h1>
+    <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
 </div>
 
-<div class="login-container">
-    <h1><i class="fa fa-sign-in"></i> เข้าสู่ระบบ</h1>
-    <p>กรุณาเลือกชื่อของท่านจากรายการ</p>
-    <form action="${pageContext.request.contextPath}/processLogin" method="post">
-        <select name="empId" required>
-            <option value="" disabled selected hidden>-- โปรดเลือก --</option>
-            <c:forEach var="emp" items="${employees}">
-                <option value="${emp.empId}">${emp.empName} (${emp.position})</option>
-            </c:forEach>
-        </select>
-        <br>
-        <button type="submit">เข้าสู่ระบบ</button>
+<div class="login-box">
+    <h2><i class="fa-solid fa-lock" style="color:#3272BB; margin-right:10px;"></i>เข้าสู่ระบบพนักงาน</h2>
+    
+    <% if (request.getParameter("error") != null) { %>
+        <div class="error-msg">รหัสพนักงานหรือรหัสแผนกไม่ถูกต้อง</div>
+    <% } %>
+
+    <form action="${pageContext.request.contextPath}/processLogin" method="POST">
+        <div class="input-group">
+            <label>รหัสพนักงาน (EMPID)</label>
+            <input type="text" name="EMPID" required placeholder="กรอกรหัสพนักงาน">
+        </div>
+        <div class="input-group">
+            <label>รหัสแผนก (SECID)</label>
+            <input type="password" name="SECID" required placeholder="กรอกรหัสแผนก">
+        </div>
+        <button type="submit" class="btn-login">เข้าสู่ระบบ</button>
     </form>
-    <p style="margin-top:20px; font-size:0.9em;">สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+
+    <p class="contact-info">สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
 </div>
 
 </body>

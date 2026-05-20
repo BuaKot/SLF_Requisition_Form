@@ -58,6 +58,34 @@
         .user-badge { background-color: #3272BB; color: white; padding: 8px 15px; border-radius: 20px; display: inline-block; margin-top: 10px; font-size: 0.9rem; }
         .role-badge { background-color: #2ecc71; color: white; padding: 4px 10px; border-radius: 10px; font-weight: bold; margin-left: 5px; }
         @media (max-width: 400px) { .admin-grid { grid-template-columns: 1fr; padding: 20px 15px; } .card { min-height: 250px; } .sidebar { width: 0; } }
+
+        /* zennnne แก้ */
+        .history-fab {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #003366;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-family: 'Sarabun', sans-serif;
+            font-weight: bold;
+            box-shadow: 0 4px 14px rgba(0,51,102,0.35);
+            transition: all 0.2s ease;
+            z-index: 999;
+        }
+        .history-fab:hover {
+            background: #00509e;
+            box-shadow: 0 6px 20px rgba(0,51,102,0.45);
+            transform: translateY(-2px);
+        }
+        .history-fab i { font-size: 15px; }
+        /* zennnne แก้ */
     </style>
 </head>
 
@@ -125,24 +153,31 @@
             </div>
         <% } %>
 
-        <% 
-            if (currentRole.equalsIgnoreCase("Admin") || 
-                currentRole.equalsIgnoreCase("Technical") || 
-                currentRole.equalsIgnoreCase("Development") || 
-                currentRole.equalsIgnoreCase("Data") || 
-                currentRole.equalsIgnoreCase("Infrastructure") || 
-                currentRole.equalsIgnoreCase("Cyber Security") || 
-                currentRole.equalsIgnoreCase("Reseach") || 
-                currentRole.equalsIgnoreCase("IT Planning")) { 
+        <%
+            if (currentRole.equalsIgnoreCase("Admin") ||
+                currentRole.equalsIgnoreCase("Technical") ||
+                currentRole.equalsIgnoreCase("Development") ||
+                currentRole.equalsIgnoreCase("Data") ||
+                currentRole.equalsIgnoreCase("Infrastructure") ||
+                currentRole.equalsIgnoreCase("Cyber Security") ||
+                currentRole.equalsIgnoreCase("Reseach") ||
+                currentRole.equalsIgnoreCase("IT Planning")) {
         %>
             <div class="card" onclick="location.href='${pageContext.request.contextPath}/Process.jsp'">
                 <i class="fa-solid fa-bars-progress"></i>
                 <p>รายละเอียดการดำเนินการ</p>
             </div>
         <% } %>
-        
+
     </div>
     </div>
+
+    <!-- zennnne แก้ -->
+    <a href="${pageContext.request.contextPath}/history.jsp" class="history-fab" title="ประวัติฟอร์มที่จบแล้ว">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>ประวัติ</span>
+    </a>
+    <!-- zennnne แก้ -->
 
     <script>
         function toggleNav() {

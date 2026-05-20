@@ -10,6 +10,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <!-- zennnne แก้ -->
     <style>
         .byte-counter { font-size: 0.75rem; color: #888; display: block; text-align: right; margin-top: 2px; width: 100%; order: 999; flex-basis: 100%; }
@@ -36,16 +37,22 @@
 
 <div id = 'main'>
 <div class="sticky-bar">
-    <i id="menuBtn" class="fa fa-bars" onclick="toggleNav()" style="font-size:36px; cursor:pointer; padding-left:5px; padding-right:5px;"></i>
-
-    <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo" style="height: 48px; padding-left: 10px; padding-right: 5px">
-    <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo" style="height: 48px; padding-left: 5px; padding-right: 5px">
-
-    <div style="margin-left:auto;display:flex;align-items:center">
-        <i class="fa fa-circle-user" style="font-size:24px;padding-left:10px;padding-right:0px"></i>
-        <p style="font-size:0.8rem; margin-left: 10px;margin-right: 10px">สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+        <i id="menuBtn" class="fa-solid fa-bars" onclick="toggleNav()"></i>
+        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
+        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
+        
+        <div class="user-info">
+            <i class="fa fa-circle-user"></i>
+            <p>
+                ${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}
+            </p>
+        </div>
+        <div class="contact-info">
+            <i class="fa-solid fa-circle-info"></i>
+            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+        </div>
+        
     </div>
-</div>
 
 <div class="banner">
     <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>

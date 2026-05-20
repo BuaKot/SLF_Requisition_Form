@@ -37,7 +37,15 @@ public class ExtendDeadlineServlet extends HttpServlet {
             return;
         }
 
-        int formId = Integer.parseInt(formIdStr.trim());
+        // zennnne แก้
+        int formId;
+        try {
+            formId = Integer.parseInt(formIdStr.trim());
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/submit.jsp?error=invalid_id");
+            return;
+        }
+        // zennnne แก้
         Date newDeadline;
         try {
             newDeadline = Date.valueOf(newDeadlineStr.trim());

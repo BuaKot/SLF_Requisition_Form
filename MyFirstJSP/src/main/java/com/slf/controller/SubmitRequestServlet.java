@@ -24,18 +24,17 @@ public class SubmitRequestServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        
-        
+
+        // zennnne แก้
+        request.setCharacterEncoding("UTF-8");
+        // zennnne แก้
+
         HttpSession session = request.getSession();
         Integer empID = (Integer) session.getAttribute("loggedInEmpId");
         if (empID == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
-
-        // Set character encoding to handle Thai UTF-8 properly
-        request.setCharacterEncoding("UTF-8");
 
         // 1. Read the header fields
         RequisitionForm form = new RequisitionForm();

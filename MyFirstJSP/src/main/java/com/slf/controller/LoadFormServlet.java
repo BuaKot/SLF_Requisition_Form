@@ -1,7 +1,9 @@
 package com.slf.controller;
 
 import com.slf.dao.LookupDAO;
+import com.slf.model.Department;
 import com.slf.model.Employee;
+import com.slf.model.RequestType;
 import com.slf.model.Section;
 
 import javax.servlet.ServletException;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet("/newForm")
 public class LoadFormServlet extends HttpServlet {
@@ -53,9 +56,48 @@ public class LoadFormServlet extends HttpServlet {
             request.setAttribute("empDeptId", empDeptId);
             request.setAttribute("empSectionId", secId);
 
-            request.setAttribute("requestTypes", dao.getAllRequestTypes());
-            request.setAttribute("departments", dao.getAllDepartments());
-            request.setAttribute("allSections", dao.getAllSections());
+            // zennnne แก้
+            // Cache static lookups in ServletContext (lazy init, double-checked locking)
+            @SuppressWarnings("unchecked")
+            List<RequestType> requestTypes = (List<RequestType>) getServletContext().getAttribute("allRequestTypes");
+            if (requestTypes == null) {
+                synchronized (getServletContext()) {
+                    requestTypes = (List<RequestType>) getServletContext().getAttribute("allRequestTypes");
+                    if (requestTypes == null) {
+                        requestTypes = dao.getAllRequestTypes();
+                        getServletContext().setAttribute("allRequestTypes", requestTypes);
+                    }
+                }
+            }
+
+            @SuppressWarnings("unchecked")
+            List<Department> departments = (List<Department>) getServletContext().getAttribute("allDepartments");
+            if (departments == null) {
+                synchronized (getServletContext()) {
+                    departments = (List<Department>) getServletContext().getAttribute("allDepartments");
+                    if (departments == null) {
+                        departments = dao.getAllDepartments();
+                        getServletContext().setAttribute("allDepartments", departments);
+                    }
+                }
+            }
+
+            @SuppressWarnings("unchecked")
+            List<Section> allSections = (List<Section>) getServletContext().getAttribute("allSections");
+            if (allSections == null) {
+                synchronized (getServletContext()) {
+                    allSections = (List<Section>) getServletContext().getAttribute("allSections");
+                    if (allSections == null) {
+                        allSections = dao.getAllSections();
+                        getServletContext().setAttribute("allSections", allSections);
+                    }
+                }
+            }
+
+            request.setAttribute("requestTypes", requestTypes);
+            request.setAttribute("departments", departments);
+            request.setAttribute("allSections", allSections);
+            // zennnne แก้
 
         } catch (SQLException e) {
             throw new ServletException("Failed to load form", e);

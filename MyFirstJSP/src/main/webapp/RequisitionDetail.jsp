@@ -39,107 +39,104 @@
 
     try {
         if (formId != null && !formId.isEmpty()) {
-            conn = DBConnection.getConnection();
-
-            // ----- Header -----
-            String sql = "SELECT r.FORMID, e.EMPNAME, e.PHONE, s.SECNAME, d.DEPTNAME, " +
-                         "d.DEPTHEAD_EMPID, r.TITLEFORM, r.REQUESTDATE, r.DEADLINE, " +
-                         "NVL((SELECT ai.STATE_STEP " +
-                         "     FROM APPROVALINFO ai " +
-                         "     WHERE ai.FORMID = r.FORMID " +
-                         "     ORDER BY ai.APPROVALID DESC " +
-                         "     FETCH FIRST 1 ROWS ONLY), 0) AS STATE_STEP " +
-                         "FROM REQUISITIONFORM r " +
-                         "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
-                         "LEFT JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
-                         "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
-                         "WHERE r.FORMID = ?";
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, formId);
-            rs = pstmt.executeQuery();
-            if (rs.next()) {
-                hasData = true;
-                empName = nvl(rs.getString("EMPNAME"));
-                sectionName = nvl(rs.getString("SECNAME"));
-                departmentName = nvl(rs.getString("DEPTNAME"));
-                phone = nvl(rs.getString("PHONE"));
-                titleForm = nvl(rs.getString("TITLEFORM"));
-                if (rs.getDate("DEADLINE") != null) {
-                    deadlineDate = sdfDisplay.format(rs.getDate("DEADLINE"));
-                } else {
-                    deadlineDate = "-";
-                }
-                if (rs.getDate("REQUESTDATE") != null) {
-                    reqDate = sdfInput.format(rs.getDate("REQUESTDATE"));
-                } else {
-                    reqDate = "-";
-                }
-                String deptHeadEmpId = rs.getString("DEPTHEAD_EMPID");
-                int stateStep = rs.getInt("STATE_STEP");
-                canApproveDirectorStep = deptHeadEmpId != null
-                    && deptHeadEmpId.trim().equals(loggedInEmpId)
-                    && stateStep == 0;
-            }
-            closeQuietly(rs, pstmt);
-
-            // ----- Request items -----
-            if (hasData) {
-                String itemSql =
-                    "SELECT req.REQUESTID, req.TYPEID, rt.TYPENAME, req.OTHERDETAILS_OR_PROGRAM, " +
+            // zennnne แก้
+            try (Connection conn = DBConnection.getConnection()) {
+                // ----- Query 1+2 combined: Header JOIN Request items (1 round-trip instead of 2) -----
+                // LEFT JOIN REQUEST so forms with zero items still return 1 row (header populated, items empty).
+                // Header columns repeat on every item row; we capture them only on the first row.
+                String sql =
+                    "SELECT r.FORMID, e.EMPNAME, e.PHONE, s.SECNAME, d.DEPTNAME, " +
+                    "d.DEPTHEAD_EMPID, r.TITLEFORM, r.REQUESTDATE, r.DEADLINE, " +
+                    "NVL((SELECT ai.STATE_STEP " +
+                    "     FROM APPROVALINFO ai " +
+                    "     WHERE ai.FORMID = r.FORMID " +
+                    "     ORDER BY ai.APPROVALID DESC " +
+                    "     FETCH FIRST 1 ROWS ONLY), 0) AS STATE_STEP, " +
+                    "req.REQUESTID, rt.TYPENAME, req.OTHERDETAILS_OR_PROGRAM, " +
                     "req.DETAILOBJECTIVE, req.CURRENTMETHOD " +
-                    "FROM REQUEST req " +
+                    "FROM REQUISITIONFORM r " +
+                    "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
+                    "LEFT JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
+                    "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+                    "LEFT JOIN REQUEST req ON req.FORMID = r.FORMID " +
                     "LEFT JOIN REQUESTTYPE rt ON req.TYPEID = rt.TYPEID " +
-                    "WHERE req.FORMID = ? ORDER BY req.REQUESTID";
-                pstmt = conn.prepareStatement(itemSql);
-                pstmt.setString(1, formId);
-                rs = pstmt.executeQuery();
-                while (rs.next()) {
-                    Map<String, String> item = new HashMap<>();
-                    item.put("typeName", nvl(rs.getString("TYPENAME")));
-                    item.put("typeDetail", nvl(rs.getString("OTHERDETAILS_OR_PROGRAM")));
-                    item.put("objective", nvl(rs.getString("DETAILOBJECTIVE")));
-                    item.put("currentMethod", nvl(rs.getString("CURRENTMETHOD")));
-                    requestItems.add(item);
+                    "WHERE r.FORMID = ? ORDER BY req.REQUESTID";
+                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    pstmt.setString(1, formId);
+                    try (ResultSet rs = pstmt.executeQuery()) {
+                        boolean firstRow = true;
+                        while (rs.next()) {
+                            if (firstRow) {
+                                // Populate header fields once from the first row
+                                hasData = true;
+                                empName = nvl(rs.getString("EMPNAME"));
+                                sectionName = nvl(rs.getString("SECNAME"));
+                                departmentName = nvl(rs.getString("DEPTNAME"));
+                                phone = nvl(rs.getString("PHONE"));
+                                titleForm = nvl(rs.getString("TITLEFORM"));
+                                if (rs.getDate("DEADLINE") != null) {
+                                    deadlineDate = sdfDisplay.format(rs.getDate("DEADLINE"));
+                                } else {
+                                    deadlineDate = "-";
+                                }
+                                if (rs.getDate("REQUESTDATE") != null) {
+                                    reqDate = sdfInput.format(rs.getDate("REQUESTDATE"));
+                                } else {
+                                    reqDate = "-";
+                                }
+                                String deptHeadEmpId = rs.getString("DEPTHEAD_EMPID");
+                                int stateStep = rs.getInt("STATE_STEP");
+                                canApproveDirectorStep = deptHeadEmpId != null
+                                    && deptHeadEmpId.trim().equals(loggedInEmpId)
+                                    && stateStep == 0;
+                                firstRow = false;
+                            }
+                            // Collect request item from this row (REQUESTID is NULL when no items exist)
+                            if (rs.getString("REQUESTID") != null) {
+                                Map<String, String> item = new HashMap<>();
+                                item.put("typeName", nvl(rs.getString("TYPENAME")));
+                                item.put("typeDetail", nvl(rs.getString("OTHERDETAILS_OR_PROGRAM")));
+                                item.put("objective", nvl(rs.getString("DETAILOBJECTIVE")));
+                                item.put("currentMethod", nvl(rs.getString("CURRENTMETHOD")));
+                                requestItems.add(item);
+                            }
+                        }
+                    }
                 }
-                closeQuietly(rs, pstmt);
 
-                // ----- Permissions -----
-                String permSql =
-                    "SELECT ISROOT, PATH, HASFULLCONTROL, HASMODIFY, HASREADEXECUTE, HASREAD, HASWRITE " +
-                    "FROM PERMISSIONDETAILS WHERE FORMID = ? ORDER BY ISROOT DESC, PATH";
-                pstmt = conn.prepareStatement(permSql);
-                pstmt.setString(1, formId);
-                rs = pstmt.executeQuery();
-                while (rs.next()) {
-                    Map<String, Object> perm = new HashMap<>();
-                    perm.put("isRoot", rs.getInt("ISROOT"));
-                    perm.put("path", rs.getString("PATH"));
-                    perm.put("full", rs.getInt("HASFULLCONTROL"));
-                    perm.put("modify", rs.getInt("HASMODIFY"));
-                    perm.put("readExec", rs.getInt("HASREADEXECUTE"));
-                    perm.put("read", rs.getInt("HASREAD"));
-                    perm.put("write", rs.getInt("HASWRITE"));
-                    permissions.add(perm);
+                // ----- Query 2 (kept separate): Permissions — different entity, multiple rows per form -----
+                if (hasData) {
+                    String permSql =
+                        "SELECT ISROOT, PATH, HASFULLCONTROL, HASMODIFY, HASREADEXECUTE, HASREAD, HASWRITE " +
+                        "FROM PERMISSIONDETAILS WHERE FORMID = ? ORDER BY ISROOT DESC, PATH";
+                    try (PreparedStatement pstmt2 = conn.prepareStatement(permSql)) {
+                        pstmt2.setString(1, formId);
+                        try (ResultSet rs2 = pstmt2.executeQuery()) {
+                            while (rs2.next()) {
+                                Map<String, Object> perm = new HashMap<>();
+                                perm.put("isRoot", rs2.getInt("ISROOT"));
+                                perm.put("path", rs2.getString("PATH"));
+                                perm.put("full", rs2.getInt("HASFULLCONTROL"));
+                                perm.put("modify", rs2.getInt("HASMODIFY"));
+                                perm.put("readExec", rs2.getInt("HASREADEXECUTE"));
+                                perm.put("read", rs2.getInt("HASREAD"));
+                                perm.put("write", rs2.getInt("HASWRITE"));
+                                permissions.add(perm);
+                            }
+                        }
+                    }
                 }
-            }
+            } // conn auto-closed
+            // zennnne แก้
         }
     } catch (Exception e) {
         System.out.println("Error Loading Form Details: " + e.getMessage());
-    } finally {
-        closeQuietly(rs, pstmt, conn);
     }
 %>
 <%!
     // Small helper to avoid null strings
     private String nvl(String s) {
         return (s == null || s.trim().isEmpty()) ? "-" : s.trim();
-    }
-    private void closeQuietly(AutoCloseable... resources) {
-        for (AutoCloseable r : resources) {
-            if (r != null) {
-                try { r.close(); } catch (Exception ignored) {}
-            }
-        }
     }
 %>
 

@@ -31,9 +31,6 @@
     List<Map<String, String>> requestItems = new ArrayList<>();
     List<Map<String, Object>> permissions = new ArrayList<>();
 
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
     SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat sdfDisplay = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -183,7 +180,9 @@
 <body>
 
 <div class="sticky-bar">
-    <a href="DirectorApprove.jsp">
+    <!-- zennnne แก้ -->
+    <a href="Directorapprove.jsp">
+    <!-- zennnne แก้ -->
         <i class="fa fa-arrow-left"></i> กลับหน้ารายการ
     </a>
     <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
@@ -211,7 +210,7 @@
         <!-- ⚡ The form now posts to SubmitApprovalServlet -->
         <form action="${pageContext.request.contextPath}/SubmitApprovalServlet" method="post">
             <input type="hidden" name="formId" value="<%= formId %>">
-            <input type="hidden" name="redirectPage" value="DirectorApprove.jsp">
+            <input type="hidden" name="redirectPage" value="Directorapprove.jsp"> <!-- zennnne แก้ -->
 
             <!-- Header fields (readonly) -->
             <div class="form-grid">

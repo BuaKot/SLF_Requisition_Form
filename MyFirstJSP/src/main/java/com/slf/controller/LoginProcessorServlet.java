@@ -28,16 +28,22 @@ public class LoginProcessorServlet extends HttpServlet {
             String password = (passwordStr.trim());
 
             LookupDAO dao = new LookupDAO();
-            Employee emp = dao.findEmployeeByEmpIdAndPasssword(empId, password);
+            Employee emp = dao.findEmployeeByEmpIdAndPassword(empId, password); // zennnne แก้
 
             if (emp != null) {
-                HttpSession session = request.getSession();
+                // zennnne แก้
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    session.invalidate();
+                }
+                HttpSession newSession = request.getSession(true);
+                // zennnne แก้
                 // Standard session keys used by the filter and your other pages
-                session.setAttribute("loggedInEmpId", emp.getEmpId());
-                session.setAttribute("loggedInEmpName", emp.getEmpName());
-                session.setAttribute("position", emp.getPosition());
+                newSession.setAttribute("loggedInEmpId", emp.getEmpId());
+                newSession.setAttribute("loggedInEmpName", emp.getEmpName());
+                newSession.setAttribute("position", emp.getPosition());
                 // Backwards compatibility for pages that check "empid" or "emp_id"
-                session.setAttribute("empid", emp.getEmpId());
+                newSession.setAttribute("empid", emp.getEmpId());
                 response.sendRedirect(request.getContextPath() + "/");
             } else {
                 response.sendRedirect(request.getContextPath() + "/login?error=1");

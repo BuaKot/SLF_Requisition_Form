@@ -1,6 +1,6 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*, com.slf.dao.DBConnection" %>
+<%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection" %>
 
 <%
     /* ===============================
@@ -19,6 +19,18 @@
 
     int empid = Integer.parseInt(empObj.toString());
 
+    // ---------- Pagination ----------
+    int currentPage = 1;
+    String pageParam = request.getParameter("page");
+    if (pageParam != null) {
+        try { currentPage = Math.max(1, Integer.parseInt(pageParam)); }
+        catch (NumberFormatException e) {}
+    }
+    int pageSize = 50;
+    int offset = (currentPage - 1) * pageSize;
+    List<Map<String, Object>> formList = new ArrayList<>();
+    // ---------- End Pagination ----------
+
     Connection conn = null;
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -31,7 +43,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Requisition Form</title>
+    <title>Submitted Requisition Form</title>
 
     <!-- CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
@@ -80,7 +92,6 @@
             <i class="fa-solid fa-circle-info"></i>
             <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
         </div>
-        
     </div>
 
     <!-- TITLE -->
@@ -140,10 +151,13 @@ try {
         "), 0) AS STATE_STEP " +
         "FROM REQUISITIONFORM RF " +
         "WHERE RF.EMPID = ? " +
-        "ORDER BY RF.FORMID DESC";
+        "ORDER BY RF.FORMID DESC " +
+        "OFFSET ? ROWS FETCH FIRST ? ROWS ONLY";
 
     pstmt = conn.prepareStatement(sql);
     pstmt.setInt(1, empid);
+    pstmt.setInt(2, offset);
+    pstmt.setInt(3, pageSize);
     rs = pstmt.executeQuery();
 
     while (rs.next()) {
@@ -153,6 +167,11 @@ try {
         String title = rs.getString("TITLEFORM");
         int stateStep = rs.getInt("STATE_STEP");
         boolean isEdited = rs.getInt("IS_EDITED") == 1;
+
+        // For pagination: store a dummy entry to count rows
+        Map<String, Object> rowMap = new HashMap<>();
+        rowMap.put("formId", formId);
+        formList.add(rowMap);
 
         java.sql.Date deadlineDate = rs.getDate("DEADLINE");
         java.time.LocalDate today = java.time.LocalDate.now();
@@ -315,6 +334,21 @@ try {
 }
 %>
     </section>
+
+    <!-- Pagination -->
+    <div class="pagination" style="display:flex; gap:16px; align-items:center; justify-content:center; padding:20px 0;">
+        <% if (currentPage > 1) { %>
+            <a href="?page=<%= currentPage - 1 %>" style="text-decoration:none;">
+                <button type="button" class="request-btn">« ก่อนหน้า</button>
+            </a>
+        <% } %>
+        <span style="font-family:'DB Helvethaica X 55 Regular',sans-serif; color:#003366;">หน้า <%= currentPage %></span>
+        <% if (formList.size() == pageSize) { %>
+            <a href="?page=<%= currentPage + 1 %>" style="text-decoration:none;">
+                <button type="button" class="request-btn">ถัดไป »</button>
+            </a>
+        <% } %>
+    </div>
 </div>
 
 <!-- CONFIRM POPUP -->

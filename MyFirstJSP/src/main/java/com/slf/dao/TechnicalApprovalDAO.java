@@ -20,8 +20,10 @@ public class TechnicalApprovalDAO {
             "    SELECT FORMID, APPROVALSTATUS " +
             "    FROM ( " +
             "        SELECT r.FORMID, ai.APPROVALSTATUS, " +
+            // zennnne แก้
             "               ROW_NUMBER() OVER (PARTITION BY r.FORMID " +
-            "               ORDER BY COALESCE(ai.APPROVED_DATE, CAST(ai.APPROVALDATE AS TIMESTAMP)) DESC NULLS LAST, ai.APPROVALID DESC) AS RN " +
+            "               ORDER BY ai.APPROVALID DESC) AS RN " +
+            // zennnne แก้
             "        FROM REQUEST r " +
             "        JOIN APPROVALINFO ai ON ai.REQUESTID = r.REQUESTID " +
             "    ) WHERE RN = 1 " +

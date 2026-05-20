@@ -114,7 +114,7 @@ public class LookupDAO {
         return null;
     }
 
-    public Employee findEmployeeByEmpIdAndPasssword(int empId, String password) throws SQLException {
+    public Employee findEmployeeByEmpIdAndPassword(int empId, String password) throws SQLException { // zennnne แก้
     String sql = "SELECT EMPID, EMPNAME, POSITION, SECID, PHONE FROM EMPLOYEE WHERE EMPID = ? AND PASSWORD = ?";
     try (Connection conn = DBConnection.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {

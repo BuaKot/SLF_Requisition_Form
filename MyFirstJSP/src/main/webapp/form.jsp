@@ -10,6 +10,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <!-- zennnne แก้ -->
     <style>
         .byte-counter { font-size: 0.75rem; color: #888; display: block; text-align: right; margin-top: 2px; width: 100%; order: 999; flex-basis: 100%; }

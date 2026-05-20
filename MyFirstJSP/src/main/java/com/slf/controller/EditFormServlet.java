@@ -1,8 +1,8 @@
-// zennnne แก้
 package com.slf.controller;
 
 import com.slf.dao.DBConnection;
 import com.slf.dao.LookupDAO;
+import com.slf.model.Department;
 import com.slf.model.Employee;
 import com.slf.model.Section;
 
@@ -52,16 +52,20 @@ public class EditFormServlet extends HttpServlet {
         LookupDAO lookupDao = new LookupDAO();
         try {
             Employee emp = lookupDao.findEmployeeById(empId);
-            // zennnne แก้
+            // Extra safety: if employee record missing, redirect to login
             if (emp == null) {
                 response.sendRedirect(request.getContextPath() + "/login");
                 return;
             }
-            // zennnne แก้
+
             Section empSection = lookupDao.getSectionById(emp.getSecId());
+            Department empDepartment = lookupDao.getDepartmentById(empSection.getDeptId());
+
             request.setAttribute("loggedInEmployee", emp);
             request.setAttribute("empDeptId", empSection.getDeptId());
             request.setAttribute("empSectionId", emp.getSecId());
+            request.setAttribute("empDeptName", empDepartment != null ? empDepartment.getDeptName() : "");
+            request.setAttribute("empSectionName", empSection.getSecName());
             request.setAttribute("requestTypes", lookupDao.getAllRequestTypes());
             request.setAttribute("departments", lookupDao.getAllDepartments());
             request.setAttribute("allSections", lookupDao.getAllSections());
@@ -255,4 +259,3 @@ public class EditFormServlet extends HttpServlet {
         return sb.toString();
     }
 }
-// zennnne แก้

@@ -25,14 +25,28 @@ public class LookupDAO {
         return list;
     }
 
+    /**
+     * Returns all request types with the destination IT section (SECID) and its name.
+     * Requires RequestType to have a constructor (int typeId, String typeName, int secId, String secName)
+     * or the corresponding setters, plus getters getSecId() and getSecName().
+     */
     public List<RequestType> getAllRequestTypes() throws SQLException {
         List<RequestType> list = new ArrayList<>();
-        String sql = "SELECT TYPEID, TYPENAME FROM REQUESTTYPE ORDER BY TYPEID";
+        String sql =
+            "SELECT rt.TYPEID, rt.TYPENAME, rt.SECID, s.SECNAME " +
+            "FROM REQUESTTYPE rt " +
+            "LEFT JOIN SECTION s ON rt.SECID = s.SECID " +
+            "ORDER BY rt.TYPEID";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                list.add(new RequestType(rs.getInt("TYPEID"), rs.getString("TYPENAME")));
+                list.add(new RequestType(
+                    rs.getInt("TYPEID"),
+                    rs.getString("TYPENAME"),
+                    rs.getInt("SECID"),
+                    rs.getString("SECNAME")
+                ));
             }
         }
         return list;
@@ -45,8 +59,6 @@ public class LookupDAO {
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                // Constructor: Department(int deptID, int deptHeadID, String deptName)
-                // DEPTHEAD_EMPID may be NULL -> getInt returns 0, which is fine.
                 list.add(new Department(
                     rs.getInt("DEPTID"),
                     rs.getString("DEPTHEAD_EMPID"),
@@ -57,6 +69,24 @@ public class LookupDAO {
         return list;
     }
 
+    public Department getDepartmentById(int deptId) throws SQLException {
+        String sql = "SELECT DEPTID, DEPTHEAD_EMPID, DEPTNAME FROM DEPARTMENT WHERE DEPTID = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, deptId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Department(
+                        rs.getInt("DEPTID"),
+                        rs.getString("DEPTHEAD_EMPID"),
+                        rs.getString("DEPTNAME")
+                    );
+                }
+            }
+        }
+        return null;
+    }
+
     public List<Section> getAllSections() throws SQLException {
         List<Section> list = new ArrayList<>();
         String sql = "SELECT SECID, DEPTID, SECNAME, SECTIONHEAD_EMPID FROM SECTION ORDER BY DEPTID, SECID";
@@ -64,18 +94,17 @@ public class LookupDAO {
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                // Constructor: Section(int secID, String secName, int deptID, int sectionHeadEmpID)
-                // Order of arguments in your constructor is (secID, secName, deptID, sectionHeadEmpID)!
                 list.add(new Section(
                     rs.getInt("SECID"),
                     rs.getString("SECNAME"),
                     rs.getInt("DEPTID"),
-                    rs.getString("SECTIONHEAD_EMPID") // 0 if NULL
+                    rs.getString("SECTIONHEAD_EMPID")
                 ));
             }
         }
         return list;
     }
+
     public Employee findEmployeeById(int empId) throws SQLException {
         String sql = "SELECT EMPID, EMPNAME, POSITION, SECID, PHONE FROM EMPLOYEE WHERE EMPID = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -95,6 +124,7 @@ public class LookupDAO {
         }
         return null;
     }
+
     public Section getSectionById(int secId) throws SQLException {
         String sql = "SELECT SECID, DEPTID, SECNAME, SECTIONHEAD_EMPID FROM SECTION WHERE SECID = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -114,24 +144,25 @@ public class LookupDAO {
         return null;
     }
 
-    public Employee findEmployeeByEmpIdAndPassword(int empId, String password) throws SQLException { // zennnne แก้
-    String sql = "SELECT EMPID, EMPNAME, POSITION, SECID, PHONE FROM EMPLOYEE WHERE EMPID = ? AND PASSWORD = ?";
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, empId);
-        ps.setString(2, password);
-        try (ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                Employee emp = new Employee();
-                emp.setEmpId(rs.getInt("EMPID"));
-                emp.setEmpName(rs.getString("EMPNAME"));
-                emp.setPosition(rs.getString("POSITION"));
-                emp.setSecId(rs.getInt("SECID"));
-                emp.setPhone(rs.getString("PHONE"));
-                return emp;
+    // Correctly named password check (fixed typo)
+    public Employee findEmployeeByEmpIdAndPassword(int empId, String password) throws SQLException {
+        String sql = "SELECT EMPID, EMPNAME, POSITION, SECID, PHONE FROM EMPLOYEE WHERE EMPID = ? AND PASSWORD = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, empId);
+            ps.setString(2, password);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Employee emp = new Employee();
+                    emp.setEmpId(rs.getInt("EMPID"));
+                    emp.setEmpName(rs.getString("EMPNAME"));
+                    emp.setPosition(rs.getString("POSITION"));
+                    emp.setSecId(rs.getInt("SECID"));
+                    emp.setPhone(rs.getString("PHONE"));
+                    return emp;
+                }
             }
         }
+        return null;
     }
-    return null;
-}
 }

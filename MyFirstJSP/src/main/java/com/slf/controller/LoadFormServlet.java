@@ -46,18 +46,20 @@ public class LoadFormServlet extends HttpServlet {
                 // The user has no section – they are a department head or similar.
                 // Store a message in the session and redirect to the home page.
                 session.setAttribute("formDeniedMessage",
-    "ท่านไม่มีส่วนงานที่สังกัด หรือเป็นหัวหน้าฝ่ายที่ไม่มีส่วนงาน กรุณาให้ผู้ใต้บังคับบัญชาเป็นผู้สร้างใบขอให้ดำเนินการแทน");
+                        "ท่านไม่มีส่วนงานที่สังกัด หรือเป็นหัวหน้าฝ่ายที่ไม่มีส่วนงาน กรุณาให้ผู้ใต้บังคับบัญชาเป็นผู้สร้างใบขอให้ดำเนินการแทน");
                 response.sendRedirect(request.getContextPath() + "/");
                 return;
             }
 
-            // 3. The employee has a section – load the department and lookups
+            // 3. The employee has a section – load the department and personal details
             int empDeptId = empSection.getDeptId();
+            Department empDepartment = dao.getDepartmentById(empDeptId);
             request.setAttribute("empDeptId", empDeptId);
             request.setAttribute("empSectionId", secId);
+            request.setAttribute("empDeptName", empDepartment != null ? empDepartment.getDeptName() : "");
+            request.setAttribute("empSectionName", empSection.getSecName());
 
-            // zennnne แก้
-            // Cache static lookups in ServletContext (lazy init, double-checked locking)
+            // 4. Load the static lookup lists, caching them in the servlet context
             @SuppressWarnings("unchecked")
             List<RequestType> requestTypes = (List<RequestType>) getServletContext().getAttribute("allRequestTypes");
             if (requestTypes == null) {
@@ -97,7 +99,6 @@ public class LoadFormServlet extends HttpServlet {
             request.setAttribute("requestTypes", requestTypes);
             request.setAttribute("departments", departments);
             request.setAttribute("allSections", allSections);
-            // zennnne แก้
 
         } catch (SQLException e) {
             throw new ServletException("Failed to load form", e);

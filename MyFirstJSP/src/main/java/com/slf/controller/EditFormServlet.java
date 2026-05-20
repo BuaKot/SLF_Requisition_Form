@@ -64,14 +64,30 @@ public class EditFormServlet extends HttpServlet {
         }
 
         // ----- Build prefill JSON from old form -----
-        try {
-            String prefillJson = buildPrefillJson(formId);
-            request.setAttribute("prefillJson", prefillJson);
-        } catch (SQLException e) {
-            throw new ServletException("Failed to load old form data", e);
-        }
+       try {
+    String prefillJson = buildPrefillJson(formId);
 
-        request.getRequestDispatcher("/form.jsp").forward(request, response);
+    request.setAttribute("prefillJson", prefillJson);
+
+    Connection conn = DBConnection.getConnection();
+
+    PreparedStatement ps =
+        conn.prepareStatement(
+        "UPDATE REQUISITIONFORM SET IS_EDITED=1 WHERE FORMID=?"
+    );
+
+    ps.setInt(1, formId);
+
+    ps.executeUpdate();
+
+    ps.close();
+    conn.close();
+
+} catch (SQLException e) {
+    throw new ServletException(e);
+}
+
+request.getRequestDispatcher("/form.jsp").forward(request, response);
     }
 
     // ---------------------------------------------------------------

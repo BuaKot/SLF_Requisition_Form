@@ -56,7 +56,7 @@ public class SubmitApprovalServlet extends HttpServlet {
 
         // zennnne แก้
         final java.util.Set<String> ALLOWED_REDIRECTS = new java.util.HashSet<>(java.util.Arrays.asList(
-            "Directorapprove.jsp", "DirectorApprove.jsp", "ITDirectorApprove.jsp", "TechnicalApprove.jsp"
+            "Process.jsp", "DirectorApprove.jsp", "ITDirectorApprove.jsp", "TechnicalApprove.jsp"
         ));
         if (!ALLOWED_REDIRECTS.contains(redirectPage)) {
             redirectPage = "Directorapprove.jsp";

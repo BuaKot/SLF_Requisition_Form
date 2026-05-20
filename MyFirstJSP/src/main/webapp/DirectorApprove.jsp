@@ -250,6 +250,7 @@
             "       ORDER BY ai.APPROVALID DESC " +
             "       FETCH FIRST 1 ROWS ONLY) = 0 " +
             "AND d.DEPTHEAD_EMPID = ? " +
+            "AND r.DEADLINE >= TRUNC(SYSDATE) " +
             "ORDER BY r.FORMID DESC";
 
         pstmt = conn.prepareStatement(sql);

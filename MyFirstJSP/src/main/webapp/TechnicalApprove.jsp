@@ -239,6 +239,7 @@
                 "       WHERE ai.FORMID = r.FORMID " +
                 "       ORDER BY ai.APPROVALID DESC " +
                 "       FETCH FIRST 1 ROWS ONLY) = 1 " +
+                "AND r.DEADLINE >= TRUNC(SYSDATE) " +
                 "ORDER BY r.FORMID DESC";
 
         pstmt = conn.prepareStatement(sql);

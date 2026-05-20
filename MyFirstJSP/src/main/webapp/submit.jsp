@@ -1,6 +1,6 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
+<%@ page import="java.sql.*, com.slf.dao.DBConnection" %>
 
 <%
     /* ===============================
@@ -139,30 +139,10 @@
 
 try {
 
-    Class.forName("oracle.jdbc.driver.OracleDriver");
+    conn = DBConnection.getConnection();
 
-    conn = DriverManager.getConnection(
-        "jdbc:oracle:thin:@172.25.18.186:1521:XE",
-        "C##DEVUSER",
-        "mypassword"
-    );
-
-    /*
-     * STATE_STEP:
-     *
-     *  0 = Pending
-     *  1 = ผ่าน STEP 1
-     *  2 = ผ่าน STEP 2
-     *  3 = ผ่าน STEP 3
-     *  4 = ผ่าน STEP 4
-     *
-     * -1 = ไม่ผ่าน STEP 1
-     * -2 = ไม่ผ่าน STEP 2
-     * -3 = ไม่ผ่าน STEP 3
-     * -4 = ไม่ผ่าน STEP 4
-     */
     String sql =
-        "SELECT RF.FORMID, RF.TITLEFORM, " +
+        "SELECT RF.FORMID, RF.TITLEFORM, RF.DEADLINE, " +
         "NVL(( " +
         "   SELECT AI.STATE_STEP " +
         "   FROM APPROVALINFO AI " +
@@ -174,7 +154,6 @@ try {
         "WHERE RF.EMPID = ? " +
         "ORDER BY RF.FORMID DESC";
 
-    
     pstmt = conn.prepareStatement(sql);
     pstmt.setInt(1, empid);
 
@@ -184,16 +163,15 @@ try {
 
         hasData = true;
 
-        /* ===============================
-           GET DATA
-        =============================== */
         int formId = rs.getInt("FORMID");
         String title = rs.getString("TITLEFORM");
         int stateStep = rs.getInt("STATE_STEP");
 
-        /* ===============================
-           STATUS FLAGS
-        =============================== */
+        java.sql.Date deadlineDate = rs.getDate("DEADLINE");
+        java.time.LocalDate today = java.time.LocalDate.now();
+        boolean isOverdue = (deadlineDate != null &&
+            deadlineDate.toLocalDate().isBefore(today));
+
         boolean director1 = false;
         boolean technical = false;
         boolean director2 = false;
@@ -204,65 +182,41 @@ try {
         boolean director2Reject = false;
         boolean processReject = false;
 
-        /* ===============================
-           PASS FLOW
-        =============================== */
         if (stateStep >= 0) {
-
             director1 = stateStep >= 1;
             technical = stateStep >= 2;
             director2 = stateStep >= 3;
             process   = stateStep >= 4;
-
         }
 
-        /* ===============================
-           REJECT FLOW
-        =============================== */
         if (stateStep == -1) {
-
             director1Reject = true;
             technicalReject = true;
             director2Reject = true;
             processReject   = true;
-
         } else if (stateStep == -2) {
-
             director1 = true;
-
             technicalReject = true;
             director2Reject = true;
             processReject   = true;
-
         } else if (stateStep == -3) {
-
             director1 = true;
             technical = true;
-
             director2Reject = true;
             processReject   = true;
-
         } else if (stateStep == -4) {
-
             director1 = true;
             technical = true;
             director2 = true;
-
             processReject = true;
-
         }
 
-        /*
-         * ยืนยันผลได้เมื่อผ่าน STEP 4 เท่านั้น
-         */
         boolean canConfirm = (stateStep == 4);
-        boolean isConfirmed = (stateStep >= 5); %>
+        boolean isConfirmed = (stateStep >= 5);
+%>
 
         <div class="request-row">
 
-            <!-- ===============================
-                 FORM BUTTON
-            =============================== -->
             <div class="request-col">
                 <a href="detail.jsp?id=<%= formId %>" style="text-decoration:none;">
                     <button type="button" class="request-btn">
@@ -271,9 +225,6 @@ try {
                 </a>
             </div>
 
-            <!-- ===============================
-                 STEP 1 : DIRECTOR
-            =============================== -->
             <div class="status-col">
                 <i class="<%=
                     director1Reject
@@ -284,9 +235,6 @@ try {
                 %>"></i>
             </div>
 
-            <!-- ===============================
-                 STEP 2 : TECHNICAL
-            =============================== -->
             <div class="status-col">
                 <i class="<%=
                     technicalReject
@@ -297,9 +245,6 @@ try {
                 %>"></i>
             </div>
 
-            <!-- ===============================
-                 STEP 3 : IT DIRECTOR
-            =============================== -->
             <div class="status-col">
                 <i class="<%=
                     director2Reject
@@ -310,9 +255,6 @@ try {
                 %>"></i>
             </div>
 
-            <!-- ===============================
-                 STEP 4 : PROCESS
-            =============================== -->
             <div class="status-col">
                 <i class="<%=
                     processReject
@@ -323,38 +265,30 @@ try {
                 %>"></i>
             </div>
 
-            <!-- ===============================
-                 FINAL CONFIRM BUTTON
-            =============================== -->
             <div class="confirm-col">
 
-                <!-- zennnne แก้ -->
                 <% if (stateStep < 0) { %>
                     <a href="${pageContext.request.contextPath}/editForm?formId=<%= formId %>"
                        style="text-decoration:none;">
                         <button type="button" class="confirm-btn edit-btn">แก้ไขฟอร์ม</button>
                     </a>
+                <% } else if (isConfirmed) { %>
+                    <button class="confirm-btn confirmed" disabled>ยืนยันผลแล้ว</button>
+                <% } else if (isOverdue) { %>
+                    <button class="overdue-btn" data-formid="<%= formId %>">
+                        <span class="overdue-label-normal">หมดเขต</span>
+                        <span class="overdue-label-hover">ยืดเวลาหมดเขต</span>
+                    </button>
                 <% } else { %>
-                <!-- zennnne แก้ -->
-
-                    <button class="confirm-btn<%= isConfirmed ? " confirmed" : "" %>"
+                    <button class="confirm-btn<%= canConfirm ? "" : "" %>"
                         data-formid="<%= formId %>"
                         <% if (!canConfirm) { %>
                             disabled
                             style="cursor:not-allowed;"
                         <% } %>>
-                        <%=
-                            isConfirmed
-                                ? "ยืนยันผลแล้ว"
-                                : canConfirm
-                                    ? "ยืนยันผลตรวจรับ"
-                                    : "รอดำเนินการ"
-                        %>
+                        <%= canConfirm ? "ยืนยันผลตรวจรับ" : "รอดำเนินการ" %>
                     </button>
-
-                <!-- zennnne แก้ -->
                 <% } %>
-                <!-- zennnne แก้ -->
 
             </div>
 
@@ -363,10 +297,6 @@ try {
 <%
     } // END WHILE
 
-
-    /* ===============================
-       NO DATA
-    =============================== */
     if (!hasData) {
 %>
 
@@ -415,7 +345,7 @@ try {
 
 </div>
 
-<!-- POPUP -->
+<!-- CONFIRM POPUP -->
 <div id="confirmPopup" class="popup-overlay">
     <div class="popup-box">
         <h3>ยืนยันผล</h3>
@@ -432,8 +362,24 @@ try {
     </div>
 </div>
 
+<!-- DEADLINE POPUP -->
+<div id="deadlinePopup" class="popup-overlay">
+    <div class="popup-box">
+        <h3>ยืดเวลาหมดเขต</h3>
+        <p>กรุณาเลือก Deadline ใหม่สำหรับรายการนี้</p>
+
+        <input type="date" id="popupNewDeadline" class="popup-date-input">
+
+        <div class="popup-buttons">
+            <button id="deadlineConfirm" class="popup-confirm-btn">ยืนยัน</button>
+            <button onclick="closeDeadlinePopup()" class="popup-cancel-btn">ยกเลิก</button>
+        </div>
+    </div>
+</div>
+
 <script>
 let currentButton = null;
+let currentOverdueButton = null;
 const contextPath = "<%= request.getContextPath() %>";
 
 function toggleNav() {
@@ -453,35 +399,27 @@ function toggleNav() {
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    // Confirm buttons (ยืนยันผลตรวจรับ)
     document.querySelectorAll(".confirm-btn").forEach(button => {
-
-        // zennnne แก้
-        if (button.closest("a")) return; // edit-btn อยู่ใน <a> ให้ navigate ปกติ
-        // zennnne แก้
+        if (button.closest("a")) return; // edit-btn is wrapped in <a>, let it navigate
 
         button.addEventListener("click", function () {
-
             if (this.disabled) {
                 alert("ยังไม่สามารถยืนยันผลได้ เนื่องจากขั้นตอนยังไม่เสร็จ");
                 return;
             }
-
             currentButton = this;
-
             document.getElementById("confirmPopup").style.display = "flex";
         });
-
     });
 
+    // Confirm popup submit
     document.getElementById("popupConfirm").addEventListener("click", function () {
-
         let detail = document.getElementById("popupDetail").value.trim();
-
         if (detail === "") {
             alert("กรุณากรอกรายละเอียดก่อนยืนยันผล");
             return;
         }
-
         if (currentButton) {
             const form = document.createElement("form");
             form.method = "POST";
@@ -507,11 +445,58 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // Overdue buttons (ยืดเวลาหมดเขต)
+    document.querySelectorAll(".overdue-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            currentOverdueButton = this;
+            const today = new Date().toISOString().split("T")[0];
+            const input = document.getElementById("popupNewDeadline");
+            input.min = today;
+            input.value = "";
+            document.getElementById("deadlinePopup").style.display = "flex";
+        });
+    });
+
+    // Deadline popup submit
+    document.getElementById("deadlineConfirm").addEventListener("click", function () {
+        const newDeadline = document.getElementById("popupNewDeadline").value;
+        if (!newDeadline) {
+            alert("กรุณาเลือก Deadline ใหม่");
+            return;
+        }
+        if (currentOverdueButton) {
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = contextPath + "/ExtendDeadlineServlet";
+
+            const fields = {
+                formId: currentOverdueButton.dataset.formid,
+                newDeadline: newDeadline
+            };
+
+            Object.keys(fields).forEach(function (name) {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = name;
+                input.value = fields[name];
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+
 });
 
 function closePopup() {
     document.getElementById("confirmPopup").style.display = "none";
     document.getElementById("popupDetail").value = "";
+}
+
+function closeDeadlinePopup() {
+    document.getElementById("deadlinePopup").style.display = "none";
+    document.getElementById("popupNewDeadline").value = "";
 }
 </script>
 

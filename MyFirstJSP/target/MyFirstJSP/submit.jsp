@@ -133,6 +133,35 @@
         </div>
     </section>
 
+    <!-- zennnne แก้ -->
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+        <div class="filter-checkboxes">
+            <label class="filter-label pending-label">
+                <input type="checkbox" value="pending" checked> รอดำเนินการ
+            </label>
+            <label class="filter-label overdue-label">
+                <input type="checkbox" value="overdue"> หมดเขต
+            </label>
+            <label class="filter-label rejected-label">
+                <input type="checkbox" value="rejected"> ไม่ผ่านการอนุมัติ
+            </label>
+            <label class="filter-label approved-label">
+                <input type="checkbox" value="approved"> อนุมัติแล้ว
+            </label>
+        </div>
+        <div class="sort-controls">
+            <span class="sort-label">เรียงตาม Deadline</span>
+            <button id="sortAscBtn" class="sort-btn active" onclick="setSortOrder('asc')" title="น้อยไปมาก">
+                <i class="fa-solid fa-arrow-up"></i>
+            </button>
+            <button id="sortDescBtn" class="sort-btn" onclick="setSortOrder('desc')" title="มากไปน้อย">
+                <i class="fa-solid fa-arrow-down"></i>
+            </button>
+        </div>
+    </div>
+    <!-- zennnne แก้ -->
+
     <!-- REQUEST LIST -->
     <section class="request-list">
 
@@ -219,9 +248,19 @@ try {
 
         boolean canConfirm = (stateStep == 4);
         boolean isConfirmed = (stateStep >= 5);
+
+        // zennnne แก้
+        String rowStatus;
+        if      (stateStep < 0) { rowStatus = "rejected"; }
+        else if (isConfirmed)   { rowStatus = "approved"; }
+        else if (isOverdue)     { rowStatus = "overdue";  }
+        else                    { rowStatus = "pending";  }
+        String rowDeadline = (deadlineDate != null) ? deadlineDate.toString() : "9999-12-31";
+        // zennnne แก้
 %>
 
-        <div class="request-row">
+        <!-- zennnne แก้ -->
+        <div class="request-row" data-status="<%= rowStatus %>" data-deadline="<%= rowDeadline %>">
             <div class="request-col">
                 <a href="detail.jsp?id=<%= formId %>" style="text-decoration:none;">
                     <button type="button" class="request-btn">
@@ -382,6 +421,35 @@ let currentButton = null;
 let currentOverdueButton = null;
 const contextPath = "<%= request.getContextPath() %>";
 
+// zennnne แก้
+let sortOrder = 'asc';
+
+function applyFilterAndSort() {
+    const checkedStatuses = Array.from(document.querySelectorAll('.filter-checkboxes input:checked'))
+        .map(function(cb) { return cb.value; });
+    const list = document.querySelector('.request-list');
+    const rows = Array.from(list.querySelectorAll('.request-row'));
+
+    rows.sort(function(a, b) {
+        const da = a.dataset.deadline || '9999-12-31';
+        const db = b.dataset.deadline || '9999-12-31';
+        if (sortOrder === 'asc') return da < db ? -1 : da > db ? 1 : 0;
+        return da > db ? -1 : da < db ? 1 : 0;
+    });
+    rows.forEach(function(row) { list.appendChild(row); });
+    rows.forEach(function(row) {
+        row.style.display = checkedStatuses.includes(row.dataset.status) ? '' : 'none';
+    });
+}
+
+function setSortOrder(order) {
+    sortOrder = order;
+    document.getElementById('sortAscBtn').classList.toggle('active', order === 'asc');
+    document.getElementById('sortDescBtn').classList.toggle('active', order === 'desc');
+    applyFilterAndSort();
+}
+// zennnne แก้
+
 function toggleNav() {
     var sidebar = document.getElementById("mySidebar");
     var main = document.getElementById("main");
@@ -473,6 +541,13 @@ document.addEventListener("DOMContentLoaded", function () {
             form.submit();
         }
     });
+
+    // zennnne แก้
+    document.querySelectorAll('.filter-checkboxes input').forEach(function(cb) {
+        cb.addEventListener('change', applyFilterAndSort);
+    });
+    applyFilterAndSort();
+    // zennnne แก้
 });
 
 function closePopup() {

@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>รายการใบขอให้ดำเนินการ (Director Approval)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
 
@@ -21,34 +22,6 @@
             margin: 0;
         }
 
-        /* Sticky Bar ตามแบบเป๊ะ */
-        .sticky-bar {
-            background: #fafafa;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #ddd;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .sticky-bar a {
-            color: #333;
-            text-decoration: none;
-        }
-
-        .contact-info {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .contact-info p {
-            margin: 0;
-            font-size: 14px;
-        }
 
         .banner {
             background: #C3EAFF;
@@ -199,13 +172,23 @@
 <body>
 
 <div class="sticky-bar">
-    <a href="Admin.jsp">
-        <i class="fa fa-arrow-left" style="font-size:24px;"></i>
-    </a>
-    <div class="contact-info">
-        <i class="fa fa-circle-user" style="font-size:1.4rem; color:#333;"></i>
-        <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-    </div>
+        <a href="Admin.jsp">
+            <i class="fa fa-arrow-left" style="font-size:24px;"></i>
+        </a>
+        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
+        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
+        
+        <div class="user-info">
+            <i class="fa fa-circle-user"></i>
+            <p>
+                ${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}
+            </p>
+        </div>
+        <div class="contact-info">
+            <i class="fa-solid fa-circle-info"></i>
+            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+        </div>
+        
 </div>
 
 <div class="banner">

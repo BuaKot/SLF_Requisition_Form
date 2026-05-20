@@ -93,7 +93,8 @@ public class SubmitApprovalServlet extends HttpServlet {
                     String directorSql =
                         "SELECT d.DEPTHEAD_EMPID " +
                         "FROM REQUISITIONFORM r " +
-                        "JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
+                        "JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
+                        "JOIN SECTION s ON e.SECID = s.SECID " +
                         "JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
                         "WHERE r.FORMID = ?";
                     try (PreparedStatement psDirector = conn.prepareStatement(directorSql)) {

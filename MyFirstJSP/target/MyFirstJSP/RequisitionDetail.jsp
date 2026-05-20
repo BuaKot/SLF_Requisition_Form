@@ -31,36 +31,30 @@
     List<Map<String, String>> requestItems = new ArrayList<>();
     List<Map<String, Object>> permissions = new ArrayList<>();
 
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
     SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat sdfDisplay = new SimpleDateFormat("dd/MM/yyyy");
 
     try {
         if (formId != null && !formId.isEmpty()) {
-            // zennnne แก้
             try (Connection conn = DBConnection.getConnection()) {
-                // ----- Query 1+2 combined: Header JOIN Request items (1 round-trip instead of 2) -----
-                // LEFT JOIN REQUEST so forms with zero items still return 1 row (header populated, items empty).
-                // Header columns repeat on every item row; we capture them only on the first row.
+                // ----- Query 1+2 combined: Header JOIN Request items -----
                 String sql =
-                    "SELECT r.FORMID, e.EMPNAME, e.PHONE, s.SECNAME, d.DEPTNAME, " +
-                    "d.DEPTHEAD_EMPID, r.TITLEFORM, r.REQUESTDATE, r.DEADLINE, " +
-                    "NVL((SELECT ai.STATE_STEP " +
-                    "     FROM APPROVALINFO ai " +
-                    "     WHERE ai.FORMID = r.FORMID " +
-                    "     ORDER BY ai.APPROVALID DESC " +
-                    "     FETCH FIRST 1 ROWS ONLY), 0) AS STATE_STEP, " +
-                    "req.REQUESTID, rt.TYPENAME, req.OTHERDETAILS_OR_PROGRAM, " +
-                    "req.DETAILOBJECTIVE, req.CURRENTMETHOD " +
-                    "FROM REQUISITIONFORM r " +
-                    "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
-                    "LEFT JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
-                    "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
-                    "LEFT JOIN REQUEST req ON req.FORMID = r.FORMID " +
-                    "LEFT JOIN REQUESTTYPE rt ON req.TYPEID = rt.TYPEID " +
-                    "WHERE r.FORMID = ? ORDER BY req.REQUESTID";
+                        "SELECT r.FORMID, e.EMPNAME, e.PHONE, s.SECNAME, d.DEPTNAME, " +
+                        "d.DEPTHEAD_EMPID, r.TITLEFORM, r.REQUESTDATE, r.DEADLINE, " +
+                        "NVL((SELECT ai.STATE_STEP " +
+                        "     FROM APPROVALINFO ai " +
+                        "     WHERE ai.FORMID = r.FORMID " +
+                        "     ORDER BY ai.APPROVALID DESC " +
+                        "     FETCH FIRST 1 ROWS ONLY), 0) AS STATE_STEP, " +
+                        "req.REQUESTID, rt.TYPENAME, req.OTHERDETAILS_OR_PROGRAM, " +
+                        "req.DETAILOBJECTIVE, req.CURRENTMETHOD " +
+                        "FROM REQUISITIONFORM r " +
+                        "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
+                        "LEFT JOIN SECTION s ON e.SECID = s.SECID " +
+                        "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+                        "LEFT JOIN REQUEST req ON req.FORMID = r.FORMID " +
+                        "LEFT JOIN REQUESTTYPE rt ON req.TYPEID = rt.TYPEID " +
+                        "WHERE r.FORMID = ? ORDER BY req.REQUESTID";
                 try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                     pstmt.setString(1, formId);
                     try (ResultSet rs = pstmt.executeQuery()) {
@@ -104,7 +98,7 @@
                     }
                 }
 
-                // ----- Query 2 (kept separate): Permissions — different entity, multiple rows per form -----
+                // ----- Permissions query (kept separate) -----
                 if (hasData) {
                     String permSql =
                         "SELECT ISROOT, PATH, HASFULLCONTROL, HASMODIFY, HASREADEXECUTE, HASREAD, HASWRITE " +
@@ -127,7 +121,6 @@
                     }
                 }
             } // conn auto-closed
-            // zennnne แก้
         }
     } catch (Exception e) {
         System.out.println("Error Loading Form Details: " + e.getMessage());

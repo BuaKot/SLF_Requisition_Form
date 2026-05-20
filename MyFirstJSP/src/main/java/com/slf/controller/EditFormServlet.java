@@ -77,6 +77,7 @@ public class EditFormServlet extends HttpServlet {
         try {
             String prefillJson = buildPrefillJson(formId);
             request.setAttribute("prefillJson", prefillJson);
+            request.setAttribute("editedFormId", formId);
         } catch (SQLException e) {
             throw new ServletException("Failed to load old form data", e);
         }

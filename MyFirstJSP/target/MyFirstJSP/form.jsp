@@ -61,6 +61,9 @@
 
     <div class="form-container">
         <form action="${pageContext.request.contextPath}/submitRequest" method="post">
+            <c:if test="${not empty editedFormId}">
+                <input type="hidden" name="editedFormId" value="${editedFormId}">
+            </c:if>
             <div class="form-grid">
                 <!-- Name (auto‑filled, readonly) -->
                 <div class="form-group">

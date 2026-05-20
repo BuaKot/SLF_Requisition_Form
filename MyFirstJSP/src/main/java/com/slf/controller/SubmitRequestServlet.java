@@ -47,6 +47,14 @@ public class SubmitRequestServlet extends HttpServlet {
         form.setDeadline(request.getParameter("deadline"));
         form.setRequestTopic(request.getParameter("requestTopic"));
 
+        Integer editedFormId;
+        try {
+            editedFormId = parseEditedFormId(request.getParameter("editedFormId"));
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/submit.jsp");
+            return;
+        }
+
         // 2. Read the item arrays
         String[] types = request.getParameterValues("requestType[]");
         if (types == null) types = new String[0];
@@ -92,6 +100,9 @@ public class SubmitRequestServlet extends HttpServlet {
         // 3. Save using DAO
         try {
             requisitionDAO.save(form);
+            if (editedFormId != null) {
+                markOriginalFormAsEdited(editedFormId, empID);
+            }
             // 4. Forward to success page
             request.getRequestDispatcher("/submit-success.jsp").forward(request, response);
         } catch (Exception e) {
@@ -173,5 +184,43 @@ public class SubmitRequestServlet extends HttpServlet {
         }
 
         return sectionIds.iterator().next();
+    }
+
+    static Integer parseEditedFormId(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        int formId = Integer.parseInt(value.trim());
+        if (formId <= 0) {
+            throw new NumberFormatException("editedFormId must be positive");
+        }
+        return Integer.valueOf(formId);
+    }
+
+    private void markOriginalFormAsEdited(int editedFormId, int empId) throws Exception {
+        String sql =
+            "UPDATE REQUISITIONFORM rf " +
+            "SET rf.IS_EDITED = 1 " +
+            "WHERE rf.FORMID = ? " +
+            "AND rf.EMPID = ? " +
+            "AND NVL(rf.IS_EDITED, 0) = 0 " +
+            "AND EXISTS ( " +
+            "    SELECT 1 FROM APPROVALINFO ai " +
+            "    WHERE ai.FORMID = rf.FORMID " +
+            "    AND ai.APPROVALID = ( " +
+            "        SELECT MAX(ai2.APPROVALID) FROM APPROVALINFO ai2 WHERE ai2.FORMID = rf.FORMID " +
+            "    ) " +
+            "    AND ai.STATE_STEP < 0 " +
+            ")";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, editedFormId);
+            ps.setInt(2, empId);
+            int updatedRows = ps.executeUpdate();
+            if (updatedRows == 0) {
+                throw new Exception("Cannot mark original form as edited");
+            }
+        }
     }
 }

@@ -42,12 +42,6 @@
             margin: 0; padding: 0; background-color: #ffffff;
             overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh;
         }
-        .sticky-bar {
-            position: sticky; top: 0; background: white; width: 100%; height: 70px;
-            border-bottom: 5px solid #3272BB; display: flex; align-items: center; padding: 0 15px; z-index: 100;
-        }
-        .header-logos { display: flex; align-items: center; gap: clamp(5px, 2vw, 20px); margin-left: 15px; }
-        .header-logos img { height: clamp(30px, 8vw, 45px); }
         .banner { background: #C3EAFF; padding: clamp(20px, 6vw, 40px) 15px; text-align: center; color: #003366; }
         .banner h1 { font-size: clamp(1.1rem, 4vw, 1.5rem); margin: 0; line-height: 1.2; }
         .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; padding: 40px 20px; max-width: 1400px; margin: 0 auto; width: 100%; }
@@ -60,7 +54,6 @@
         .card:hover i { color: #003366; transform: scale(1.1); transition: all 0.3s ease; }
         .card i { font-size: 90px; color: #3272BB; margin-bottom: 20px; transition: all 0.3s ease; }
         .card p { font-weight: bold; font-size: 20px; color: #003366; margin: 0; line-height: 1.3; }
-        .contact-info p { margin: 0; white-space: nowrap; }
         
         .user-badge { background-color: #3272BB; color: white; padding: 8px 15px; border-radius: 20px; display: inline-block; margin-top: 10px; font-size: 0.9rem; }
         .role-badge { background-color: #2ecc71; color: white; padding: 4px 10px; border-radius: 10px; font-weight: bold; margin-left: 5px; }
@@ -77,25 +70,26 @@
         <a href="${pageContext.request.contextPath}/logout"><i class="fa-solid fa-arrow-right-from-bracket" style='margin-right: 10px'></i>ออกจากระบบ</a>
         <a href="${pageContext.request.contextPath}/Admin.jsp" class="admin-tab">
             <i class="fa-solid fa-circle-user"></i>Admin
-        </a>
+        </a>    
     </div>
 
 <div id='main'>
-    <div class='sticky-bar'>
-        <i class="fa fa-bars" onclick="toggleNav()" style="font-size:1.8rem; cursor:pointer; color:#333; padding: 10px;"></i>
-        <div class="header-logos">
-            <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
-            <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
-        </div>
-        <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
-            <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
-            <p style="margin-left: 5px; margin-right: 15px; font-weight: bold; color: #3272BB;">
-                คุณ: <%= escapeHtml(employeeName) %>
-            </p>
-            <p style="margin-left: 5px; margin-right: 15px; font-weight: bold; color: #3272BB;">
-                สอบถามข้อมูลเพิ่มเติม ติดต่อ 411
+    <div class="sticky-bar">
+        <i id="menuBtn" class="fa-solid fa-bars" onclick="toggleNav()"></i>
+        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
+        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
+        
+        <div class="user-info">
+            <i class="fa fa-circle-user"></i>
+            <p>
+                ${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}
             </p>
         </div>
+        <div class="contact-info">
+            <i class="fa-solid fa-circle-info"></i>
+            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+        </div>
+        
     </div>
 
     <div class="banner">

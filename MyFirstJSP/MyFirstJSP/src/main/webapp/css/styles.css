@@ -1,3 +1,4 @@
+/*Home Start*/
 @font-face {
     font-family: 'DBHelvethaica';
     src: url("fonts/DB\ HelvethaicaMon\ X\ Bd\ v3.2.ttf") format('ttf');
@@ -55,6 +56,13 @@ html, body{
     width: 100%;        /* Default to full width on mobile */
     max-width: 400px;   /* Won't grow larger than 400px */
     margin: 20px;       /* Simplified margin */
+    border-radius: 20px;
+}
+
+.option-box-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
 .option-pic{
@@ -76,27 +84,40 @@ html, body{
 }
 
 /* The sidebar menu */
+/* Sidebar stays mostly the same, but remove z-index if you want it to push */
 .sidebar {
   height: 100%;
-  width: 0; /* Initially hidden */
+  width: 0;
   position: fixed;
-  z-index: 1000; /* Stays on top of everything */
   top: 0;
   left: 0;
-  background-color: #3272BB; /* Matching your theme blue */
+  background-color: #C3EAFF;
   overflow-x: hidden;
-  transition: 0.5s; /* Smooth sliding effect */
+  transition: 0.5s; /* Smooth transition */
   padding-top: 60px;
+}
+
+/* The main content container */
+#main {
+  transition: all .5s; /* Smoothly animate margin AND width */
+  width: 100%;         /* Default full width */
+  margin-left: 0;
 }
 
 /* Sidebar links */
 .sidebar a {
-  padding: 8px 8px 8px 32px;
+  padding: 8px 8px 8px 8px;
   text-decoration: none;
   font-size: 25px;
-  color: white;
+  color: black;
   display: block;
   transition: 0.3s;
+  background-color: white;
+  margin: 10px 24px;
+  cursor: pointer;
+  border: solid #3272BB 2px;
+  border-radius: 10px;
+  text-align: center;
 }
 
 /* Close button position */
@@ -105,5 +126,24 @@ html, body{
   top: 0;
   right: 25px;
   font-size: 36px;
+  margin: 4px 2px;
   margin-left: 50px;
+  background: none;
+  border: none;
 }
+
+.sidebar .admin-tab{
+  position: absolute;
+  bottom: 0;
+  background-color: #3272BB;
+  color: white;
+  border: none;
+  border-radius: 0px;
+  padding: 12px 12px;
+  margin: 0px 0px;
+  width: 100%;
+  display:flex;
+  align-items: center;
+}
+
+/*Home End*/

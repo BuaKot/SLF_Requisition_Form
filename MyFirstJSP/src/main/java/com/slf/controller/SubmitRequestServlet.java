@@ -70,6 +70,22 @@ public class SubmitRequestServlet extends HttpServlet {
             return;
         }
 
+        // zennnne แก้
+        // Validate every requestType[] value is a parseable integer before touching the DAO.
+        // Gives a specific error (which item number) instead of a generic rollback message.
+        for (int i = 0; i < types.length; i++) {
+            try {
+                Integer.parseInt(types[i] == null ? "" : types[i].trim());
+            } catch (NumberFormatException e) {
+                request.setAttribute("error",
+                        "ประเภทคำขอที่ระบุไม่ถูกต้อง (รายการที่ " + (i + 1) + "): \""
+                        + types[i] + "\" ต้องเป็นตัวเลขเท่านั้น");
+                request.getRequestDispatcher("/form.jsp").forward(request, response);
+                return;
+            }
+        }
+        // zennnne แก้
+
         List<RequestItem> items = new ArrayList<>();
         for (int i = 0; i < types.length; i++) {
             RequestItem item = new RequestItem();

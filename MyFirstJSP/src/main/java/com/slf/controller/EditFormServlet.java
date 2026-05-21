@@ -18,7 +18,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import com.fasterxml.jackson.core.JsonProcessingException; // zennnne แก้
+import com.fasterxml.jackson.databind.ObjectMapper;        // zennnne แก้
 
 @WebServlet("/editForm")
 public class EditFormServlet extends HttpServlet {
@@ -74,13 +78,20 @@ public class EditFormServlet extends HttpServlet {
         }
 
         // ----- Build prefill JSON from old form -----
+        // zennnne แก้
         try {
-            String prefillJson = buildPrefillJson(formId);
+            String prefillJson = buildPrefillJson(formId, empId);
+            if (prefillJson == null) {
+                // Form doesn't belong to this user — ownership check failed
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
+                return;
+            }
             request.setAttribute("prefillJson", prefillJson);
             request.setAttribute("editedFormId", formId);
         } catch (SQLException e) {
             throw new ServletException("Failed to load old form data", e);
         }
+        // zennnne แก้
 
         request.getRequestDispatcher("/form.jsp").forward(request, response);
     }
@@ -88,7 +99,9 @@ public class EditFormServlet extends HttpServlet {
     // ---------------------------------------------------------------
     //  Build JSON string representing the old form's data
     // ---------------------------------------------------------------
-    private String buildPrefillJson(int formId) throws SQLException {
+    // zennnne แก้
+    private String buildPrefillJson(int formId, int empId) throws SQLException {
+    // zennnne แก้
         Connection conn = null;
         try {
             conn = DBConnection.getConnection();
@@ -99,20 +112,26 @@ public class EditFormServlet extends HttpServlet {
             int    sectionId  = 0;
             int    deptId     = 0;
 
+            // zennnne แก้
+            // SEC-3: เพิ่ม AND r.EMPID = ? เพื่อตรวจ ownership ป้องกัน IDOR
             String headerSql =
                 "SELECT r.TITLEFORM, TO_CHAR(r.DEADLINE,'YYYY-MM-DD') AS DEADLINE, " +
                 "r.ASSIGN_SECID, NVL(s.DEPTID, 0) AS DEPTID " +
                 "FROM REQUISITIONFORM r " +
                 "LEFT JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
-                "WHERE r.FORMID = ?";
+                "WHERE r.FORMID = ? AND r.EMPID = ?";
             try (PreparedStatement ps = conn.prepareStatement(headerSql)) {
                 ps.setInt(1, formId);
+                ps.setInt(2, empId);
+                // zennnne แก้
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         titleForm = nvl(rs.getString("TITLEFORM"));
                         deadline  = nvl(rs.getString("DEADLINE"));
                         sectionId = rs.getInt("ASSIGN_SECID");
                         deptId    = rs.getInt("DEPTID");
+                    } else {
+                        return null; // zennnne แก้ — form ไม่ใช่ของ user คนนี้
                     }
                 }
             }
@@ -158,8 +177,10 @@ public class EditFormServlet extends HttpServlet {
             }
 
             // ---------- Request items ----------
-            List<String> itemsJson   = new ArrayList<>();
-            boolean      serverUsed  = false; // attach permissions to first server item only
+            // zennnne แก้
+            // MAINT-6: เปลี่ยนจาก List<String> raw JSON → List<Map> แล้วให้ Jackson serialize
+            List<Map<String, Object>> items = new ArrayList<>();
+            boolean serverUsed = false;
 
             String itemSql =
                 "SELECT req.TYPEID, rt.TYPENAME, req.OTHERDETAILS_OR_PROGRAM, " +
@@ -171,55 +192,58 @@ public class EditFormServlet extends HttpServlet {
                 ps.setInt(1, formId);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        int    typeId        = rs.getInt("TYPEID");
-                        String typeName      = nvl(rs.getString("TYPENAME"));
+                        int    typeId         = rs.getInt("TYPEID");
+                        String typeName       = nvl(rs.getString("TYPENAME"));
                         String programOrOther = nvl(rs.getString("OTHERDETAILS_OR_PROGRAM"));
-                        String objective     = nvl(rs.getString("DETAILOBJECTIVE"));
-                        String currentMethod = nvl(rs.getString("CURRENTMETHOD"));
+                        String objective      = nvl(rs.getString("DETAILOBJECTIVE"));
+                        String currentMethod  = nvl(rs.getString("CURRENTMETHOD"));
 
                         boolean isServerType = typeName.contains("สิทธิ์") && typeName.contains("ข้อมูล");
 
-                        StringBuilder sb = new StringBuilder("{");
-                        sb.append("\"typeId\":").append(typeId).append(",");
-                        sb.append("\"programOrOther\":\"").append(esc(programOrOther)).append("\",");
-                        sb.append("\"objective\":\"").append(esc(objective)).append("\",");
-                        sb.append("\"currentMethod\":\"").append(esc(currentMethod)).append("\",");
-
+                        Map<String, Object> item = new LinkedHashMap<>();
+                        item.put("typeId",         typeId);
+                        item.put("programOrOther", programOrOther);
+                        item.put("objective",      objective);
+                        item.put("currentMethod",  currentMethod);
                         if (isServerType && !serverUsed) {
-                            sb.append("\"serverName\":\"").append(esc(serverName)).append("\",");
-                            sb.append("\"serverFolder\":\"").append(esc(serverFolder)).append("\",");
-                            sb.append("\"subFolder\":\"").append(esc(subFolder)).append("\",");
-                            sb.append("\"folderPerms\":").append(toJsonArr(folderPerms)).append(",");
-                            sb.append("\"subFolderPerms\":").append(toJsonArr(subFolderPerms));
+                            item.put("serverName",     serverName);
+                            item.put("serverFolder",   serverFolder);
+                            item.put("subFolder",      subFolder);
+                            item.put("folderPerms",    folderPerms);
+                            item.put("subFolderPerms", subFolderPerms);
                             serverUsed = true;
                         } else {
-                            sb.append("\"serverName\":\"\",\"serverFolder\":\"\",\"subFolder\":\"\",");
-                            sb.append("\"folderPerms\":[],\"subFolderPerms\":[]");
+                            item.put("serverName",     "");
+                            item.put("serverFolder",   "");
+                            item.put("subFolder",      "");
+                            item.put("folderPerms",    new ArrayList<>());
+                            item.put("subFolderPerms", new ArrayList<>());
                         }
-                        sb.append("}");
-                        itemsJson.add(sb.toString());
+                        items.add(item);
                     }
                 }
             }
 
-            // ---------- Assemble ----------
-            StringBuilder json = new StringBuilder("{");
-            json.append("\"titleForm\":\"").append(esc(titleForm)).append("\",");
-            json.append("\"deadline\":\"").append(esc(deadline)).append("\",");
-            json.append("\"sectionId\":").append(sectionId).append(",");
-            json.append("\"deptId\":").append(deptId).append(",");
-            json.append("\"items\":[").append(String.join(",", itemsJson)).append("]");
-            json.append("}");
-            return json.toString();
+            // ---------- Assemble with Jackson (handles all escaping correctly) ----------
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, Object> root = new LinkedHashMap<>();
+                root.put("titleForm", titleForm);
+                root.put("deadline",  deadline);
+                root.put("sectionId", sectionId);
+                root.put("deptId",    deptId);
+                root.put("items",     items);
+                return mapper.writeValueAsString(root);
+            } catch (JsonProcessingException e) {
+                throw new SQLException("JSON serialization failed", e);
+            }
+            // zennnne แก้
 
         } finally {
             if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
         }
     }
 
-    /**
-     * Parse \\server\folder[\subfolder] → ["server", "folder"] or ["server", "folder", "subfolder"]
-     */
     private String[] parsePath(String path) {
         if (path == null || !path.startsWith("\\\\")) return new String[]{"", ""};
         String noPrefix = path.substring(2);
@@ -234,29 +258,5 @@ public class EditFormServlet extends HttpServlet {
 
     private String nvl(String s) {
         return s == null ? "" : s.trim();
-    }
-
-    /** Escape for embedding inside a JS string literal */
-    private String esc(String s) {
-        if (s == null) return "";
-        return s.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t")
-                .replace("<", "\\u003C")
-                .replace(">", "\\u003E")
-                .replace("/", "\\/");
-    }
-
-    private String toJsonArr(List<String> list) {
-        if (list == null || list.isEmpty()) return "[]";
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < list.size(); i++) {
-            if (i > 0) sb.append(",");
-            sb.append("\"").append(esc(list.get(i))).append("\"");
-        }
-        sb.append("]");
-        return sb.toString();
     }
 }

@@ -227,15 +227,29 @@
     if (loggedInEmpObj == null) {
         loggedInEmpObj = session.getAttribute("empid");
     }
+    // zennnne แก้
+    if (loggedInEmpObj == null) {
+        response.sendRedirect(request.getContextPath() + "/login");
+        return;
+    }
+    // zennnne แก้
     int loggedInEmpId = Integer.parseInt(loggedInEmpObj.toString());
-    
+
     try {
         conn = DBConnection.getConnection();
-        
-        String sql = 
+
+        // zennnne แก้
+        // เปลี่ยน correlated subquery → CTE (เหมือน DirectorApprove.jsp)
+        String sql =
+                "WITH latest_step AS ( " +
+                "    SELECT FORMID, STATE_STEP, " +
+                "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
+                "    FROM APPROVALINFO " +
+                ") " +
                 "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, " +
                 "requester_s.SECNAME AS SECTION_NAME, requester_d.DEPTNAME AS DEPARTMENT_NAME " +
                 "FROM REQUISITIONFORM r " +
+                "JOIN latest_step ls ON ls.FORMID = r.FORMID AND ls.RN = 1 " +
                 "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
                 "LEFT JOIN SECTION requester_s ON e.SECID = requester_s.SECID " +
                 "LEFT JOIN DEPARTMENT requester_d ON requester_s.DEPTID = requester_d.DEPTID " +
@@ -248,6 +262,7 @@
                 "AND assigned_s.SECTIONHEAD_EMPID = ? " +
                 "AND r.DEADLINE >= TRUNC(SYSDATE) " +
                 "ORDER BY r.FORMID DESC";
+        // zennnne แก้
 
         pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, String.valueOf(loggedInEmpId));

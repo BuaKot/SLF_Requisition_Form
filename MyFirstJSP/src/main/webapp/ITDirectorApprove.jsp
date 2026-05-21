@@ -224,24 +224,39 @@
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-    
+    // zennnne แก้
+    Object itDirEmpObj = session.getAttribute("loggedInEmpId");
+    if (itDirEmpObj == null) {
+        itDirEmpObj = session.getAttribute("empid");
+    }
+    if (itDirEmpObj == null) {
+        response.sendRedirect(request.getContextPath() + "/login");
+        return;
+    }
+    // zennnne แก้
+
     try {
         conn = DBConnection.getConnection();
-        
-        String sql = 
+
+        // zennnne แก้
+        // เปลี่ยน correlated subquery → CTE (เหมือน DirectorApprove.jsp)
+        String sql =
+            "WITH latest_step AS ( " +
+            "    SELECT FORMID, STATE_STEP, " +
+            "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
+            "    FROM APPROVALINFO " +
+            ") " +
             "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, " +
             "s.SECNAME AS SECTION_NAME, d.DEPTNAME AS DEPARTMENT_NAME " +
             "FROM REQUISITIONFORM r " +
+            "JOIN latest_step ls ON ls.FORMID = r.FORMID AND ls.RN = 1 " +
             "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
             "LEFT JOIN SECTION s ON e.SECID = s.SECID " +
             "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
-            "WHERE (SELECT ai.STATE_STEP " +
-            "       FROM APPROVALINFO ai " +
-            "       WHERE ai.FORMID = r.FORMID " +
-            "       ORDER BY ai.APPROVALID DESC " +
-            "       FETCH FIRST 1 ROWS ONLY) = 2 " +
+            "WHERE ls.STATE_STEP = 2 " +
             "AND r.DEADLINE >= TRUNC(SYSDATE) " +
             "ORDER BY r.FORMID DESC";
+        // zennnne แก้
 
         pstmt = conn.prepareStatement(sql);
         rs = pstmt.executeQuery();

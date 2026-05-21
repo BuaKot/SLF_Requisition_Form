@@ -50,25 +50,6 @@
     String orderDir = "desc".equals(sortParam) ? "DESC" : "ASC";
     // zennnne แก้
 
-    // zennnne แก้
-    String showParam = request.getParameter("show");
-    if (showParam == null || showParam.trim().isEmpty()) showParam = "pending";
-    String sortParam = request.getParameter("sort");
-    if (!"desc".equals(sortParam)) sortParam = "asc";
-    List<String> statusConds = new ArrayList<>();
-    for (String s : showParam.split(",")) {
-        switch (s.trim().toLowerCase()) {
-            case "pending":  statusConds.add("(NVL(ls.STATE_STEP,0) BETWEEN 0 AND 4 AND RF.DEADLINE >= TRUNC(SYSDATE))"); break;
-            case "overdue":  statusConds.add("(NVL(ls.STATE_STEP,0) BETWEEN 0 AND 4 AND RF.DEADLINE < TRUNC(SYSDATE))");  break;
-            case "rejected": statusConds.add("NVL(ls.STATE_STEP,0) < 0");  break;
-            case "approved": statusConds.add("NVL(ls.STATE_STEP,0) >= 5"); break;
-        }
-    }
-    String statusWhere = statusConds.isEmpty() ? "1=0"
-        : "(" + String.join(" OR ", statusConds) + ")";
-    String orderDir = "desc".equals(sortParam) ? "DESC" : "ASC";
-    // zennnne แก้
-
     Connection conn = null;
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -430,6 +411,7 @@ try {
             </a>
         <% } %>
     </div>
+    <!-- zennnne แก้ -->
 </div>
 
 <!-- CONFIRM POPUP -->
@@ -616,43 +598,4 @@ function closeDeadlinePopup() {
 </script>
 
 </body>
-<script>
-
-function toggleNav() {
-  var sidebar = document.getElementById("mySidebar");
-  var main = document.getElementById("main");
-  
-  if (sidebar.style.width === "250px") {
-    sidebar.style.width = "0";
-    main.style.marginLeft = "0";
-    main.style.width = "100%";
-  } else {
-    sidebar.style.width = "250px";
-    main.style.marginLeft = "250px";
-    main.style.width = "calc(100% - 250px)";
-  }
-}
-
-/* Open popup when click confirm button */
-document.querySelectorAll(".confirm-btn").forEach(button => {
-    button.addEventListener("click", function() {
-        currentButton = this;
-        document.getElementById("confirmPopup").style.display = "flex";
-    });
-});
-
-/* Close popup */
-function closePopup() {
-    document.getElementById("confirmPopup").style.display = "none";
-}
-
-/* Final confirm */
-document.getElementById("popupConfirm").addEventListener("click", function() {
-    if (currentButton) {
-        currentButton.innerText = "ยืนยันแล้ว";
-        currentButton.classList.add("confirmed");
-    }
-    closePopup();
-});
-</script>
 </html>

@@ -1,4 +1,4 @@
-﻿package com.slf.controller;
+package com.slf.controller;
 
 import com.slf.dao.DBConnection;
 
@@ -57,7 +57,7 @@ public class SubmitApprovalServlet extends HttpServlet {
 
         // zennnne แก้
         final java.util.Set<String> ALLOWED_REDIRECTS = new java.util.HashSet<>(java.util.Arrays.asList(
-            "Process.jsp", "DirectorApprove.jsp", "ITDirectorApprove.jsp", "TechnicalApprove.jsp"
+            "Process.jsp", "DirectorApprove.jsp", "ITDirectorApprove.jsp", "TechnicalApprove.jsp", "submit.jsp"
         ));
         if (!ALLOWED_REDIRECTS.contains(redirectPage)) {
             redirectPage = "DirectorApprove.jsp";

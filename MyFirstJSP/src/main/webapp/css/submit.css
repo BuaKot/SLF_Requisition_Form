@@ -438,12 +438,7 @@ body {
     }
 }
 
-<<<<<<< HEAD
 /* ================= POPUP STYLES ================= */
-=======
-
-/* Popup Background */
->>>>>>> c16cd4518b1c1c077511b0799889594f3a68da48
 .popup-overlay {
     display: none;
     position: fixed;
@@ -451,7 +446,6 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-<<<<<<< HEAD
     background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
@@ -540,55 +534,4 @@ body {
 
     /* จัดข้อความให้เริ่มบนซ้าย */
     vertical-align: top;
-=======
-    background: rgba(0,0,0,0.4);
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-/* Popup Box */
-.popup-box {
-    background: white;
-    padding: 30px;
-    width: 320px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-}
-
-/* Buttons */
-.popup-buttons {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-}
-
-.popup-confirm-btn,
-.popup-cancel-btn {
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    border-radius: 8px;
-    font-size: 16px;
-}
-
-.popup-confirm-btn {
-    background-color: #28a745;
-    color: white;
-}
-
-.popup-cancel-btn {
-    background-color: #dc3545;
-    color: white;
-}
-
-/* Confirmed State */
-.confirmed {
-    color: green !important;
-    font-weight: bold;
-    border: 2px solid green;
-    background-color: #f0fff0;
->>>>>>> c16cd4518b1c1c077511b0799889594f3a68da48
 }

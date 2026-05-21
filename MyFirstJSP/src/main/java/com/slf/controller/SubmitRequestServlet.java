@@ -104,6 +104,7 @@ public class SubmitRequestServlet extends HttpServlet {
                 markOriginalFormAsEdited(editedFormId, empID);
             }
             // 4. Forward to success page
+            request.setAttribute("submittedFormId", form.getFormId());
             request.getRequestDispatcher("/submit-success.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();

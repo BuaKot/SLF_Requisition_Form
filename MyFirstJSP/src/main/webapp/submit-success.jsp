@@ -109,6 +109,21 @@
             margin: 0 0 35px 0;
         }
 
+        .form-id-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 0 24px 0;
+            padding: 10px 18px;
+            border-radius: 10px;
+            background: #f0f6fc;
+            border: 1px solid #C3EAFF;
+            color: #003366;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
         /* Responsive Button Group Layout */
         .button-group {
             display: flex;
@@ -198,6 +213,10 @@
     <div class="success-card">
         <i class="fa-solid fa-check main-tick"></i>
         <h1>ส่งคำขอเรียบร้อยแล้ว</h1>
+        <div class="form-id-badge">
+            <i class="fa-solid fa-file-lines"></i>
+            FormID: ${submittedFormId}
+        </div>
         <p>คำขอของคุณถูกบันทึกเข้าสู่ระบบอย่างปลอดภัยแล้ว<br>เจ้าหน้าที่จะดำเนินการตรวจสอบข้อมูลในลำดับถัดไป</p>
         
         <div class="button-group">

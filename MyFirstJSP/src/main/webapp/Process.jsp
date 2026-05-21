@@ -207,6 +207,11 @@
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    Object loggedInEmpObj = session.getAttribute("loggedInEmpId");
+    if (loggedInEmpObj == null) {
+        loggedInEmpObj = session.getAttribute("empid");
+    }
+    int loggedInEmpId = Integer.parseInt(loggedInEmpObj.toString());
     
     try {
         conn = DBConnection.getConnection();
@@ -223,10 +228,17 @@
                 "       WHERE ai.FORMID = r.FORMID " +
                 "       ORDER BY ai.APPROVALID DESC " +
                 "       FETCH FIRST 1 ROWS ONLY) = 3 " +
+                "AND (SELECT ai.DEV_EMPID " +
+                "       FROM APPROVALINFO ai " +
+                "       WHERE ai.FORMID = r.FORMID " +
+                "       AND ai.DEV_EMPID IS NOT NULL " +
+                "       ORDER BY ai.APPROVALID DESC " +
+                "       FETCH FIRST 1 ROWS ONLY) = ? " +
                 "AND r.DEADLINE >= TRUNC(SYSDATE) " +
                 "ORDER BY r.FORMID DESC";
 
         pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, loggedInEmpId);
         rs = pstmt.executeQuery();
 
         while (rs.next()) {

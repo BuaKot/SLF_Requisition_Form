@@ -25,9 +25,11 @@
     // ----- 2. Data holders -----
     String empName = "", sectionName = "", departmentName = "", phone = "";
     String reqDate = "", deadlineDate = "", titleForm = "";
+    int assignedSecId = 0;
     boolean hasData = false;
     List<Map<String, String>> requestItems = new ArrayList<>();
     List<Map<String, Object>> permissions = new ArrayList<>();
+    List<Map<String, String>> technicians = new ArrayList<>();
 
     Connection conn = null;
     PreparedStatement pstmt = null;
@@ -41,7 +43,7 @@
 
             // ----- Header -----
             String sql = "SELECT r.FORMID, e.EMPNAME, e.PHONE, s.SECNAME, d.DEPTNAME, " +
-                         "r.TITLEFORM, r.REQUESTDATE, r.DEADLINE " +
+                         "r.TITLEFORM, r.REQUESTDATE, r.DEADLINE, r.ASSIGN_SECID " +
                          "FROM REQUISITIONFORM r " +
                          "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
                          "LEFT JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
@@ -57,6 +59,7 @@
                 departmentName = nvl(rs.getString("DEPTNAME"));
                 phone = nvl(rs.getString("PHONE"));
                 titleForm = nvl(rs.getString("TITLEFORM"));
+                assignedSecId = rs.getInt("ASSIGN_SECID");
                 if (rs.getDate("DEADLINE") != null) {
                     deadlineDate = sdfDisplay.format(rs.getDate("DEADLINE"));
                 } else {
@@ -72,6 +75,25 @@
 
             // ----- Request items -----
             if (hasData) {
+                if (assignedSecId > 0) {
+                    String technicianSql =
+                        "SELECT EMPID, EMPNAME, POSITION " +
+                        "FROM EMPLOYEE " +
+                        "WHERE SECID = ? " +
+                        "ORDER BY EMPNAME";
+                    pstmt = conn.prepareStatement(technicianSql);
+                    pstmt.setInt(1, assignedSecId);
+                    rs = pstmt.executeQuery();
+                    while (rs.next()) {
+                        Map<String, String> technician = new HashMap<>();
+                        technician.put("empId", String.valueOf(rs.getInt("EMPID")));
+                        technician.put("empName", nvl(rs.getString("EMPNAME")));
+                        technician.put("position", nvl(rs.getString("POSITION")));
+                        technicians.add(technician);
+                    }
+                    closeQuietly(rs, pstmt);
+                }
+
                 String itemSql =
                     "SELECT req.REQUESTID, req.TYPEID, rt.TYPENAME, req.OTHERDETAILS_OR_PROGRAM, " +
                     "req.DETAILOBJECTIVE, req.CURRENTMETHOD " +
@@ -337,6 +359,20 @@
                 <h3 style="margin-top: 0; color: #3272BB; font-size: 1.1rem; font-weight: bold; margin-bottom: 15px;">
                     ความเห็นและการอนุมัติเชิงเทคนิค
                 </h3>
+                <div class="form-group full-width" style="margin-bottom: 16px;">
+                    <label>ผู้รับมอบหมายงาน <span style="color:red">*</span></label>
+                    <select name="devEmpId" id="devEmpId">
+                        <option value="">-- เลือกผู้รับมอบหมาย --</option>
+                        <% for (Map<String, String> technician : technicians) { %>
+                            <option value="<%= technician.get("empId") %>">
+                                <%= technician.get("empName") %> (ID: <%= technician.get("empId") %>, <%= technician.get("position") %>)
+                            </option>
+                        <% } %>
+                    </select>
+                    <% if (technicians.isEmpty()) { %>
+                        <small style="color:#CC0000; margin-top:6px;">ไม่พบพนักงานในส่วนงานปลายทางของคำขอนี้</small>
+                    <% } %>
+                </div>
                 <div class="form-group full-width">
                     <textarea name="comment" rows="4" data-maxbytes="500" style="width: 100%; border: 1px solid #3272BB; border-radius: 5px; padding: 10px;" placeholder="ระบุความเห็นและบันทึกข้อความที่นี่..."></textarea>
                 </div>
@@ -394,6 +430,17 @@ document.addEventListener("DOMContentLoaded", function () {
             if (overLimit.length > 0) {
                 event.preventDefault();
                 alert("ข้อมูลเกินขนาดที่กำหนด :\n- " + overLimit.join("\n- "));
+                return;
+            }
+            var submitter = event.submitter || document.activeElement;
+            if (submitter && submitter.name === "action" && submitter.value === "approve") {
+                var devSelect = document.getElementById("devEmpId");
+                if (!devSelect || devSelect.value.trim() === "") {
+                    event.preventDefault();
+                    alert("กรุณาเลือกผู้รับมอบหมายงาน");
+                    if (devSelect) devSelect.focus();
+                    return;
+                }
             }
         });
     }

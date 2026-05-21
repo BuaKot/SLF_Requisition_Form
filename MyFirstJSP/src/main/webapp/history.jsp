@@ -1,4 +1,4 @@
-<%@ page isELIgnored="false" %>
+﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat" %>
 
@@ -55,6 +55,23 @@
         needsEmpParam = true;
     }
     // Admin, ITDirector → no additional filter (see all completed forms)
+    // zennnne แก้
+
+    // zennnne แก้
+    String showParam = request.getParameter("show");
+    if (showParam == null || showParam.trim().isEmpty()) showParam = "rejected,approved";
+    String sortParam = request.getParameter("sort");
+    if (!"desc".equals(sortParam)) sortParam = "asc";
+    List<String> statusConds = new ArrayList<>();
+    for (String s : showParam.split(",")) {
+        switch (s.trim().toLowerCase()) {
+            case "rejected": statusConds.add("ls.STATE_STEP < 0");  break;
+            case "approved": statusConds.add("ls.STATE_STEP >= 5"); break;
+        }
+    }
+    String histStatusWhere = statusConds.isEmpty() ? "1=0"
+        : "(" + String.join(" OR ", statusConds) + ")";
+    String orderDir = "desc".equals(sortParam) ? "DESC" : "ASC";
     // zennnne แก้
 
     List<Map<String, Object>> formList = new ArrayList<>();
@@ -405,9 +422,9 @@
             "LEFT JOIN EMPLOYEE   E ON RF.EMPID  = E.EMPID " +
             "LEFT JOIN SECTION    S ON E.SECID   = S.SECID " +
             "LEFT JOIN DEPARTMENT D ON S.DEPTID  = D.DEPTID " +
-            "WHERE (ls.STATE_STEP >= 5 OR ls.STATE_STEP < 0) " +
+            "WHERE " + histStatusWhere + " " +
             roleWhere +
-            "ORDER BY RF.FORMID DESC " +
+            "ORDER BY RF.DEADLINE " + orderDir + ", RF.FORMID DESC " +
             "OFFSET ? ROWS FETCH FIRST ? ROWS ONLY";
         // zennnne แก้
 
@@ -491,19 +508,21 @@
     </div><!-- /history-list -->
 
     <!-- PAGINATION -->
+    <!-- zennnne แก้ -->
     <div class="pagination">
         <% if (currentPage > 1) { %>
-            <a href="?page=<%= currentPage - 1 %>" style="text-decoration:none;">
+            <a href="?page=<%= currentPage - 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>" style="text-decoration:none;">
                 <button type="button" class="page-btn">« ก่อนหน้า</button>
             </a>
         <% } %>
         <span class="page-num">หน้า <%= currentPage %></span>
         <% if (formList.size() == pageSize) { %>
-            <a href="?page=<%= currentPage + 1 %>" style="text-decoration:none;">
+            <a href="?page=<%= currentPage + 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>" style="text-decoration:none;">
                 <button type="button" class="page-btn">ถัดไป »</button>
             </a>
         <% } %>
     </div>
+    <!-- zennnne แก้ -->
 
 </div><!-- /main -->
 
@@ -523,14 +542,11 @@ function toggleNav() {
 }
 
 // zennnne แก้
-let sortOrder = 'asc';
+let sortOrder = (new URLSearchParams(window.location.search).get('sort') || 'asc');
 
-function applyFilterAndSort() {
-    const checkedStatuses = Array.from(document.querySelectorAll('.filter-checkboxes input:checked'))
-        .map(function(cb) { return cb.value; });
+function applySort() {
     const list  = document.querySelector('.history-list');
     const cards = Array.from(list.querySelectorAll('.history-card'));
-
     cards.sort(function(a, b) {
         const da = a.dataset.deadline || '9999-12-31';
         const db = b.dataset.deadline || '9999-12-31';
@@ -538,23 +554,38 @@ function applyFilterAndSort() {
         return da > db ? -1 : da < db ? 1 : 0;
     });
     cards.forEach(function(c) { list.appendChild(c); });
-    cards.forEach(function(c) {
-        c.style.display = checkedStatuses.includes(c.dataset.status) ? '' : 'none';
-    });
 }
 
 function setSortOrder(order) {
     sortOrder = order;
     document.getElementById('sortAscBtn').classList.toggle('active',  order === 'asc');
     document.getElementById('sortDescBtn').classList.toggle('active', order === 'desc');
-    applyFilterAndSort();
+    const sp = new URLSearchParams(window.location.search);
+    sp.set('sort', order);
+    history.replaceState(null, '', '?' + sp.toString());
+    applySort();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    const initParams = new URLSearchParams(window.location.search);
+    const initShow   = (initParams.get('show') || 'rejected,approved').split(',').map(function(s) { return s.trim(); });
     document.querySelectorAll('.filter-checkboxes input').forEach(function(cb) {
-        cb.addEventListener('change', applyFilterAndSort);
+        cb.checked = initShow.includes(cb.value);
     });
-    applyFilterAndSort();
+    document.getElementById('sortAscBtn').classList.toggle('active',  sortOrder === 'asc');
+    document.getElementById('sortDescBtn').classList.toggle('active', sortOrder === 'desc');
+    applySort();
+
+    document.querySelectorAll('.filter-checkboxes input').forEach(function(cb) {
+        cb.addEventListener('change', function() {
+            const checked = Array.from(document.querySelectorAll('.filter-checkboxes input:checked'))
+                .map(function(c) { return c.value; });
+            const sp = new URLSearchParams(window.location.search);
+            sp.set('show', checked.length > 0 ? checked.join(',') : 'none');
+            sp.set('page', '1');
+            window.location.href = '?' + sp.toString();
+        });
+    });
 });
 // zennnne แก้
 </script>

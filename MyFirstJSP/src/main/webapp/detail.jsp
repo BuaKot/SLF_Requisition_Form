@@ -79,7 +79,6 @@
 
 <%
     try {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
         conn = DBConnection.getConnection();
 
         // ---------- Header ----------

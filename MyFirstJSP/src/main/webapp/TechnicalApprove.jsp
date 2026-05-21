@@ -22,34 +22,6 @@
             margin: 0;
         }
 
-        /* Sticky Bar ตามแบบเป๊ะ */
-        .sticky-bar {
-            background: #fafafa;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #ddd;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .sticky-bar a {
-            color: #333;
-            text-decoration: none;
-        }
-
-        .contact-info {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .contact-info p {
-            margin: 0;
-            font-size: 14px;
-        }
 
         .banner {
             background: #C3EAFF;

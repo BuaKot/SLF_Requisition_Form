@@ -1,0 +1,288 @@
+[33mcommit 331815d8a1dcc082663193fbf079b90355f54603[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mlion[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/lion[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: zen <zenandzen18@gmail.com>
+Date:   Thu May 21 12:39:17 2026 +0700
+
+    Fix submit.css - remove conflict markers, use zennnnne version
+
+[33mcommit 4bbf1047cfc1445eddd1659bb9b5b5f1ec413734[m
+Author: zen <zenandzen18@gmail.com>
+Date:   Thu May 21 12:37:46 2026 +0700
+
+    Fix submit.jsp - replace conflict-marked version with zennnnne version
+
+[33mcommit 3c935a4339a861847e2fd18a9e0662e3d4b9b236[m
+Merge: 15d6d78 19838c3
+Author: PoomTalubnark <66010638@kmitl.ac.th>
+Date:   Thu May 21 12:17:23 2026 +0700
+
+    Merge pull request #12 from BuaKot/poomes
+    
+    Poomes
+
+[33mcommit 19838c325a9c4eeba4b158d06b00a71ab5032fb6[m[33m ([m[1;31morigin/poomes[m[33m, [m[1;32mpoomes[m[33m)[m
+Author: PoomTalubnark <66010638@kmitl.ac.th>
+Date:   Thu May 21 12:16:43 2026 +0700
+
+    ยพรีส
+
+[33mcommit 776f1e14a97a5a8520ad69eef0a807283621d2ff[m
+Merge: 918871a 6b5d98a
+Author: PoomTalubnark <66010638@kmitl.ac.th>
+Date:   Thu May 21 12:16:39 2026 +0700
+
+    Merge branch 'main' of https://github.com/BuaKot/SLF_Requisition_Form into poomes
+
+[33mcommit 6b5d98a5028e4b984be53a1c52b346912c1c9895[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Thu May 21 12:07:35 2026 +0700
+
+    Update Directorapprove.jsp
+
+[33mcommit 918871a1cfc141dbf701a4b356df5c9d6f5a0878[m
+Author: PoomTalubnark <66010638@kmitl.ac.th>
+Date:   Thu May 21 12:04:28 2026 +0700
+
+    new
+
+[33mcommit 7db0d9cdbf25c9f20daccc15308c278ddc6d7abf[m
+Author: PoomTalubnark <66010638@kmitl.ac.th>
+Date:   Thu May 21 12:03:58 2026 +0700
+
+    Remove target from git tracking
+
+[33mcommit 15d6d788c34933f0fc8d7866213d570a02c5132a[m[33m ([m[1;31morigin/zennnnne[m[33m)[m
+Author: zen <zenandzen18@gmail.com>
+Date:   Thu May 21 11:56:52 2026 +0700
+
+    update history.jsp, submit.jsp, SubmitApprovalServlet.java from zen_files.zip
+    
+    Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+[33mcommit 9c55eebfaa846644c620708e41b42b292c81529c[m
+Author: PoomTalubnark <66010638@kmitl.ac.th>
+Date:   Thu May 21 11:49:10 2026 +0700
+
+    wow
+
+[33mcommit c4215df893052fc4f1743628e9b6ef563896a82a[m
+Author: PoomTalubnark <66010638@kmitl.ac.th>
+Date:   Thu May 21 11:48:53 2026 +0700
+
+    Ignore target folder
+
+[33mcommit 70b0067abfc058ec4c2f186005fead5636fbb86e[m
+Author: PoomTalubnark <66010638@kmitl.ac.th>
+Date:   Thu May 21 11:46:05 2026 +0700
+
+    Poom Head sec
+    
+    d
+
+[33mcommit 18b3cb99a0a59080b5de1d61ac74c06289a21b28[m
+Merge: 81ac209 c16cd45
+Author: PoomTalubnark <66010638@kmitl.ac.th>
+Date:   Thu May 21 11:31:54 2026 +0700
+
+    Poom Head sec
+    
+    d
+
+[33mcommit 81ac209551be3f67df356cb4228c6cdcf67736de[m
+Merge: d8bd6a9 1fe6a64
+Author: Roadlion <132723756+Roadlion@users.noreply.github.com>
+Date:   Thu May 21 11:19:45 2026 +0700
+
+    Merge pull request #10 from BuaKot/lion
+    
+    Took out some text and updated titles
+
+[33mcommit 1fe6a64f3fd5a0274018dbabf54daf68c8114c08[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Thu May 21 11:02:26 2026 +0700
+
+    Changed some names
+
+[33mcommit e7ace855cdc9b9982c00b68545cfdebb72d5d340[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Thu May 21 10:07:19 2026 +0700
+
+    Mystery
+
+[33mcommit d8bd6a9d04b4f0050a8976faf9ebbbe5ab20d3aa[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Thu May 21 10:02:37 2026 +0700
+
+    Da Nuke
+
+[33mcommit 3b82b51b09dcad5bf1b01767fa5cefe0f95758e6[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Thu May 21 09:52:17 2026 +0700
+
+    Remove target/ from version control and add to .gitignore
+
+[33mcommit 60c22c78c98c6e468f0a97709c48bb1604b8edc4[m
+Author: Laziy <dvis.vichitlaksana@gmail.com>
+Date:   Thu May 21 09:42:40 2026 +0700
+
+    Update detail.jsp
+    
+    upd
+
+[33mcommit 3c04ed567baccf8927d0866b69b5c1becc4277fe[m
+Merge: 47adc67 c5356e3
+Author: Laziy <dvis.vichitlaksana@gmail.com>
+Date:   Thu May 21 09:24:30 2026 +0700
+
+    Merge branch 'lion' of https://github.com/BuaKot/SLF_Requisition_Form into lion
+
+[33mcommit 47adc671a699f0ab9860abea85623a48a408815b[m
+Author: Laziy <dvis.vichitlaksana@gmail.com>
+Date:   Thu May 21 09:24:15 2026 +0700
+
+    Update detail.jsp
+
+[33mcommit c5356e32fb65468e597a19526ecae7945c71d5f0[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Thu May 21 09:22:54 2026 +0700
+
+    Good Morning chat
+
+[33mcommit 8257262aa9b30f8fdd87bfd51b114690ba00d582[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Wed May 20 16:26:26 2026 +0700
+
+    YEAH
+
+[33mcommit 0681df4ba5f38445adceefbe14d8a11eff42cb92[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Wed May 20 16:06:32 2026 +0700
+
+    Submit Page Sorting
+
+[33mcommit f240d0674f81446fb6dda2c888199806d31c100d[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Wed May 20 15:59:20 2026 +0700
+
+    sticky bar update
+
+[33mcommit c5be62f6e40fd3fec2f0a226a1c82864873d342b[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Wed May 20 15:45:23 2026 +0700
+
+    spiderman
+
+[33mcommit d6c73335dda3e2d1ae8026dba82afef9f0870b68[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Wed May 20 15:23:39 2026 +0700
+
+    skibidi
+
+[33mcommit 2769f0708a29889aa0447e7f939a0ee676414eb4[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Wed May 20 15:01:22 2026 +0700
+
+    UHHHH
+
+[33mcommit ccf6c95f7ef5d9312504b490c6059f9fd824a020[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Wed May 20 14:34:08 2026 +0700
+
+    mai wai laew
+
+[33mcommit e9a1aeb7eeab1cf0dcb4b9735e8dc3bb9b173020[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Wed May 20 14:10:01 2026 +0700
+
+    ZEN FAST  LOAD
+
+[33mcommit b2fbc9c6297e12aaa852e13ca7f34c00fade3edc[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Wed May 20 11:51:55 2026 +0700
+
+    Updated Sticky Bar
+    
+    Includes EMPID and EMPNAME
+
+[33mcommit d9d80fce1378ac5368cae6fc0494e7697fdf0748[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Wed May 20 11:07:22 2026 +0700
+
+    X gon give it to ya
+    
+    Included the edited form logic from Poome
+
+[33mcommit 5aa732cd3552bed4b7fb07580fc9dde22d654d4b[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Wed May 20 10:16:36 2026 +0700
+
+    Incorporated Zen's Files
+
+[33mcommit 1a493406cd1d5a836e85674252b46cae868ba61e[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Wed May 20 09:59:55 2026 +0700
+
+    Good Morning GitHub
+
+[33mcommit e6d0d6cc21a7b7367b071a26f9e364fee07e66ba[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Tue May 19 16:20:48 2026 +0700
+
+    changed some queries
+
+[33mcommit 12da05062c84ecf00a2caf7ef82ceff85c1f0883[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Tue May 19 15:59:48 2026 +0700
+
+    small login page fixes
+
+[33mcommit f52c94cb14729f73a968f08743efe389faf76369[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Tue May 19 15:34:15 2026 +0700
+
+    Added Director Pop Up
+    
+    Directors can't fill forms and are told to tell their employees to make a form for them to sign off on instead
+
+[33mcommit e4a6deac84702a36fd8504ea8a2296afba857d35[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Tue May 19 15:26:35 2026 +0700
+
+    kys
+
+[33mcommit e29a3b874076d342a2ee614838dca446ab6713e8[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Tue May 19 15:07:49 2026 +0700
+
+    AHHHHHHHHHHh
+
+[33mcommit 0cee9b6ebacddc4dcfb1c341be4b9bc96938a0c8[m
+Author: Laziy <dvis.vichitlaksana@gmail.com>
+Date:   Tue May 19 14:33:42 2026 +0700
+
+    vis
+    
+    real upd
+
+[33mcommit e7331b6cf868db8127e376a0b4c17fd038636f39[m
+Author: Laziy <dvis.vichitlaksana@gmail.com>
+Date:   Tue May 19 14:13:15 2026 +0700
+
+    vis
+    
+    my upd
+
+[33mcommit ab790683c18c40268925a0cf18dd8ff8d9727bec[m
+Author: Laziy <dvis.vichitlaksana@gmail.com>
+Date:   Tue May 19 14:07:04 2026 +0700
+
+    Merge requisition workflow updates into lion
+
+[33mcommit 69d2d0c50172d5ffd8092066aa0734030a6f1412[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Tue May 19 13:55:53 2026 +0700
+
+    Fixed Page Encoding
+
+[33mcommit ed4d75dd526e7f8c3376d1f12ab5d7ffc8968fd3[m
+Author: Roadlion <brodyismyhero@gmail.com>
+Date:   Tue May 1

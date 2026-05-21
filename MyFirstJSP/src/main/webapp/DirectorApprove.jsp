@@ -149,6 +149,23 @@
             color: #ffc107;
         }
 
+        /* zennnne แก้ */
+        .deadline-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            font-family: 'Sarabun', sans-serif;
+            padding: 3px 12px;
+            border-radius: 20px;
+            border: 1px solid;
+            white-space: nowrap;
+        }
+        .deadline-tag.normal { color: #1a6e00; background: #f0fce8; border-color: #2dbb00; }
+        .deadline-tag.soon   { color: #a87000; background: #fff8e6; border-color: #e4a000; }
+        .deadline-tag.urgent { color: #c62828; background: #fef0f0; border-color: #e53935; }
+        /* zennnne แก้ */
+
         @media (max-width: 1000px) {
             .requisition-card {
                 align-items: flex-start;
@@ -251,7 +268,14 @@
             String departmentName = rs.getString("DEPARTMENT_NAME") != null ? rs.getString("DEPARTMENT_NAME") : "-";
             String empName = rs.getString("EMPNAME") != null ? rs.getString("EMPNAME") : "-";
             String sectionName = rs.getString("SECTION_NAME") != null ? rs.getString("SECTION_NAME") : "-";
-            String deadline = rs.getDate("DEADLINE") != null ? sdf.format(rs.getDate("DEADLINE")) : "-";
+            // zennnne แก้
+            java.sql.Date deadlineSqlDate = rs.getDate("DEADLINE");
+            String deadline = deadlineSqlDate != null ? sdf.format(deadlineSqlDate) : "-";
+            int daysLeft = 999;
+            if (deadlineSqlDate != null)
+                daysLeft = (int)(deadlineSqlDate.toLocalDate().toEpochDay() - java.time.LocalDate.now().toEpochDay());
+            String deadlineTagClass = daysLeft <= 3 ? "urgent" : daysLeft <= 7 ? "soon" : "normal";
+            // zennnne แก้
             String titleForm = rs.getString("TITLEFORM") != null ? rs.getString("TITLEFORM") : "-";
 %>
 
@@ -269,10 +293,17 @@
         </div>
 
         <div class="status-section">
-            <div class="status-icon status-pending">
-                <i class="fa-solid fa-clock-rotate-left"></i>
-                <span class="status-label">Pending</span>
+            <!-- zennnne แก้ -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                <div class="status-icon status-pending">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span class="status-label">Pending</span>
+                </div>
+                <span class="deadline-tag <%= deadlineTagClass %>">
+                    <i class="fa-regular fa-calendar-days"></i> <%= deadline %>
+                </span>
             </div>
+            <!-- zennnne แก้ -->
             <i class="fa-solid fa-chevron-right" style="color:#ddd"></i>
         </div>
     </div>

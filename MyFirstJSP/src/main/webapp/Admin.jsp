@@ -132,7 +132,7 @@
         
         <% if (currentRole.equalsIgnoreCase("Admin") || currentRole.equalsIgnoreCase("Director")) { %>
             <!-- zennnne แก้ -->
-            <div class="card" onclick="location.href='${pageContext.request.contextPath}/DirectorApprove.jsp'">
+            <div class="card" onclick="location.href='${pageContext.request.contextPath}/Directorapprove.jsp'">
             <!-- zennnne แก้ -->
                 <i class="fa-regular fa-circle-user"></i>
                 <p>ผู้อำนวยการฝ่าย</p>

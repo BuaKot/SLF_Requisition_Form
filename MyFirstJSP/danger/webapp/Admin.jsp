@@ -33,7 +33,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IT Requisition - Admin Database Authentication</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
 
     <style>
         * { box-sizing: border-box; }
@@ -42,6 +41,19 @@
             margin: 0; padding: 0; background-color: #ffffff;
             overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh;
         }
+        .sticky-bar {
+            position: sticky; top: 0; background: white; width: 100%; height: 70px;
+            border-bottom: 5px solid #3272BB; display: flex; align-items: center; padding: 0 15px; z-index: 100;
+        }
+        .header-logos { display: flex; align-items: center; gap: clamp(5px, 2vw, 20px); margin-left: 15px; }
+        .header-logos img { height: clamp(30px, 8vw, 45px); }
+        .sidebar {
+            height: 100%; width: 0; position: fixed; z-index: 1001; top: 0; left: 0;
+            background-color: #3272BB; overflow-x: hidden; transition: 0.4s; padding-top: 60px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+        .sidebar a { padding: 15px 32px; text-decoration: none; font-size: 1.2rem; color: white; display: block; white-space: nowrap; transition: 0.2s; }
+        .sidebar a:hover { background: rgba(255, 255, 255, 0.1); }
         .banner { background: #C3EAFF; padding: clamp(20px, 6vw, 40px) 15px; text-align: center; color: #003366; }
         .banner h1 { font-size: clamp(1.1rem, 4vw, 1.5rem); margin: 0; line-height: 1.2; }
         .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; padding: 40px 20px; max-width: 1400px; margin: 0 auto; width: 100%; }
@@ -54,70 +66,38 @@
         .card:hover i { color: #003366; transform: scale(1.1); transition: all 0.3s ease; }
         .card i { font-size: 90px; color: #3272BB; margin-bottom: 20px; transition: all 0.3s ease; }
         .card p { font-weight: bold; font-size: 20px; color: #003366; margin: 0; line-height: 1.3; }
+        .contact-info p { margin: 0; white-space: nowrap; }
         
         .user-badge { background-color: #3272BB; color: white; padding: 8px 15px; border-radius: 20px; display: inline-block; margin-top: 10px; font-size: 0.9rem; }
         .role-badge { background-color: #2ecc71; color: white; padding: 4px 10px; border-radius: 10px; font-weight: bold; margin-left: 5px; }
         @media (max-width: 400px) { .admin-grid { grid-template-columns: 1fr; padding: 20px 15px; } .card { min-height: 250px; } .sidebar { width: 0; } }
-
-        /* zennnne แก้ */
-        .history-fab {
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #003366;
-            color: #fff;
-            text-decoration: none;
-            padding: 10px 18px;
-            border-radius: 999px;
-            font-size: 14px;
-            font-family: 'Sarabun', sans-serif;
-            font-weight: bold;
-            box-shadow: 0 4px 14px rgba(0,51,102,0.35);
-            transition: all 0.2s ease;
-            z-index: 999;
-        }
-        .history-fab:hover {
-            background: #00509e;
-            box-shadow: 0 6px 20px rgba(0,51,102,0.45);
-            transform: translateY(-2px);
-        }
-        .history-fab i { font-size: 15px; }
-        /* zennnne แก้ */
     </style>
 </head>
 
 <body>
     <div id="mySidebar" class="sidebar">
-        <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
-        <a href="${pageContext.request.contextPath}"><i class="fa-solid fa-house" style='margin-right: 10px'></i>หน้าหลัก</a>
-        <a href="${pageContext.request.contextPath}/newForm"><i class="fa-solid fa-plus" style='margin-right: 10px'></i>สร้างฟอร์มใหม่</a>
-        <a href="${pageContext.request.contextPath}/submit.jsp"><i class="fa-solid fa-paper-plane" style='margin-right: 10px'></i>ฟอร์มที่ส่งแล้ว</a>
-        <a href="${pageContext.request.contextPath}/logout"><i class="fa-solid fa-arrow-right-from-bracket" style='margin-right: 10px'></i>ออกจากระบบ</a>
-        <a href="${pageContext.request.contextPath}/Admin.jsp" class="admin-tab">
-            <i class="fa-solid fa-circle-user"></i>Admin
-        </a>    
+        <a href="javascript:void(0)" style="font-size:2.5rem; padding: 0 20px;" onclick="toggleNav()">&times;</a>
+        <a href="#"><i class="fa fa-home"></i> หน้าหลัก</a>
+        <a href="#"><i class="fa fa-history"></i> ประวัติรายการ</a>
+        <a href="#"><i class="fa fa-info-circle"></i> ช่วยเหลือ</a>
+        <a href="logout.jsp" style="color: #ff6b6b;"><i class="fa fa-sign-out-alt"></i> ออกจากระบบ</a>
     </div>
 
-<div id='main'>
-    <div class="sticky-bar">
-        <i id="menuBtn" class="fa-solid fa-bars" onclick="toggleNav()"></i>
-        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
-        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
-        
-        <div class="user-info">
-            <i class="fa fa-circle-user"></i>
-            <p>
-                ${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}
+    <div class='sticky-bar'>
+        <i class="fa fa-bars" onclick="toggleNav()" style="font-size:1.8rem; cursor:pointer; color:#333; padding: 10px;"></i>
+        <div class="header-logos">
+            <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
+            <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
+        </div>
+        <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
+            <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
+            <p style="margin-left: 5px; margin-right: 15px; font-weight: bold; color: #3272BB;">
+                คุณ: <%= escapeHtml(employeeName) %>
+            </p>
+            <p style="margin-left: 5px; margin-right: 15px; font-weight: bold; color: #3272BB;">
+                สอบถามข้อมูลเพิ่มเติม ติดต่อ 411
             </p>
         </div>
-        <div class="contact-info">
-            <i class="fa-solid fa-circle-info"></i>
-            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-        </div>
-        
     </div>
 
     <div class="banner">
@@ -132,7 +112,7 @@
         
         <% if (currentRole.equalsIgnoreCase("Admin") || currentRole.equalsIgnoreCase("Director")) { %>
             <!-- zennnne แก้ -->
-            <div class="card" onclick="location.href='${pageContext.request.contextPath}/DirectorApprove.jsp'">
+            <div class="card" onclick="location.href='${pageContext.request.contextPath}/Directorapprove.jsp'">
             <!-- zennnne แก้ -->
                 <i class="fa-regular fa-circle-user"></i>
                 <p>ผู้อำนวยการฝ่าย</p>
@@ -153,46 +133,33 @@
             </div>
         <% } %>
 
-        <%
-            if (currentRole.equalsIgnoreCase("Admin") ||
-                currentRole.equalsIgnoreCase("Technical") ||
-                currentRole.equalsIgnoreCase("Development") ||
-                currentRole.equalsIgnoreCase("Data") ||
-                currentRole.equalsIgnoreCase("Infrastructure") ||
-                currentRole.equalsIgnoreCase("Cyber Security") ||
-                currentRole.equalsIgnoreCase("Reseach") ||
-                currentRole.equalsIgnoreCase("IT Planning")) {
+        <% 
+            if (currentRole.equalsIgnoreCase("Admin") || 
+                currentRole.equalsIgnoreCase("Technical") || 
+                currentRole.equalsIgnoreCase("Development") || 
+                currentRole.equalsIgnoreCase("Data") || 
+                currentRole.equalsIgnoreCase("Infrastructure") || 
+                currentRole.equalsIgnoreCase("Cyber Security") || 
+                currentRole.equalsIgnoreCase("Reseach") || 
+                currentRole.equalsIgnoreCase("IT Planning")) { 
         %>
             <div class="card" onclick="location.href='${pageContext.request.contextPath}/Process.jsp'">
                 <i class="fa-solid fa-bars-progress"></i>
                 <p>รายละเอียดการดำเนินการ</p>
             </div>
         <% } %>
-
+        
     </div>
-    </div>
-
-    <!-- zennnne แก้ -->
-    <a href="${pageContext.request.contextPath}/history.jsp" class="history-fab" title="ประวัติฟอร์มที่จบแล้ว">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-        <span>ประวัติ</span>
-    </a>
-    <!-- zennnne แก้ -->
 
     <script>
         function toggleNav() {
-        var sidebar = document.getElementById("mySidebar");
-        var main = document.getElementById("main");
-        
-        if (sidebar.style.width === "250px") {
-            sidebar.style.width = "0";
-            main.style.marginLeft = "0";
-            main.style.width = "100%";
-        } else {
-            sidebar.style.width = "250px";
-            main.style.marginLeft = "250px";
-            main.style.width = "calc(100% - 250px)"; 
+            var sidebar = document.getElementById("mySidebar");
+            var openWidth = (window.innerWidth < 400) ? "80%" : "250px";
+            sidebar.style.width = (sidebar.style.width === openWidth) ? "0" : openWidth;
         }
+        window.onclick = function (event) {
+            var sidebar = document.getElementById("mySidebar");
+            if (event.target == sidebar) { sidebar.style.width = "0"; }
         }
     </script>
 </body>

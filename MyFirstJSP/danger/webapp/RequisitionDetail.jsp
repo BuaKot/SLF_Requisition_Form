@@ -31,115 +31,109 @@
     List<Map<String, String>> requestItems = new ArrayList<>();
     List<Map<String, Object>> permissions = new ArrayList<>();
 
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
     SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat sdfDisplay = new SimpleDateFormat("dd/MM/yyyy");
 
     try {
         if (formId != null && !formId.isEmpty()) {
-            conn = DBConnection.getConnection();
-
-            // ----- Header -----
-            String sql = "SELECT r.FORMID, e.EMPNAME, e.PHONE, s.SECNAME, d.DEPTNAME, " +
-                         "d.DEPTHEAD_EMPID, r.TITLEFORM, r.REQUESTDATE, r.DEADLINE, " +
-                         "NVL((SELECT ai.STATE_STEP " +
-                         "     FROM APPROVALINFO ai " +
-                         "     WHERE ai.FORMID = r.FORMID " +
-                         "     ORDER BY ai.APPROVALID DESC " +
-                         "     FETCH FIRST 1 ROWS ONLY), 0) AS STATE_STEP " +
-                         "FROM REQUISITIONFORM r " +
-                         "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
-                         "LEFT JOIN SECTION s ON e.SECID = s.SECID " +
-                         "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
-                         "WHERE r.FORMID = ?";
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, formId);
-            rs = pstmt.executeQuery();
-            if (rs.next()) {
-                hasData = true;
-                empName = nvl(rs.getString("EMPNAME"));
-                sectionName = nvl(rs.getString("SECNAME"));
-                departmentName = nvl(rs.getString("DEPTNAME"));
-                phone = nvl(rs.getString("PHONE"));
-                titleForm = nvl(rs.getString("TITLEFORM"));
-                if (rs.getDate("DEADLINE") != null) {
-                    deadlineDate = sdfDisplay.format(rs.getDate("DEADLINE"));
-                } else {
-                    deadlineDate = "-";
-                }
-                if (rs.getDate("REQUESTDATE") != null) {
-                    reqDate = sdfInput.format(rs.getDate("REQUESTDATE"));
-                } else {
-                    reqDate = "-";
-                }
-                String deptHeadEmpId = rs.getString("DEPTHEAD_EMPID");
-                int stateStep = rs.getInt("STATE_STEP");
-                canApproveDirectorStep = deptHeadEmpId != null
-                    && deptHeadEmpId.trim().equals(loggedInEmpId)
-                    && stateStep == 0;
-            }
-            closeQuietly(rs, pstmt);
-
-            // ----- Request items -----
-            if (hasData) {
-                String itemSql =
-                    "SELECT req.REQUESTID, req.TYPEID, rt.TYPENAME, req.OTHERDETAILS_OR_PROGRAM, " +
+            // zennnne แก้
+            try (Connection conn = DBConnection.getConnection()) {
+                // ----- Query 1+2 combined: Header JOIN Request items (1 round-trip instead of 2) -----
+                // LEFT JOIN REQUEST so forms with zero items still return 1 row (header populated, items empty).
+                // Header columns repeat on every item row; we capture them only on the first row.
+                String sql =
+                    "SELECT r.FORMID, e.EMPNAME, e.PHONE, s.SECNAME, d.DEPTNAME, " +
+                    "d.DEPTHEAD_EMPID, r.TITLEFORM, r.REQUESTDATE, r.DEADLINE, " +
+                    "NVL((SELECT ai.STATE_STEP " +
+                    "     FROM APPROVALINFO ai " +
+                    "     WHERE ai.FORMID = r.FORMID " +
+                    "     ORDER BY ai.APPROVALID DESC " +
+                    "     FETCH FIRST 1 ROWS ONLY), 0) AS STATE_STEP, " +
+                    "req.REQUESTID, rt.TYPENAME, req.OTHERDETAILS_OR_PROGRAM, " +
                     "req.DETAILOBJECTIVE, req.CURRENTMETHOD " +
-                    "FROM REQUEST req " +
+                    "FROM REQUISITIONFORM r " +
+                    "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
+                    "LEFT JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
+                    "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+                    "LEFT JOIN REQUEST req ON req.FORMID = r.FORMID " +
                     "LEFT JOIN REQUESTTYPE rt ON req.TYPEID = rt.TYPEID " +
-                    "WHERE req.FORMID = ? ORDER BY req.REQUESTID";
-                pstmt = conn.prepareStatement(itemSql);
-                pstmt.setString(1, formId);
-                rs = pstmt.executeQuery();
-                while (rs.next()) {
-                    Map<String, String> item = new HashMap<>();
-                    item.put("typeName", nvl(rs.getString("TYPENAME")));
-                    item.put("typeDetail", nvl(rs.getString("OTHERDETAILS_OR_PROGRAM")));
-                    item.put("objective", nvl(rs.getString("DETAILOBJECTIVE")));
-                    item.put("currentMethod", nvl(rs.getString("CURRENTMETHOD")));
-                    requestItems.add(item);
+                    "WHERE r.FORMID = ? ORDER BY req.REQUESTID";
+                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    pstmt.setString(1, formId);
+                    try (ResultSet rs = pstmt.executeQuery()) {
+                        boolean firstRow = true;
+                        while (rs.next()) {
+                            if (firstRow) {
+                                // Populate header fields once from the first row
+                                hasData = true;
+                                empName = nvl(rs.getString("EMPNAME"));
+                                sectionName = nvl(rs.getString("SECNAME"));
+                                departmentName = nvl(rs.getString("DEPTNAME"));
+                                phone = nvl(rs.getString("PHONE"));
+                                titleForm = nvl(rs.getString("TITLEFORM"));
+                                if (rs.getDate("DEADLINE") != null) {
+                                    deadlineDate = sdfDisplay.format(rs.getDate("DEADLINE"));
+                                } else {
+                                    deadlineDate = "-";
+                                }
+                                if (rs.getDate("REQUESTDATE") != null) {
+                                    reqDate = sdfInput.format(rs.getDate("REQUESTDATE"));
+                                } else {
+                                    reqDate = "-";
+                                }
+                                String deptHeadEmpId = rs.getString("DEPTHEAD_EMPID");
+                                int stateStep = rs.getInt("STATE_STEP");
+                                canApproveDirectorStep = deptHeadEmpId != null
+                                    && deptHeadEmpId.trim().equals(loggedInEmpId)
+                                    && stateStep == 0;
+                                firstRow = false;
+                            }
+                            // Collect request item from this row (REQUESTID is NULL when no items exist)
+                            if (rs.getString("REQUESTID") != null) {
+                                Map<String, String> item = new HashMap<>();
+                                item.put("typeName", nvl(rs.getString("TYPENAME")));
+                                item.put("typeDetail", nvl(rs.getString("OTHERDETAILS_OR_PROGRAM")));
+                                item.put("objective", nvl(rs.getString("DETAILOBJECTIVE")));
+                                item.put("currentMethod", nvl(rs.getString("CURRENTMETHOD")));
+                                requestItems.add(item);
+                            }
+                        }
+                    }
                 }
-                closeQuietly(rs, pstmt);
 
-                // ----- Permissions -----
-                String permSql =
-                    "SELECT ISROOT, PATH, HASFULLCONTROL, HASMODIFY, HASREADEXECUTE, HASREAD, HASWRITE " +
-                    "FROM PERMISSIONDETAILS WHERE FORMID = ? ORDER BY ISROOT DESC, PATH";
-                pstmt = conn.prepareStatement(permSql);
-                pstmt.setString(1, formId);
-                rs = pstmt.executeQuery();
-                while (rs.next()) {
-                    Map<String, Object> perm = new HashMap<>();
-                    perm.put("isRoot", rs.getInt("ISROOT"));
-                    perm.put("path", rs.getString("PATH"));
-                    perm.put("full", rs.getInt("HASFULLCONTROL"));
-                    perm.put("modify", rs.getInt("HASMODIFY"));
-                    perm.put("readExec", rs.getInt("HASREADEXECUTE"));
-                    perm.put("read", rs.getInt("HASREAD"));
-                    perm.put("write", rs.getInt("HASWRITE"));
-                    permissions.add(perm);
+                // ----- Query 2 (kept separate): Permissions — different entity, multiple rows per form -----
+                if (hasData) {
+                    String permSql =
+                        "SELECT ISROOT, PATH, HASFULLCONTROL, HASMODIFY, HASREADEXECUTE, HASREAD, HASWRITE " +
+                        "FROM PERMISSIONDETAILS WHERE FORMID = ? ORDER BY ISROOT DESC, PATH";
+                    try (PreparedStatement pstmt2 = conn.prepareStatement(permSql)) {
+                        pstmt2.setString(1, formId);
+                        try (ResultSet rs2 = pstmt2.executeQuery()) {
+                            while (rs2.next()) {
+                                Map<String, Object> perm = new HashMap<>();
+                                perm.put("isRoot", rs2.getInt("ISROOT"));
+                                perm.put("path", rs2.getString("PATH"));
+                                perm.put("full", rs2.getInt("HASFULLCONTROL"));
+                                perm.put("modify", rs2.getInt("HASMODIFY"));
+                                perm.put("readExec", rs2.getInt("HASREADEXECUTE"));
+                                perm.put("read", rs2.getInt("HASREAD"));
+                                perm.put("write", rs2.getInt("HASWRITE"));
+                                permissions.add(perm);
+                            }
+                        }
+                    }
                 }
-            }
+            } // conn auto-closed
+            // zennnne แก้
         }
     } catch (Exception e) {
         System.out.println("Error Loading Form Details: " + e.getMessage());
-    } finally {
-        closeQuietly(rs, pstmt, conn);
     }
 %>
 <%!
     // Small helper to avoid null strings
     private String nvl(String s) {
         return (s == null || s.trim().isEmpty()) ? "-" : s.trim();
-    }
-    private void closeQuietly(AutoCloseable... resources) {
-        for (AutoCloseable r : resources) {
-            if (r != null) {
-                try { r.close(); } catch (Exception ignored) {}
-            }
-        }
     }
 %>
 
@@ -150,20 +144,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>รายละเอียดใบขอให้ดำเนินการ (ID: <%= (formId != null) ? formId : "-" %>)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
         /* ... keep all the existing CSS from your friend's version ... */
         * { box-sizing: border-box; }
         body { font-family: 'Sarabun', sans-serif; margin: 0; background-color: #f4f7f9; }
+        .sticky-bar { position: sticky; top: 0; background: white; height: 60px; border-bottom: 4px solid #3272BB; display: flex; align-items: center; padding: 0 20px; z-index: 1000; }
+        .sticky-bar a { text-decoration: none; color: #333; font-weight: bold; }
         .banner { background: #C3EAFF; padding: clamp(20px, 6vw, 40px) 15px; text-align: center; color: #003366; }
         .banner h1 { font-size: clamp(1.1rem, 4vw, 1.5rem); margin: 0; line-height: 1.2; }
-        .form-container { max-width: 900px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .form-group { display: flex; flex-direction: column; }
+        .form-container { width: min(900px, calc(100% - 32px)); margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow-x: hidden; }
+        .form-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; min-width: 0; }
         .form-group label { font-weight: bold; margin-bottom: 8px; font-size: 0.9rem; color: #333; }
-        .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid #3272BB; border-radius: 5px; font-size: 14px; background-color: #ffffff; }
+        .form-group input, .form-group select, .form-group textarea { display: block; width: 100%; max-width: 100%; min-width: 0; padding: 10px; border: 1px solid #3272BB; border-radius: 5px; font-size: 14px; background-color: #ffffff; }
         .form-group input[readonly], .form-group textarea[readonly], .form-group select[disabled] { background-color: #f8fafc; border-color: #cbd5e1; color: #475569; }
         .full-width { grid-column: span 2; }
+        form, .section-box-main, .item-block, .server-permission-box { width: 100%; max-width: 100%; min-width: 0; }
         .item-block { border: 1px solid #3272BB; border-radius: 10px; padding: 15px; margin-bottom: 16px; background: #ffffff; }
         .permission-checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
         .permission-checkbox-row label { display: inline-flex; align-items: center; gap: 5px; font-weight: normal; }
@@ -184,23 +180,15 @@
 <body>
 
 <div class="sticky-bar">
-        <a href="DirectorApprove.jsp">
-            <i class="fa fa-arrow-left" style="font-size:24px;"></i>
-        </a>
-        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
-        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
-        
-        <div class="user-info">
-            <i class="fa fa-circle-user"></i>
-            <p>
-                ${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}
-            </p>
-        </div>
-        <div class="contact-info">
-            <i class="fa-solid fa-circle-info"></i>
-            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-        </div>
-        
+    <!-- zennnne แก้ -->
+    <a href="Directorapprove.jsp">
+    <!-- zennnne แก้ -->
+        <i class="fa fa-arrow-left"></i> กลับหน้ารายการ
+    </a>
+    <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
+        <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
+        <p style='margin-left: 8px; font-size: 0.9rem; margin-top:0; margin-bottom:0;'>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+    </div>
 </div>
 
 <div class="banner">
@@ -222,7 +210,7 @@
         <!-- ⚡ The form now posts to SubmitApprovalServlet -->
         <form action="${pageContext.request.contextPath}/SubmitApprovalServlet" method="post">
             <input type="hidden" name="formId" value="<%= formId %>">
-            <input type="hidden" name="redirectPage" value="DirectorApprove.jsp">
+            <input type="hidden" name="redirectPage" value="Directorapprove.jsp"> <!-- zennnne แก้ -->
 
             <!-- Header fields (readonly) -->
             <div class="form-grid">

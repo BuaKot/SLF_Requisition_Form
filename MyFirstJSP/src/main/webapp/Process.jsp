@@ -228,31 +228,37 @@
     if (loggedInEmpObj == null) {
         loggedInEmpObj = session.getAttribute("empid");
     }
+    // zennnne แก้
+    if (loggedInEmpObj == null) {
+        response.sendRedirect(request.getContextPath() + "/login");
+        return;
+    }
+    // zennnne แก้
     int loggedInEmpId = Integer.parseInt(loggedInEmpObj.toString());
-    
+
     try {
         conn = DBConnection.getConnection();
-        
-        String sql = 
+
+        // zennnne แก้
+        // เปลี่ยน 2 correlated subqueries → CTE เดียวที่ดึง STATE_STEP + DEV_EMPID จาก row ล่าสุด
+        String sql =
+                "WITH latest_step AS ( " +
+                "    SELECT FORMID, STATE_STEP, DEV_EMPID, " +
+                "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
+                "    FROM APPROVALINFO " +
+                ") " +
                 "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, " +
                 "s.SECNAME AS SECTION_NAME, d.DEPTNAME AS DEPARTMENT_NAME " +
                 "FROM REQUISITIONFORM r " +
+                "JOIN latest_step ls ON ls.FORMID = r.FORMID AND ls.RN = 1 " +
                 "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
                 "LEFT JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
                 "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
-                "WHERE (SELECT ai.STATE_STEP " +
-                "       FROM APPROVALINFO ai " +
-                "       WHERE ai.FORMID = r.FORMID " +
-                "       ORDER BY ai.APPROVALID DESC " +
-                "       FETCH FIRST 1 ROWS ONLY) = 3 " +
-                "AND (SELECT ai.DEV_EMPID " +
-                "       FROM APPROVALINFO ai " +
-                "       WHERE ai.FORMID = r.FORMID " +
-                "       AND ai.DEV_EMPID IS NOT NULL " +
-                "       ORDER BY ai.APPROVALID DESC " +
-                "       FETCH FIRST 1 ROWS ONLY) = ? " +
+                "WHERE ls.STATE_STEP = 3 " +
+                "AND ls.DEV_EMPID = ? " +
                 "AND r.DEADLINE >= TRUNC(SYSDATE) " +
                 "ORDER BY r.FORMID DESC";
+        // zennnne แก้
 
         pstmt = conn.prepareStatement(sql);
         pstmt.setInt(1, loggedInEmpId);

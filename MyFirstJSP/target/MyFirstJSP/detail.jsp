@@ -32,6 +32,7 @@
     <title>รายละเอียดใบขอให้ดำเนินการ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
         .item-block {
             position: relative;
@@ -53,6 +54,11 @@
             width: auto;
             margin: 0;
         }
+        .sticky-bar .contact-info {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -60,9 +66,10 @@
 <!-- Header and Banner (unchanged) -->
 <div class="sticky-bar">
     <a href="submit.jsp" style="text-decoration:none; color:#333;"><i class="fa fa-arrow-left"></i> กลับ</a>
-    <div style="margin-left:auto;display:flex;align-items:center">
-        <i class="fa fa-circle-user" style="font-size:24px;padding-left:10px;padding-right:0px"></i>
-        <p style="font-size:0.8rem; margin-left: 10px;margin-right: 10px">สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+
+    <div class="contact-info">
+        <i class="fa-solid fa-circle-info"></i>
+        <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
     </div>
 </div>
 <div class="banner">

@@ -78,7 +78,7 @@ public class LoadDirectorServlet extends HttpServlet {
         }
 
         request.setAttribute("formList", formList);
-        request.getRequestDispatcher("/Directorapprove.jsp").forward(request, response);
+        request.getRequestDispatcher("/DirectorApprove.jsp").forward(request, response); // zennnne แก้
     }
 }
 // zennnne แก้

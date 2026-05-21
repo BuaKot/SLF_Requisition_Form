@@ -4,14 +4,13 @@
 
 <%
     // ----- Session Check -----
+    // zennnne แก้
     Object empObj = session.getAttribute("loggedInEmpId");
-    if (empObj == null) {
-        empObj = session.getAttribute("empid");
-    }
     if (empObj == null) {
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
+    // zennnne แก้
     String loggedInEmpId = empObj.toString().trim();
 
     // ----- 1. Grab the form ID -----

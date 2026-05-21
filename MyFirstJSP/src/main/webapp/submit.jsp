@@ -1,60 +1,24 @@
 ﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection" %>
+<%@ page import="java.util.*" %>
 
 <%
-    /* ===============================
-       SESSION CHECK
-    =============================== */
-    Object empObj = session.getAttribute("empid");
-
-    if (empObj == null) {
-        empObj = session.getAttribute("loggedInEmpId");
-    }
-
-    if (empObj == null) {
+    // zennnne แก้
+    if (session.getAttribute("loggedInEmpId") == null) {
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
 
-    int empid = Integer.parseInt(empObj.toString());
+    @SuppressWarnings("unchecked")
+    List<Map<String, Object>> formList = (List<Map<String, Object>>) request.getAttribute("formList");
+    if (formList == null) formList = new ArrayList<>();
 
-    // ---------- Pagination ----------
-    int currentPage = 1;
-    String pageParam = request.getParameter("page");
-    if (pageParam != null) {
-        try { currentPage = Math.max(1, Integer.parseInt(pageParam)); }
-        catch (NumberFormatException e) {}
-    }
-    int pageSize = 50;
-    int offset = (currentPage - 1) * pageSize;
-    List<Map<String, Object>> formList = new ArrayList<>();
-    // ---------- End Pagination ----------
-
+    int currentPage = request.getAttribute("currentPage") != null ? (Integer) request.getAttribute("currentPage") : 1;
+    int pageSize    = request.getAttribute("pageSize")    != null ? (Integer) request.getAttribute("pageSize")    : 50;
+    String showParam = request.getAttribute("showParam")  != null ? (String) request.getAttribute("showParam")   : "pending";
+    String sortParam = request.getAttribute("sortParam")  != null ? (String) request.getAttribute("sortParam")   : "asc";
+    boolean hasData  = !formList.isEmpty();
     // zennnne แก้
-    String showParam = request.getParameter("show");
-    if (showParam == null || showParam.trim().isEmpty()) showParam = "pending";
-    String sortParam = request.getParameter("sort");
-    if (!"desc".equals(sortParam)) sortParam = "asc";
-    List<String> statusConds = new ArrayList<>();
-    for (String s : showParam.split(",")) {
-        switch (s.trim().toLowerCase()) {
-            case "pending":  statusConds.add("(NVL(ls.STATE_STEP,0) BETWEEN 0 AND 4 AND RF.DEADLINE >= TRUNC(SYSDATE))"); break;
-            case "overdue":  statusConds.add("(NVL(ls.STATE_STEP,0) BETWEEN 0 AND 4 AND RF.DEADLINE < TRUNC(SYSDATE))");  break;
-            case "rejected": statusConds.add("NVL(ls.STATE_STEP,0) < 0");  break;
-            case "approved": statusConds.add("NVL(ls.STATE_STEP,0) >= 5"); break;
-        }
-    }
-    String statusWhere = statusConds.isEmpty() ? "1=0"
-        : "(" + String.join(" OR ", statusConds) + ")";
-    String orderDir = "desc".equals(sortParam) ? "DESC" : "ASC";
-    // zennnne แก้
-
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-
-    boolean hasData = false;
 %>
 
 <!DOCTYPE html>
@@ -86,7 +50,7 @@
     <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
     <a href="${pageContext.request.contextPath}"><i class="fa-solid fa-house" style='margin-right: 10px'></i>หน้าหลัก</a>
     <a href="${pageContext.request.contextPath}/newForm"><i class="fa-solid fa-plus" style='margin-right: 10px'></i>สร้างฟอร์มใหม่</a>
-    <a href="${pageContext.request.contextPath}/submit.jsp"><i class="fa-solid fa-paper-plane" style='margin-right: 10px'></i>ฟอร์มที่ส่งแล้ว</a>
+    <a href="${pageContext.request.contextPath}/submit"><i class="fa-solid fa-paper-plane" style='margin-right: 10px'></i>ฟอร์มที่ส่งแล้ว</a><!-- zennnne แก้ -->
     <a href="${pageContext.request.contextPath}/logout"><i class="fa-solid fa-arrow-right-from-bracket" style='margin-right: 10px'></i>ออกจากระบบ</a>
     <a href="${pageContext.request.contextPath}/Admin.jsp" class="admin-tab">
         <i class="fa-solid fa-circle-user"></i>Admin
@@ -185,46 +149,14 @@
     <section class="request-list">
 
 <%
-try {
-    conn = DBConnection.getConnection();
-
     // zennnne แก้
-    String sql =
-        "WITH latest_step AS ( " +
-        "    SELECT FORMID, STATE_STEP, " +
-        "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
-        "    FROM APPROVALINFO " +
-        ") " +
-        "SELECT RF.FORMID, RF.TITLEFORM, RF.DEADLINE, RF.IS_EDITED, " +
-        "       NVL(ls.STATE_STEP, 0) AS STATE_STEP " +
-        "FROM REQUISITIONFORM RF " +
-        "LEFT JOIN latest_step ls ON ls.FORMID = RF.FORMID AND ls.RN = 1 " +
-        "WHERE RF.EMPID = ? " +
-        "AND " + statusWhere + " " +
-        "ORDER BY RF.DEADLINE " + orderDir + ", RF.FORMID DESC " +
-        "OFFSET ? ROWS FETCH FIRST ? ROWS ONLY";
-    // zennnne แก้
+    for (Map<String, Object> row : formList) {
+        int formId    = (Integer) row.get("FORMID");
+        String title  = (String)  row.get("TITLEFORM");
+        int stateStep = (Integer) row.get("STATE_STEP");
+        boolean isEdited = (Integer) row.get("IS_EDITED") == 1;
 
-    pstmt = conn.prepareStatement(sql);
-    pstmt.setInt(1, empid);
-    pstmt.setInt(2, offset);
-    pstmt.setInt(3, pageSize);
-    rs = pstmt.executeQuery();
-
-    while (rs.next()) {
-        hasData = true;
-
-        int formId = rs.getInt("FORMID");
-        String title = rs.getString("TITLEFORM");
-        int stateStep = rs.getInt("STATE_STEP");
-        boolean isEdited = rs.getInt("IS_EDITED") == 1;
-
-        // For pagination: store a dummy entry to count rows
-        Map<String, Object> rowMap = new HashMap<>();
-        rowMap.put("formId", formId);
-        formList.add(rowMap);
-
-        java.sql.Date deadlineDate = rs.getDate("DEADLINE");
+        java.sql.Date deadlineDate = (java.sql.Date) row.get("DEADLINE");
         java.time.LocalDate today = java.time.LocalDate.now();
         boolean isOverdue = (deadlineDate != null &&
             deadlineDate.toLocalDate().isBefore(today));
@@ -395,7 +327,8 @@ try {
         </div>
 
 <%
-    } // END WHILE
+    } // END FOR
+    // zennnne แก้
 
     if (!hasData) {
 %>
@@ -407,19 +340,6 @@ try {
         </div>
 <%
     }
-} catch (Exception e) {
-%>
-        <div style="color:red; text-align:center; padding:20px;">
-            <h3>เกิดข้อผิดพลาด</h3>
-            <p><%= e.getMessage() %></p>
-        </div>
-<%
-    e.printStackTrace();
-} finally {
-    try { if (rs != null) rs.close(); } catch (Exception ignored) {}
-    try { if (pstmt != null) pstmt.close(); } catch (Exception ignored) {}
-    try { if (conn != null) conn.close(); } catch (Exception ignored) {}
-}
 %>
     </section>
 
@@ -538,7 +458,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const fields = {
                 formId: currentButton.dataset.formid,
                 action: "approve",
-                redirectPage: "submit.jsp",
+                redirectPage: "submit", // zennnne แก้
                 comment: detail
             };
             Object.keys(fields).forEach(function (name) {

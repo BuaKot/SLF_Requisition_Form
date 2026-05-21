@@ -354,7 +354,7 @@
     <a href="${pageContext.request.contextPath}/newForm">
         <i class="fa-solid fa-plus" style="margin-right:10px"></i>สร้างฟอร์มใหม่
     </a>
-    <a href="${pageContext.request.contextPath}/submit.jsp">
+    <a href="${pageContext.request.contextPath}/submit"><!-- zennnne แก้ -->
         <i class="fa-solid fa-paper-plane" style="margin-right:10px"></i>ฟอร์มที่ส่งแล้ว
     </a>
     <a href="${pageContext.request.contextPath}/logout">

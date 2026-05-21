@@ -80,11 +80,7 @@
 <%
     try {
         Class.forName("oracle.jdbc.driver.OracleDriver");
-        conn = DriverManager.getConnection(
-            "jdbc:oracle:thin:@172.25.18.186:1521:XE",
-            "C##DEVUSER",
-            "mypassword"
-        );
+        conn = DBConnection.getConnection();
 
         // ---------- Header ----------
         String headerSQL =

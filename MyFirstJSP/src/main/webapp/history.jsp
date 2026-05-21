@@ -277,6 +277,22 @@
 
         .card-arrow { color: #ccc; flex-shrink: 0; font-size: 14px; }
 
+        /* zennnne แก้ */
+        .deadline-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            font-family: inherit;
+            padding: 3px 12px;
+            border-radius: 20px;
+            border: 1px solid;
+            white-space: nowrap;
+        }
+        .deadline-tag.approved { color: #1e8000; background: #f0fce8; border-color: #2dbb00; }
+        .deadline-tag.rejected { color: #888;    background: #f5f5f5; border-color: #ccc; }
+        /* zennnne แก้ */
+
         /* ─── PAGINATION ─── */
         .pagination {
             display: flex;
@@ -472,9 +488,16 @@
                 <div class="detail-line"><b>รายละเอียด :</b> <%= titleForm %></div>
             </div>
 
-            <span class="status-badge <%= rowStatus.equals("approved") ? "badge-approved" : "badge-rejected" %>">
-                <%= rowStatus.equals("approved") ? "อนุมัติแล้ว" : "ไม่ผ่านการอนุมัติ" %>
-            </span>
+            <!-- zennnne แก้ -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px; flex-shrink:0;">
+                <span class="status-badge <%= rowStatus.equals("approved") ? "badge-approved" : "badge-rejected" %>">
+                    <%= rowStatus.equals("approved") ? "อนุมัติแล้ว" : "ไม่ผ่านการอนุมัติ" %>
+                </span>
+                <span class="deadline-tag <%= rowStatus %>">
+                    <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
+                </span>
+            </div>
+            <!-- zennnne แก้ -->
             <i class="fa-solid fa-chevron-right card-arrow"></i>
         </div>
         <!-- zennnne แก้ -->

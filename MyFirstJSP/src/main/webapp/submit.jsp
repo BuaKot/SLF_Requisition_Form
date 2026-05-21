@@ -278,6 +278,12 @@ try {
         else if (isOverdue)     { rowStatus = "overdue";  }
         else                    { rowStatus = "pending";  }
         String rowDeadline = (deadlineDate != null) ? deadlineDate.toString() : "9999-12-31";
+        String deadlineDisplay = "-";
+        if (deadlineDate != null) {
+            java.time.LocalDate dl = deadlineDate.toLocalDate();
+            deadlineDisplay = String.format("%02d/%02d/%d",
+                dl.getDayOfMonth(), dl.getMonthValue(), dl.getYear() + 543);
+        }
         // zennnne แก้
 %>
 
@@ -343,15 +349,30 @@ try {
                             ไม่ผ่านการอนุมัติ
                         </button>
                     <% } %>
+                    <!-- zennnne แก้ -->
+                    <span class="deadline-tag rejected">
+                        <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
+                    </span>
+                    <!-- zennnne แก้ -->
 
                 <% } else if (isConfirmed) { %>
                     <button class="confirm-btn confirmed" disabled>ยืนยันผลแล้ว</button>
+                    <!-- zennnne แก้ -->
+                    <span class="deadline-tag approved">
+                        <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
+                    </span>
+                    <!-- zennnne แก้ -->
 
                 <% } else if (isOverdue) { %>
                     <button class="overdue-btn" data-formid="<%= formId %>">
                         <span class="overdue-label-normal">หมดเขต</span>
                         <span class="overdue-label-hover">ยืดเวลาหมดเขต</span>
                     </button>
+                    <!-- zennnne แก้ -->
+                    <span class="deadline-tag overdue">
+                        <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
+                    </span>
+                    <!-- zennnne แก้ -->
 
                 <% } else { %>
                     <button class="confirm-btn<%= canConfirm ? "" : "" %>"
@@ -362,6 +383,12 @@ try {
                             <% } %>>
                         <%= canConfirm ? "ยืนยันผลตรวจรับ" : "รอดำเนินการ" %>
                     </button>
+                    <!-- zennnne แก้ -->
+                    <span class="deadline-tag <%= canConfirm ? "ready" : "pending" %>">
+                        <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
+                    </span>
+                    <!-- zennnne แก้ -->
+
                 <% } %>
 
             </div>

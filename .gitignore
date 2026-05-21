@@ -1,4 +1,5 @@
 target/
 *.war
 *.class
-.DS_Store
+.DS_Store"target/" 
+"MyFirstJSP/target/" 

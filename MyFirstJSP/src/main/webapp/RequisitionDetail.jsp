@@ -165,6 +165,7 @@
         .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid #3272BB; border-radius: 5px; font-size: 14px; background-color: #ffffff; }
         .form-group input[readonly], .form-group textarea[readonly], .form-group select[disabled] { background-color: #f8fafc; border-color: #cbd5e1; color: #475569; }
         .full-width { grid-column: span 2; }
+        .form-id-note { color: #777; font-size: 0.9rem; margin-bottom: 14px; }
         .item-block { border: 1px solid #3272BB; border-radius: 10px; padding: 15px; margin-bottom: 16px; background: #ffffff; }
         .permission-checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
         .permission-checkbox-row label { display: inline-flex; align-items: center; gap: 5px; font-weight: normal; }
@@ -216,9 +217,10 @@
             <input type="hidden" name="redirectPage" value="DirectorApprove.jsp">
 
             <!-- Header fields (readonly) -->
+            <div class="form-id-note">#<%= (formId != null) ? formId : "-" %></div>
             <div class="form-grid">
                 <div class="form-group">
-                    <label>ชื่อ-นามสกุล <span style="color:red">*</span></label>
+                    <label>ชื่อ-นามสกุล</label>
                     <input type="text" value="<%= empName %>" readonly>
                 </div>
                 <div class="form-group">
@@ -226,19 +228,19 @@
                     <input type="text" value="<%= sectionName %>" readonly>
                 </div>
                 <div class="form-group">
-                    <label>ฝ่าย <span style="color:red">*</span></label>
+                    <label>ฝ่าย</label>
                     <input type="text" value="<%= departmentName %>" readonly>
                 </div>
                 <div class="form-group">
-                    <label>เบอร์ต่อ <span style="color:red">*</span></label>
+                    <label>เบอร์ต่อ</label>
                     <input type="text" value="<%= phone %>" readonly>
                 </div>
                 <div class="form-group">
-                    <label>วันที่ <span style="color:red">*</span></label>
+                    <label>วันที่</label>
                     <input type="date" value="<%= reqDate %>" readonly>
                 </div>
                 <div class="form-group">
-                    <label>Deadline <span style="color:red">*</span></label>
+                    <label>Deadline</label>
                     <input type="text" value="<%= deadlineDate %>" readonly>
                 </div>
                 <div class="form-group full-width">

@@ -173,6 +173,7 @@
         .form-group input, .form-group select, .form-group textarea { display: block; width: 100%; max-width: 100%; min-width: 0; padding: 10px; border: 1px solid #3272BB; border-radius: 5px; font-size: 14px; background-color: #ffffff; }
         .form-group input[readonly], .form-group textarea[readonly], .form-group select[disabled] { background-color: #f8fafc; border-color: #cbd5e1; color: #475569; }
         .full-width { grid-column: span 2; }
+        .form-id-note { color: #777; font-size: 0.9rem; margin-bottom: 14px; }
         form, .section-box-main, .item-block, .section-box, .server-permission-box { width: 100%; max-width: 100%; min-width: 0; }
         .item-block { border: 1px solid #3272BB; border-radius: 10px; padding: 15px; margin-bottom: 16px; background: #ffffff; }
         .permission-checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
@@ -224,6 +225,7 @@
             <input type="hidden" name="redirectPage" value="TechnicalApprove.jsp">
 
             <!-- Header fields -->
+            <div class="form-id-note">#<%= (formId != null) ? formId : "-" %></div>
             <div class="form-grid">
                 <div class="form-group">
                     <label>ชื่อ-นามสกุล</label>

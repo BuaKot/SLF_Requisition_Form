@@ -106,8 +106,30 @@ public class SubmitApprovalServlet extends HttpServlet {
                                 return;
                             }
                             String deptHeadEmpId = directorRs.getString("DEPTHEAD_EMPID");
-                            if (deptHeadEmpId == null || !deptHeadEmpId.trim().equals(String.valueOf(reviewerEmpId))) {
+                            if (!matchesReviewer(deptHeadEmpId, reviewerEmpId)) {
                                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "Only the department director can approve this step");
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                if (currentStep == 1) {
+                    String sectionHeadSql =
+                        "SELECT s.SECTIONHEAD_EMPID " +
+                        "FROM REQUISITIONFORM r " +
+                        "JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
+                        "WHERE r.FORMID = ?";
+                    try (PreparedStatement psSectionHead = conn.prepareStatement(sectionHeadSql)) {
+                        psSectionHead.setInt(1, formId);
+                        try (ResultSet sectionHeadRs = psSectionHead.executeQuery()) {
+                            if (!sectionHeadRs.next()) {
+                                response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=not_found");
+                                return;
+                            }
+                            String sectionHeadEmpId = sectionHeadRs.getString("SECTIONHEAD_EMPID");
+                            if (!matchesReviewer(sectionHeadEmpId, reviewerEmpId)) {
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Only the assigned section head can approve this step");
                                 return;
                             }
                         }
@@ -190,6 +212,10 @@ public class SubmitApprovalServlet extends HttpServlet {
             throw new NumberFormatException("devEmpId must be positive");
         }
         return Integer.valueOf(devEmpId);
+    }
+
+    static boolean matchesReviewer(String expectedEmpId, int reviewerEmpId) {
+        return expectedEmpId != null && expectedEmpId.trim().equals(String.valueOf(reviewerEmpId));
     }
 
     private boolean isDeveloperInAssignedSection(Connection conn, int formId, int devEmpId) throws SQLException {

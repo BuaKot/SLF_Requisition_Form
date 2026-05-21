@@ -60,10 +60,13 @@
 <!-- Header and Banner (unchanged) -->
 <div class="sticky-bar">
     <a href="submit.jsp" style="text-decoration:none; color:#333;"><i class="fa fa-arrow-left"></i> กลับ</a>
+
     <div style="margin-left:auto;display:flex;align-items:center">
-        <i class="fa fa-circle-user" style="font-size:24px;padding-left:10px;padding-right:0px"></i>
-        <p style="font-size:0.8rem; margin-left: 10px;margin-right: 10px">สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-    </div>
+            <i class="fa fa-circle-user" style="font-size:24px;padding-left:10px;"></i>
+            <p style="margin-left:5px;margin-right:15px">
+                สอบถามข้อมูลเพิ่มเติม ติดต่อ 411
+            </p>
+        </div>
 </div>
 <div class="banner">
     <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</h1>
@@ -82,11 +85,11 @@
         // ---------- Header ----------
         String headerSQL =
             "SELECT E.EMPNAME, E.PHONE, S.SECNAME, D.DEPTNAME, " +
-            "RF.TITLEFORM, TO_CHAR(RF.REQUESTDATE, 'YYYY-MM-DD') AS REQDATE, " +
-            "TO_CHAR(RF.DEADLINE, 'YYYY-MM-DD') AS DDL, RF.STATUS " +
+            "RF.TITLEFORM, TO_CHAR(RF.REQUESTDATE, 'DD/MM/YYYY') AS REQDATE, " +
+            "TO_CHAR(RF.DEADLINE, 'DD/MM/YYYY') AS DDL, RF.STATUS " +
             "FROM REQUISITIONFORM RF " +
             "JOIN EMPLOYEE E ON RF.EMPID = E.EMPID " +
-            "LEFT JOIN SECTION S ON RF.ASSIGN_SECID = S.SECID " +
+            "LEFT JOIN SECTION S ON E.SECID = S.SECID " +
             "LEFT JOIN DEPARTMENT D ON S.DEPTID = D.DEPTID " +
             "WHERE RF.FORMID = ?";
         psHeader = conn.prepareStatement(headerSQL);
@@ -172,16 +175,16 @@
 <!-- Main Detail -->
 <div class="form-container">
     <form>
+        <div style="font-size:0.9rem; color:#777;">#<%= formId %></div>
         <div class="form-grid">
             <!-- personal info -->
             <div class="form-group"><label>ชื่อ-นามสกุล</label><input type="text" value="<%= fullName %>" readonly></div>
             <div class="form-group"><label>ส่วน</label><input type="text" value="<%= sectionName %>" readonly></div>
             <div class="form-group"><label>ฝ่าย</label><input type="text" value="<%= departmentName %>" readonly></div>
             <div class="form-group"><label>เบอร์ต่อ</label><input type="text" value="<%= phone %>" readonly></div>
-            <div class="form-group"><label>วันที่</label><input type="date" value="<%= requestDate %>" readonly></div>
-            <div class="form-group"><label>Deadline</label><input type="date" value="<%= deadline %>" readonly></div>
-            <div class="form-group" style="margin-bottom:20px;"><label>ชื่อหัวข้อความต้องการ :</label><input type="text" value="<%= requestTitle %>" readonly></div>
-            <div class="form-group"><label>สถานะ</label><input type="text" value="<%= status %>" readonly></div>
+            <div class="form-group"><label>วันที่</label><input type="text" value="<%= requestDate %>" readonly></div>
+            <div class="form-group"><label>Deadline</label><input type="text" value="<%= deadline %>" readonly></div>
+            <div class="form-group full-width" style="margin-bottom:20px;"><label>ชื่อหัวข้อความต้องการ :</label><input type="text" value="<%= requestTitle %>" readonly></div>
         </div>
 
         <h3 style="margin-top:30px;">รายละเอียดคำขอ (จำนวน <%= items.size() %> รายการ)</h3>

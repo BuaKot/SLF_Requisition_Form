@@ -67,13 +67,13 @@
             <div class="form-grid">
                 <!-- Name (auto‑filled, readonly) -->
                 <div class="form-group">
-                    <label for="name">ชื่อ-นามสกุล <span class="required-star">*</span></label>
+                    <label for="name">ชื่อ-นามสกุล</label>
                     <input type="text" id="name" name="name" value="${loggedInEmployee.empName}" readonly required>
                 </div>
 
                 <!-- Department (auto‑filled, locked) -->
                 <div class="form-group">
-                    <label for="departmentDisplay">ฝ่าย <span class="required-star">*</span></label>
+                    <label for="departmentDisplay">ฝ่าย</label>
                     <input type="text" id="departmentDisplay" value="${empDeptName}" readonly required>
                     <input type="hidden" id="department" name="department" value="${empDeptId}">
                 </div>
@@ -87,7 +87,7 @@
 
                 <!-- Phone (auto‑filled) -->
                 <div class="form-group">
-                    <label for="phone">เบอร์ต่อ <span class="required-star">*</span></label>
+                    <label for="phone">เบอร์ต่อ</label>
                     <input type="text" id="phone" name="phone" value="${loggedInEmployee.phone}" readonly required>
                 </div>
 
@@ -167,7 +167,7 @@
                                     <label><input type="checkbox" name="folderPermission[]" value="Write"> Write</label>
                                 </div>
                                 <div class="server-input-row sub-folder-row">
-                                    <label>Sub Folder : <span class="required-star">*</span></label>
+                                    <label>Sub Folder :</label>
                                     <input type="text" name="subFolder[]" placeholder="โปรดระบุ Sub Folder" required data-maxbytes="500">
                                 </div>
                                 <div class="permission-checkbox-row">
@@ -214,7 +214,7 @@
 <div class="request-alert-overlay" id="requestTypeAlert" aria-hidden="true" style="display:none; position:fixed; inset:0; z-index:2000; align-items:center; justify-content:center; padding:20px; background:rgba(0,0,0,0.28);">
     <div class="request-alert-box" role="alertdialog" aria-modal="true" aria-labelledby="requestTypeAlertTitle" style="width:min(420px,100%); padding:22px 24px; border-radius:8px; background:#fff; box-shadow:0 14px 38px rgba(0,0,0,0.24); text-align:left;">
         <h3 id="requestTypeAlertTitle" style="margin:0 0 10px; font-size:1.15rem; color:#111827;">กรุณาตรวจสอบประเภทคำขอ</h3>
-        <p id="requestTypeAlertMessage" style="margin:0 0 20px; color:#1f2937; line-height:1.5;"></p>
+        <p id="requestTypeAlertMessage" style="margin:0 0 20px; color:#1f2937; line-height:1.5; white-space:pre-line;"></p>
         <div style="display:flex; justify-content:flex-end;">
             <button type="button" class="request-alert-btn" id="requestTypeAlertClose">ตกลง</button>
         </div>
@@ -396,6 +396,7 @@ function handleRequestTypeChange(select) {
             serverPermissionBox.style.display = "flex";
             serverNameInput.required = true;
             serverFolderInput.required = true;
+            // subFolderInput.required = true; // Sub Folder ไม่บังคับใส่
         } else {
             serverPermissionBox.style.display = "none";
             serverNameInput.required = false;
@@ -418,13 +419,15 @@ function getSelectedRequestSection(select) {
     return { id: option.dataset.secId || "", name: option.dataset.secName || "" };
 }
 
-function showRequestTypeAlert(message) {
+function showRequestTypeAlert(message, title) {
     var overlay = document.getElementById("requestTypeAlert");
+    var titleEl = document.getElementById("requestTypeAlertTitle");
     var messageEl = document.getElementById("requestTypeAlertMessage");
     if (!overlay || !messageEl) {
         alert(message);
         return;
     }
+    if (titleEl) titleEl.textContent = title || "กรุณาตรวจสอบประเภทคำขอ";
     messageEl.textContent = message;
     overlay.classList.add("is-open");
     overlay.style.display = "flex";
@@ -438,6 +441,12 @@ function closeRequestTypeAlert() {
     overlay.classList.remove("is-open");
     overlay.style.display = "none";
     overlay.setAttribute("aria-hidden", "true");
+}
+
+function hasCheckedPermission(item, selector) {
+    return Array.prototype.some.call(item.querySelectorAll(selector), function (checkbox) {
+        return checkbox.checked;
+    });
 }
 
 function validateSameRequestSection(showAlert, changedSelect) {
@@ -612,6 +621,7 @@ document.addEventListener("keydown", function (e) {
 // ---------- Form submission validation ----------
 const requisitionForm = document.querySelector("form");
 if (requisitionForm) {
+    requisitionForm.setAttribute("novalidate", "novalidate");
     requisitionForm.addEventListener("submit", function (event) {
         const missingFields = [];
 
@@ -631,13 +641,27 @@ if (requisitionForm) {
             const requestNumber = index + 1;
             const requestTypeInput = item.querySelector('select[name="requestType[]"]');
             const objectiveInput = item.querySelector('textarea[name="objective[]"]');
+            const programNameInput = item.querySelector('input[name="programName[]"]');
+            const otherRequestInput = item.querySelector('input[name="otherRequest[]"]');
+            const serverPermissionBox = item.querySelector(".server-permission-box");
+            const serverNameInput = item.querySelector('input[name="serverName[]"]');
+            const serverFolderInput = item.querySelector('input[name="serverFolder[]"]');
+            const subFolderInput = item.querySelector('input[name="subFolder[]"]');
             if (!requestTypeInput || requestTypeInput.value.trim() === "") missingFields.push("ประเภทคำขอ ช่องคำขอที่ " + requestNumber);
             if (!objectiveInput || objectiveInput.value.trim() === "") missingFields.push("วัตถุประสงค์ / ความต้องการ ช่องคำขอที่ " + requestNumber);
+            if (programNameInput && programNameInput.required && programNameInput.value.trim() === "") missingFields.push("ชื่อโปรแกรม ช่องคำขอที่ " + requestNumber);
+            if (otherRequestInput && otherRequestInput.required && otherRequestInput.value.trim() === "") missingFields.push("โปรดระบุ ช่องคำขอที่ " + requestNumber);
+            if (serverPermissionBox && serverPermissionBox.style.display !== "none") {
+                if (!serverNameInput || serverNameInput.value.trim() === "") missingFields.push("Server ช่องคำขอที่ " + requestNumber);
+                if (!serverFolderInput || serverFolderInput.value.trim() === "") missingFields.push("Folder ช่องคำขอที่ " + requestNumber);
+                if (!hasCheckedPermission(item, 'input[name^="folderPermission"]')) missingFields.push("สิทธิ์ Folder ช่องคำขอที่ " + requestNumber);
+//                if (!hasCheckedPermission(item, 'input[name^="subFolderPermission"]')) missingFields.push("สิทธิ์ Sub Folder ช่องคำขอที่ " + requestNumber); // Sub Folder ไม่บังคับเลือกสิทธิ์
+            }
         });
 
         if (missingFields.length > 0) {
             event.preventDefault();
-            alert("กรุณากรอกข้อมูลในช่อง :\n- " + missingFields.join("\n- "));
+            showRequestTypeAlert("กรุณากรอกข้อมูลในช่อง :\n- " + missingFields.join("\n- "), "กรุณากรอกข้อมูลให้ครบถ้วน");
             return;
         }
 
@@ -674,7 +698,7 @@ if (requisitionForm) {
         });
         if (overLimitFields.length > 0) {
             event.preventDefault();
-            alert("ข้อมูลเกินขนาดที่กำหนด :\n- " + overLimitFields.join("\n- "));
+            showRequestTypeAlert("ข้อมูลเกินขนาดที่กำหนด :\n- " + overLimitFields.join("\n- "), "กรุณาตรวจสอบข้อมูล");
             return;
         }
 

@@ -1,6 +1,8 @@
 package com.slf.dao;
 
 import com.slf.model.*;
+import com.slf.util.PasswordUtil;
+
 import java.sql.*;
 import java.util.*;
 
@@ -146,20 +148,23 @@ public class LookupDAO {
 
     // Correctly named password check (fixed typo)
     public Employee findEmployeeByEmpIdAndPassword(int empId, String password) throws SQLException {
-        String sql = "SELECT EMPID, EMPNAME, POSITION, SECID, PHONE FROM EMPLOYEE WHERE EMPID = ? AND PASSWORD = ?";
+        String sql = "SELECT EMPID, EMPNAME, POSITION, SECID, PHONE, PASSWORD FROM EMPLOYEE WHERE EMPID = ?";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, empId);
-            ps.setString(2, password);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    Employee emp = new Employee();
-                    emp.setEmpId(rs.getInt("EMPID"));
-                    emp.setEmpName(rs.getString("EMPNAME"));
-                    emp.setPosition(rs.getString("POSITION"));
-                    emp.setSecId(rs.getInt("SECID"));
-                    emp.setPhone(rs.getString("PHONE"));
-                    return emp;
+                    String storedPassword = rs.getString("PASSWORD");
+                    // Use the utility to check
+                    if (PasswordUtil.check(password, storedPassword)) {
+                        Employee emp = new Employee();
+                        emp.setEmpId(rs.getInt("EMPID"));
+                        emp.setEmpName(rs.getString("EMPNAME"));
+                        emp.setPosition(rs.getString("POSITION"));
+                        emp.setSecId(rs.getInt("SECID"));
+                        emp.setPhone(rs.getString("PHONE"));
+                        return emp;
+                    }
                 }
             }
         }

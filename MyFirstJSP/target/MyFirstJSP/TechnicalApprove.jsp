@@ -22,6 +22,34 @@
             margin: 0;
         }
 
+        /* Sticky Bar ตามแบบเป๊ะ */
+        .sticky-bar {
+            background: #fafafa;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sticky-bar a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .contact-info {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .contact-info p {
+            margin: 0;
+            font-size: 14px;
+        }
 
         .banner {
             background: #C3EAFF;
@@ -206,6 +234,11 @@
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    Object loggedInEmpObj = session.getAttribute("loggedInEmpId");
+    if (loggedInEmpObj == null) {
+        loggedInEmpObj = session.getAttribute("empid");
+    }
+    int loggedInEmpId = Integer.parseInt(loggedInEmpObj.toString());
     
     try {
         conn = DBConnection.getConnection();
@@ -222,10 +255,12 @@
                 "       WHERE ai.FORMID = r.FORMID " +
                 "       ORDER BY ai.APPROVALID DESC " +
                 "       FETCH FIRST 1 ROWS ONLY) = 1 " +
+                "AND s.SECTIONHEAD_EMPID = ? " +
                 "AND r.DEADLINE >= TRUNC(SYSDATE) " +
                 "ORDER BY r.FORMID DESC";
 
         pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, String.valueOf(loggedInEmpId));
         rs = pstmt.executeQuery();
 
         while (rs.next()) {

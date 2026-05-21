@@ -1,0 +1,5 @@
+# Created at 2026-05-21T13:00:27.973
+Boot Manifest-JAR contains absolute paths in classpath 'e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

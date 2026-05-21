@@ -1,66 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.slf.webapp.SubmitSuccessPageTest" time="0.026" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.slf.webapp.SubmitSuccessPageTest" time="0.027" tests="1" errors="0" skipped="0" failures="0">
   <properties>
-    <property name="java.specification.version" value="25"/>
+    <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
     <property name="sun.jnu.encoding" value="MS874"/>
-    <property name="java.class.path" value="c:\Users\Acer\Documents\GitHub\SLF_Requisition_Form\MyFirstJSP\target\test-classes;c:\Users\Acer\Documents\GitHub\SLF_Requisition_Form\MyFirstJSP\target\classes;C:\Users\Acer\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;C:\Users\Acer\.m2\repository\jakarta\servlet\jakarta.servlet-api\5.0.0\jakarta.servlet-api-5.0.0.jar;C:\Users\Acer\.m2\repository\javax\servlet\javax.servlet-api\4.0.1\javax.servlet-api-4.0.1.jar;C:\Users\Acer\.m2\repository\javax\servlet\jstl\1.2\jstl-1.2.jar;C:\Users\Acer\.m2\repository\com\oracle\database\jdbc\ojdbc8\21.9.0.0\ojdbc8-21.9.0.0.jar;C:\Users\Acer\.m2\repository\com\zaxxer\HikariCP\5.1.0\HikariCP-5.1.0.jar;C:\Users\Acer\.m2\repository\org\slf4j\slf4j-api\1.7.36\slf4j-api-1.7.36.jar;"/>
-    <property name="java.vm.vendor" value="Eclipse Adoptium"/>
+    <property name="java.class.path" value="e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\target\test-classes;e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\target\classes;C:\Users\ACER\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;C:\Users\ACER\.m2\repository\jakarta\servlet\jakarta.servlet-api\5.0.0\jakarta.servlet-api-5.0.0.jar;C:\Users\ACER\.m2\repository\javax\servlet\javax.servlet-api\4.0.1\javax.servlet-api-4.0.1.jar;C:\Users\ACER\.m2\repository\javax\servlet\jstl\1.2\jstl-1.2.jar;C:\Users\ACER\.m2\repository\com\oracle\database\jdbc\ojdbc8\21.9.0.0\ojdbc8-21.9.0.0.jar;C:\Users\ACER\.m2\repository\com\zaxxer\HikariCP\5.1.0\HikariCP-5.1.0.jar;C:\Users\ACER\.m2\repository\org\slf4j\slf4j-api\1.7.36\slf4j-api-1.7.36.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="user.variant" value=""/>
-    <property name="java.vendor.url" value="https://adoptium.net/"/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
     <property name="user.timezone" value="Asia/Bangkok"/>
-    <property name="user.country.format" value="TH"/>
     <property name="os.name" value="Windows 11"/>
-    <property name="java.vm.specification.version" value="25"/>
+    <property name="java.vm.specification.version" value="21"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
-    <property name="sun.boot.library.path" value="C:\Program Files\Eclipse Adoptium\jdk-25.0.3.9-hotspot\bin"/>
-    <property name="sun.java.command" value="C:\Users\Acer\AppData\Local\Temp\surefire17337005052632001233\surefirebooter-20260521114356566_3.jar C:\Users\Acer\AppData\Local\Temp\surefire17337005052632001233 2569-05-21T11-43-56_490-jvmRun1 surefire-20260521114356566_1tmp surefire_0-20260521114356566_2tmp"/>
+    <property name="sun.boot.library.path" value="E:\JDK\bin"/>
+    <property name="sun.java.command" value="C:\Users\ACER\AppData\Local\Temp\surefire11037257748726286260\surefirebooter-20260521130027931_3.jar C:\Users\ACER\AppData\Local\Temp\surefire11037257748726286260 2026-05-21T13-00-27_814-jvmRun1 surefire-20260521130027931_1tmp surefire_0-20260521130027931_2tmp"/>
     <property name="jdk.debug" value="release"/>
-    <property name="surefire.test.class.path" value="c:\Users\Acer\Documents\GitHub\SLF_Requisition_Form\MyFirstJSP\target\test-classes;c:\Users\Acer\Documents\GitHub\SLF_Requisition_Form\MyFirstJSP\target\classes;C:\Users\Acer\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;C:\Users\Acer\.m2\repository\jakarta\servlet\jakarta.servlet-api\5.0.0\jakarta.servlet-api-5.0.0.jar;C:\Users\Acer\.m2\repository\javax\servlet\javax.servlet-api\4.0.1\javax.servlet-api-4.0.1.jar;C:\Users\Acer\.m2\repository\javax\servlet\jstl\1.2\jstl-1.2.jar;C:\Users\Acer\.m2\repository\com\oracle\database\jdbc\ojdbc8\21.9.0.0\ojdbc8-21.9.0.0.jar;C:\Users\Acer\.m2\repository\com\zaxxer\HikariCP\5.1.0\HikariCP-5.1.0.jar;C:\Users\Acer\.m2\repository\org\slf4j\slf4j-api\1.7.36\slf4j-api-1.7.36.jar;"/>
+    <property name="surefire.test.class.path" value="e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\target\test-classes;e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP\target\classes;C:\Users\ACER\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;C:\Users\ACER\.m2\repository\jakarta\servlet\jakarta.servlet-api\5.0.0\jakarta.servlet-api-5.0.0.jar;C:\Users\ACER\.m2\repository\javax\servlet\javax.servlet-api\4.0.1\javax.servlet-api-4.0.1.jar;C:\Users\ACER\.m2\repository\javax\servlet\jstl\1.2\jstl-1.2.jar;C:\Users\ACER\.m2\repository\com\oracle\database\jdbc\ojdbc8\21.9.0.0\ojdbc8-21.9.0.0.jar;C:\Users\ACER\.m2\repository\com\zaxxer\HikariCP\5.1.0\HikariCP-5.1.0.jar;C:\Users\ACER\.m2\repository\org\slf4j\slf4j-api\1.7.36\slf4j-api-1.7.36.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
-    <property name="user.home" value="C:\Users\Acer"/>
+    <property name="user.home" value="C:\Users\ACER"/>
     <property name="user.language" value="en"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
-    <property name="java.version.date" value="2026-04-21"/>
-    <property name="java.home" value="C:\Program Files\Eclipse Adoptium\jdk-25.0.3.9-hotspot"/>
+    <property name="java.version.date" value="2026-01-20"/>
+    <property name="java.home" value="E:\JDK"/>
     <property name="file.separator" value="\"/>
-    <property name="basedir" value="c:\Users\Acer\Documents\GitHub\SLF_Requisition_Form\MyFirstJSP"/>
+    <property name="basedir" value="e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP"/>
     <property name="java.vm.compressedOopsMode" value="Zero based"/>
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\Acer\AppData\Local\Temp\surefire17337005052632001233\surefirebooter-20260521114356566_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\ACER\AppData\Local\Temp\surefire11037257748726286260\surefirebooter-20260521130027931_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
-    <property name="java.runtime.version" value="25.0.3+9-LTS"/>
-    <property name="user.name" value="Acer"/>
+    <property name="java.runtime.version" value="21.0.10+8-LTS-217"/>
+    <property name="user.name" value="ACER"/>
     <property name="stdout.encoding" value="MS874"/>
     <property name="path.separator" value=";"/>
     <property name="os.version" value="10.0"/>
-    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="file.encoding" value="UTF-8"/>
-    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
-    <property name="java.vendor.version" value="Temurin-25.0.3+9"/>
-    <property name="localRepository" value="C:\Users\Acer\.m2\repository"/>
-    <property name="java.vendor.url.bug" value="https://github.com/adoptium/adoptium-support/issues"/>
-    <property name="java.io.tmpdir" value="C:\Users\Acer\AppData\Local\Temp\"/>
-    <property name="java.version" value="25.0.3"/>
-    <property name="user.dir" value="c:\Users\Acer\Documents\GitHub\SLF_Requisition_Form\MyFirstJSP"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="C:\Users\ACER\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Users\ACER\AppData\Local\Temp\"/>
+    <property name="java.version" value="21.0.10"/>
+    <property name="user.dir" value="e:\lion_stuff\Da Projects\SLF_Requisition_Form\MyFirstJSP"/>
     <property name="os.arch" value="amd64"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="user.language.format" value="th"/>
     <property name="sun.os.patch.level" value=""/>
     <property name="native.encoding" value="MS874"/>
-    <property name="java.library.path" value="C:\Program Files\Eclipse Adoptium\jdk-25.0.3.9-hotspot\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;c:\Users\Acer\AppData\Roaming\Code\User\globalStorage\github.copilot-chat\debugCommand;c:\Users\Acer\AppData\Roaming\Code\User\globalStorage\github.copilot-chat\copilotCli;C:\Program Files\Eclipse Adoptium\jdk-25.0.3.9-hotspot\bin;C:\app\Acer\product\21c\dbhomeXE\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\libnvvp;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\Nsight Compute 2023.1.0\;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Cloudflare\Cloudflare WARP\;C:\Program Files\Eclipse Adoptium\jdk-25.0.3.9-hotspot\bin;C:\apache-maven-3.9.15\bin;C:\Users\Acer\AppData\Local\Programs\Python\Python314\Scripts\;C:\Users\Acer\AppData\Local\Programs\Python\Python314\;C:\Users\Acer\AppData\Local\Programs\Python\Python310\Scripts\;C:\Users\Acer\AppData\Local\Programs\Python\Python310\;C:\Users\Acer\AppData\Local\Programs\Python\Python311\Scripts\;C:\Users\Acer\AppData\Local\Programs\Python\Python311\;C:\Users\Acer\AppData\Local\Microsoft\WindowsApps;C:\Users\Acer\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Acer\AppData\Local\GitHubDesktop\bin;C:\Users\Acer\Downloads\flutter_windows_3.35.5-stable\flutter\bin;C:\flutter\bin;C:\Users\Acer\AppData\Local\Pub\Cache\bin;C:\Users\Acer\AppData\Roaming\npm;C:\Users\Acer\AppData\Local\Programs\Antigravity\bin;c:\Users\Acer\.vscode\extensions\vscjava.vscode-java-debug-0.59.0\bundled\scripts\noConfigScripts;."/>
+    <property name="java.library.path" value="E:\JDK\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;E:\conda\condabin;c:\Users\ACER\AppData\Roaming\Code\User\globalStorage\github.copilot-chat\debugCommand;c:\Users\ACER\AppData\Roaming\Code\User\globalStorage\github.copilot-chat\copilotCli;C:\Users\ACER\AppData\Local\Programs\Microsoft VS Code;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\oraclexe\app\oracle\product\11.2.0\server\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\libnvvp;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Tools;C:\Program Files\dotnet\;C:\Program Files\NVIDIA Corporation\NVIDIA app\NvDLISR;E:\conda\condabin;E:\ffmpeg-2025-08-14-git-cdbb5f1b93-full_build\bin;C:\Program Files\Git\cmd;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;E:\nodejs\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Users\ACER\AppData\Local\Programs\Python\Python310\Scripts\;C:\Users\ACER\AppData\Local\Programs\Python\Python310\;C:\Users\ACER\AppData\Local\Microsoft\WindowsApps;C:\Users\ACER\AppData\Local\Programs\Microsoft VS Code\bin;C:\ffmpeg;C:\MinGW\bin;C:\Users\ACER\AppData\Local\Programs\Ollama;C:\Users\ACER\AppData\Roaming\npm;E:\JDK\bin;E:\apache-maven-3.9.15\bin;C:\Users\ACER\AppData\Local\GitHubDesktop\bin;c:\Users\ACER\.vscode\extensions\vscjava.vscode-java-debug-0.59.0\bundled\scripts\noConfigScripts;."/>
     <property name="java.vm.info" value="mixed mode, sharing"/>
     <property name="stderr.encoding" value="MS874"/>
-    <property name="java.vendor" value="Eclipse Adoptium"/>
-    <property name="java.vm.version" value="25.0.3+9-LTS"/>
-    <property name="stdin.encoding" value="MS874"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="21.0.10+8-LTS-217"/>
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
-    <property name="java.class.version" value="69.0"/>
+    <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="testCreateNewRequestLinkUsesLoadFormServlet" classname="com.slf.webapp.SubmitSuccessPageTest" time="0.006"/>
+  <testcase name="testCreateNewRequestLinkUsesLoadFormServlet" classname="com.slf.webapp.SubmitSuccessPageTest" time="0.007"/>
 </testsuite>

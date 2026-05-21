@@ -53,34 +53,6 @@
             <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
         </div>
     </div>
-<!-- Form section2 -->
-<div class="request-page">
-
-    <div id="requestsContainer">
-
-        <div class="request-item">
-
-    <div class="request-header-box">
-
-    <div class="request-header-left">
-        <div class="request-title-row">
-            <label>ชื่อความต้องการ :</label>
-            <input type="text" name="requestTitle">
-            <button type="button" class="request-delete-btn" disabled>
-            <i class="fa-regular fa-trash-can"></i>
-        </button>
-        </div>
-
-        <div class="request-date-row">
-            <label>ภายในวันที่ :</label>
-            <input type="date" name="dueDate">
-            <button type="button" class="request-zoom-btn">
-                <i class="fa-solid fa-expand expand-icon"></i>
-            </button>
-            
-        </div>
-        <div class="request-empty-space"></div>
-    </div>
 
     <div class="banner">
         <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>

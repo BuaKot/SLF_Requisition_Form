@@ -412,6 +412,20 @@ try {
         <% } %>
     </div>
     <!-- zennnne แก้ -->
+=======
+    <!-- Confirm Popup -->
+<div id="confirmPopup" class="popup-overlay">
+    <div class="popup-box">
+        <h3>ยืนยันผล</h3>
+        <p>คุณต้องการยืนยันผลรายการนี้ใช่หรือไม่?</p>
+        <div class="popup-buttons">
+            <button id="popupConfirm" class="popup-confirm-btn">ยืนยัน</button>
+            <button onclick="closePopup()" class="popup-cancel-btn">ยกเลิก</button>
+        </div>
+    </div>
+</div>
+
+>>>>>>> c16cd4518b1c1c077511b0799889594f3a68da48
 </div>
 
 <!-- CONFIRM POPUP -->
@@ -598,4 +612,43 @@ function closeDeadlinePopup() {
 </script>
 
 </body>
+<script>
+
+function toggleNav() {
+  var sidebar = document.getElementById("mySidebar");
+  var main = document.getElementById("main");
+  
+  if (sidebar.style.width === "250px") {
+    sidebar.style.width = "0";
+    main.style.marginLeft = "0";
+    main.style.width = "100%";
+  } else {
+    sidebar.style.width = "250px";
+    main.style.marginLeft = "250px";
+    main.style.width = "calc(100% - 250px)";
+  }
+}
+
+/* Open popup when click confirm button */
+document.querySelectorAll(".confirm-btn").forEach(button => {
+    button.addEventListener("click", function() {
+        currentButton = this;
+        document.getElementById("confirmPopup").style.display = "flex";
+    });
+});
+
+/* Close popup */
+function closePopup() {
+    document.getElementById("confirmPopup").style.display = "none";
+}
+
+/* Final confirm */
+document.getElementById("popupConfirm").addEventListener("click", function() {
+    if (currentButton) {
+        currentButton.innerText = "ยืนยันแล้ว";
+        currentButton.classList.add("confirmed");
+    }
+    closePopup();
+});
+</script>
 </html>

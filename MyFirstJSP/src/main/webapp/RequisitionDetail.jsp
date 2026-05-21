@@ -150,12 +150,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>รายละเอียดใบขอให้ดำเนินการ (ID: <%= (formId != null) ? formId : "-" %>)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
         /* ... keep all the existing CSS from your friend's version ... */
         * { box-sizing: border-box; }
         body { font-family: 'Sarabun', sans-serif; margin: 0; background-color: #f4f7f9; }
-        .sticky-bar { position: sticky; top: 0; background: white; height: 60px; border-bottom: 4px solid #3272BB; display: flex; align-items: center; padding: 0 20px; z-index: 1000; }
-        .sticky-bar a { text-decoration: none; color: #333; font-weight: bold; }
         .banner { background: #C3EAFF; padding: clamp(20px, 6vw, 40px) 15px; text-align: center; color: #003366; }
         .banner h1 { font-size: clamp(1.1rem, 4vw, 1.5rem); margin: 0; line-height: 1.2; }
         .form-container { max-width: 900px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -185,13 +184,23 @@
 <body>
 
 <div class="sticky-bar">
-    <a href="DirectorApprove.jsp">
-        <i class="fa fa-arrow-left"></i> กลับหน้ารายการ
-    </a>
-    <div class="contact-info" style="margin-left:auto; display:flex; align-items:center">
-        <i class='fa fa-circle-user' style='font-size:1.4rem; color:#333;'></i>
-        <p style='margin-left: 8px; font-size: 0.9rem; margin-top:0; margin-bottom:0;'>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-    </div>
+        <a href="DirectorApprove.jsp">
+            <i class="fa fa-arrow-left" style="font-size:24px;"></i>
+        </a>
+        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
+        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
+        
+        <div class="user-info">
+            <i class="fa fa-circle-user"></i>
+            <p>
+                ${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}
+            </p>
+        </div>
+        <div class="contact-info">
+            <i class="fa-solid fa-circle-info"></i>
+            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+        </div>
+        
 </div>
 
 <div class="banner">

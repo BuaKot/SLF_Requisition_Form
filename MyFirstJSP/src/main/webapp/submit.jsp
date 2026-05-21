@@ -31,6 +31,25 @@
     List<Map<String, Object>> formList = new ArrayList<>();
     // ---------- End Pagination ----------
 
+    // zennnne แก้
+    String showParam = request.getParameter("show");
+    if (showParam == null || showParam.trim().isEmpty()) showParam = "pending";
+    String sortParam = request.getParameter("sort");
+    if (!"desc".equals(sortParam)) sortParam = "asc";
+    List<String> statusConds = new ArrayList<>();
+    for (String s : showParam.split(",")) {
+        switch (s.trim().toLowerCase()) {
+            case "pending":  statusConds.add("(NVL(ls.STATE_STEP,0) BETWEEN 0 AND 4 AND RF.DEADLINE >= TRUNC(SYSDATE))"); break;
+            case "overdue":  statusConds.add("(NVL(ls.STATE_STEP,0) BETWEEN 0 AND 4 AND RF.DEADLINE < TRUNC(SYSDATE))");  break;
+            case "rejected": statusConds.add("NVL(ls.STATE_STEP,0) < 0");  break;
+            case "approved": statusConds.add("NVL(ls.STATE_STEP,0) >= 5"); break;
+        }
+    }
+    String statusWhere = statusConds.isEmpty() ? "1=0"
+        : "(" + String.join(" OR ", statusConds) + ")";
+    String orderDir = "desc".equals(sortParam) ? "DESC" : "ASC";
+    // zennnne แก้
+
     Connection conn = null;
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -169,19 +188,22 @@
 try {
     conn = DBConnection.getConnection();
 
+    // zennnne แก้
     String sql =
+        "WITH latest_step AS ( " +
+        "    SELECT FORMID, STATE_STEP, " +
+        "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
+        "    FROM APPROVALINFO " +
+        ") " +
         "SELECT RF.FORMID, RF.TITLEFORM, RF.DEADLINE, RF.IS_EDITED, " +
-        "NVL(( " +
-        "   SELECT AI.STATE_STEP " +
-        "   FROM APPROVALINFO AI " +
-        "   WHERE AI.FORMID = RF.FORMID " +
-        "   ORDER BY AI.APPROVALID DESC " +
-        "   FETCH FIRST 1 ROWS ONLY " +
-        "), 0) AS STATE_STEP " +
+        "       NVL(ls.STATE_STEP, 0) AS STATE_STEP " +
         "FROM REQUISITIONFORM RF " +
+        "LEFT JOIN latest_step ls ON ls.FORMID = RF.FORMID AND ls.RN = 1 " +
         "WHERE RF.EMPID = ? " +
-        "ORDER BY RF.FORMID DESC " +
+        "AND " + statusWhere + " " +
+        "ORDER BY RF.DEADLINE " + orderDir + ", RF.FORMID DESC " +
         "OFFSET ? ROWS FETCH FIRST ? ROWS ONLY";
+    // zennnne แก้
 
     pstmt = conn.prepareStatement(sql);
     pstmt.setInt(1, empid);
@@ -374,20 +396,22 @@ try {
 %>
     </section>
 
+    <!-- zennnne แก้ -->
     <!-- Pagination -->
     <div class="pagination" style="display:flex; gap:16px; align-items:center; justify-content:center; padding:20px 0;">
         <% if (currentPage > 1) { %>
-            <a href="?page=<%= currentPage - 1 %>" style="text-decoration:none;">
+            <a href="?page=<%= currentPage - 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>" style="text-decoration:none;">
                 <button type="button" class="request-btn">« ก่อนหน้า</button>
             </a>
         <% } %>
         <span style="font-family:'DB Helvethaica X 55 Regular',sans-serif; color:#003366;">หน้า <%= currentPage %></span>
         <% if (formList.size() == pageSize) { %>
-            <a href="?page=<%= currentPage + 1 %>" style="text-decoration:none;">
+            <a href="?page=<%= currentPage + 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>" style="text-decoration:none;">
                 <button type="button" class="request-btn">ถัดไป »</button>
             </a>
         <% } %>
     </div>
+    <!-- zennnne แก้ -->
 </div>
 
 <!-- CONFIRM POPUP -->
@@ -422,14 +446,11 @@ let currentOverdueButton = null;
 const contextPath = "<%= request.getContextPath() %>";
 
 // zennnne แก้
-let sortOrder = 'asc';
+let sortOrder = (new URLSearchParams(window.location.search).get('sort') || 'asc');
 
-function applyFilterAndSort() {
-    const checkedStatuses = Array.from(document.querySelectorAll('.filter-checkboxes input:checked'))
-        .map(function(cb) { return cb.value; });
+function applySort() {
     const list = document.querySelector('.request-list');
     const rows = Array.from(list.querySelectorAll('.request-row'));
-
     rows.sort(function(a, b) {
         const da = a.dataset.deadline || '9999-12-31';
         const db = b.dataset.deadline || '9999-12-31';
@@ -437,16 +458,16 @@ function applyFilterAndSort() {
         return da > db ? -1 : da < db ? 1 : 0;
     });
     rows.forEach(function(row) { list.appendChild(row); });
-    rows.forEach(function(row) {
-        row.style.display = checkedStatuses.includes(row.dataset.status) ? '' : 'none';
-    });
 }
 
 function setSortOrder(order) {
     sortOrder = order;
-    document.getElementById('sortAscBtn').classList.toggle('active', order === 'asc');
+    document.getElementById('sortAscBtn').classList.toggle('active',  order === 'asc');
     document.getElementById('sortDescBtn').classList.toggle('active', order === 'desc');
-    applyFilterAndSort();
+    const sp = new URLSearchParams(window.location.search);
+    sp.set('sort', order);
+    history.replaceState(null, '', '?' + sp.toString());
+    applySort();
 }
 // zennnne แก้
 
@@ -543,10 +564,25 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // zennnne แก้
+    const initParams = new URLSearchParams(window.location.search);
+    const initShow   = (initParams.get('show') || 'pending').split(',').map(function(s) { return s.trim(); });
     document.querySelectorAll('.filter-checkboxes input').forEach(function(cb) {
-        cb.addEventListener('change', applyFilterAndSort);
+        cb.checked = initShow.includes(cb.value);
     });
-    applyFilterAndSort();
+    document.getElementById('sortAscBtn').classList.toggle('active',  sortOrder === 'asc');
+    document.getElementById('sortDescBtn').classList.toggle('active', sortOrder === 'desc');
+    applySort();
+
+    document.querySelectorAll('.filter-checkboxes input').forEach(function(cb) {
+        cb.addEventListener('change', function() {
+            const checked = Array.from(document.querySelectorAll('.filter-checkboxes input:checked'))
+                .map(function(c) { return c.value; });
+            const sp = new URLSearchParams(window.location.search);
+            sp.set('show', checked.length > 0 ? checked.join(',') : 'none');
+            sp.set('page', '1');
+            window.location.href = '?' + sp.toString();
+        });
+    });
     // zennnne แก้
 });
 

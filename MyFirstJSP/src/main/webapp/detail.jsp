@@ -5,7 +5,7 @@
 <%
     String idParam = request.getParameter("id");
     if (idParam == null || idParam.trim().isEmpty()) {
-        response.sendRedirect("submit.jsp");
+        response.sendRedirect("submit"); // zennnne แก้
         return;
     }
     int formId = Integer.parseInt(idParam);
@@ -65,7 +65,7 @@
 
 <!-- Header and Banner (unchanged) -->
 <div class="sticky-bar">
-    <a href="submit.jsp" style="text-decoration:none; color:#333;"><i class="fa fa-arrow-left"></i> กลับ</a>
+    <a href="submit" style="text-decoration:none; color:#333;"><i class="fa fa-arrow-left"></i> กลับ</a><!-- zennnne แก้ -->
 
     <div class="contact-info">
         <i class="fa-solid fa-circle-info"></i>

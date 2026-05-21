@@ -78,6 +78,7 @@ public class OracleRequisitionDAO implements RequisitionDAO {
             int formId;
             if (formRs.next()) {
                 formId = formRs.getInt(1);
+                form.setFormId(formId);
                 System.out.println("REQUISITIONFORM INSERTED, FORMID=" + formId);
             } else {
                 throw new Exception("ไม่สามารถดึง FORMID ที่สร้างใหม่ได้");

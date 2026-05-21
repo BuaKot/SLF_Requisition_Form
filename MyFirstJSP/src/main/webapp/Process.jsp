@@ -248,14 +248,23 @@
                 "    FROM APPROVALINFO " +
                 ") " +
                 "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, " +
-                "s.SECNAME AS SECTION_NAME, d.DEPTNAME AS DEPARTMENT_NAME " +
+                "requester_s.SECNAME AS SECTION_NAME, requester_d.DEPTNAME AS DEPARTMENT_NAME " +
                 "FROM REQUISITIONFORM r " +
                 "JOIN latest_step ls ON ls.FORMID = r.FORMID AND ls.RN = 1 " +
                 "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
-                "LEFT JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
-                "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
-                "WHERE ls.STATE_STEP = 3 " +
-                "AND ls.DEV_EMPID = ? " +
+                "LEFT JOIN SECTION requester_s ON e.SECID = requester_s.SECID " +
+                "LEFT JOIN DEPARTMENT requester_d ON requester_s.DEPTID = requester_d.DEPTID " +
+                "WHERE (SELECT ai.STATE_STEP " +
+                "       FROM APPROVALINFO ai " +
+                "       WHERE ai.FORMID = r.FORMID " +
+                "       ORDER BY ai.APPROVALID DESC " +
+                "       FETCH FIRST 1 ROWS ONLY) = 3 " +
+                "AND (SELECT ai.DEV_EMPID " +
+                "       FROM APPROVALINFO ai " +
+                "       WHERE ai.FORMID = r.FORMID " +
+                "       AND ai.DEV_EMPID IS NOT NULL " +
+                "       ORDER BY ai.APPROVALID DESC " +
+                "       FETCH FIRST 1 ROWS ONLY) = ? " +
                 "AND r.DEADLINE >= TRUNC(SYSDATE) " +
                 "ORDER BY r.FORMID DESC";
         // zennnne แก้

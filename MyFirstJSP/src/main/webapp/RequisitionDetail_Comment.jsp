@@ -42,12 +42,12 @@
             conn = DBConnection.getConnection();
 
             // ----- Header -----
-            String sql = "SELECT r.FORMID, e.EMPNAME, e.PHONE, s.SECNAME, d.DEPTNAME, " +
+            String sql = "SELECT r.FORMID, e.EMPNAME, e.PHONE, requester_s.SECNAME, requester_d.DEPTNAME, " +
                          "r.TITLEFORM, r.REQUESTDATE, r.DEADLINE, r.ASSIGN_SECID " +
                          "FROM REQUISITIONFORM r " +
                          "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
-                         "LEFT JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
-                         "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+                         "LEFT JOIN SECTION requester_s ON e.SECID = requester_s.SECID " +
+                         "LEFT JOIN DEPARTMENT requester_d ON requester_s.DEPTID = requester_d.DEPTID " +
                          "WHERE r.FORMID = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, formId);
@@ -226,7 +226,7 @@
             <!-- Header fields -->
             <div class="form-grid">
                 <div class="form-group">
-                    <label>ชื่อ-นามสกุล <span style="color:red">*</span></label>
+                    <label>ชื่อ-นามสกุล</label>
                     <input type="text" value="<%= empName %>" readonly>
                 </div>
                 <div class="form-group">
@@ -234,19 +234,19 @@
                     <input type="text" value="<%= sectionName %>" readonly>
                 </div>
                 <div class="form-group">
-                    <label>ฝ่าย <span style="color:red">*</span></label>
+                    <label>ฝ่าย</label>
                     <input type="text" value="<%= departmentName %>" readonly>
                 </div>
                 <div class="form-group">
-                    <label>เบอร์ต่อ <span style="color:red">*</span></label>
+                    <label>เบอร์ต่อ</label>
                     <input type="text" value="<%= phone %>" readonly>
                 </div>
                 <div class="form-group">
-                    <label>วันที่ <span style="color:red">*</span></label>
+                    <label>วันที่</label>
                     <input type="date" value="<%= reqDate %>" readonly>
                 </div>
                 <div class="form-group">
-                    <label>Deadline <span style="color:red">*</span></label>
+                    <label>Deadline</label>
                     <input type="text" value="<%= deadlineDate %>" readonly>
                 </div>
                 <div class="form-group full-width">

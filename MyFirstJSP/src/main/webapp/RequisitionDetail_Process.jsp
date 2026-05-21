@@ -40,12 +40,12 @@
             conn = DBConnection.getConnection();
 
             // ----- Header -----
-            String sql = "SELECT r.FORMID, e.EMPNAME, e.PHONE, s.SECNAME, d.DEPTNAME, " +
+            String sql = "SELECT r.FORMID, e.EMPNAME, e.PHONE, requester_s.SECNAME, requester_d.DEPTNAME, " +
                          "r.TITLEFORM, r.REQUESTDATE, r.DEADLINE " +
                          "FROM REQUISITIONFORM r " +
                          "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
-                         "LEFT JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
-                         "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+                         "LEFT JOIN SECTION requester_s ON e.SECID = requester_s.SECID " +
+                         "LEFT JOIN DEPARTMENT requester_d ON requester_s.DEPTID = requester_d.DEPTID " +
                          "WHERE r.FORMID = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, formId);

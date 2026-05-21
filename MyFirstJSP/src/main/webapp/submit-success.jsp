@@ -201,7 +201,7 @@
         <p>คำขอของคุณถูกบันทึกเข้าสู่ระบบอย่างปลอดภัยแล้ว<br>เจ้าหน้าที่จะดำเนินการตรวจสอบข้อมูลในลำดับถัดไป</p>
         
         <div class="button-group">
-            <a href="${pageContext.request.contextPath}/form.jsp" class="btn btn-primary">
+            <a href="${pageContext.request.contextPath}/newForm" class="btn btn-primary">
                 <i class="fa-solid fa-plus"></i> สร้างคำขอใหม่
             </a>
             <a href="${pageContext.request.contextPath}/" class="btn btn-outline">

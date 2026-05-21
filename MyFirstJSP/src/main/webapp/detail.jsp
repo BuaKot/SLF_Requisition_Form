@@ -1,6 +1,6 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.sql.*, java.util.*" %>
+<%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection" %>
 
 <%
     String idParam = request.getParameter("id");

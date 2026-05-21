@@ -6,9 +6,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายการใบขอให้ดำเนินการ (IT Director Approval)</title>
+    <title>รายการใบขอให้ดำเนินการ (Director Approval)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
 
@@ -22,6 +21,34 @@
             margin: 0;
         }
 
+        /* Sticky Bar ตามแบบเป๊ะ */
+        .sticky-bar {
+            background: #fafafa;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sticky-bar a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .contact-info {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .contact-info p {
+            margin: 0;
+            font-size: 14px;
+        }
 
         .banner {
             background: #C3EAFF;
@@ -171,25 +198,14 @@
 </head>
 <body>
 
-
 <div class="sticky-bar">
-        <a href="Admin.jsp">
-            <i class="fa fa-arrow-left" style="font-size:24px;"></i>
-        </a>
-        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
-        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
-        
-        <div class="user-info">
-            <i class="fa fa-circle-user"></i>
-            <p>
-                ${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}
-            </p>
-        </div>
-        <div class="contact-info">
-            <i class="fa-solid fa-circle-info"></i>
-            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-        </div>
-        
+    <a href="Admin.jsp">
+        <i class="fa fa-arrow-left" style="font-size:24px;"></i>
+    </a>
+    <div class="contact-info">
+        <i class="fa fa-circle-user" style="font-size:1.4rem; color:#333;"></i>
+        <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+    </div>
 </div>
 
 <div class="banner">
@@ -203,6 +219,16 @@
     </a>
 
 <%
+    Object directorEmpObj = session.getAttribute("loggedInEmpId");
+    if (directorEmpObj == null) {
+        directorEmpObj = session.getAttribute("empid");
+    }
+    if (directorEmpObj == null) {
+        response.sendRedirect(request.getContextPath() + "/login");
+        return;
+    }
+    int directorEmpId = Integer.parseInt(directorEmpObj.toString());
+
     Connection conn = null;
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -211,22 +237,29 @@
     try {
         conn = DBConnection.getConnection();
         
-        String sql = 
+        // <!-- zennnne แก้ -->
+        // เปลี่ยน correlated subquery → CTE (WITH clause) เพื่อ performance (PERF-3)
+        String sql =
+            "WITH latest_step AS ( " +
+            "    SELECT FORMID, STATE_STEP, " +
+            "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
+            "    FROM APPROVALINFO " +
+            ") " +
             "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, " +
             "s.SECNAME AS SECTION_NAME, d.DEPTNAME AS DEPARTMENT_NAME " +
             "FROM REQUISITIONFORM r " +
+            "JOIN latest_step ls ON ls.FORMID = r.FORMID AND ls.RN = 1 " +
             "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
             "LEFT JOIN SECTION s ON e.SECID = s.SECID " +
             "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
-            "WHERE (SELECT ai.STATE_STEP " +
-            "       FROM APPROVALINFO ai " +
-            "       WHERE ai.FORMID = r.FORMID " +
-            "       ORDER BY ai.APPROVALID DESC " +
-            "       FETCH FIRST 1 ROWS ONLY) = 2 " +
+            "WHERE ls.STATE_STEP = 0 " +
+            "AND d.DEPTHEAD_EMPID = ? " +
             "AND r.DEADLINE >= TRUNC(SYSDATE) " +
             "ORDER BY r.FORMID DESC";
+        // <!-- zennnne แก้ -->
 
         pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, directorEmpId);
         rs = pstmt.executeQuery();
 
         while (rs.next()) {
@@ -238,7 +271,7 @@
             String titleForm = rs.getString("TITLEFORM") != null ? rs.getString("TITLEFORM") : "-";
 %>
 
-    <div class="requisition-card" onclick="location.href='RequisitionDetail_ITDirector.jsp?id=<%= formId %>'">
+    <div class="requisition-card" onclick="location.href='RequisitionDetail.jsp?id=<%= formId %>'">
         <div class="card-id-box">ใบขอให้ดำเนินการที่ <%= formId %></div>
 
         <div class="card-info">

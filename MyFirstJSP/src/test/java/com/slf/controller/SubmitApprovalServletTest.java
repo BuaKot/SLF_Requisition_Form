@@ -19,4 +19,16 @@ public class SubmitApprovalServletTest extends TestCase {
     public void testParsesExpectedStep() {
         assertEquals(Integer.valueOf(2), SubmitApprovalServlet.parseExpectedStep(" 2 "));
     }
+
+    public void testAllowsDirectorApproveServletRedirect() {
+        assertEquals("directorApprove", SubmitApprovalServlet.sanitizeRedirectPage("directorApprove"));
+    }
+
+    public void testReviewerMatchIgnoresExpectedWhitespace() {
+        assertTrue(SubmitApprovalServlet.matchesReviewer(" 54 ", 54));
+    }
+
+    public void testReviewerDoesNotMatchDifferentEmployee() {
+        assertFalse(SubmitApprovalServlet.matchesReviewer("54", 301));
+    }
 }

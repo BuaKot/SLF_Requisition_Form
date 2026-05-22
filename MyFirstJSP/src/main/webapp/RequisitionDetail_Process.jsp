@@ -18,6 +18,7 @@
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
+    String loggedInEmpId = empObj.toString().trim();
 
     // ----- 1. Grab the form ID -----
     String formId = request.getParameter("id");
@@ -49,6 +50,12 @@
             // ----- Header -----
             String sql = "SELECT r.FORMID, e.EMPNAME, e.PHONE, requester_s.SECNAME, requester_d.DEPTNAME, " +
                          "r.TITLEFORM, r.REQUESTDATE, r.DEADLINE, " +
+                         "(SELECT ai.DEV_EMPID " +
+                         "     FROM APPROVALINFO ai " +
+                         "     WHERE ai.FORMID = r.FORMID " +
+                         "     AND ai.DEV_EMPID IS NOT NULL " +
+                         "     ORDER BY ai.APPROVALID DESC " +
+                         "     FETCH FIRST 1 ROWS ONLY) AS LATEST_DEV_EMPID, " +
                          "NVL((SELECT ai.STATE_STEP " +
                          "     FROM APPROVALINFO ai " +
                          "     WHERE ai.FORMID = r.FORMID " +
@@ -69,7 +76,10 @@
                 departmentName = nvl(rs.getString("DEPTNAME"));
                 phone = nvl(rs.getString("PHONE"));
                 titleForm = nvl(rs.getString("TITLEFORM"));
-                canApproveExpectedStep = rs.getInt("STATE_STEP") == EXPECTED_STEP;
+                String latestDevEmpId = rs.getString("LATEST_DEV_EMPID");
+                canApproveExpectedStep = rs.getInt("STATE_STEP") == EXPECTED_STEP
+                    && latestDevEmpId != null
+                    && latestDevEmpId.trim().equals(loggedInEmpId);
                 if (rs.getDate("DEADLINE") != null) {
                     deadlineDate = sdfDisplay.format(rs.getDate("DEADLINE"));
                 } else {

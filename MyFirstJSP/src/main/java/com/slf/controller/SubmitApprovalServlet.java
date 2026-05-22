@@ -164,11 +164,9 @@ public class SubmitApprovalServlet extends HttpServlet {
      * Returns redirectPage if it is in the allowed whitelist, otherwise falls back to
      * "DirectorApprove.jsp" to prevent open-redirect attacks.
      */
-    private String sanitizeRedirectPage(String redirectPage) {
-        // zennnne แก้
+    static String sanitizeRedirectPage(String redirectPage) { // vis เปลี่ยนของ zen จาก private เป็น static
         final java.util.Set<String> ALLOWED_REDIRECTS = new java.util.HashSet<>(java.util.Arrays.asList(
-            "Process.jsp", "DirectorApprove.jsp", "ITDirectorApprove.jsp", "TechnicalApprove.jsp",
-            "submit.jsp", "submit", "directorApprove"
+            "Process.jsp", "DirectorApprove.jsp", "directorApprove", "ITDirectorApprove.jsp", "TechnicalApprove.jsp", "submit.jsp", "submit"
         ));
         // zennnne แก้
         return ALLOWED_REDIRECTS.contains(redirectPage) ? redirectPage : "DirectorApprove.jsp";
@@ -244,6 +242,37 @@ public class SubmitApprovalServlet extends HttpServlet {
                         return "Only the assigned section head can approve this step";
                     }
                 }
+            }
+        }
+
+        if (currentStep == 2) {
+            String assignedDeptHeadSql =
+                "SELECT d.DEPTHEAD_EMPID " +
+                "FROM REQUISITIONFORM r " +
+                "JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
+                "JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+                "WHERE r.FORMID = ?";
+            try (PreparedStatement ps = conn.prepareStatement(assignedDeptHeadSql)) {
+                ps.setInt(1, formId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        return "not_found";
+                    }
+                    String deptHeadEmpId = rs.getString("DEPTHEAD_EMPID");
+                    if (!matchesReviewer(deptHeadEmpId, reviewerEmpId)) {
+                        return "Only the assigned department director can approve this step";
+                    }
+                }
+            }
+        }
+
+        if (currentStep == 3) {
+            Integer assignedDeveloperId = getLatestAssignedDeveloperId(conn, formId);
+            if (assignedDeveloperId == null) {
+                return "not_found";
+            }
+            if (assignedDeveloperId.intValue() != reviewerEmpId) {
+                return "Only the assigned developer can approve this step";
             }
         }
 

@@ -32,6 +32,7 @@ public class SubmitApprovalServlet extends HttpServlet {
         // 2. Read and validate parameters
         String formIdStr    = request.getParameter("formId");
         String action       = request.getParameter("action");        // "approve" or "reject"
+        String expectedStepStr = request.getParameter("expectedStep");
         String comment      = request.getParameter("comment");
         String devEmpIdStr  = request.getParameter("devEmpId");
         String redirectPage = request.getParameter("redirectPage");  // e.g., "DirectorApprove.jsp"
@@ -49,6 +50,14 @@ public class SubmitApprovalServlet extends HttpServlet {
             return;
         }
 
+        Integer expectedStep;
+        try {
+            expectedStep = parseExpectedStep(expectedStepStr);
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid expectedStep");
+            return;
+        }
+
         redirectPage = sanitizeRedirectPage(redirectPage);
 
         try (Connection conn = DBConnection.getConnection()) {
@@ -58,6 +67,11 @@ public class SubmitApprovalServlet extends HttpServlet {
             if (currentStep == Integer.MIN_VALUE) {
                 // No approval row at all — can't process
                 response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=not_found");
+                return;
+            }
+
+            if (isStaleApprovalRequest(currentStep, expectedStep)) {
+                response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=stale_state");
                 return;
             }
 
@@ -287,6 +301,17 @@ public class SubmitApprovalServlet extends HttpServlet {
 
     static boolean requiresAssignedDeveloper(int currentStep, String action) {
         return currentStep == 1 && "approve".equalsIgnoreCase(action);
+    }
+
+    static Integer parseExpectedStep(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        return Integer.valueOf(Integer.parseInt(value.trim()));
+    }
+
+    static boolean isStaleApprovalRequest(int currentStep, Integer expectedStep) {
+        return expectedStep == null || expectedStep.intValue() != currentStep;
     }
 
     static Integer parseAssignedDeveloperId(String value, boolean required) {

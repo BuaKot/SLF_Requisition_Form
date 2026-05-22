@@ -3,6 +3,10 @@
 <%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat, java.util.*" %>
 
 <%
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+
     // ----- Session Check -----
     // zennnne แก้
     Object empObj = session.getAttribute("loggedInEmpId");
@@ -222,6 +226,7 @@
         <!-- ⚡ The form now posts to SubmitApprovalServlet -->
         <form action="${pageContext.request.contextPath}/SubmitApprovalServlet" method="post">
             <input type="hidden" name="formId" value="<%= formId %>">
+            <input type="hidden" name="expectedStep" value="0">
             <input type="hidden" name="redirectPage" value="DirectorApprove.jsp">
 
             <!-- Header fields (readonly) -->
@@ -371,5 +376,12 @@
     <% } %>
 </div>
 
+<script>
+window.addEventListener("pageshow", function (event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+</script>
 </body>
 </html>

@@ -3,6 +3,12 @@
 <%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat" %>
 
 <%
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+
+    final int EXPECTED_STEP = 3;
+
     // ----- Session Check -----
     Object empObj = session.getAttribute("loggedInEmpId");
     if (empObj == null) {
@@ -26,6 +32,7 @@
     String empName = "", sectionName = "", departmentName = "", phone = "";
     String reqDate = "", deadlineDate = "", titleForm = "";
     boolean hasData = false;
+    boolean canApproveExpectedStep = false;
     List<Map<String, String>> requestItems = new ArrayList<>();
     List<Map<String, Object>> permissions = new ArrayList<>();
 
@@ -41,7 +48,12 @@
 
             // ----- Header -----
             String sql = "SELECT r.FORMID, e.EMPNAME, e.PHONE, requester_s.SECNAME, requester_d.DEPTNAME, " +
-                         "r.TITLEFORM, r.REQUESTDATE, r.DEADLINE " +
+                         "r.TITLEFORM, r.REQUESTDATE, r.DEADLINE, " +
+                         "NVL((SELECT ai.STATE_STEP " +
+                         "     FROM APPROVALINFO ai " +
+                         "     WHERE ai.FORMID = r.FORMID " +
+                         "     ORDER BY ai.APPROVALID DESC " +
+                         "     FETCH FIRST 1 ROWS ONLY), 0) AS STATE_STEP " +
                          "FROM REQUISITIONFORM r " +
                          "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
                          "LEFT JOIN SECTION requester_s ON e.SECID = requester_s.SECID " +
@@ -57,6 +69,7 @@
                 departmentName = nvl(rs.getString("DEPTNAME"));
                 phone = nvl(rs.getString("PHONE"));
                 titleForm = nvl(rs.getString("TITLEFORM"));
+                canApproveExpectedStep = rs.getInt("STATE_STEP") == EXPECTED_STEP;
                 if (rs.getDate("DEADLINE") != null) {
                     deadlineDate = sdfDisplay.format(rs.getDate("DEADLINE"));
                 } else {
@@ -202,9 +215,14 @@
         <div style="text-align: center; color: #CC0000; padding: 30px; font-weight: bold;">
             ❌ ไม่พบข้อมูลใบขอให้ดำเนินการเลขที่ "<%= formId %>" ในระบบฐานข้อมูล
         </div>
+    <% } else if (!canApproveExpectedStep) { %>
+        <div style="text-align: center; color: #CC0000; padding: 30px; font-weight: bold;">
+            ใบขอนี้ไม่ได้อยู่ในขั้นตอนการดำเนินการแล้ว
+        </div>
     <% } else { %>
         <form action="SubmitApprovalServlet" method="post">
             <input type="hidden" name="formId" value="<%= formId %>">
+            <input type="hidden" name="expectedStep" value="<%= EXPECTED_STEP %>">
             <input type="hidden" name="redirectPage" value="Process.jsp">
 
             <!-- Header fields -->
@@ -360,5 +378,12 @@
     <% } %>
 </div>
 
+<script>
+window.addEventListener("pageshow", function (event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+</script>
 </body>
 </html>

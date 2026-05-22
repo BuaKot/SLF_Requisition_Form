@@ -26,11 +26,11 @@
 %>
 
 <%
-    //String currentRole = (session.getAttribute("position") != null) ? (String)session.getAttribute("position") : "Guest";
-    //if (!currentRole.equalsIgnoreCase("Admin") && !currentRole.equalsIgnoreCase("Director")) {
-    //    response.sendRedirect("login.jsp");
-    //    return;
-    //}
+    String currentRole = (session.getAttribute("position") != null) ? (String)session.getAttribute("position") : "Guest";
+    if (!currentRole.equalsIgnoreCase("Admin") && !currentRole.equalsIgnoreCase("Director")) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
     
     String employeeName = (session.getAttribute("empName") != null) ? escapeHtml((String)session.getAttribute("empName")) : "ผู้ใช้งานระบบ";
     
@@ -173,6 +173,8 @@
         trendDataJson = "[40, 65, 52]";
     }
 %>
+
+<%@ include file="WEB-INF/checkAuth.jsp" %>
 
 <!DOCTYPE html>
 <html lang="th">

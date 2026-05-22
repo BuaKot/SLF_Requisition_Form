@@ -26,6 +26,9 @@
         return;
     }
 %>
+
+<%@ include file="WEB-INF/checkAuth.jsp" %>
+
 <!DOCTYPE html>
 <html lang="th">
 

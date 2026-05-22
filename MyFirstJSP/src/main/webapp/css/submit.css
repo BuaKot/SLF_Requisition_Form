@@ -135,8 +135,8 @@ body {
 /* zennnne แก้ */
 
 /* zennnne แก้ */
-.edit-btn { background: #3272BB; color: #ffffff; }
-.edit-btn:hover { background: #255a99; }
+.edit-btn { background: #9e9e9e; color: #ffffff; }
+.edit-btn:hover { background: #757575; }
 
 .overdue-btn {
     background: #e53935;
@@ -501,7 +501,7 @@ body {
     width: auto;
 }
 
-/* zennnne แก้ — B: Two-column compact card */
+/* zennnne แก้ — 3-column card: info | timeline | buttons */
 .request-card {
     background: #fff;
     border: 1px solid #e0e0e0;
@@ -511,7 +511,7 @@ body {
     transition: all 0.2s ease;
     box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     display: grid;
-    grid-template-columns: minmax(180px, 42%) 1fr;
+    grid-template-columns: minmax(200px, 30%) 1fr 140px;
 }
 
 .request-card:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
@@ -532,23 +532,24 @@ body {
 .request-card[data-status="overdue"]  .card-left { background: linear-gradient(135deg, #fff4f4, #fff); }
 .request-card[data-status="rejected"] .card-left { background: linear-gradient(135deg, #fce8e8, #fff); }
 
-/* LEFT COLUMN */
+/* LEFT COLUMN — info */
 .card-left {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     gap: 10px;
-    padding: 14px 16px 14px 20px;
+    padding: 12px 16px 12px 20px;
     border-right: 1px solid #ebebeb;
     min-width: 0;
 }
 
+/* zennnne แก้ — fix title clamp */
 .card-title-wrap {
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    flex-wrap: wrap;
     min-width: 0;
+    overflow: hidden;
 }
 
 .card-formid {
@@ -561,6 +562,8 @@ body {
     padding: 2px 8px;
     flex-shrink: 0;
     white-space: nowrap;
+    align-self: flex-start;
+    margin-top: 1px;
 }
 
 .card-title {
@@ -569,12 +572,16 @@ body {
     font-family: 'DBHelvethaica', sans-serif;
     text-decoration: none;
     font-weight: bold;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     min-width: 0;
     flex: 1;
+    line-height: 1.35;
+    word-break: break-word;
 }
+/* zennnne แก้ */
 
 .card-title:hover { color: #3272BB; text-decoration: underline; }
 
@@ -601,30 +608,69 @@ body {
 .card-status-badge.rejected { background: #fce8e8; color: #7f1414; border: 1px solid #b71c1c; }
 .card-status-badge.approved { background: #f0fce8; color: #1e8000; border: 1px solid #2dbb00; }
 
-/* RIGHT COLUMN */
+/* MIDDLE COLUMN — timeline (centered, full width) */
 .card-right {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 10px 20px 12px;
-    gap: 6px;
+    justify-content: center;
+    align-items: stretch;
+    padding: 12px 20px;
+    min-height: 80px;
 }
 
+/* zennnne แก้ — RIGHT COLUMN: 2 ปุ่มซ้อนแนวตั้ง กิน full height */
 .card-action {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    flex-direction: column;
+    border-left: 1px solid #ebebeb;
 }
 
+.card-action > * {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+    border-radius: 0;
+    margin: 0;
+}
+
+.detail-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: transparent;
+    color: #3272BB;
+    border: none;
+    border-bottom: 1px solid #ebebeb;
+    border-radius: 0;
+    padding: 0 16px;
+    font-size: 14px;
+    font-family: 'DBHelvethaica', sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.18s ease, color 0.18s ease;
+    white-space: nowrap;
+    width: 100%;
+}
+.detail-btn:hover { background: #3272BB; color: #fff; }
+/* zennnne แก้ */
+
 /* ================= PROGRESS TIMELINE ================= */
+/* zennnne แก้ — timeline ยาวเต็ม column */
 .progress-timeline {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    padding: 2px 0 0;
+    padding: 4px 0 0;
     position: relative;
-    gap: 6px;
+    gap: 8px;
+    width: 100%;
 }
+/* zennnne แก้ */
 
 .tl-step {
     display: flex;
@@ -638,9 +684,9 @@ body {
 .tl-step::after {
     content: '';
     position: absolute;
-    top: 14px;
-    left: calc(50% + 18px);
-    right: calc(-50% + 18px);
+    top: 19px;
+    left: calc(50% + 22px);
+    right: calc(-50% + 22px);
     height: 3px;
     background: #e0e0e0;
     z-index: 0;
@@ -650,9 +696,10 @@ body {
 .tl-step.done::after   { background: #2dbb00; }
 .tl-step.reject::after { background: #e53935; }
 
+/* zennnne แก้ — dot 44→38px */
 .tl-dot {
-    width: 32px;
-    height: 32px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     background: #fff;
     border: 3px solid #ccc;
@@ -663,7 +710,8 @@ body {
     transition: all 0.2s ease;
 }
 
-.tl-dot i { font-size: 14px; color: transparent; }
+.tl-dot i { font-size: 16px; color: transparent; }
+/* zennnne แก้ */
 
 .tl-step.done .tl-dot {
     background: #2dbb00;
@@ -681,27 +729,65 @@ body {
 
 .tl-step.pending .tl-dot { background: #fff; border-color: #ccc; }
 
+/* zennnne แก้ — label + time ใหญ่ขึ้น */
 .tl-label {
-    margin-top: 6px;
-    font-size: 12px;
+    margin-top: 8px;
+    font-size: 15px;
     color: #666;
     text-align: center;
     line-height: 1.2;
     font-family: 'DBHelvethaica', sans-serif;
-    max-width: 110px;
+    max-width: 140px;
 }
 
 .tl-step.done .tl-label   { color: #1e8000; font-weight: bold; }
 .tl-step.reject .tl-label { color: #c62828; font-weight: bold; }
 
+/* zennnne แก้ — step timestamp */
+.tl-time {
+    font-size: 13px;
+    color: #bbb;
+    text-align: center;
+    white-space: nowrap;
+    font-family: 'DBHelvethaica', sans-serif;
+    margin-top: 4px;
+    line-height: 1.2;
+}
+.tl-step.done .tl-time   { color: #5a9e3a; }
+.tl-step.reject .tl-time { color: #e57373; }
+/* zennnne แก้ */
+
 .card-left .deadline-tag { font-size: 13px; padding: 4px 12px; }
 
+/* zennnne แก้ — status buttons กิน full height ของ col 3 */
 .card-action .confirm-btn,
 .card-action .overdue-btn,
 .card-action .edit-btn {
-    padding: 8px 20px;
-    font-size: 15px;
+    flex: 1;
+    width: 100%;
+    border-radius: 0;
+    padding: 0 12px;
+    font-size: 14px;
 }
+
+.card-action > a {
+    flex: 1;
+    display: flex;
+    align-items: stretch;
+    text-decoration: none;
+}
+
+.card-action > a > .confirm-btn,
+.card-action > a > .edit-btn,
+.card-action > a > .overdue-btn {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    padding: 0 12px;
+    font-size: 14px;
+}
+/* zennnne แก้ */
 
 /* ================= EMPTY STATE ================= */
 .empty-state {
@@ -791,21 +877,26 @@ body {
 
 @media (max-width: 768px) {
     .request-list { padding: 12px; gap: 10px; }
-    /* stack 2-col card into single column */
+    /* zennnne แก้ — mobile: stack 3 cols → single col */
     .request-card { grid-template-columns: 1fr; }
     .card-left { border-right: none; border-bottom: 1px solid #ebebeb; padding: 12px 14px 10px 18px; }
-    .card-right { padding: 8px 14px 12px; }
-    .card-action { justify-content: flex-start; }
+    .card-right { padding: 12px 12px 10px; min-height: auto; }
+    .card-action { flex-direction: row; border-left: none; border-top: 1px solid #ebebeb; min-height: 52px; }
+    .card-action > * { border-bottom: none; border-right: 1px solid #ebebeb; }
+    .card-action > *:last-child { border-right: none; }
+    .detail-btn { border-bottom: none; border-right: 1px solid #ebebeb; }
     .progress-timeline { padding: 0; }
-    .tl-label { display: none; }
-    .tl-dot { width: 26px; height: 26px; border-width: 2px; }
-    .tl-step::after { top: 12px; }
-    .card-title { font-size: 16px; white-space: normal; }
+    .tl-label { font-size: 12px; }
+    .tl-time { font-size: 11px; }
+    .tl-dot { width: 32px; height: 32px; border-width: 2px; }
+    .tl-dot i { font-size: 14px; }
+    .tl-step::after { top: 15px; left: calc(50% + 18px); right: calc(-50% + 18px); }
+    .card-title { font-size: 16px; }
+    /* zennnne แก้ */
     .summary-cards { grid-template-columns: repeat(2, 1fr); }
     .summary-card { min-height: 52px; padding: 8px 12px 8px 16px; }
     .summary-card .sc-count { font-size: 22px; }
     .summary-card .sc-label { font-size: 12px; }
-
     .title-section h1 { font-size: 22px; }
     .title-section h2 { font-size: 16px; }
 }

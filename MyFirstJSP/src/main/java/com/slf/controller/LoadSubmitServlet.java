@@ -72,15 +72,23 @@ public class LoadSubmitServlet extends HttpServlet {
             "LEFT JOIN latest_step ls ON ls.FORMID = RF.FORMID AND ls.RN = 1 " +
             "WHERE RF.EMPID = ?";
 
+        // zennnne แก้ — add step timestamps via conditional aggregation
         String sql = cteBase +
             "SELECT RF.FORMID, RF.TITLEFORM, RF.DEADLINE, RF.IS_EDITED, " +
-            "       NVL(ls.STATE_STEP, 0) AS STATE_STEP " +
+            "       NVL(ls.STATE_STEP, 0) AS STATE_STEP, " +
+            "       MAX(CASE WHEN ABS(ai.STATE_STEP) = 1 THEN ai.APPROVED_DATE END) AS TS1, " +
+            "       MAX(CASE WHEN ABS(ai.STATE_STEP) = 2 THEN ai.APPROVED_DATE END) AS TS2, " +
+            "       MAX(CASE WHEN ABS(ai.STATE_STEP) = 3 THEN ai.APPROVED_DATE END) AS TS3, " +
+            "       MAX(CASE WHEN ABS(ai.STATE_STEP) = 4 THEN ai.APPROVED_DATE END) AS TS4 " +
             "FROM REQUISITIONFORM RF " +
             "LEFT JOIN latest_step ls ON ls.FORMID = RF.FORMID AND ls.RN = 1 " +
+            "LEFT JOIN APPROVALINFO ai ON ai.FORMID = RF.FORMID " +
             "WHERE RF.EMPID = ? " +
             "AND " + statusWhere + " " +
+            "GROUP BY RF.FORMID, RF.TITLEFORM, RF.DEADLINE, RF.IS_EDITED, NVL(ls.STATE_STEP, 0) " +
             "ORDER BY RF.DEADLINE " + orderDir + ", RF.FORMID DESC " +
             "OFFSET ? ROWS FETCH FIRST ? ROWS ONLY";
+        // zennnne แก้
         // zennnne แก้
 
         List<Map<String, Object>> formList = new ArrayList<>();
@@ -109,6 +117,7 @@ public class LoadSubmitServlet extends HttpServlet {
                 pstmt.setInt(3, pageSize);
 
                 try (ResultSet rs = pstmt.executeQuery()) {
+                    // zennnne แก้
                     while (rs.next()) {
                         Map<String, Object> row = new HashMap<>();
                         row.put("FORMID",    rs.getInt("FORMID"));
@@ -116,8 +125,13 @@ public class LoadSubmitServlet extends HttpServlet {
                         row.put("DEADLINE",  rs.getDate("DEADLINE"));
                         row.put("IS_EDITED", rs.getInt("IS_EDITED"));
                         row.put("STATE_STEP", rs.getInt("STATE_STEP"));
+                        row.put("TS1", rs.getTimestamp("TS1"));
+                        row.put("TS2", rs.getTimestamp("TS2"));
+                        row.put("TS3", rs.getTimestamp("TS3"));
+                        row.put("TS4", rs.getTimestamp("TS4"));
                         formList.add(row);
                     }
+                    // zennnne แก้
                 }
             }
         } catch (SQLException e) {

@@ -168,8 +168,9 @@
     <section class="request-list">
 
 <%
-    // zennnne แก้ — labels for timeline steps
+    // zennnne แก้ — labels for timeline steps + timestamp formatter
     String[] stepLabels = { "ผอ.ฝ่าย", "เทคนิค", "ผอ.IT", "ดำเนินการ" };
+    java.text.SimpleDateFormat sdfStep = new java.text.SimpleDateFormat("dd/MM HH:mm");
 
     for (Map<String, Object> row : formList) {
         int formId    = (Integer) row.get("FORMID");
@@ -204,6 +205,19 @@
 
         boolean canConfirm = (stateStep == 4);
         boolean isConfirmed = (stateStep >= 5);
+
+        // zennnne แก้ — build step timestamps
+        java.sql.Timestamp[] stepTs = {
+            (java.sql.Timestamp) row.get("TS1"),
+            (java.sql.Timestamp) row.get("TS2"),
+            (java.sql.Timestamp) row.get("TS3"),
+            (java.sql.Timestamp) row.get("TS4")
+        };
+        String[] stepTimes = new String[4];
+        for (int ti = 0; ti < 4; ti++) {
+            stepTimes[ti] = (stepTs[ti] != null) ? sdfStep.format(stepTs[ti]) : "";
+        }
+        // zennnne แก้
 
         String rowStatus;
         String rowStatusLabel;
@@ -245,7 +259,7 @@
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: timeline + action button -->
+            <!-- MIDDLE ROW: timeline (centered, full width) -->
             <div class="card-right">
                 <div class="progress-timeline">
 <%
@@ -257,53 +271,61 @@
                     <div class="tl-step <%= stepClass %>">
                         <span class="tl-dot"><i class="<%= iconCls %>"></i></span>
                         <span class="tl-label"><%= stepLabels[i] %></span>
+                        <% if (!stepTimes[i].isEmpty()) { %>
+                        <span class="tl-time"><%= stepTimes[i] %></span>
+                        <% } %>
                     </div>
 <%
                 }
 %>
                 </div>
+            </div>
 
-                <div class="card-action">
+            <!-- zennnne แก้ — BOTTOM ROW: action buttons (full card width, 2 cols) -->
+            <div class="card-action">
+                <a href="detail.jsp?id=<%= formId %>" class="detail-btn">
+                    <i class="fa-solid fa-file-lines"></i> รายละเอียด
+                </a>
 <%
                 if (stateStep < 0) {
                     if (!isEdited) {
 %>
-                    <a href="${pageContext.request.contextPath}/editForm?formId=<%= formId %>" style="text-decoration:none;">
-                        <button type="button" class="confirm-btn edit-btn">แก้ไขฟอร์ม</button>
-                    </a>
+                <a href="${pageContext.request.contextPath}/editForm?formId=<%= formId %>" style="text-decoration:none;">
+                    <button type="button" class="confirm-btn edit-btn">แก้ไขฟอร์ม</button>
+                </a>
 <%
                     } else {
 %>
-                    <button type="button" class="confirm-btn edit-btn" disabled
-                            style="background:#dc2626; border-color:#dc2626; color:white; cursor:not-allowed; opacity:1;">
-                        ไม่ผ่านการอนุมัติ
-                    </button>
+                <button type="button" class="confirm-btn edit-btn" disabled
+                        style="background:#dc2626; border-color:#dc2626; color:white; cursor:not-allowed; opacity:1;">
+                    ไม่ผ่านการอนุมัติ
+                </button>
 <%
                     }
                 } else if (isConfirmed) {
 %>
-                    <button class="confirm-btn confirmed" disabled>ยืนยันผลแล้ว</button>
+                <button class="confirm-btn confirmed" disabled>ยืนยันผลแล้ว</button>
 <%
                 } else if (isOverdue) {
 %>
-                    <button class="overdue-btn" data-formid="<%= formId %>">
-                        <span class="overdue-label-normal">หมดเขต</span>
-                        <span class="overdue-label-hover">ยืดเวลาหมดเขต</span>
-                    </button>
+                <button class="overdue-btn" data-formid="<%= formId %>">
+                    <span class="overdue-label-normal">หมดเขต</span>
+                    <span class="overdue-label-hover">ยืดเวลาหมดเขต</span>
+                </button>
 <%
                 } else {
 %>
-                    <button class="confirm-btn"
-                            data-formid="<%= formId %>"
-                            data-expectedstep="<%= stateStep %>"
-                            <% if (!canConfirm) { %> disabled style="cursor:not-allowed;" <% } %>>
-                        <%= canConfirm ? "ยืนยันผลตรวจรับ" : "รอดำเนินการ" %>
-                    </button>
+                <button class="confirm-btn"
+                        data-formid="<%= formId %>"
+                        data-expectedstep="<%= stateStep %>"
+                        <% if (!canConfirm) { %> disabled style="cursor:not-allowed;" <% } %>>
+                    <%= canConfirm ? "ยืนยันผลตรวจรับ" : "รอดำเนินการ" %>
+                </button>
 <%
                 }
 %>
-                </div>
             </div>
+            <!-- zennnne แก้ -->
         </div>
         <!-- zennnne แก้ -->
 

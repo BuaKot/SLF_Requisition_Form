@@ -11,8 +11,8 @@
     int formId = Integer.parseInt(idParam);
 
     Connection conn = null;
-    PreparedStatement psHeader = null, psItems = null, psPerm = null;
-    ResultSet rsHeader = null, rsItems = null, rsPerm = null;
+    PreparedStatement psHeader = null, psItems = null, psPerm = null, psApproval = null;
+    ResultSet rsHeader = null, rsItems = null, rsPerm = null, rsApproval = null;
 
     String fullName = "", sectionName = "", departmentName = "", phone = "";
     String requestDate = "", deadline = "", requestTitle = "", status = "";
@@ -22,6 +22,41 @@
     java.util.List<java.util.Map<String,String>> items = new java.util.ArrayList<>();
     // List of permission rows (each map holds isRoot, path, fullControl, modify, readExec, read, write)
     java.util.List<java.util.Map<String,Object>> permissions = new java.util.ArrayList<>();
+    java.util.Map<String, java.util.Map<String,String>> approvalSections = new java.util.LinkedHashMap<>();
+
+    approvalSections.put("director", createStandbyApproval("ผู้อำนวยการฝ่าย"));
+    approvalSections.put("technical", createStandbyApproval("Technical"));
+    approvalSections.put("itDirector", createStandbyApproval("ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ"));
+    approvalSections.put("process", createStandbyApproval("ผู้ดำเนินการแก้ไข"));
+%>
+<%!
+    private java.util.Map<String,String> createStandbyApproval(String label) {
+        java.util.Map<String,String> row = new java.util.HashMap<>();
+        row.put("label", label);
+        row.put("hasApproval", "false");
+        return row;
+    }
+
+    private String approvalKey(int stateStep) {
+        int step = Math.abs(stateStep);
+        if (step == 1) return "director";
+        if (step == 2) return "technical";
+        if (step == 3) return "itDirector";
+        if (step == 4) return "process";
+        return null;
+    }
+
+    private String nvlDisplay(String value) {
+        return (value == null || value.trim().isEmpty()) ? "-" : value.trim();
+    }
+
+    private String approvalActionText(int stateStep) {
+        return stateStep < 0 ? "ไม่อนุมัติ" : "อนุมัติ";
+    }
+
+    private String approvalActionClass(String action) {
+        return "ไม่อนุมัติ".equals(action) ? "is-rejected" : "is-approved";
+    }
 %>
 
 <!DOCTYPE html>
@@ -58,6 +93,42 @@
             margin-left: auto;
             display: flex;
             align-items: center;
+        }
+        .approval-history {
+            margin-top: 26px;
+            border-top: 1px solid #d8e2ef;
+            padding-top: 18px;
+        }
+        .approval-history h3 {
+            margin: 0 0 14px;
+            color: #003366;
+        }
+        .approval-section {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            background: #ffffff;
+        }
+        .approval-section.is-standby {
+            color: #777;
+            background: #f8fafc;
+        }
+        .approval-row {
+            margin: 5px 0;
+            line-height: 1.45;
+        }
+        .approval-row strong {
+            color: #3272BB;
+        }
+        .approval-action {
+            font-weight: bold;
+        }
+        .approval-action.is-approved {
+            color: #1e8000;
+        }
+        .approval-action.is-rejected {
+            color: #CC0000;
         }
     </style>
 </head>
@@ -157,10 +228,42 @@
             }
         }
 
+        if (found) {
+            String approvalSQL =
+                "SELECT AI.STATE_STEP, AI.IT_COMMENT, " +
+                "TO_CHAR(AI.APPROVED_DATE, 'DD/MM/YYYY') AS APPROVED_DAY, " +
+                "TO_CHAR(AI.APPROVED_DATE, 'HH24:MI') AS APPROVED_TIME, " +
+                "EMP.EMPNAME, EMP.POSITION " +
+                "FROM APPROVALINFO AI " +
+                "LEFT JOIN EMPLOYEE EMP ON AI.REVIEWER_EMPID = EMP.EMPID " +
+                "WHERE AI.FORMID = ? " +
+                "AND ABS(AI.STATE_STEP) BETWEEN 1 AND 4 " +
+                "ORDER BY AI.APPROVALID";
+            psApproval = conn.prepareStatement(approvalSQL);
+            psApproval.setInt(1, formId);
+            rsApproval = psApproval.executeQuery();
+            while (rsApproval.next()) {
+                int stateStep = rsApproval.getInt("STATE_STEP");
+                String key = approvalKey(stateStep);
+                if (key != null && approvalSections.containsKey(key)) {
+                    java.util.Map<String,String> approval = approvalSections.get(key);
+                    approval.put("hasApproval", "true");
+                    approval.put("position", nvlDisplay(rsApproval.getString("POSITION")));
+                    approval.put("empName", nvlDisplay(rsApproval.getString("EMPNAME")));
+                    approval.put("action", approvalActionText(stateStep));
+                    approval.put("approvedDay", nvlDisplay(rsApproval.getString("APPROVED_DAY")));
+                    approval.put("approvedTime", nvlDisplay(rsApproval.getString("APPROVED_TIME")));
+                    approval.put("comment", nvlDisplay(rsApproval.getString("IT_COMMENT")));
+                }
+            }
+        }
+
     } catch (Exception e) {
         out.println("<div style='color:red;text-align:center;'>เกิดข้อผิดพลาด: " + e.getMessage() + "</div>");
         e.printStackTrace();
     } finally {
+        try { if (rsApproval != null) rsApproval.close(); } catch (Exception ignored) {}
+        try { if (psApproval != null) psApproval.close(); } catch (Exception ignored) {}
         try { if (rsPerm != null) rsPerm.close(); } catch (Exception ignored) {}
         try { if (psPerm != null) psPerm.close(); } catch (Exception ignored) {}
         try { if (rsItems != null) rsItems.close(); } catch (Exception ignored) {}
@@ -286,6 +389,35 @@
                 }
             }
         %>
+
+        <div class="approval-history">
+            <h3>ความเห็นและผลการดำเนินการ</h3>
+            <%
+                for (java.util.Map<String,String> approval : approvalSections.values()) {
+                    boolean hasApproval = "true".equals(approval.get("hasApproval"));
+                    if (!hasApproval) {
+                        // Standby approval labels are fixed workflow labels until a reviewer row exists.
+            %>
+                <div class="approval-section is-standby">
+                    <div class="approval-row"><strong><%= approval.get("label") %></strong></div>
+                </div>
+            <%
+                    } else {
+            %>
+                <div class="approval-section">
+                    <div class="approval-row"><strong>ตำแหน่ง:</strong> <%= approval.get("position") %></div>
+                    <div class="approval-row"><strong>ชื่อ-สกุล:</strong> <%= approval.get("empName") %></div>
+                    <div class="approval-row">
+                        <span class="approval-action <%= approvalActionClass(approval.get("action")) %>"><%= approval.get("action") %></span>
+                        เมื่อ <%= approval.get("approvedDay") %> เวลา <%= approval.get("approvedTime") %>
+                    </div>
+                    <div class="approval-row"><strong>ความคิดเห็น:</strong> <%= approval.get("comment") %></div>
+                </div>
+            <%
+                    }
+                }
+            %>
+        </div>
 
         <div class="btn-group">
             <button type="button" style="background-color:red;" class="btn btn-back" onclick="history.back()">ย้อนกลับ</button>

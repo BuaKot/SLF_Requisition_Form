@@ -233,6 +233,7 @@
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
+    int loggedInEmpId = Integer.parseInt(itDirEmpObj.toString());
     // zennnne แก้
 
     try {
@@ -253,12 +254,16 @@
             "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
             "LEFT JOIN SECTION s ON e.SECID = s.SECID " +
             "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+            "LEFT JOIN SECTION assigned_s ON r.ASSIGN_SECID = assigned_s.SECID " +
+            "LEFT JOIN DEPARTMENT assigned_d ON assigned_s.DEPTID = assigned_d.DEPTID " +
             "WHERE ls.STATE_STEP = 2 " +
+            "AND assigned_d.DEPTHEAD_EMPID = ? " +
             "AND r.DEADLINE >= TRUNC(SYSDATE) " +
             "ORDER BY r.FORMID DESC";
         // zennnne แก้
 
         pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, loggedInEmpId);
         rs = pstmt.executeQuery();
 
         while (rs.next()) {

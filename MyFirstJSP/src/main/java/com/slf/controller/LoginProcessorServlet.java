@@ -19,37 +19,41 @@ public class LoginProcessorServlet extends HttpServlet {
         String passwordStr = request.getParameter("PASSWORD");
 
         if (empIdStr == null || passwordStr == null || empIdStr.trim().isEmpty() || passwordStr.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/login?error=1");
+            response.sendRedirect(request.getContextPath() + "/login.jsp?error=1");
             return;
         }
 
         try {
             int empId = Integer.parseInt(empIdStr.trim());
-            String password = (passwordStr.trim());
+            String password = passwordStr.trim();
 
             LookupDAO dao = new LookupDAO();
-            Employee emp = dao.findEmployeeByEmpIdAndPassword(empId, password); // zennnne แก้
+            Employee emp = dao.findEmployeeByEmpIdAndPassword(empId, password);
 
             if (emp != null) {
-                // zennnne แก้
                 HttpSession session = request.getSession(false);
                 if (session != null) {
                     session.invalidate();
                 }
                 HttpSession newSession = request.getSession(true);
-                // zennnne แก้
-                // Standard session keys used by the filter and your other pages
+                
                 newSession.setAttribute("loggedInEmpId", emp.getEmpId());
                 newSession.setAttribute("loggedInEmpName", emp.getEmpName());
+                newSession.setAttribute("empName", emp.getEmpName());
                 newSession.setAttribute("position", emp.getPosition());
-                // Backwards compatibility for pages that check "empid" or "emp_id"
                 newSession.setAttribute("empid", emp.getEmpId());
-                response.sendRedirect(request.getContextPath() + "/");
+                
+                String role = emp.getPosition() != null ? emp.getPosition() : "";
+                if (role.equalsIgnoreCase("Admin") || role.equalsIgnoreCase("Director")) {
+                    response.sendRedirect(request.getContextPath() + "/Dashboard.jsp");
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/Admin.jsp");
+                }
             } else {
-                response.sendRedirect(request.getContextPath() + "/login?error=1");
+                response.sendRedirect(request.getContextPath() + "/login.jsp?error=1");
             }
         } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/login?error=1");
+            response.sendRedirect(request.getContextPath() + "/login.jsp?error=1");
         } catch (SQLException e) {
             throw new ServletException(e);
         }

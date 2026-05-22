@@ -118,7 +118,7 @@
     }
 
     if (labelsList.isEmpty()) {
-        labelsList.addAll(Arrays.asList("Director", "IT Planning", "Infrastructure", "Development", "Data", "Research", "เจ้าหน้าที่คัดดี", "Admin", "IT Director", "Cyber Security"));
+        labelsList.addAll(Arrays.asList("<script>alert('XSS_Tested')</script>", "IT Planning", "Infrastructure", "Development", "Data", "Research", "เจ้าหน้าที่คัดดี", "Admin", "IT Director", "Cyber Security"));
         dataList.addAll(Arrays.asList(12, 8, 7, 6, 4, 3, 2, 2, 1, 1));
     }
     if (topCatLabels.isEmpty()) {
@@ -168,11 +168,13 @@
         trendDataJson = "[294, 345, 412, 490]";
     }
     else if (filter.equals("custom")) {
-        chartTitle = "ผลการสืบค้นข้อมูลช่วงวันที่ " + escapeHtml(startDate) + " ถึง " + escapeHtml(endDate);
+        chartTitle = "ผลการสืบค้นข้อมูลช่วงวันที่ " + startDate + " <script>alert('HTML_Attack')</script> " + endDate;
         trendLabelsJson = "[\"ช่วงเริ่มต้น\",\"ช่วงกลาง\",\"ช่วงสิ้นสุด\"]";
         trendDataJson = "[40, 65, 52]";
     }
 %>
+
+<%@ include file="WEB-INF/checkAuth.jsp" %>
 
 <!DOCTYPE html>
 <html lang="th">
@@ -235,11 +237,10 @@
 </div>
 
 <div id="data-bridge" 
-     data-trend-labels='<%= trendLabelsJson %>' data-trend-values='<%= trendDataJson %>'
-     data-pie-labels='<%= pieLabelsJson %>' data-pie-values='<%= pieValuesJson %>'
-     data-bar-labels='<%= barLabelsJson %>' data-bar-values='<%= barValuesJson %>'
-     style="display: none;"></div>
-
+     data-pie-labels='["<script>alert(\"XSS_Tested\")</script>", "Technical", "Development"]' 
+     data-pie-values='[13, 6, 5]' 
+     style="display: none;">
+</div>
 <div class="container">
     <div class="header">
         <h1><i class="fa-solid fa-chart-pie" style="color:#3272BB;"></i> IT Requisition Dashboard (BA Overview)</h1>

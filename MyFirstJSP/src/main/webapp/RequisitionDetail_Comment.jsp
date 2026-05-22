@@ -18,6 +18,7 @@
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
+    String loggedInEmpId = empObj.toString().trim();
 
     // ----- 1. Grab the form ID -----
     String formId = request.getParameter("id");
@@ -51,6 +52,7 @@
             // ----- Header -----
             String sql = "SELECT r.FORMID, e.EMPNAME, e.PHONE, requester_s.SECNAME, requester_d.DEPTNAME, " +
                          "r.TITLEFORM, r.REQUESTDATE, r.DEADLINE, r.ASSIGN_SECID, " +
+                         "assigned_s.SECTIONHEAD_EMPID AS ASSIGNED_SECTIONHEAD_EMPID, " +
                          "NVL((SELECT ai.STATE_STEP " +
                          "     FROM APPROVALINFO ai " +
                          "     WHERE ai.FORMID = r.FORMID " +
@@ -60,6 +62,7 @@
                          "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
                          "LEFT JOIN SECTION requester_s ON e.SECID = requester_s.SECID " +
                          "LEFT JOIN DEPARTMENT requester_d ON requester_s.DEPTID = requester_d.DEPTID " +
+                         "LEFT JOIN SECTION assigned_s ON r.ASSIGN_SECID = assigned_s.SECID " +
                          "WHERE r.FORMID = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, formId);
@@ -72,7 +75,10 @@
                 phone = nvl(rs.getString("PHONE"));
                 titleForm = nvl(rs.getString("TITLEFORM"));
                 assignedSecId = rs.getInt("ASSIGN_SECID");
-                canApproveExpectedStep = rs.getInt("STATE_STEP") == EXPECTED_STEP;
+                String assignedSectionHeadEmpId = rs.getString("ASSIGNED_SECTIONHEAD_EMPID");
+                canApproveExpectedStep = rs.getInt("STATE_STEP") == EXPECTED_STEP
+                    && assignedSectionHeadEmpId != null
+                    && assignedSectionHeadEmpId.trim().equals(loggedInEmpId);
                 if (rs.getDate("DEADLINE") != null) {
                     deadlineDate = sdfDisplay.format(rs.getDate("DEADLINE"));
                 } else {
@@ -212,7 +218,7 @@
 <body>
 
 <div class="sticky-bar">
-        <a href="TechnicalApprove.jsp">
+        <a href="javascript:history.back()">
             <i class="fa fa-arrow-left" style="font-size:24px;"></i>
         </a>
         <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">

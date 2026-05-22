@@ -2,6 +2,29 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
 
+<%!
+    public String escapeHtml(String input) {
+        if (input == null) return "";
+        return input.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("\"", "&quot;")
+                    .replace("'", "&#x27;")
+                    .replace("/", "&#x2F;");
+    }
+
+    public String escapeJson(String input) {
+        if (input == null) return "";
+        return input.replace("\\", "\\\\")
+                    .replace("\"", "\\\"")
+                    .replace("\b", "\\b")
+                    .replace("\f", "\\f")
+                    .replace("\n", "\\n")
+                    .replace("\r", "\\r")
+                    .replace("\t", "\\t");
+    }
+%>
+
 <%
     String currentRole = (session.getAttribute("position") != null) ? (String)session.getAttribute("position") : "Guest";
     if (!currentRole.equalsIgnoreCase("Admin") && !currentRole.equalsIgnoreCase("Director")) {
@@ -9,17 +32,18 @@
         return;
     }
     
-    String employeeName = (session.getAttribute("empName") != null) ? (String)session.getAttribute("empName") : "ผู้ใช้งานระบบ";
+    String employeeName = (session.getAttribute("empName") != null) ? escapeHtml((String)session.getAttribute("empName")) : "ผู้ใช้งานระบบ";
     
     String filter = request.getParameter("timeFilter");
-    if (filter == null || filter.equals("")) { filter = "30days"; }
-    
+    if (filter == null || filter.trim().equals("")) { filter = "30days"; }
+
+    List<String> allowedFilters = Arrays.asList("7days", "30days", "quarters", "forecast", "custom");
+    if (!allowedFilters.contains(filter)) { filter = "30days"; }
 
     String startDate = request.getParameter("startDate");
     String endDate = request.getParameter("endDate");
     
- 
-    if (startDate != null && !startDate.equals("") && endDate != null && !endDate.equals("")) {
+    if (startDate != null && !startDate.trim().equals("") && endDate != null && !endDate.trim().equals("")) {
         filter = "custom";
     } else {
         startDate = ""; 
@@ -36,6 +60,8 @@
     ResultSet rs = null;
     Statement stmt = null;
     ResultSet countRs = null;
+    PreparedStatement pstmt2 = null;
+    ResultSet rs2 = null;
 
     List<String> labelsList = new ArrayList<String>();
     List<Integer> dataList = new ArrayList<Integer>();
@@ -56,7 +82,8 @@
         pstmt = conn.prepareStatement(sql);
         rs = pstmt.executeQuery();
         while (rs.next()) {
-            labelsList.add(rs.getString("POSITION") != null ? rs.getString("POSITION") : "ไม่ระบุ");
+            String rawPosition = rs.getString("POSITION");
+            labelsList.add(rawPosition != null ? escapeHtml(rawPosition) : "ไม่ระบุ");
             dataList.add(rs.getInt("TOTAL"));
         }
         
@@ -65,22 +92,28 @@
             top5Sql = "SELECT CATEGORY, COUNT(*) as TOTAL FROM REQUISITION WHERE CREATE_DATE BETWEEN TO_DATE(?, 'YYYY-MM-DD') AND TO_DATE(?, 'YYYY-MM-DD') GROUP BY CATEGORY ORDER BY TOTAL DESC FETCH FIRST 5 ROWS ONLY";
         }
         
-        PreparedStatement pstmt2 = conn.prepareStatement(top5Sql);
-        if (filter.equals("custom")) { pstmt2.setString(1, startDate); pstmt2.setString(2, endDate); }
-        ResultSet rs2 = pstmt2.executeQuery();
+        pstmt2 = conn.prepareStatement(top5Sql);
+        if (filter.equals("custom")) { 
+            pstmt2.setString(1, startDate); 
+            pstmt2.setString(2, endDate); 
+        }
+        
+        rs2 = pstmt2.executeQuery();
         while (rs2.next()) {
-            topCatLabels.add(rs2.getString("CATEGORY"));
+            String rawCategory = rs2.getString("CATEGORY");
+            topCatLabels.add(rawCategory != null ? escapeHtml(rawCategory) : "ทั่วไป");
             topCatValues.add(rs2.getInt("TOTAL"));
         }
-        rs2.close(); pstmt2.close();
 
     } catch (Exception e) {
-    System.out.println("DB Connection Status: Fallback Mode Enabled.");
+        System.out.println("DB Connection Status: Fallback Mode Enabled.");
     } finally {
         if (countRs != null) try { countRs.close(); } catch (SQLException e) {}
         if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
         if (rs != null) try { rs.close(); } catch (SQLException e) {}
         if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
+        if (rs2 != null) try { rs2.close(); } catch (SQLException e) {}
+        if (pstmt2 != null) try { pstmt2.close(); } catch (SQLException e) {}
         if (conn != null) try { conn.close(); } catch (SQLException e) {}
     }
 
@@ -97,14 +130,16 @@
     StringBuilder sbLabels = new StringBuilder(); StringBuilder sbValues = new StringBuilder();
     for(int i=0; i<labelsList.size(); i++){
         if(i>0) { sbLabels.append(","); sbValues.append(","); }
-        sbLabels.append("\"").append(labelsList.get(i).replace("\"", "\\\"")).append("\""); sbValues.append(dataList.get(i));
+        sbLabels.append("\"").append(escapeJson(labelsList.get(i))).append("\""); 
+        sbValues.append(dataList.get(i));
     }
     String pieLabelsJson = "[" + sbLabels.toString() + "]"; String pieValuesJson = "[" + sbValues.toString() + "]";
 
     StringBuilder sbBarLabels = new StringBuilder(); StringBuilder sbBarValues = new StringBuilder();
     for(int i=0; i<topCatLabels.size(); i++){
         if(i>0) { sbBarLabels.append(","); sbBarValues.append(","); }
-        sbBarLabels.append("\"").append(topCatLabels.get(i).replace("\"", "\\\"")).append("\""); sbBarValues.append(topCatValues.get(i));
+        sbBarLabels.append("\"").append(escapeJson(topCatLabels.get(i))).append("\""); 
+        sbBarValues.append(topCatValues.get(i));
     }
     String barLabelsJson = "[" + sbBarLabels.toString() + "]"; String barValuesJson = "[" + sbBarValues.toString() + "]";
     
@@ -133,9 +168,9 @@
         trendDataJson = "[294, 345, 412, 490]";
     }
     else if (filter.equals("custom")) {
-        chartTitle = "ผลการสืบค้นข้อมูลช่วงวันที่ " + startDate + " ถึง " + endDate;
+        chartTitle = "ผลการสืบค้นข้อมูลช่วงวันที่ " + escapeHtml(startDate) + " ถึง " + escapeHtml(endDate);
         trendLabelsJson = "[\"ช่วงเริ่มต้น\",\"ช่วงกลาง\",\"ช่วงสิ้นสุด\"]";
-        trendDataJson = "[40, 65, 52]"; // ตัวอย่างชุดข้อมูลสมมุติเมื่อกรองแบบกำหนดเอง
+        trendDataJson = "[40, 65, 52]";
     }
 %>
 
@@ -157,8 +192,6 @@
         .sidebar .closebtn { position: absolute; top: 10px; right: 25px; font-size: 2rem; cursor: pointer; color: white; }
         .container { max-width: 1300px; margin: 25px auto; padding: 0 20px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 3px solid #3272BB; padding-bottom: 10px; }
-        
-        
         .filter-container { background: white; border-radius: 15px; padding: 20px 25px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 15px; border: 1px solid #e0e0e0; }
         .filter-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
         .filter-title { font-weight: bold; color: #003366; display: flex; align-items: center; gap: 8px; }
@@ -166,14 +199,11 @@
         .btn-filter { background: #f0f3f5; color: #555; border: 1px solid #ccc; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.2s ease; font-family: 'Sarabun', sans-serif; text-decoration: none; font-size: 0.9rem; }
         .btn-filter:hover { background: #e2e6e9; color: #003366; }
         .btn-filter.active { background: #3272BB; color: white; border-color: #3272BB; box-shadow: 0 3px 6px rgba(50,114,187,0.3); }
-
-       
         .date-picker-form { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 15px; border-radius: 10px; border: 1px dashed #3272BB; }
         .date-input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.9rem; color: #333; outline: none; }
         .date-input:focus { border-color: #3272BB; }
         .btn-submit-date { background: #2ecc71; color: white; border: none; padding: 7px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 0.9rem; transition: background 0.2s; }
         .btn-submit-date:hover { background: #27ae60; }
-
         .grid-kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
         .kpi-card { background: #3272BB; color: white; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .kpi-card h2 { margin: 10px 0 0 0; font-size: 2.5rem; }
@@ -233,9 +263,9 @@
             <div class="filter-title" style="font-size: 0.9rem; color:#555;"><i class="fa-regular fa-calendar-days" style="color: #3272BB;"></i> หรือกำหนดช่วงเวลาด้วยตนเอง:</div>
             <form action="Dashboard.jsp" method="GET" class="date-picker-form">
                 <label style="font-size:0.85rem; color:#666;">เริ่มต้น:</label>
-                <input type="date" name="startDate" value="<%= startDate %>" class="date-input" required>
+                <input type="date" name="startDate" value="<%= escapeHtml(startDate) %>" class="date-input" required>
                 <label style="font-size:0.85rem; color:#666;">สิ้นสุด:</label>
-                <input type="date" name="endDate" value="<%= endDate %>" class="date-input" required>
+                <input type="date" name="endDate" value="<%= escapeHtml(endDate) %>" class="date-input" required>
                 <button type="submit" class="btn-submit-date"><i class="fa fa-search"></i> ค้นหา</button>
                 <% if(filter.equals("custom")) { %>
                     <a href="Dashboard.jsp?timeFilter=30days" style="color:#e74c3c; font-size:0.85rem; font-weight:bold; text-decoration:none; margin-left:5px;"><i class="fa fa-times-circle"></i> ล้างตัวกรอง</a>

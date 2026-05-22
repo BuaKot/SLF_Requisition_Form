@@ -40,11 +40,11 @@ public class RoleBasedAccessFilter implements Filter {
         String pageKey = null;
         if (path.equals("/directorApprove") || path.equals("/DirectorApprove.jsp")) {
             pageKey = "directorApprove";
-        } else if (path.equals("/TechnicalApprove.jsp")) {
+        } else if (path.equals("/technicalApprove") || path.equals("/TechnicalApprove.jsp")) {
             pageKey = "technicalApprove";
-        } else if (path.equals("/ITDirectorApprove.jsp")) {
+        } else if (path.equals("/itDirectorApprove") || path.equals("/ITDirectorApprove.jsp")) {
             pageKey = "itDirectorApprove";
-        } else if (path.equals("/Process.jsp")) {
+        } else if (path.equals("/process") || path.equals("/Process.jsp")) {
             pageKey = "process";
         } else if (path.startsWith("/RequisitionDetail")) {
             // RequisitionDetail pages are accessible to the same roles that can see the

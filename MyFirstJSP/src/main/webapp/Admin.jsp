@@ -16,11 +16,13 @@
 %>
 
 <%
+    // These are available to every scriptlet on the page
     String currentRole = (String) session.getAttribute("position");
     String employeeName = (String) session.getAttribute("loggedInEmpName");
 
+    // Now the security check
     if (currentRole == null || employeeName == null) {
-        response.sendRedirect("login.jsp");
+        response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
 %>

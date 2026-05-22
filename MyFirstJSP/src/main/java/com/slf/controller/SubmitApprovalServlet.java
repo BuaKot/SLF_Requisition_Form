@@ -164,10 +164,11 @@ public class SubmitApprovalServlet extends HttpServlet {
      * Returns redirectPage if it is in the allowed whitelist, otherwise falls back to
      * "DirectorApprove.jsp" to prevent open-redirect attacks.
      */
-    static String sanitizeRedirectPage(String redirectPage) {
+    static String sanitizeRedirectPage(String redirectPage) { // vis เปลี่ยนของ zen จาก private เป็น static
         final java.util.Set<String> ALLOWED_REDIRECTS = new java.util.HashSet<>(java.util.Arrays.asList(
-            "Process.jsp", "DirectorApprove.jsp", "directorApprove", "ITDirectorApprove.jsp", "TechnicalApprove.jsp", "submit.jsp"
+            "Process.jsp", "DirectorApprove.jsp", "directorApprove", "ITDirectorApprove.jsp", "TechnicalApprove.jsp", "submit.jsp", "submit"
         ));
+        // zennnne แก้
         return ALLOWED_REDIRECTS.contains(redirectPage) ? redirectPage : "DirectorApprove.jsp";
     }
     // zennnne แก้

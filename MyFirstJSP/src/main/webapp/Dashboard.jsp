@@ -174,7 +174,7 @@
     }
 %>
 
-<%@ include file="WEB-INF/checkAuth.jsp" %>
+
 
 <!DOCTYPE html>
 <html lang="th">
@@ -223,7 +223,6 @@
     <span class="closebtn" onclick="closeNav()">&times;</span>
     <a href="Admin.jsp"><i class="fa fa-home"></i> หน้าหลักระบบผู้ดูแล</a>
     <a href="Dashboard.jsp"><i class="fa fa-chart-line"></i> รายงานแดชบอร์ด (BA)</a>
-    <a href="RequisitionList.jsp"><i class="fa fa-file-invoice"></i> ใบคำขอรับบริการ</a>
     <a href="login.jsp" style="color: #ff7675; margin-top: 30px;"><i class="fa fa-sign-out-alt"></i> ออกจากระบบ</a>
 </div>
 

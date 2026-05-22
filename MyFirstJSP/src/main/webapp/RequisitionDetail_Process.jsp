@@ -196,7 +196,7 @@
 <body>
 
 <div class="sticky-bar">
-        <a href="Process.jsp">
+        <a href="javascript:history.back()">
             <i class="fa fa-arrow-left" style="font-size:24px;"></i>
         </a>
         <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">

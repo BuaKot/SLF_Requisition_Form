@@ -133,21 +133,21 @@
         <% } %>
 
         <% if (AuthUtil.isAllowedForPage(currentRole, "technicalApprove")) { %>
-            <div class="card" onclick="location.href='${pageContext.request.contextPath}/TechnicalApprove.jsp'">
+            <div class="card" onclick="location.href='${pageContext.request.contextPath}/technicalApprove'">
                 <i class="fa-solid fa-screwdriver-wrench"></i>
                 <p>ความเห็นและการอนุมัติเชิงเทคนิค</p>
             </div>
         <% } %>
 
         <% if (AuthUtil.isAllowedForPage(currentRole, "itDirectorApprove")) { %>
-            <div class="card" onclick="location.href='${pageContext.request.contextPath}/ITDirectorApprove.jsp'">
+            <div class="card" onclick="location.href='${pageContext.request.contextPath}/itDirectorApprove'">
                 <i class="fa-solid fa-user-gear"></i>
                 <p>ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ</p>
             </div>
         <% } %>
 
         <% if (AuthUtil.isAllowedForPage(currentRole, "process")) { %>
-            <div class="card" onclick="location.href='${pageContext.request.contextPath}/Process.jsp'">
+            <div class="card" onclick="location.href='${pageContext.request.contextPath}/process'">
                 <i class="fa-solid fa-bars-progress"></i>
                 <p>รายละเอียดการดำเนินการ</p>
             </div>

@@ -401,12 +401,21 @@
         </div>
         <div class="sort-controls">
             <span class="sort-label">เรียงตาม Deadline</span>
-            <button id="sortAscBtn"  class="sort-btn active" onclick="setSortOrder('asc')"  title="น้อยไปมาก">
+            <button id="sortAscBtn"  class="sort-btn active" onclick="setSortOrder('deadline','asc')"  title="น้อยไปมาก">
                 <i class="fa-solid fa-arrow-up"></i>
             </button>
-            <button id="sortDescBtn" class="sort-btn"        onclick="setSortOrder('desc')" title="มากไปน้อย">
+            <button id="sortDescBtn" class="sort-btn"        onclick="setSortOrder('deadline','desc')" title="มากไปน้อย">
                 <i class="fa-solid fa-arrow-down"></i>
             </button>
+            <!-- zennnne แก้ -->
+            <span class="sort-label" style="margin-left:12px;">เรียงตาม วันกรอก</span>
+            <button id="sortIdAscBtn"  class="sort-btn" onclick="setSortOrder('formid','asc')"  title="เก่าสุดก่อน">
+                <i class="fa-solid fa-arrow-up"></i>
+            </button>
+            <button id="sortIdDescBtn" class="sort-btn" onclick="setSortOrder('formid','desc')" title="ใหม่สุดก่อน">
+                <i class="fa-solid fa-arrow-down"></i>
+            </button>
+            <!-- zennnne แก้ -->
         </div>
     </div>
     <!-- zennnne แก้ -->
@@ -424,7 +433,7 @@
         // zennnne แก้
         String sql =
             "WITH latest_step AS ( " +
-            "    SELECT FORMID, STATE_STEP, " +
+            "    SELECT FORMID, STATE_STEP, APPROVED_DATE, " +
             "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
             "    FROM APPROVALINFO " +
             ") " +
@@ -432,7 +441,7 @@
             "       NVL(E.EMPNAME,  '-') AS EMPNAME, " +
             "       NVL(S.SECNAME,  '-') AS SECNAME, " +
             "       NVL(D.DEPTNAME, '-') AS DEPTNAME, " +
-            "       ls.STATE_STEP " +
+            "       ls.STATE_STEP, ls.APPROVED_DATE " +
             "FROM REQUISITIONFORM RF " +
             "JOIN latest_step ls ON ls.FORMID = RF.FORMID AND ls.RN = 1 " +
             "LEFT JOIN EMPLOYEE   E ON RF.EMPID  = E.EMPID " +
@@ -461,6 +470,11 @@
             String secName   = rs.getString("SECNAME");
             String deptName  = rs.getString("DEPTNAME");
             int    stateStep = rs.getInt("STATE_STEP");
+            // zennnne แก้
+            java.sql.Timestamp approvedTs = rs.getTimestamp("APPROVED_DATE");
+            String approvedDisplay = (approvedTs != null)
+                ? sdf.format(new java.util.Date(approvedTs.getTime())) : "-";
+            // zennnne แก้
 
             String deadlineDisplay = (ddl != null) ? sdf.format(ddl) : "-";
             String deadlineSort    = (ddl != null) ? ddl.toString()  : "9999-12-31";
@@ -474,6 +488,7 @@
         <div class="history-card"
              data-status="<%= rowStatus %>"
              data-deadline="<%= deadlineSort %>"
+             data-formid="<%= formId %>"
              onclick="location.href='detail.jsp?id=<%= formId %>'">
 
             <div class="card-id-box">ใบขอให้ดำเนินการที่ <%= formId %></div>
@@ -483,7 +498,7 @@
                     <div class="info-item"><b>ชื่อ :</b> <%= empName %></div>
                     <div class="info-item"><b>ฝ่าย :</b> <%= deptName %></div>
                     <div class="info-item"><b>ส่วน :</b> <%= secName %></div>
-                    <div class="info-item"><b>Deadline :</b> <%= deadlineDisplay %></div>
+                    <div class="info-item"><b>ดำเนินการล่าสุด :</b> <%= approvedDisplay %></div><!-- zennnne แก้ -->
                 </div>
                 <div class="detail-line"><b>รายละเอียด :</b> <%= titleForm %></div>
             </div>
@@ -566,25 +581,40 @@ function toggleNav() {
 
 // zennnne แก้
 let sortOrder = (new URLSearchParams(window.location.search).get('sort') || 'asc');
+let sortField = (new URLSearchParams(window.location.search).get('sortby') || 'deadline');
 
 function applySort() {
     const list  = document.querySelector('.history-list');
     const cards = Array.from(list.querySelectorAll('.history-card'));
     cards.sort(function(a, b) {
-        const da = a.dataset.deadline || '9999-12-31';
-        const db = b.dataset.deadline || '9999-12-31';
-        if (sortOrder === 'asc') return da < db ? -1 : da > db ? 1 : 0;
-        return da > db ? -1 : da < db ? 1 : 0;
+        if (sortField === 'formid') {
+            const ia = parseInt(a.dataset.formid) || 0;
+            const ib = parseInt(b.dataset.formid) || 0;
+            return sortOrder === 'asc' ? ia - ib : ib - ia;
+        } else {
+            const da = a.dataset.deadline || '9999-12-31';
+            const db = b.dataset.deadline || '9999-12-31';
+            if (sortOrder === 'asc') return da < db ? -1 : da > db ? 1 : 0;
+            return da > db ? -1 : da < db ? 1 : 0;
+        }
     });
     cards.forEach(function(c) { list.appendChild(c); });
 }
 
-function setSortOrder(order) {
+function updateSortButtons() {
+    document.getElementById('sortAscBtn').classList.toggle('active',    sortField === 'deadline' && sortOrder === 'asc');
+    document.getElementById('sortDescBtn').classList.toggle('active',   sortField === 'deadline' && sortOrder === 'desc');
+    document.getElementById('sortIdAscBtn').classList.toggle('active',  sortField === 'formid'   && sortOrder === 'asc');
+    document.getElementById('sortIdDescBtn').classList.toggle('active', sortField === 'formid'   && sortOrder === 'desc');
+}
+
+function setSortOrder(field, order) {
+    sortField = field;
     sortOrder = order;
-    document.getElementById('sortAscBtn').classList.toggle('active',  order === 'asc');
-    document.getElementById('sortDescBtn').classList.toggle('active', order === 'desc');
+    updateSortButtons();
     const sp = new URLSearchParams(window.location.search);
     sp.set('sort', order);
+    sp.set('sortby', field);
     history.replaceState(null, '', '?' + sp.toString());
     applySort();
 }
@@ -595,8 +625,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.filter-checkboxes input').forEach(function(cb) {
         cb.checked = initShow.includes(cb.value);
     });
-    document.getElementById('sortAscBtn').classList.toggle('active',  sortOrder === 'asc');
-    document.getElementById('sortDescBtn').classList.toggle('active', sortOrder === 'desc');
+    updateSortButtons();
     applySort();
 
     document.querySelectorAll('.filter-checkboxes input').forEach(function(cb) {

@@ -135,12 +135,21 @@
         </div>
         <div class="sort-controls">
             <span class="sort-label">เรียงตาม Deadline</span>
-            <button id="sortAscBtn" class="sort-btn active" onclick="setSortOrder('asc')" title="น้อยไปมาก">
+            <button id="sortAscBtn" class="sort-btn active" onclick="setSortOrder('deadline','asc')" title="น้อยไปมาก">
                 <i class="fa-solid fa-arrow-up"></i>
             </button>
-            <button id="sortDescBtn" class="sort-btn" onclick="setSortOrder('desc')" title="มากไปน้อย">
+            <button id="sortDescBtn" class="sort-btn" onclick="setSortOrder('deadline','desc')" title="มากไปน้อย">
                 <i class="fa-solid fa-arrow-down"></i>
             </button>
+            <!-- zennnne แก้ -->
+            <span class="sort-label" style="margin-left:12px;">เรียงตาม วันกรอก</span>
+            <button id="sortIdAscBtn" class="sort-btn" onclick="setSortOrder('formid','asc')" title="เก่าสุดก่อน">
+                <i class="fa-solid fa-arrow-up"></i>
+            </button>
+            <button id="sortIdDescBtn" class="sort-btn" onclick="setSortOrder('formid','desc')" title="ใหม่สุดก่อน">
+                <i class="fa-solid fa-arrow-down"></i>
+            </button>
+            <!-- zennnne แก้ -->
         </div>
     </div>
     <!-- zennnne แก้ -->
@@ -220,7 +229,7 @@
 %>
 
         <!-- zennnne แก้ -->
-        <div class="request-row" data-status="<%= rowStatus %>" data-deadline="<%= rowDeadline %>">
+        <div class="request-row" data-status="<%= rowStatus %>" data-deadline="<%= rowDeadline %>" data-formid="<%= formId %>">
             <div class="request-col">
                 <a href="detail.jsp?id=<%= formId %>" style="text-decoration:none;">
                     <button type="button" class="request-btn">
@@ -345,16 +354,16 @@
 
     <!-- zennnne แก้ -->
     <!-- Pagination -->
-    <div class="pagination" style="display:flex; gap:16px; align-items:center; justify-content:center; padding:20px 0;">
+    <div class="pagination">
         <% if (currentPage > 1) { %>
             <a href="?page=<%= currentPage - 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>" style="text-decoration:none;">
-                <button type="button" class="request-btn">« ก่อนหน้า</button>
+                <button type="button" class="page-btn">« ก่อนหน้า</button>
             </a>
         <% } %>
-        <span style="font-family:'DB Helvethaica X 55 Regular',sans-serif; color:#003366;">หน้า <%= currentPage %></span>
+        <span class="page-num">หน้า <%= currentPage %></span>
         <% if (formList.size() == pageSize) { %>
             <a href="?page=<%= currentPage + 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>" style="text-decoration:none;">
-                <button type="button" class="request-btn">ถัดไป »</button>
+                <button type="button" class="page-btn">ถัดไป »</button>
             </a>
         <% } %>
     </div>
@@ -394,25 +403,40 @@ const contextPath = "<%= request.getContextPath() %>";
 
 // zennnne แก้
 let sortOrder = (new URLSearchParams(window.location.search).get('sort') || 'asc');
+let sortField = (new URLSearchParams(window.location.search).get('sortby') || 'deadline');
 
 function applySort() {
     const list = document.querySelector('.request-list');
     const rows = Array.from(list.querySelectorAll('.request-row'));
     rows.sort(function(a, b) {
-        const da = a.dataset.deadline || '9999-12-31';
-        const db = b.dataset.deadline || '9999-12-31';
-        if (sortOrder === 'asc') return da < db ? -1 : da > db ? 1 : 0;
-        return da > db ? -1 : da < db ? 1 : 0;
+        if (sortField === 'formid') {
+            const ia = parseInt(a.dataset.formid) || 0;
+            const ib = parseInt(b.dataset.formid) || 0;
+            return sortOrder === 'asc' ? ia - ib : ib - ia;
+        } else {
+            const da = a.dataset.deadline || '9999-12-31';
+            const db = b.dataset.deadline || '9999-12-31';
+            if (sortOrder === 'asc') return da < db ? -1 : da > db ? 1 : 0;
+            return da > db ? -1 : da < db ? 1 : 0;
+        }
     });
     rows.forEach(function(row) { list.appendChild(row); });
 }
 
-function setSortOrder(order) {
+function updateSortButtons() {
+    document.getElementById('sortAscBtn').classList.toggle('active',    sortField === 'deadline' && sortOrder === 'asc');
+    document.getElementById('sortDescBtn').classList.toggle('active',   sortField === 'deadline' && sortOrder === 'desc');
+    document.getElementById('sortIdAscBtn').classList.toggle('active',  sortField === 'formid'   && sortOrder === 'asc');
+    document.getElementById('sortIdDescBtn').classList.toggle('active', sortField === 'formid'   && sortOrder === 'desc');
+}
+
+function setSortOrder(field, order) {
+    sortField = field;
     sortOrder = order;
-    document.getElementById('sortAscBtn').classList.toggle('active',  order === 'asc');
-    document.getElementById('sortDescBtn').classList.toggle('active', order === 'desc');
+    updateSortButtons();
     const sp = new URLSearchParams(window.location.search);
     sp.set('sort', order);
+    sp.set('sortby', field);
     history.replaceState(null, '', '?' + sp.toString());
     applySort();
 }

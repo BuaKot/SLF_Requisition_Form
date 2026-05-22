@@ -32,7 +32,7 @@ public class AuthenticationFilter implements Filter {
         HttpSession session = request.getSession(false); // don't create a new one if it doesn't exist
         if (session == null || session.getAttribute("loggedInEmpId") == null) {
             // No valid session – send 'em back to the login page
-            response.sendRedirect(request.getContextPath() + "/login");
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 

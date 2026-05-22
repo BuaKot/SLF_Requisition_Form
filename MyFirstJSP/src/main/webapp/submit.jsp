@@ -13,10 +13,10 @@
     List<Map<String, Object>> formList = (List<Map<String, Object>>) request.getAttribute("formList");
     if (formList == null) formList = new ArrayList<>();
 
-    int currentPage  = request.getAttribute("currentPage") != null ? (Integer) request.getAttribute("currentPage") : 1;
-    int pageSize     = request.getAttribute("pageSize")    != null ? (Integer) request.getAttribute("pageSize")    : 50;
-    String showParam = request.getAttribute("showParam")   != null ? (String)  request.getAttribute("showParam")   : "all";
-    String sortParam = request.getAttribute("sortParam")   != null ? (String)  request.getAttribute("sortParam")   : "asc";
+    int currentPage = request.getAttribute("currentPage") != null ? (Integer) request.getAttribute("currentPage") : 1;
+    int pageSize    = request.getAttribute("pageSize")    != null ? (Integer) request.getAttribute("pageSize")    : 50;
+    String showParam = request.getAttribute("showParam")  != null ? (String) request.getAttribute("showParam")   : "pending";
+    String sortParam = request.getAttribute("sortParam")  != null ? (String) request.getAttribute("sortParam")   : "asc";
     boolean hasData  = !formList.isEmpty();
     // zennnne แก้
 %>
@@ -28,9 +28,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submitted Requisition Form</title>
 
+    <!-- CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/submit.css">
 
+    <!-- ICON -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flaticon@3/flaticon.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
@@ -41,13 +43,15 @@
 
 <body>
 
-<!-- SIDEBAR -->
+<!-- ===============================
+     SIDEBAR
+================================ -->
 <div id="mySidebar" class="sidebar">
     <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
-    <a href="${pageContext.request.contextPath}"><i class="fa-solid fa-house" style="margin-right:10px"></i>หน้าหลัก</a>
-    <a href="${pageContext.request.contextPath}/newForm"><i class="fa-solid fa-plus" style="margin-right:10px"></i>สร้างฟอร์มใหม่</a>
-    <a href="${pageContext.request.contextPath}/submit"><i class="fa-solid fa-paper-plane" style="margin-right:10px"></i>ฟอร์มที่ส่งแล้ว</a><!-- zennnne แก้ -->
-    <a href="${pageContext.request.contextPath}/logout"><i class="fa-solid fa-arrow-right-from-bracket" style="margin-right:10px"></i>ออกจากระบบ</a>
+    <a href="${pageContext.request.contextPath}"><i class="fa-solid fa-house" style='margin-right: 10px'></i>หน้าหลัก</a>
+    <a href="${pageContext.request.contextPath}/newForm"><i class="fa-solid fa-plus" style='margin-right: 10px'></i>สร้างฟอร์มใหม่</a>
+    <a href="${pageContext.request.contextPath}/submit"><i class="fa-solid fa-paper-plane" style='margin-right: 10px'></i>ฟอร์มที่ส่งแล้ว</a><!-- zennnne แก้ -->
+    <a href="${pageContext.request.contextPath}/logout"><i class="fa-solid fa-arrow-right-from-bracket" style='margin-right: 10px'></i>ออกจากระบบ</a>
     <a href="${pageContext.request.contextPath}/Admin.jsp" class="admin-tab">
         <i class="fa-solid fa-circle-user"></i>Admin
     </a>
@@ -60,9 +64,12 @@
         <i id="menuBtn" class="fa-solid fa-bars" onclick="toggleNav()"></i>
         <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
         <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
+        
         <div class="user-info">
             <i class="fa fa-circle-user"></i>
-            <p>${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}</p>
+            <p>
+                ${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}
+            </p>
         </div>
         <div class="contact-info">
             <i class="fa-solid fa-circle-info"></i>
@@ -72,33 +79,76 @@
 
     <!-- TITLE -->
     <div class="blue-title">
-        <h1 style="margin-block-start:0.1em; margin-block-end:0.1em; color:#003366">
+        <h1 style="margin-block-start:0.1em; margin-block-end:0.1em;color:#003366">
             ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา
         </h1>
-        <h2 style="margin-block-start:0.1em; margin-block-end:0.1em; color:#003366">
+
+        <h2 style="margin-block-start:0.1em; margin-block-end:0.1em;color:#003366">
             ใบขอให้ดำเนินการ / Requisition Form
         </h2>
     </div>
 
+    <!-- HEADER TABLE -->
+    <section class="progress-header">
+        <div class="header-item">
+            <i class="fi fi-rr-form"></i>
+            <span>จำนวนใบขอให้ดำเนินการทั้งหมด</span>
+        </div>
+        <div class="header-item">
+            <i class="fi fi-bs-user"></i>
+            <span>ผู้อำนวยการฝ่าย</span>
+        </div>
+        <div class="header-item">
+            <i class="fi fi-rr-it-alt"></i>
+            <span>ความเห็นและการอนุมัติเชิงเทคนิค</span>
+        </div>
+        <div class="header-item">
+            <i class="fi fi-bs-user"></i>
+            <span>ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ</span>
+        </div>
+        <div class="header-item">
+            <i class="fa-solid fa-gears"></i>
+            <span>ขั้นตอนการดำเนินการ</span>
+        </div>
+        <div class="header-item">
+            <i class="fi fi-rr-confirmed-user"></i>
+            <span>ผลตรวจรับ</span>
+        </div>
+    </section>
+
     <!-- zennnne แก้ -->
     <!-- FILTER BAR -->
     <div class="filter-bar">
-        <div class="filter-tabs">
-            <button class="filter-tab" data-filter="all">ทั้งหมด</button>
-            <button class="filter-tab" data-filter="pending">รอดำเนินการ</button>
-            <button class="filter-tab" data-filter="ready">พร้อมยืนยัน</button>
-            <button class="filter-tab" data-filter="approved">อนุมัติแล้ว</button>
-            <button class="filter-tab" data-filter="rejected">ปฏิเสธ</button>
-            <button class="filter-tab" data-filter="overdue">เกินกำหนด</button>
+        <div class="filter-checkboxes">
+            <label class="filter-label pending-label">
+                <input type="checkbox" value="pending" checked> รอดำเนินการ
+            </label>
+            <label class="filter-label overdue-label">
+                <input type="checkbox" value="overdue"> หมดเขต
+            </label>
+            <label class="filter-label rejected-label">
+                <input type="checkbox" value="rejected"> ไม่ผ่านการอนุมัติ
+            </label>
+            <label class="filter-label approved-label">
+                <input type="checkbox" value="approved"> อนุมัติแล้ว
+            </label>
         </div>
         <div class="sort-controls">
             <span class="sort-label">เรียงตาม Deadline</span>
-            <button id="sortAscBtn"  class="sort-btn active" onclick="setSortOrder('deadline','asc')"  title="น้อยไปมาก"><i class="fa-solid fa-arrow-up"></i></button>
-            <button id="sortDescBtn" class="sort-btn"        onclick="setSortOrder('deadline','desc')" title="มากไปน้อย"><i class="fa-solid fa-arrow-down"></i></button>
+            <button id="sortAscBtn" class="sort-btn active" onclick="setSortOrder('deadline','asc')" title="น้อยไปมาก">
+                <i class="fa-solid fa-arrow-up"></i>
+            </button>
+            <button id="sortDescBtn" class="sort-btn" onclick="setSortOrder('deadline','desc')" title="มากไปน้อย">
+                <i class="fa-solid fa-arrow-down"></i>
+            </button>
             <!-- zennnne แก้ -->
-            <span class="sort-label" style="margin-left:12px">เรียงตาม วันกรอก</span>
-            <button id="sortIdAscBtn"  class="sort-btn" onclick="setSortOrder('formid','asc')"  title="เก่าสุดก่อน"><i class="fa-solid fa-arrow-up"></i></button>
-            <button id="sortIdDescBtn" class="sort-btn" onclick="setSortOrder('formid','desc')" title="ใหม่สุดก่อน"><i class="fa-solid fa-arrow-down"></i></button>
+            <span class="sort-label" style="margin-left:12px;">เรียงตาม วันกรอก</span>
+            <button id="sortIdAscBtn" class="sort-btn" onclick="setSortOrder('formid','asc')" title="เก่าสุดก่อน">
+                <i class="fa-solid fa-arrow-up"></i>
+            </button>
+            <button id="sortIdDescBtn" class="sort-btn" onclick="setSortOrder('formid','desc')" title="ใหม่สุดก่อน">
+                <i class="fa-solid fa-arrow-down"></i>
+            </button>
             <!-- zennnne แก้ -->
         </div>
     </div>
@@ -116,11 +166,19 @@
         boolean isEdited = (Integer) row.get("IS_EDITED") == 1;
 
         java.sql.Date deadlineDate = (java.sql.Date) row.get("DEADLINE");
-        java.time.LocalDate today  = java.time.LocalDate.now();
-        boolean isOverdue = (deadlineDate != null && deadlineDate.toLocalDate().isBefore(today));
+        java.time.LocalDate today = java.time.LocalDate.now();
+        boolean isOverdue = (deadlineDate != null &&
+            deadlineDate.toLocalDate().isBefore(today));
 
-        boolean director1 = false, technical = false, director2 = false, process = false;
-        boolean director1Reject = false, technicalReject = false, director2Reject = false, processReject = false;
+        boolean director1 = false;
+        boolean technical = false;
+        boolean director2 = false;
+        boolean process = false;
+
+        boolean director1Reject = false;
+        boolean technicalReject = false;
+        boolean director2Reject = false;
+        boolean processReject = false;
 
         if (stateStep >= 0) {
             director1 = stateStep >= 1;
@@ -128,12 +186,30 @@
             director2 = stateStep >= 3;
             process   = stateStep >= 4;
         }
-        if      (stateStep == -1) { director1Reject = true; technicalReject = true; director2Reject = true; processReject = true; }
-        else if (stateStep == -2) { director1 = true; technicalReject = true; director2Reject = true; processReject = true; }
-        else if (stateStep == -3) { director1 = true; technical = true; director2Reject = true; processReject = true; }
-        else if (stateStep == -4) { director1 = true; technical = true; director2 = true; processReject = true; }
 
-        boolean canConfirm  = (stateStep == 4);
+        if (stateStep == -1) {
+            director1Reject = true;
+            technicalReject = true;
+            director2Reject = true;
+            processReject   = true;
+        } else if (stateStep == -2) {
+            director1 = true;
+            technicalReject = true;
+            director2Reject = true;
+            processReject   = true;
+        } else if (stateStep == -3) {
+            director1 = true;
+            technical = true;
+            director2Reject = true;
+            processReject   = true;
+        } else if (stateStep == -4) {
+            director1 = true;
+            technical = true;
+            director2 = true;
+            processReject = true;
+        }
+
+        boolean canConfirm = (stateStep == 4);
         boolean isConfirmed = (stateStep >= 5);
 
         // zennnne แก้
@@ -141,66 +217,71 @@
         if      (stateStep < 0) { rowStatus = "rejected"; }
         else if (isConfirmed)   { rowStatus = "approved"; }
         else if (isOverdue)     { rowStatus = "overdue";  }
-        else if (canConfirm)    { rowStatus = "ready";    }
         else                    { rowStatus = "pending";  }
-
-        String rowDeadline     = (deadlineDate != null) ? deadlineDate.toString() : "9999-12-31";
+        String rowDeadline = (deadlineDate != null) ? deadlineDate.toString() : "9999-12-31";
         String deadlineDisplay = "-";
         if (deadlineDate != null) {
             java.time.LocalDate dl = deadlineDate.toLocalDate();
-            deadlineDisplay = String.format("%02d/%02d/%d", dl.getDayOfMonth(), dl.getMonthValue(), dl.getYear() + 543);
+            deadlineDisplay = String.format("%02d/%02d/%d",
+                dl.getDayOfMonth(), dl.getMonthValue(), dl.getYear() + 543);
         }
-
-        String d1Icon   = director1Reject ? "fi fi-sr-cross-circle status-red"   : director1 ? "fi fi-sr-user-trust status-green" : "fi fi-sr-pending status-yellow";
-        String techIcon = technicalReject  ? "fi fi-sr-cross-circle status-red"   : technical  ? "fi fi-sr-user-trust status-green" : "fi fi-sr-pending status-yellow";
-        String d2Icon   = director2Reject ? "fi fi-sr-cross-circle status-red"   : director2 ? "fi fi-sr-user-trust status-green" : "fi fi-sr-pending status-yellow";
-        String procIcon = processReject    ? "fi fi-sr-cross-circle status-red"   : process    ? "fi fi-sr-user-trust status-green" : "fi fi-sr-pending status-yellow";
         // zennnne แก้
 %>
 
         <!-- zennnne แก้ -->
-        <div class="request-card" data-status="<%= rowStatus %>" data-deadline="<%= rowDeadline %>" data-formid="<%= formId %>">
-
-            <!-- Card Header -->
-            <div class="card-header">
-                <div class="card-title-area">
-                    <a href="detail.jsp?id=<%= formId %>" class="card-title-link">
+        <div class="request-row" data-status="<%= rowStatus %>" data-deadline="<%= rowDeadline %>" data-formid="<%= formId %>">
+            <div class="request-col">
+                <a href="detail.jsp?id=<%= formId %>" style="text-decoration:none;">
+                    <button type="button" class="request-btn">
                         <%= title %> ที่ <%= formId %>
-                    </a>
-                </div>
-                <span class="deadline-tag <%= rowStatus %>">
-                    <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
-                </span>
+                    </button>
+                </a>
             </div>
 
-            <!-- Approval Stepper -->
-            <div class="approval-stepper">
-                <div class="step">
-                    <i class="step-icon <%= d1Icon %>"></i>
-                    <span class="step-label">ผู้อำนวยการฝ่าย</span>
-                </div>
-                <div class="step-connector"></div>
-                <div class="step">
-                    <i class="step-icon <%= techIcon %>"></i>
-                    <span class="step-label">ความเห็นทางเทคนิค</span>
-                </div>
-                <div class="step-connector"></div>
-                <div class="step">
-                    <i class="step-icon <%= d2Icon %>"></i>
-                    <span class="step-label">ผู้อำนวยการ IT</span>
-                </div>
-                <div class="step-connector"></div>
-                <div class="step">
-                    <i class="step-icon <%= procIcon %>"></i>
-                    <span class="step-label">ดำเนินการ</span>
-                </div>
+            <div class="status-col">
+                <i class="<%=
+                    director1Reject
+                        ? "fi fi-sr-cross-circle status-red"
+                        : director1
+                            ? "fi fi-sr-user-trust status-green"
+                            : "fi fi-sr-pending status-yellow"
+                %>"></i>
+            </div>
+            <div class="status-col">
+                <i class="<%=
+                    technicalReject
+                        ? "fi fi-sr-cross-circle status-red"
+                        : technical
+                            ? "fi fi-sr-user-trust status-green"
+                            : "fi fi-sr-pending status-yellow"
+                %>"></i>
+            </div>
+            <div class="status-col">
+                <i class="<%=
+                    director2Reject
+                        ? "fi fi-sr-cross-circle status-red"
+                        : director2
+                            ? "fi fi-sr-user-trust status-green"
+                            : "fi fi-sr-pending status-yellow"
+                %>"></i>
+            </div>
+            <div class="status-col">
+                <i class="<%=
+                    processReject
+                        ? "fi fi-sr-cross-circle status-red"
+                        : process
+                            ? "fi fi-sr-user-trust status-green"
+                            : "fi fi-sr-pending status-yellow"
+                %>"></i>
             </div>
 
-            <!-- Card Footer -->
-            <div class="card-footer">
+            <div class="confirm-col">
+
                 <% if (stateStep < 0) { %>
+
                     <% if (!isEdited) { %>
-                        <a href="${pageContext.request.contextPath}/editForm?formId=<%= formId %>" style="text-decoration:none;">
+                        <a href="${pageContext.request.contextPath}/editForm?formId=<%= formId %>"
+                           style="text-decoration:none;">
                             <button type="button" class="confirm-btn edit-btn">แก้ไขฟอร์ม</button>
                         </a>
                     <% } else { %>
@@ -209,25 +290,53 @@
                             ไม่ผ่านการอนุมัติ
                         </button>
                     <% } %>
+                    <!-- zennnne แก้ -->
+                    <span class="deadline-tag rejected">
+                        <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
+                    </span>
+                    <!-- zennnne แก้ -->
+
                 <% } else if (isConfirmed) { %>
                     <button class="confirm-btn confirmed" disabled>ยืนยันผลแล้ว</button>
+                    <!-- zennnne แก้ -->
+                    <span class="deadline-tag approved">
+                        <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
+                    </span>
+                    <!-- zennnne แก้ -->
+
                 <% } else if (isOverdue) { %>
                     <button class="overdue-btn" data-formid="<%= formId %>">
                         <span class="overdue-label-normal">หมดเขต</span>
                         <span class="overdue-label-hover">ยืดเวลาหมดเขต</span>
                     </button>
+                    <!-- zennnne แก้ -->
+                    <span class="deadline-tag overdue">
+                        <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
+                    </span>
+                    <!-- zennnne แก้ -->
+
                 <% } else { %>
-                    <button class="confirm-btn"
+                    <!-- zennnne แก้ -->
+                    <button class="confirm-btn<%= canConfirm ? "" : "" %>"
                             data-formid="<%= formId %>"
                             data-expectedstep="<%= stateStep %>"
-                            <% if (!canConfirm) { %>disabled style="cursor:not-allowed;"<% } %>>
+                            <% if (!canConfirm) { %>
+                                disabled
+                                style="cursor:not-allowed;"
+                            <% } %>>
                         <%= canConfirm ? "ยืนยันผลตรวจรับ" : "รอดำเนินการ" %>
                     </button>
-                <% } %>
-            </div>
+                    <!-- zennnne แก้ -->
+                    <!-- zennnne แก้ -->
+                    <span class="deadline-tag <%= canConfirm ? "ready" : "pending" %>">
+                        <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
+                    </span>
+                    <!-- zennnne แก้ -->
 
+                <% } %>
+
+            </div>
         </div>
-        <!-- zennnne แก้ -->
 
 <%
     } // END FOR
@@ -238,7 +347,7 @@
         <div style="text-align:center; padding:40px;">
             <h3>ยังไม่มีฟอร์มคำร้องของคุณ</h3>
             <a href="${pageContext.request.contextPath}/newForm">
-                <button class="confirm-btn">+ สร้างฟอร์มใหม่</button>
+                <button class="request-btn">+ สร้างฟอร์มใหม่</button>
             </a>
         </div>
 <%
@@ -251,18 +360,17 @@
     <div class="pagination">
         <% if (currentPage > 1) { %>
             <a href="?page=<%= currentPage - 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>" style="text-decoration:none;">
-                <button type="button" class="page-btn">&#171; ก่อนหน้า</button>
+                <button type="button" class="page-btn">« ก่อนหน้า</button>
             </a>
         <% } %>
         <span class="page-num">หน้า <%= currentPage %></span>
         <% if (formList.size() == pageSize) { %>
             <a href="?page=<%= currentPage + 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>" style="text-decoration:none;">
-                <button type="button" class="page-btn">ถัดไป &#187;</button>
+                <button type="button" class="page-btn">ถัดไป »</button>
             </a>
         <% } %>
     </div>
     <!-- zennnne แก้ -->
-
 </div>
 
 <!-- CONFIRM POPUP -->
@@ -297,24 +405,25 @@ let currentOverdueButton = null;
 const contextPath = "<%= request.getContextPath() %>";
 
 // zennnne แก้
-let sortOrder = (new URLSearchParams(window.location.search).get('sort')   || 'asc');
+let sortOrder = (new URLSearchParams(window.location.search).get('sort') || 'asc');
 let sortField = (new URLSearchParams(window.location.search).get('sortby') || 'deadline');
 
 function applySort() {
-    const list  = document.querySelector('.request-list');
-    const cards = Array.from(list.querySelectorAll('.request-card'));
-    cards.sort(function(a, b) {
+    const list = document.querySelector('.request-list');
+    const rows = Array.from(list.querySelectorAll('.request-row'));
+    rows.sort(function(a, b) {
         if (sortField === 'formid') {
             const ia = parseInt(a.dataset.formid) || 0;
             const ib = parseInt(b.dataset.formid) || 0;
             return sortOrder === 'asc' ? ia - ib : ib - ia;
+        } else {
+            const da = a.dataset.deadline || '9999-12-31';
+            const db = b.dataset.deadline || '9999-12-31';
+            if (sortOrder === 'asc') return da < db ? -1 : da > db ? 1 : 0;
+            return da > db ? -1 : da < db ? 1 : 0;
         }
-        const da = a.dataset.deadline || '9999-12-31';
-        const db = b.dataset.deadline || '9999-12-31';
-        if (sortOrder === 'asc') return da < db ? -1 : da > db ? 1 : 0;
-        return da > db ? -1 : da < db ? 1 : 0;
     });
-    cards.forEach(function(c) { list.appendChild(c); });
+    rows.forEach(function(row) { list.appendChild(row); });
 }
 
 function updateSortButtons() {
@@ -325,30 +434,20 @@ function updateSortButtons() {
 }
 
 function setSortOrder(field, order) {
-    sortField = field; sortOrder = order;
+    sortField = field;
+    sortOrder = order;
     updateSortButtons();
     const sp = new URLSearchParams(window.location.search);
-    sp.set('sort', order); sp.set('sortby', field);
+    sp.set('sort', order);
+    sp.set('sortby', field);
     history.replaceState(null, '', '?' + sp.toString());
     applySort();
-}
-
-function applyFilterTab(filter, reload) {
-    document.querySelectorAll('.filter-tab').forEach(function(tab) {
-        tab.classList.toggle('active', tab.dataset.filter === filter);
-    });
-    if (reload) {
-        const sp = new URLSearchParams(window.location.search);
-        sp.set('show', filter);
-        sp.set('page', '1');
-        window.location.href = '?' + sp.toString();
-    }
 }
 // zennnne แก้
 
 function toggleNav() {
     var sidebar = document.getElementById("mySidebar");
-    var main    = document.getElementById("main");
+    var main = document.getElementById("main");
     if (sidebar.style.width === "250px") {
         sidebar.style.width = "0";
         main.style.marginLeft = "0";
@@ -361,9 +460,7 @@ function toggleNav() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-
-    // confirm buttons
-    document.querySelectorAll(".confirm-btn").forEach(function(button) {
+    document.querySelectorAll(".confirm-btn").forEach(button => {
         if (button.closest("a")) return;
         button.addEventListener("click", function () {
             if (this.disabled) {
@@ -376,8 +473,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     document.getElementById("popupConfirm").addEventListener("click", function () {
-        const detail = document.getElementById("popupDetail").value.trim();
-        if (detail === "") { alert("กรุณากรอกรายละเอียดก่อนยืนยันผล"); return; }
+        let detail = document.getElementById("popupDetail").value.trim();
+        if (detail === "") {
+            alert("กรุณากรอกรายละเอียดก่อนยืนยันผล");
+            return;
+        }
         if (currentButton) {
             const form = document.createElement("form");
             form.method = "POST";
@@ -391,9 +491,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 comment: detail
             };
             // zennnne แก้
-            Object.keys(fields).forEach(function(name) {
+            Object.keys(fields).forEach(function (name) {
                 const input = document.createElement("input");
-                input.type = "hidden"; input.name = name; input.value = fields[name];
+                input.type = "hidden";
+                input.name = name;
+                input.value = fields[name];
                 form.appendChild(input);
             });
             document.body.appendChild(form);
@@ -401,28 +503,36 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // overdue buttons
-    document.querySelectorAll(".overdue-btn").forEach(function(btn) {
+    document.querySelectorAll(".overdue-btn").forEach(function (btn) {
         btn.addEventListener("click", function () {
             currentOverdueButton = this;
             const today = new Date().toISOString().split("T")[0];
             const input = document.getElementById("popupNewDeadline");
-            input.min = today; input.value = "";
+            input.min = today;
+            input.value = "";
             document.getElementById("deadlinePopup").style.display = "flex";
         });
     });
 
     document.getElementById("deadlineConfirm").addEventListener("click", function () {
         const newDeadline = document.getElementById("popupNewDeadline").value;
-        if (!newDeadline) { alert("กรุณาเลือก Deadline ใหม่"); return; }
+        if (!newDeadline) {
+            alert("กรุณาเลือก Deadline ใหม่");
+            return;
+        }
         if (currentOverdueButton) {
             const form = document.createElement("form");
             form.method = "POST";
             form.action = contextPath + "/ExtendDeadlineServlet";
-            const fields = { formId: currentOverdueButton.dataset.formid, newDeadline: newDeadline };
-            Object.keys(fields).forEach(function(name) {
+            const fields = {
+                formId: currentOverdueButton.dataset.formid,
+                newDeadline: newDeadline
+            };
+            Object.keys(fields).forEach(function (name) {
                 const input = document.createElement("input");
-                input.type = "hidden"; input.name = name; input.value = fields[name];
+                input.type = "hidden";
+                input.name = name;
+                input.value = fields[name];
                 form.appendChild(input);
             });
             document.body.appendChild(form);
@@ -431,14 +541,23 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // zennnne แก้
-    const initShow = new URLSearchParams(window.location.search).get('show') || 'all';
-    applyFilterTab(initShow, false);
-    updateSortButtons();
+    const initParams = new URLSearchParams(window.location.search);
+    const initShow   = (initParams.get('show') || 'pending').split(',').map(function(s) { return s.trim(); });
+    document.querySelectorAll('.filter-checkboxes input').forEach(function(cb) {
+        cb.checked = initShow.includes(cb.value);
+    });
+    document.getElementById('sortAscBtn').classList.toggle('active',  sortOrder === 'asc');
+    document.getElementById('sortDescBtn').classList.toggle('active', sortOrder === 'desc');
     applySort();
 
-    document.querySelectorAll('.filter-tab').forEach(function(tab) {
-        tab.addEventListener('click', function() {
-            applyFilterTab(this.dataset.filter, true);
+    document.querySelectorAll('.filter-checkboxes input').forEach(function(cb) {
+        cb.addEventListener('change', function() {
+            const checked = Array.from(document.querySelectorAll('.filter-checkboxes input:checked'))
+                .map(function(c) { return c.value; });
+            const sp = new URLSearchParams(window.location.search);
+            sp.set('show', checked.length > 0 ? checked.join(',') : 'none');
+            sp.set('page', '1');
+            window.location.href = '?' + sp.toString();
         });
     });
     // zennnne แก้

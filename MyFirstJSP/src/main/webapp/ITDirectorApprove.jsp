@@ -272,7 +272,7 @@
             int daysLeft = 999;
             if (deadlineSqlDate != null)
                 daysLeft = (int)(deadlineSqlDate.toLocalDate().toEpochDay() - java.time.LocalDate.now().toEpochDay());
-            String deadlineTagClass = daysLeft <= 3 ? "urgent" : daysLeft <= 7 ? "soon" : "normal";
+            String deadlineTagClass = daysLeft <= 1 ? "urgent" : daysLeft <= 3 ? "soon" : "normal"; // zennnne แก้
             // zennnne แก้
             String titleForm = rs.getString("TITLEFORM") != null ? rs.getString("TITLEFORM") : "-";
 %>

@@ -68,7 +68,7 @@ public class LoadDirectorServlet extends HttpServlet {
                     int daysLeft = 999;
                     if (deadlineSql != null)
                         daysLeft = (int)(deadlineSql.toLocalDate().toEpochDay() - LocalDate.now().toEpochDay());
-                    row.put("DEADLINE_TAG", daysLeft <= 3 ? "urgent" : daysLeft <= 7 ? "soon" : "normal");
+                    row.put("DEADLINE_TAG", daysLeft <= 1 ? "urgent" : daysLeft <= 3 ? "soon" : "normal"); // zennnne แก้
 
                     formList.add(row);
                 }

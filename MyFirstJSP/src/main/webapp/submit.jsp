@@ -222,44 +222,48 @@
         // zennnne แก้
 %>
 
-        <!-- zennnne แก้ -->
+        <!-- zennnne แก้ — B: Two-column compact card -->
         <div class="request-card"
              data-status="<%= rowStatus %>"
              data-deadline="<%= rowDeadline %>"
              data-formid="<%= formId %>"
              data-title="<%= title %>">
 
-            <div class="card-header">
+            <!-- LEFT COLUMN: ID + ชื่อ + meta (deadline tag + status badge) -->
+            <div class="card-left">
                 <div class="card-title-wrap">
                     <span class="card-formid">#<%= formId %></span>
                     <a href="detail.jsp?id=<%= formId %>" class="card-title" title="<%= title %>">
                         <%= title %>
                     </a>
                 </div>
-                <span class="card-status-badge <%= rowStatus %>"><%= rowStatusLabel %></span>
+                <div class="card-meta">
+                    <span class="deadline-tag <%= rowStatus %>">
+                        <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
+                    </span>
+                    <span class="card-status-badge <%= rowStatus %>"><%= rowStatusLabel %></span>
+                </div>
             </div>
 
-            <div class="progress-timeline">
+            <!-- RIGHT COLUMN: timeline + action button -->
+            <div class="card-right">
+                <div class="progress-timeline">
 <%
                 for (int i = 0; i < 4; i++) {
                     String stepClass = reject[i] ? "reject" : (done[i] ? "done" : "pending");
                     String iconCls   = reject[i] ? "fa-solid fa-xmark"
                                                  : (done[i] ? "fa-solid fa-check" : "fa-solid fa-clock");
 %>
-                <div class="tl-step <%= stepClass %>">
-                    <span class="tl-dot"><i class="<%= iconCls %>"></i></span>
-                    <span class="tl-label"><%= stepLabels[i] %></span>
-                </div>
+                    <div class="tl-step <%= stepClass %>">
+                        <span class="tl-dot"><i class="<%= iconCls %>"></i></span>
+                        <span class="tl-label"><%= stepLabels[i] %></span>
+                    </div>
 <%
                 }
 %>
-            </div>
+                </div>
 
-            <div class="card-footer">
-                <span class="deadline-tag <%= rowStatus %>">
-                    <i class="fa-regular fa-calendar-days"></i> Deadline: <%= deadlineDisplay %>
-                </span>
-                <div>
+                <div class="card-action">
 <%
                 if (stateStep < 0) {
                     if (!isEdited) {

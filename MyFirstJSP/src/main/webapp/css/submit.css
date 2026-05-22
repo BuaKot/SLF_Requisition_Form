@@ -49,18 +49,8 @@ body {
     margin-block-end: 0.1em;
 }
 
-/* ================= PROGRESS HEADER ================= */
-.progress-header {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1.5fr 1fr 1fr 1fr;
-    padding: 20px;
-    text-align: center;
-    align-items: center;
-    font-size: 18px;
-    font-weight: bold;
-    gap: 10px;
-    border-bottom: 2px solid #222;
-}
+/* zennnne แก้ — header เก่าถูกแทนด้วย summary cards + per-card timeline */
+.progress-header { display: none; }
 
 .header-item {
     display: flex;
@@ -70,36 +60,10 @@ body {
     min-height: 100px;
 }
 
-.header-item i {
-    font-size: 36px;
-    margin-bottom: 8px;
-}
+.header-item i { font-size: 36px; margin-bottom: 8px; }
+.header-item span { font-size: 16px; line-height: 1.3; }
 
-.header-item span {
-    font-size: 16px;
-    line-height: 1.3;
-}
-
-/* ================= REQUEST ROW ================= */
-.request-list {
-    width: 100%;
-}
-
-.request-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1.5fr 1fr 1fr 1fr;
-    align-items: center;
-    text-align: center;
-    padding: 18px 20px;
-    border-top: 2px solid #222;
-    min-height: 100px;
-}
-
-.request-row:last-child {
-    border-bottom: 2px solid #222;
-}
-
-/* Request Button */
+/* ================= LEGACY (kept for popup buttons / fallback) ================= */
 .request-btn {
     border: 2px solid #666;
     background: white;
@@ -111,34 +75,15 @@ body {
     transition: all 0.3s ease;
 }
 
-.request-btn:hover {
-    background: #f5f5f5;
-}
+.request-btn:hover { background: #f5f5f5; }
 
-/* Status Column */
-.status-col {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+.status-col { display: flex; justify-content: center; align-items: center; }
+.status-col i { font-size: 40px; }
 
-.status-col i {
-    font-size: 40px;
-}
+.status-green  { color: #2dbb00; }
+.status-yellow { color: #f4b400; }
+.status-red    { color: #e53935; }
 
-.status-green {
-    color: #2dbb00;
-}
-
-.status-yellow {
-    color: #f4b400;
-}
-
-.status-red {
-    color: #e53935;
-}
-
-/* Confirm Column */
 .confirm-col {
     display: flex;
     flex-direction: column;
@@ -150,9 +95,9 @@ body {
 .confirm-btn {
     background: #e4a000;
     color: #ffffff;
-    border: none; 
-    outline: none; 
-    box-shadow: none; 
+    border: none;
+    outline: none;
+    box-shadow: none;
     border-radius: 8px;
     padding: 10px 25px;
     font-size: 16px;
@@ -161,20 +106,9 @@ body {
     transition: all 0.3s ease;
 }
 
-.confirm-btn:hover {
-    background: #fff5d7;
-}
-
-.confirm-btn.confirmed {
-    background: #2dbb00;
-    color: white;
-    border: 2px solid #2dbb00;
-}
-
-.confirm-btn.confirmed:hover {
-    background: #2dbb00;
-}
-
+.confirm-btn:hover { background: #fff5d7; }
+.confirm-btn.confirmed { background: #2dbb00; color: white; border: 2px solid #2dbb00; }
+.confirm-btn.confirmed:hover { background: #2dbb00; }
 
 /* zennnne แก้ */
 .deadline-tag {
@@ -191,49 +125,18 @@ body {
     white-space: nowrap;
 }
 
-.deadline-tag i {
-    font-size: 12px;
-}
+.deadline-tag i { font-size: 12px; }
 
-.deadline-tag.pending {
-    color: #a87000;
-    background: #fff8e6;
-    border-color: #e4a000;
-}
-
-.deadline-tag.ready {
-    color: #1a6e00;
-    background: #f0fce8;
-    border-color: #2dbb00;
-}
-
-.deadline-tag.overdue {
-    color: #c62828;
-    background: #fef0f0;
-    border-color: #e53935;
-}
-
-.deadline-tag.approved {
-    color: #1e8000;
-    background: #f0fce8;
-    border-color: #2dbb00;
-}
-
-.deadline-tag.rejected {
-    color: #888;
-    background: #f5f5f5;
-    border-color: #ccc;
-}
+.deadline-tag.pending  { color: #a87000; background: #fff8e6; border-color: #e4a000; }
+.deadline-tag.ready    { color: #1a6e00; background: #f0fce8; border-color: #2dbb00; }
+.deadline-tag.overdue  { color: #c62828; background: #fef0f0; border-color: #e53935; }
+.deadline-tag.approved { color: #1e8000; background: #f0fce8; border-color: #2dbb00; }
+.deadline-tag.rejected { color: #888;    background: #f5f5f5; border-color: #ccc; }
 /* zennnne แก้ */
-/* zennnne แก้ */
-.edit-btn {
-    background: #3272BB;
-    color: #ffffff;
-}
 
-.edit-btn:hover {
-    background: #255a99;
-}
+/* zennnne แก้ */
+.edit-btn { background: #3272BB; color: #ffffff; }
+.edit-btn:hover { background: #255a99; }
 
 .overdue-btn {
     background: #e53935;
@@ -249,21 +152,10 @@ body {
     transition: all 0.3s ease;
 }
 
-.overdue-btn:hover {
-    background: #b71c1c;
-}
-
-.overdue-btn .overdue-label-hover {
-    display: none;
-}
-
-.overdue-btn:hover .overdue-label-normal {
-    display: none;
-}
-
-.overdue-btn:hover .overdue-label-hover {
-    display: inline;
-}
+.overdue-btn:hover { background: #b71c1c; }
+.overdue-btn .overdue-label-hover { display: none; }
+.overdue-btn:hover .overdue-label-normal { display: none; }
+.overdue-btn:hover .overdue-label-hover { display: inline; }
 
 .popup-date-input {
     width: 100%;
@@ -277,6 +169,7 @@ body {
     box-sizing: border-box;
 }
 /* zennnne แก้ */
+
 /* zennnne แก้ */
 /* ================= FILTER BAR ================= */
 .filter-bar {
@@ -290,12 +183,7 @@ body {
     flex-wrap: wrap;
 }
 
-.filter-checkboxes {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-}
+.filter-checkboxes { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
 .filter-label {
     display: inline-flex;
@@ -314,7 +202,6 @@ body {
     white-space: nowrap;
 }
 
-/* dot indicator via pseudo-element */
 .filter-label::before {
     content: '';
     width: 10px;
@@ -326,50 +213,30 @@ body {
     transition: all 0.18s ease;
 }
 
-/* hide native checkbox — state tracked in DOM */
-.filter-label input[type="checkbox"] {
-    display: none;
-}
+.filter-label input[type="checkbox"] { display: none; }
 
-/* ── pending (amber) ── */
 .pending-label:hover                { border-color: #e4a000; color: #c48a00; }
 .pending-label:hover::before        { border-color: #e4a000; }
 .pending-label:has(input:checked)   { border-color: #e4a000; background: #fff8e6; color: #a87000; }
 .pending-label:has(input:checked)::before { border-color: #e4a000; background: #e4a000; }
 
-/* ── overdue (red) ── */
 .overdue-label:hover                { border-color: #e53935; color: #c62828; }
 .overdue-label:hover::before        { border-color: #e53935; }
 .overdue-label:has(input:checked)   { border-color: #e53935; background: #fef0f0; color: #c62828; }
 .overdue-label:has(input:checked)::before { border-color: #e53935; background: #e53935; }
 
-/* ── rejected (dark red) ── */
 .rejected-label:hover               { border-color: #b71c1c; color: #7f1414; }
 .rejected-label:hover::before       { border-color: #b71c1c; }
 .rejected-label:has(input:checked)  { border-color: #b71c1c; background: #fce8e8; color: #7f1414; }
 .rejected-label:has(input:checked)::before { border-color: #b71c1c; background: #b71c1c; }
 
-/* ── approved (green) ── */
 .approved-label:hover               { border-color: #2dbb00; color: #1e8000; }
 .approved-label:hover::before       { border-color: #2dbb00; }
 .approved-label:has(input:checked)  { border-color: #2dbb00; background: #f0fce8; color: #1e8000; }
 .approved-label:has(input:checked)::before { border-color: #2dbb00; background: #2dbb00; }
 
-/* sort pushed to the right */
-.sort-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-left: auto;
-    flex-shrink: 0;
-}
-
-.sort-label {
-    font-size: 15px;
-    font-family: 'DBHelvethaica', sans-serif;
-    color: #555;
-    white-space: nowrap;
-}
+.sort-controls { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
+.sort-label { font-size: 15px; font-family: 'DBHelvethaica', sans-serif; color: #555; white-space: nowrap; }
 
 .sort-btn {
     background: #fff;
@@ -386,11 +253,7 @@ body {
     color: #888;
 }
 
-.sort-btn:hover {
-    border-color: #003366;
-    color: #003366;
-    background: #f0f4ff;
-}
+.sort-btn:hover { border-color: #003366; color: #003366; background: #f0f4ff; }
 
 .sort-btn.active {
     background: #003366;
@@ -399,96 +262,6 @@ body {
     box-shadow: 0 2px 6px rgba(0,51,102,0.28);
 }
 /* zennnne แก้ */
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 1200px) {
-    .title-section h1 {
-        font-size: 28px;
-    }
-
-    .title-section h2 {
-        font-size: 20px;
-    }
-
-    .progress-header,
-    .request-row {
-        font-size: 14px;
-    }
-
-    .progress-header,
-.request-row {
-    grid-template-columns: 2fr 1fr 1.5fr 1fr 1fr 1fr;
-}
-
-    .header-item {
-        min-height: 80px;
-    }
-
-    .header-item i {
-        font-size: 28px;
-    }
-
-    .header-item span {
-        font-size: 12px;
-    }
-
-    .request-btn,
-    .confirm-btn {
-        font-size: 14px;
-        padding: 8px 15px;
-    }
-
-    .status-col i {
-        font-size: 32px;
-    }
-}
-
-@media (max-width: 768px) {
-    .progress-header,
-    .request-row {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    .progress-header {
-        padding: 15px 10px;
-    }
-
-    .request-row {
-        padding: 15px 10px;
-    }
-
-    .title-section h1 {
-        font-size: 22px;
-    }
-
-    .title-section h2 {
-        font-size: 16px;
-    }
-
-    .header-item {
-        min-height: 70px;
-    }
-
-    .header-item i {
-        font-size: 24px;
-    }
-
-    .header-item span {
-        font-size: 11px;
-    }
-
-    .request-btn,
-    .confirm-btn {
-        font-size: 12px;
-        padding: 8px 12px;
-        width: 100%;
-    }
-
-    .status-col i {
-        font-size: 28px;
-    }
-}
 
 /* ================= POPUP STYLES ================= */
 .popup-overlay {
@@ -515,25 +288,10 @@ body {
     font-family: 'DBHelvethaica', sans-serif;
 }
 
-.popup-box h3 {
-    font-size: 24px;
-    color: #222;
-    margin-bottom: 15px;
-    font-weight: bold;
-}
+.popup-box h3 { font-size: 24px; color: #222; margin-bottom: 15px; font-weight: bold; }
+.popup-box p  { font-size: 16px; color: #555; margin-bottom: 25px; line-height: 1.5; }
 
-.popup-box p {
-    font-size: 16px;
-    color: #555;
-    margin-bottom: 25px;
-    line-height: 1.5;
-}
-
-.popup-buttons {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-}
+.popup-buttons { display: flex; gap: 15px; justify-content: center; }
 
 .popup-confirm-btn {
     background-color: #4CAF50;
@@ -548,9 +306,7 @@ body {
     transition: background-color 0.3s ease;
 }
 
-.popup-confirm-btn:hover {
-    background-color: #45a049;
-}
+.popup-confirm-btn:hover { background-color: #45a049; }
 
 .popup-cancel-btn {
     background-color: #f44336;
@@ -565,37 +321,24 @@ body {
     transition: background-color 0.3s ease;
 }
 
-.popup-cancel-btn:hover {
-    background-color: #da190b;
-}
+.popup-cancel-btn:hover { background-color: #da190b; }
 
 .popup-textarea {
     width: 100%;
     height: 220px;
-
-    /* ไม่ให้ผู้ใช้ลากขยายกรอบ */
     resize: none;
     margin-bottom: 25px;
     padding: 15px;
     font-size: 16px;
     font-family: 'DBHelvethaica', sans-serif;
-
     border: 2px solid #333;
     border-radius: 8px;
     outline: none;
-
-    /* จัดข้อความให้เริ่มบนซ้าย */
     vertical-align: top;
 }
 
 /* zennnne แก้ */
-.pagination {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    justify-content: center;
-    padding: 24px 0 32px;
-}
+.pagination { display: flex; gap: 16px; align-items: center; justify-content: center; padding: 24px 0 32px; }
 
 .page-btn {
     border: 2px solid #666;
@@ -611,3 +354,433 @@ body {
 .page-btn:hover { background: #f5f5f5; }
 .page-num       { font-family: 'DBHelvethaica', sans-serif; color: #003366; font-size: 16px; }
 /* zennnne แก้ */
+
+/* zennnne แก้ — redesign block start */
+/* ================= SUMMARY DASHBOARD ================= */
+.summary-wrap {
+    display: flex;
+    gap: 16px;
+    padding: 20px 24px 4px;
+    flex-wrap: wrap;
+    align-items: stretch;
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    flex: 1 1 600px;
+}
+
+.summary-card {
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 92px;
+    position: relative;
+    overflow: hidden;
+}
+
+.summary-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+    background: #bbb;
+}
+
+.summary-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+
+.summary-card .sc-label {
+    font-size: 14px;
+    color: #666;
+    font-family: 'DBHelvethaica', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.summary-card .sc-count {
+    font-size: 32px;
+    font-weight: bold;
+    color: #003366;
+    font-family: 'DBHelvethaica', sans-serif;
+    line-height: 1;
+    margin-top: 6px;
+}
+
+.summary-card.sc-total::before    { background: #003366; }
+.summary-card.sc-pending::before  { background: #e4a000; }
+.summary-card.sc-overdue::before  { background: #e53935; }
+.summary-card.sc-rejected::before { background: #b71c1c; }
+.summary-card.sc-approved::before { background: #2dbb00; }
+
+.summary-card.sc-pending  .sc-label i { color: #e4a000; }
+.summary-card.sc-overdue  .sc-label i { color: #e53935; }
+.summary-card.sc-rejected .sc-label i { color: #b71c1c; }
+.summary-card.sc-approved .sc-label i { color: #2dbb00; }
+.summary-card.sc-total    .sc-label i { color: #003366; }
+
+.summary-card.active {
+    background: #f5faff;
+    border-color: #003366;
+    box-shadow: 0 4px 12px rgba(0,51,102,0.18);
+}
+
+/* ================= SEARCH BAR ================= */
+.search-wrap {
+    flex: 0 0 280px;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 0 14px;
+    transition: border-color 0.18s ease;
+}
+
+.search-wrap:focus-within {
+    border-color: #003366;
+    box-shadow: 0 0 0 3px rgba(0,51,102,0.08);
+}
+
+.search-wrap > i { color: #888; font-size: 16px; margin-right: 8px; }
+
+.search-input {
+    border: none;
+    outline: none;
+    flex: 1;
+    padding: 14px 0;
+    font-size: 16px;
+    font-family: 'DBHelvethaica', sans-serif;
+    background: transparent;
+    color: #222;
+    min-width: 0;
+}
+
+.search-input::placeholder { color: #aaa; }
+
+.search-clear {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px 6px;
+    display: none;
+}
+
+.search-clear:hover { color: #e53935; }
+.search-wrap.has-text .search-clear { display: inline-block; }
+
+.summary-hint {
+    font-size: 12px;
+    color: #999;
+    padding: 0 24px 8px;
+    font-family: 'DBHelvethaica', sans-serif;
+    text-align: right;
+}
+
+/* ================= REQUEST CARD LAYOUT ================= */
+.request-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px 24px 8px;
+    border-top: none;
+    width: auto;
+}
+
+.request-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    padding-left: 6px;
+}
+
+.request-card:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+
+.request-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+}
+
+.request-card[data-status="pending"]::before  { background: #e4a000; }
+.request-card[data-status="overdue"]::before  { background: #e53935; }
+.request-card[data-status="rejected"]::before { background: #b71c1c; }
+.request-card[data-status="approved"]::before { background: #2dbb00; }
+
+.request-card[data-status="overdue"]  { background: linear-gradient(90deg, #fef0f0 0%, #fff 30%); }
+.request-card[data-status="rejected"] { background: linear-gradient(90deg, #fce8e8 0%, #fff 30%); }
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px 10px;
+    gap: 12px;
+}
+
+.card-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    min-width: 0;
+    flex: 1;
+}
+
+.card-formid {
+    color: #003366;
+    font-weight: bold;
+    font-size: 18px;
+    font-family: 'DBHelvethaica', sans-serif;
+    background: #eef3fa;
+    border-radius: 6px;
+    padding: 3px 10px;
+    flex-shrink: 0;
+}
+
+.card-title {
+    color: #222;
+    font-size: 20px;
+    font-family: 'DBHelvethaica', sans-serif;
+    text-decoration: none;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.card-title:hover { color: #3272BB; text-decoration: underline; }
+
+.card-status-badge {
+    font-size: 13px;
+    font-family: 'DBHelvethaica', sans-serif;
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.card-status-badge.pending  { background: #fff8e6; color: #a87000; border: 1px solid #e4a000; }
+.card-status-badge.overdue  { background: #fef0f0; color: #c62828; border: 1px solid #e53935; }
+.card-status-badge.rejected { background: #fce8e8; color: #7f1414; border: 1px solid #b71c1c; }
+.card-status-badge.approved { background: #f0fce8; color: #1e8000; border: 1px solid #2dbb00; }
+
+/* ================= PROGRESS TIMELINE ================= */
+.progress-timeline {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 8px 30px 14px;
+    position: relative;
+    gap: 6px;
+}
+
+.tl-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+    min-width: 0;
+}
+
+.tl-step::after {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: calc(50% + 18px);
+    right: calc(-50% + 18px);
+    height: 3px;
+    background: #e0e0e0;
+    z-index: 0;
+}
+
+.tl-step:last-child::after { display: none; }
+.tl-step.done::after   { background: #2dbb00; }
+.tl-step.reject::after { background: #e53935; }
+
+.tl-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    transition: all 0.2s ease;
+}
+
+.tl-dot i { font-size: 14px; color: transparent; }
+
+.tl-step.done .tl-dot {
+    background: #2dbb00;
+    border-color: #2dbb00;
+    box-shadow: 0 0 0 4px rgba(45,187,0,0.15);
+}
+.tl-step.done .tl-dot i { color: #fff; }
+
+.tl-step.reject .tl-dot {
+    background: #e53935;
+    border-color: #e53935;
+    box-shadow: 0 0 0 4px rgba(229,57,53,0.15);
+}
+.tl-step.reject .tl-dot i { color: #fff; }
+
+.tl-step.pending .tl-dot { background: #fff; border-color: #ccc; }
+
+.tl-label {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    line-height: 1.2;
+    font-family: 'DBHelvethaica', sans-serif;
+    max-width: 110px;
+}
+
+.tl-step.done .tl-label   { color: #1e8000; font-weight: bold; }
+.tl-step.reject .tl-label { color: #c62828; font-weight: bold; }
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px 14px;
+    border-top: 1px dashed #eee;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.card-footer .deadline-tag { font-size: 14px; padding: 6px 14px; }
+
+.card-footer .confirm-btn,
+.card-footer .overdue-btn,
+.card-footer .edit-btn {
+    padding: 9px 22px;
+    font-size: 15px;
+}
+
+/* ================= EMPTY STATE ================= */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+    margin: 24px;
+    border: 2px dashed #cfd8e3;
+    border-radius: 16px;
+    background: #fafbfd;
+    text-align: center;
+}
+
+.empty-state-icon {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: #eef3fa;
+    color: #3272BB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 44px;
+    margin-bottom: 18px;
+}
+
+.empty-state h3 {
+    color: #003366;
+    font-size: 24px;
+    font-family: 'DBHelvethaica', sans-serif;
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    color: #666;
+    font-size: 16px;
+    font-family: 'DBHelvethaica', sans-serif;
+    margin-bottom: 22px;
+    max-width: 400px;
+    line-height: 1.5;
+}
+
+.empty-state-btn {
+    background: #003366;
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'DBHelvethaica', sans-serif;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.empty-state-btn:hover {
+    background: #3272BB;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(50,114,187,0.3);
+}
+
+.empty-search {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888;
+    font-family: 'DBHelvethaica', sans-serif;
+    font-size: 16px;
+    display: none;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1100px) {
+    .tl-label { font-size: 11px; }
+}
+
+@media (max-width: 900px) {
+    .summary-wrap { flex-direction: column; }
+    .search-wrap { flex: 1 1 100%; }
+    .summary-cards { grid-template-columns: repeat(3, 1fr); }
+    .summary-card .sc-count { font-size: 26px; }
+}
+
+@media (max-width: 768px) {
+    .request-list { padding: 12px; gap: 10px; }
+    .card-header { padding: 12px 14px 8px; flex-wrap: wrap; }
+    .card-footer { padding: 8px 14px 12px; }
+    .progress-timeline { padding: 6px 8px 12px; }
+    .tl-label { display: none; }
+    .tl-dot { width: 26px; height: 26px; border-width: 2px; }
+    .tl-step::after { top: 12px; }
+    .card-title { font-size: 17px; white-space: normal; }
+    .summary-cards { grid-template-columns: repeat(2, 1fr); }
+    .summary-card { min-height: 78px; padding: 10px 12px; }
+    .summary-card .sc-count { font-size: 24px; }
+    .summary-card .sc-label { font-size: 12px; }
+
+    .title-section h1 { font-size: 22px; }
+    .title-section h2 { font-size: 16px; }
+}
+/* zennnne แก้ — redesign block end */

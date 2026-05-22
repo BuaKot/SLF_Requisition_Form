@@ -1,4 +1,4 @@
-﻿<%@ page isELIgnored="false" %>
+<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %>
 
@@ -64,7 +64,7 @@
         <i id="menuBtn" class="fa-solid fa-bars" onclick="toggleNav()"></i>
         <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
         <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
-        
+
         <div class="user-info">
             <i class="fa fa-circle-user"></i>
             <p>
@@ -88,32 +88,50 @@
         </h2>
     </div>
 
-    <!-- HEADER TABLE -->
+    <!-- zennnne แก้ — SUMMARY DASHBOARD + SEARCH -->
+    <div class="summary-wrap">
+        <div class="summary-cards">
+            <div class="summary-card sc-total" data-filter="all" title="แสดงทั้งหมด">
+                <div class="sc-label"><i class="fa-solid fa-clipboard-list"></i> ทั้งหมด</div>
+                <div class="sc-count" id="cnt-total">0</div>
+            </div>
+            <div class="summary-card sc-pending" data-filter="pending" title="คลิกเพื่อ filter เฉพาะรอดำเนินการ">
+                <div class="sc-label"><i class="fa-solid fa-hourglass-half"></i> รอดำเนินการ</div>
+                <div class="sc-count" id="cnt-pending">0</div>
+            </div>
+            <div class="summary-card sc-overdue" data-filter="overdue" title="คลิกเพื่อ filter เฉพาะหมดเขต">
+                <div class="sc-label"><i class="fa-solid fa-triangle-exclamation"></i> หมดเขต</div>
+                <div class="sc-count" id="cnt-overdue">0</div>
+            </div>
+            <div class="summary-card sc-rejected" data-filter="rejected" title="คลิกเพื่อ filter เฉพาะไม่ผ่าน">
+                <div class="sc-label"><i class="fa-solid fa-circle-xmark"></i> ไม่ผ่าน</div>
+                <div class="sc-count" id="cnt-rejected">0</div>
+            </div>
+            <div class="summary-card sc-approved" data-filter="approved" title="คลิกเพื่อ filter เฉพาะอนุมัติแล้ว">
+                <div class="sc-label"><i class="fa-solid fa-circle-check"></i> ผ่าน</div>
+                <div class="sc-count" id="cnt-approved">0</div>
+            </div>
+        </div>
+
+        <div class="search-wrap" id="searchWrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาฟอร์ม..." autocomplete="off">
+            <button type="button" class="search-clear" id="searchClear" title="ล้าง">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+    <div class="summary-hint">* จำนวนนับเฉพาะหน้าปัจจุบัน — กดที่ card เพื่อ filter ดูทั้งหมด</div>
+    <!-- zennnne แก้ -->
+
+    <!-- HEADER TABLE (legacy hidden — kept for backward compat) -->
     <section class="progress-header">
-        <div class="header-item">
-            <i class="fi fi-rr-form"></i>
-            <span>จำนวนใบขอให้ดำเนินการทั้งหมด</span>
-        </div>
-        <div class="header-item">
-            <i class="fi fi-bs-user"></i>
-            <span>ผู้อำนวยการฝ่าย</span>
-        </div>
-        <div class="header-item">
-            <i class="fi fi-rr-it-alt"></i>
-            <span>ความเห็นและการอนุมัติเชิงเทคนิค</span>
-        </div>
-        <div class="header-item">
-            <i class="fi fi-bs-user"></i>
-            <span>ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ</span>
-        </div>
-        <div class="header-item">
-            <i class="fa-solid fa-gears"></i>
-            <span>ขั้นตอนการดำเนินการ</span>
-        </div>
-        <div class="header-item">
-            <i class="fi fi-rr-confirmed-user"></i>
-            <span>ผลตรวจรับ</span>
-        </div>
+        <div class="header-item"><i class="fi fi-rr-form"></i><span>จำนวนใบขอให้ดำเนินการทั้งหมด</span></div>
+        <div class="header-item"><i class="fi fi-bs-user"></i><span>ผู้อำนวยการฝ่าย</span></div>
+        <div class="header-item"><i class="fi fi-rr-it-alt"></i><span>ความเห็นและการอนุมัติเชิงเทคนิค</span></div>
+        <div class="header-item"><i class="fi fi-bs-user"></i><span>ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ</span></div>
+        <div class="header-item"><i class="fa-solid fa-gears"></i><span>ขั้นตอนการดำเนินการ</span></div>
+        <div class="header-item"><i class="fi fi-rr-confirmed-user"></i><span>ผลตรวจรับ</span></div>
     </section>
 
     <!-- zennnne แก้ -->
@@ -158,7 +176,9 @@
     <section class="request-list">
 
 <%
-    // zennnne แก้
+    // zennnne แก้ — labels for timeline steps
+    String[] stepLabels = { "ผอ.ฝ่าย", "เทคนิค", "ผอ.IT", "ดำเนินการ" };
+
     for (Map<String, Object> row : formList) {
         int formId    = (Integer) row.get("FORMID");
         String title  = (String)  row.get("TITLEFORM");
@@ -170,54 +190,36 @@
         boolean isOverdue = (deadlineDate != null &&
             deadlineDate.toLocalDate().isBefore(today));
 
-        boolean director1 = false;
-        boolean technical = false;
-        boolean director2 = false;
-        boolean process = false;
-
-        boolean director1Reject = false;
-        boolean technicalReject = false;
-        boolean director2Reject = false;
-        boolean processReject = false;
+        boolean[] done   = new boolean[4]; // director1, technical, director2, process
+        boolean[] reject = new boolean[4];
 
         if (stateStep >= 0) {
-            director1 = stateStep >= 1;
-            technical = stateStep >= 2;
-            director2 = stateStep >= 3;
-            process   = stateStep >= 4;
+            done[0] = stateStep >= 1;
+            done[1] = stateStep >= 2;
+            done[2] = stateStep >= 3;
+            done[3] = stateStep >= 4;
         }
 
         if (stateStep == -1) {
-            director1Reject = true;
-            technicalReject = true;
-            director2Reject = true;
-            processReject   = true;
+            reject[0] = true; reject[1] = true; reject[2] = true; reject[3] = true;
         } else if (stateStep == -2) {
-            director1 = true;
-            technicalReject = true;
-            director2Reject = true;
-            processReject   = true;
+            done[0] = true;  reject[1] = true; reject[2] = true; reject[3] = true;
         } else if (stateStep == -3) {
-            director1 = true;
-            technical = true;
-            director2Reject = true;
-            processReject   = true;
+            done[0] = true;  done[1] = true;  reject[2] = true; reject[3] = true;
         } else if (stateStep == -4) {
-            director1 = true;
-            technical = true;
-            director2 = true;
-            processReject = true;
+            done[0] = true;  done[1] = true;  done[2] = true;  reject[3] = true;
         }
 
         boolean canConfirm = (stateStep == 4);
         boolean isConfirmed = (stateStep >= 5);
 
-        // zennnne แก้
         String rowStatus;
-        if      (stateStep < 0) { rowStatus = "rejected"; }
-        else if (isConfirmed)   { rowStatus = "approved"; }
-        else if (isOverdue)     { rowStatus = "overdue";  }
-        else                    { rowStatus = "pending";  }
+        String rowStatusLabel;
+        if      (stateStep < 0) { rowStatus = "rejected"; rowStatusLabel = "ไม่ผ่านการอนุมัติ"; }
+        else if (isConfirmed)   { rowStatus = "approved"; rowStatusLabel = "ยืนยันผลแล้ว"; }
+        else if (isOverdue)     { rowStatus = "overdue";  rowStatusLabel = "หมดเขต"; }
+        else                    { rowStatus = "pending";  rowStatusLabel = "รอดำเนินการ"; }
+
         String rowDeadline = (deadlineDate != null) ? deadlineDate.toString() : "9999-12-31";
         String deadlineDisplay = "-";
         if (deadlineDate != null) {
@@ -229,130 +231,110 @@
 %>
 
         <!-- zennnne แก้ -->
-        <div class="request-row" data-status="<%= rowStatus %>" data-deadline="<%= rowDeadline %>" data-formid="<%= formId %>">
-            <div class="request-col">
-                <a href="detail.jsp?id=<%= formId %>" style="text-decoration:none;">
-                    <button type="button" class="request-btn">
-                        <%= title %> ที่ <%= formId %>
+        <div class="request-card"
+             data-status="<%= rowStatus %>"
+             data-deadline="<%= rowDeadline %>"
+             data-formid="<%= formId %>"
+             data-title="<%= title %>">
+
+            <div class="card-header">
+                <div class="card-title-wrap">
+                    <span class="card-formid">#<%= formId %></span>
+                    <a href="detail.jsp?id=<%= formId %>" class="card-title" title="<%= title %>">
+                        <%= title %>
+                    </a>
+                </div>
+                <span class="card-status-badge <%= rowStatus %>"><%= rowStatusLabel %></span>
+            </div>
+
+            <div class="progress-timeline">
+<%
+                for (int i = 0; i < 4; i++) {
+                    String stepClass = reject[i] ? "reject" : (done[i] ? "done" : "pending");
+                    String iconCls   = reject[i] ? "fa-solid fa-xmark"
+                                                 : (done[i] ? "fa-solid fa-check" : "fa-solid fa-clock");
+%>
+                <div class="tl-step <%= stepClass %>">
+                    <span class="tl-dot"><i class="<%= iconCls %>"></i></span>
+                    <span class="tl-label"><%= stepLabels[i] %></span>
+                </div>
+<%
+                }
+%>
+            </div>
+
+            <div class="card-footer">
+                <span class="deadline-tag <%= rowStatus %>">
+                    <i class="fa-regular fa-calendar-days"></i> Deadline: <%= deadlineDisplay %>
+                </span>
+                <div>
+<%
+                if (stateStep < 0) {
+                    if (!isEdited) {
+%>
+                    <a href="${pageContext.request.contextPath}/editForm?formId=<%= formId %>" style="text-decoration:none;">
+                        <button type="button" class="confirm-btn edit-btn">แก้ไขฟอร์ม</button>
+                    </a>
+<%
+                    } else {
+%>
+                    <button type="button" class="confirm-btn edit-btn" disabled
+                            style="background:#dc2626; border-color:#dc2626; color:white; cursor:not-allowed; opacity:1;">
+                        ไม่ผ่านการอนุมัติ
                     </button>
-                </a>
-            </div>
-
-            <div class="status-col">
-                <i class="<%=
-                    director1Reject
-                        ? "fi fi-sr-cross-circle status-red"
-                        : director1
-                            ? "fi fi-sr-user-trust status-green"
-                            : "fi fi-sr-pending status-yellow"
-                %>"></i>
-            </div>
-            <div class="status-col">
-                <i class="<%=
-                    technicalReject
-                        ? "fi fi-sr-cross-circle status-red"
-                        : technical
-                            ? "fi fi-sr-user-trust status-green"
-                            : "fi fi-sr-pending status-yellow"
-                %>"></i>
-            </div>
-            <div class="status-col">
-                <i class="<%=
-                    director2Reject
-                        ? "fi fi-sr-cross-circle status-red"
-                        : director2
-                            ? "fi fi-sr-user-trust status-green"
-                            : "fi fi-sr-pending status-yellow"
-                %>"></i>
-            </div>
-            <div class="status-col">
-                <i class="<%=
-                    processReject
-                        ? "fi fi-sr-cross-circle status-red"
-                        : process
-                            ? "fi fi-sr-user-trust status-green"
-                            : "fi fi-sr-pending status-yellow"
-                %>"></i>
-            </div>
-
-            <div class="confirm-col">
-
-                <% if (stateStep < 0) { %>
-
-                    <% if (!isEdited) { %>
-                        <a href="${pageContext.request.contextPath}/editForm?formId=<%= formId %>"
-                           style="text-decoration:none;">
-                            <button type="button" class="confirm-btn edit-btn">แก้ไขฟอร์ม</button>
-                        </a>
-                    <% } else { %>
-                        <button type="button" class="confirm-btn edit-btn" disabled
-                                style="background:#dc2626; border-color:#dc2626; color:white; cursor:not-allowed; opacity:1;">
-                            ไม่ผ่านการอนุมัติ
-                        </button>
-                    <% } %>
-                    <!-- zennnne แก้ -->
-                    <span class="deadline-tag rejected">
-                        <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
-                    </span>
-                    <!-- zennnne แก้ -->
-
-                <% } else if (isConfirmed) { %>
+<%
+                    }
+                } else if (isConfirmed) {
+%>
                     <button class="confirm-btn confirmed" disabled>ยืนยันผลแล้ว</button>
-                    <!-- zennnne แก้ -->
-                    <span class="deadline-tag approved">
-                        <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
-                    </span>
-                    <!-- zennnne แก้ -->
-
-                <% } else if (isOverdue) { %>
+<%
+                } else if (isOverdue) {
+%>
                     <button class="overdue-btn" data-formid="<%= formId %>">
                         <span class="overdue-label-normal">หมดเขต</span>
                         <span class="overdue-label-hover">ยืดเวลาหมดเขต</span>
                     </button>
-                    <!-- zennnne แก้ -->
-                    <span class="deadline-tag overdue">
-                        <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
-                    </span>
-                    <!-- zennnne แก้ -->
-
-                <% } else { %>
-                    <!-- zennnne แก้ -->
-                    <button class="confirm-btn<%= canConfirm ? "" : "" %>"
+<%
+                } else {
+%>
+                    <button class="confirm-btn"
                             data-formid="<%= formId %>"
                             data-expectedstep="<%= stateStep %>"
-                            <% if (!canConfirm) { %>
-                                disabled
-                                style="cursor:not-allowed;"
-                            <% } %>>
+                            <% if (!canConfirm) { %> disabled style="cursor:not-allowed;" <% } %>>
                         <%= canConfirm ? "ยืนยันผลตรวจรับ" : "รอดำเนินการ" %>
                     </button>
-                    <!-- zennnne แก้ -->
-                    <!-- zennnne แก้ -->
-                    <span class="deadline-tag <%= canConfirm ? "ready" : "pending" %>">
-                        <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
-                    </span>
-                    <!-- zennnne แก้ -->
-
-                <% } %>
-
+<%
+                }
+%>
+                </div>
             </div>
         </div>
+        <!-- zennnne แก้ -->
 
 <%
     } // END FOR
-    // zennnne แก้
 
     if (!hasData) {
 %>
-        <div style="text-align:center; padding:40px;">
+        <!-- zennnne แก้ — empty state ใหม่ -->
+        <div class="empty-state">
+            <div class="empty-state-icon"><i class="fa-solid fa-folder-open"></i></div>
             <h3>ยังไม่มีฟอร์มคำร้องของคุณ</h3>
-            <a href="${pageContext.request.contextPath}/newForm">
-                <button class="request-btn">+ สร้างฟอร์มใหม่</button>
+            <p>ยังไม่มีรายการในหมวดที่เลือก ลองปรับ filter ด้านบน หรือสร้างฟอร์มใหม่เพื่อเริ่มต้น</p>
+            <a href="${pageContext.request.contextPath}/newForm" class="empty-state-btn">
+                <i class="fa-solid fa-plus"></i> สร้างฟอร์มใหม่
             </a>
         </div>
+        <!-- zennnne แก้ -->
 <%
     }
 %>
+        <!-- zennnne แก้ — empty search state -->
+        <div class="empty-search" id="emptySearch">
+            <i class="fa-solid fa-magnifying-glass" style="font-size:32px; color:#ccc; display:block; margin-bottom:10px;"></i>
+            ไม่พบฟอร์มที่ตรงกับคำค้นหา
+        </div>
+        <!-- zennnne แก้ -->
     </section>
 
     <!-- zennnne แก้ -->
@@ -410,8 +392,8 @@ let sortField = (new URLSearchParams(window.location.search).get('sortby') || 'd
 
 function applySort() {
     const list = document.querySelector('.request-list');
-    const rows = Array.from(list.querySelectorAll('.request-row'));
-    rows.sort(function(a, b) {
+    const cards = Array.from(list.querySelectorAll('.request-card'));
+    cards.sort(function(a, b) {
         if (sortField === 'formid') {
             const ia = parseInt(a.dataset.formid) || 0;
             const ib = parseInt(b.dataset.formid) || 0;
@@ -423,7 +405,7 @@ function applySort() {
             return da > db ? -1 : da < db ? 1 : 0;
         }
     });
-    rows.forEach(function(row) { list.appendChild(row); });
+    cards.forEach(function(c) { list.insertBefore(c, list.querySelector('#emptySearch')); });
 }
 
 function updateSortButtons() {
@@ -460,6 +442,74 @@ function toggleNav() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    // zennnne แก้ — summary cards: count per status
+    const allCards = document.querySelectorAll('.request-card');
+    const counts = { all: allCards.length, pending: 0, overdue: 0, rejected: 0, approved: 0 };
+    allCards.forEach(function(c) {
+        const s = c.dataset.status;
+        if (counts[s] !== undefined) counts[s]++;
+    });
+    document.getElementById('cnt-total').textContent    = counts.all;
+    document.getElementById('cnt-pending').textContent  = counts.pending;
+    document.getElementById('cnt-overdue').textContent  = counts.overdue;
+    document.getElementById('cnt-rejected').textContent = counts.rejected;
+    document.getElementById('cnt-approved').textContent = counts.approved;
+
+    // highlight active summary card based on current filter
+    const initParams = new URLSearchParams(window.location.search);
+    const initShow   = (initParams.get('show') || 'pending').split(',').map(function(s) { return s.trim(); });
+    document.querySelectorAll('.summary-card').forEach(function(card) {
+        const f = card.dataset.filter;
+        if (f === 'all') {
+            if (initShow.length === 4) card.classList.add('active');
+        } else if (initShow.length === 1 && initShow[0] === f) {
+            card.classList.add('active');
+        }
+    });
+
+    // summary card click → set filter (reload with new show=)
+    document.querySelectorAll('.summary-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+            const f = this.dataset.filter;
+            const sp = new URLSearchParams(window.location.search);
+            if (f === 'all') {
+                sp.set('show', 'pending,overdue,rejected,approved');
+            } else {
+                sp.set('show', f);
+            }
+            sp.set('page', '1');
+            window.location.href = '?' + sp.toString();
+        });
+    });
+
+    // search input — client-side filter on visible cards
+    const searchInput = document.getElementById('searchInput');
+    const searchWrap  = document.getElementById('searchWrap');
+    const searchClear = document.getElementById('searchClear');
+    const emptySearch = document.getElementById('emptySearch');
+
+    function runSearch() {
+        const q = searchInput.value.trim().toLowerCase();
+        searchWrap.classList.toggle('has-text', q.length > 0);
+        let visible = 0;
+        document.querySelectorAll('.request-card').forEach(function(c) {
+            const t = (c.dataset.title || '').toLowerCase();
+            const id = (c.dataset.formid || '').toString();
+            const match = q === '' || t.includes(q) || id.includes(q);
+            c.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+        emptySearch.style.display = (q !== '' && visible === 0) ? 'block' : 'none';
+    }
+
+    searchInput.addEventListener('input', runSearch);
+    searchClear.addEventListener('click', function() {
+        searchInput.value = '';
+        runSearch();
+        searchInput.focus();
+    });
+    // zennnne แก้
+
     document.querySelectorAll(".confirm-btn").forEach(button => {
         if (button.closest("a")) return;
         button.addEventListener("click", function () {
@@ -541,13 +591,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // zennnne แก้
-    const initParams = new URLSearchParams(window.location.search);
-    const initShow   = (initParams.get('show') || 'pending').split(',').map(function(s) { return s.trim(); });
     document.querySelectorAll('.filter-checkboxes input').forEach(function(cb) {
         cb.checked = initShow.includes(cb.value);
     });
-    document.getElementById('sortAscBtn').classList.toggle('active',  sortOrder === 'asc');
-    document.getElementById('sortDescBtn').classList.toggle('active', sortOrder === 'desc');
+    updateSortButtons();
     applySort();
 
     document.querySelectorAll('.filter-checkboxes input').forEach(function(cb) {

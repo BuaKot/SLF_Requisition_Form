@@ -1,6 +1,6 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-
+<%@ page import="com.slf.util.AuthUtil" %>
 <%!
     // Keep this if you want, or remove it.
     public String escapeHtml(Object input) {
@@ -16,15 +16,16 @@
 %>
 
 <%
+    // These are available to every scriptlet on the page
     String currentRole = (String) session.getAttribute("position");
     String employeeName = (String) session.getAttribute("loggedInEmpName");
 
+    // Now the security check
     if (currentRole == null || employeeName == null) {
-        response.sendRedirect("login.jsp");
+        response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
 %>
-
 <!DOCTYPE html>
 <html lang="th">
 
@@ -90,16 +91,7 @@
 </head>
 
 <body>
-    <div id="mySidebar" class="sidebar">
-        <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
-        <a href="${pageContext.request.contextPath}"><i class="fa-solid fa-house" style='margin-right: 10px'></i>หน้าหลัก</a>
-        <a href="${pageContext.request.contextPath}/newForm"><i class="fa-solid fa-plus" style='margin-right: 10px'></i>สร้างฟอร์มใหม่</a>
-        <a href="${pageContext.request.contextPath}/submit"><i class="fa-solid fa-paper-plane" style='margin-right: 10px'></i>ฟอร์มที่ส่งแล้ว</a><!-- zennnne แก้ -->
-        <a href="${pageContext.request.contextPath}/logout"><i class="fa-solid fa-arrow-right-from-bracket" style='margin-right: 10px'></i>ออกจากระบบ</a>
-        <a href="${pageContext.request.contextPath}/Admin.jsp" class="admin-tab">
-            <i class="fa-solid fa-circle-user"></i>Admin
-        </a>    
-    </div>
+    <%@ include file="/WEB-INF/sidebar.jsp" %>
 
 <div id='main'>
     <div class="sticky-bar">
@@ -129,40 +121,29 @@
     </div>
 
     <div class="admin-grid">
-        
-        <% if (currentRole.equalsIgnoreCase("Admin") || currentRole.equalsIgnoreCase("Director")) { %>
-            <!-- zennnne แก้ -->
-            <div class="card" onclick="location.href='${pageContext.request.contextPath}/directorApprove'"><!-- zennnne แก้ -->
-            <!-- zennnne แก้ -->
+
+        <% if (AuthUtil.isAllowedForPage(currentRole, "directorApprove")) { %>
+            <div class="card" onclick="location.href='${pageContext.request.contextPath}/directorApprove'">
                 <i class="fa-regular fa-circle-user"></i>
                 <p>ผู้อำนวยการฝ่าย</p>
             </div>
         <% } %>
 
-        <% if (currentRole.equalsIgnoreCase("Admin") || currentRole.equalsIgnoreCase("Technical")) { %>
+        <% if (AuthUtil.isAllowedForPage(currentRole, "technicalApprove")) { %>
             <div class="card" onclick="location.href='${pageContext.request.contextPath}/TechnicalApprove.jsp'">
                 <i class="fa-solid fa-screwdriver-wrench"></i>
                 <p>ความเห็นและการอนุมัติเชิงเทคนิค</p>
             </div>
         <% } %>
 
-        <% if (currentRole.equalsIgnoreCase("Admin") || currentRole.equalsIgnoreCase("ITDirector")) { %>
+        <% if (AuthUtil.isAllowedForPage(currentRole, "itDirectorApprove")) { %>
             <div class="card" onclick="location.href='${pageContext.request.contextPath}/ITDirectorApprove.jsp'">
                 <i class="fa-solid fa-user-gear"></i>
-                <p>ผู้อำนวยการฝ่าย<br>เทคโนโลยีสารสนเทศ</p>
+                <p>ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ</p>
             </div>
         <% } %>
 
-        <%
-            if (currentRole.equalsIgnoreCase("Admin") ||
-                currentRole.equalsIgnoreCase("Technical") ||
-                currentRole.equalsIgnoreCase("Development") ||
-                currentRole.equalsIgnoreCase("Data") ||
-                currentRole.equalsIgnoreCase("Infrastructure") ||
-                currentRole.equalsIgnoreCase("Cyber Security") ||
-                currentRole.equalsIgnoreCase("Reseach") ||
-                currentRole.equalsIgnoreCase("IT Planning")) {
-        %>
+        <% if (AuthUtil.isAllowedForPage(currentRole, "process")) { %>
             <div class="card" onclick="location.href='${pageContext.request.contextPath}/Process.jsp'">
                 <i class="fa-solid fa-bars-progress"></i>
                 <p>รายละเอียดการดำเนินการ</p>

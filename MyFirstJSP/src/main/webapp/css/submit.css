@@ -587,3 +587,27 @@ body {
     /* จัดข้อความให้เริ่มบนซ้าย */
     vertical-align: top;
 }
+
+/* zennnne แก้ */
+.pagination {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 0 32px;
+}
+
+.page-btn {
+    border: 2px solid #666;
+    background: white;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-size: 16px;
+    font-family: 'DBHelvethaica', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.page-btn:hover { background: #f5f5f5; }
+.page-num       { font-family: 'DBHelvethaica', sans-serif; color: #003366; font-size: 16px; }
+/* zennnne แก้ */

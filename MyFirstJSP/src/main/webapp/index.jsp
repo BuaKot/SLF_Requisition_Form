@@ -70,10 +70,19 @@
 </head>
 <body>
 <%
+    String currentRole = (String) session.getAttribute("position");
+    String employeeName = (String) session.getAttribute("loggedInEmpName");
+
+    if (currentRole == null || employeeName == null) {
+        response.sendRedirect(request.getContextPath() + "/login");
+        return;
+    }
+
     String deniedMessage = (String) session.getAttribute("formDeniedMessage");
     if (deniedMessage != null) {
         session.removeAttribute("formDeniedMessage");
 %>
+
 <div class="modal-overlay" id="deniedModal">
     <div class="modal-box">
         <span class="modal-close" onclick="closeDeniedModal()">&times;</span>
@@ -93,17 +102,31 @@
 <%
     }
 %>
-
-<div id="mySidebar" class="sidebar">
-    <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
-    <a href="${pageContext.request.contextPath}"><i class="fa-solid fa-house" style='margin-right: 10px'></i>หน้าหลัก</a>
-    <a href="${pageContext.request.contextPath}/newForm"><i class="fa-solid fa-plus" style='margin-right: 10px'></i>สร้างฟอร์มใหม่</a>
-    <a href="${pageContext.request.contextPath}/submit"><i class="fa-solid fa-paper-plane" style='margin-right: 10px'></i>ฟอร์มที่ส่งแล้ว</a><!-- zennnne แก้ -->
-    <a href="${pageContext.request.contextPath}/logout"><i class="fa-solid fa-arrow-right-from-bracket" style='margin-right: 10px'></i>ออกจากระบบ</a>
-    <a href="${pageContext.request.contextPath}/Admin.jsp" class="admin-tab">
-        <i class="fa-solid fa-circle-user"></i>Admin
-    </a>
+<%
+    String accessDeniedMsg = (String) session.getAttribute("accessDeniedMessage");
+    if (accessDeniedMsg != null) {
+        session.removeAttribute("accessDeniedMessage");
+%>
+<div class="modal-overlay" id="accessDeniedModal">
+    <div class="modal-box">
+        <span class="modal-close" onclick="closeAccessDeniedModal()">&times;</span>
+        <p><%= accessDeniedMsg %></p>
+        <button class="modal-ok-btn" onclick="closeAccessDeniedModal()">ตกลง</button>
+    </div>
 </div>
+<script>
+    document.getElementById('accessDeniedModal').addEventListener('click', function(e) {
+        if (e.target === this) closeAccessDeniedModal();
+    });
+    function closeAccessDeniedModal() {
+        document.getElementById('accessDeniedModal').style.display = 'none';
+    }
+</script>
+<%
+    }
+%>
+
+<%@ include file="/WEB-INF/sidebar.jsp" %>
 
 <div id="main">
     

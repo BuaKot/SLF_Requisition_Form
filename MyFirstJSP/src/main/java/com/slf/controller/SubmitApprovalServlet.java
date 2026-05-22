@@ -32,6 +32,7 @@ public class SubmitApprovalServlet extends HttpServlet {
         // 2. Read and validate parameters
         String formIdStr    = request.getParameter("formId");
         String action       = request.getParameter("action");        // "approve" or "reject"
+        String expectedStepStr = request.getParameter("expectedStep");
         String comment      = request.getParameter("comment");
         String devEmpIdStr  = request.getParameter("devEmpId");
         String redirectPage = request.getParameter("redirectPage");  // e.g., "DirectorApprove.jsp"
@@ -49,6 +50,14 @@ public class SubmitApprovalServlet extends HttpServlet {
             return;
         }
 
+        Integer expectedStep;
+        try {
+            expectedStep = parseExpectedStep(expectedStepStr);
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid expectedStep");
+            return;
+        }
+
         redirectPage = sanitizeRedirectPage(redirectPage);
 
         try (Connection conn = DBConnection.getConnection()) {
@@ -58,6 +67,11 @@ public class SubmitApprovalServlet extends HttpServlet {
             if (currentStep == Integer.MIN_VALUE) {
                 // No approval row at all — can't process
                 response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=not_found");
+                return;
+            }
+
+            if (isStaleApprovalRequest(currentStep, expectedStep)) {
+                response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=stale_state");
                 return;
             }
 
@@ -150,10 +164,11 @@ public class SubmitApprovalServlet extends HttpServlet {
      * Returns redirectPage if it is in the allowed whitelist, otherwise falls back to
      * "DirectorApprove.jsp" to prevent open-redirect attacks.
      */
-    private String sanitizeRedirectPage(String redirectPage) {
+    static String sanitizeRedirectPage(String redirectPage) { // vis เปลี่ยนของ zen จาก private เป็น static
         final java.util.Set<String> ALLOWED_REDIRECTS = new java.util.HashSet<>(java.util.Arrays.asList(
-            "Process.jsp", "DirectorApprove.jsp", "ITDirectorApprove.jsp", "TechnicalApprove.jsp", "submit.jsp"
+            "Process.jsp", "DirectorApprove.jsp", "directorApprove", "ITDirectorApprove.jsp", "TechnicalApprove.jsp", "submit.jsp", "submit"
         ));
+        // zennnne แก้
         return ALLOWED_REDIRECTS.contains(redirectPage) ? redirectPage : "DirectorApprove.jsp";
     }
     // zennnne แก้
@@ -230,6 +245,37 @@ public class SubmitApprovalServlet extends HttpServlet {
             }
         }
 
+        if (currentStep == 2) {
+            String assignedDeptHeadSql =
+                "SELECT d.DEPTHEAD_EMPID " +
+                "FROM REQUISITIONFORM r " +
+                "JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
+                "JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+                "WHERE r.FORMID = ?";
+            try (PreparedStatement ps = conn.prepareStatement(assignedDeptHeadSql)) {
+                ps.setInt(1, formId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        return "not_found";
+                    }
+                    String deptHeadEmpId = rs.getString("DEPTHEAD_EMPID");
+                    if (!matchesReviewer(deptHeadEmpId, reviewerEmpId)) {
+                        return "Only the assigned department director can approve this step";
+                    }
+                }
+            }
+        }
+
+        if (currentStep == 3) {
+            Integer assignedDeveloperId = getLatestAssignedDeveloperId(conn, formId);
+            if (assignedDeveloperId == null) {
+                return "not_found";
+            }
+            if (assignedDeveloperId.intValue() != reviewerEmpId) {
+                return "Only the assigned developer can approve this step";
+            }
+        }
+
         return null; // authorised
     }
     // zennnne แก้
@@ -287,6 +333,17 @@ public class SubmitApprovalServlet extends HttpServlet {
 
     static boolean requiresAssignedDeveloper(int currentStep, String action) {
         return currentStep == 1 && "approve".equalsIgnoreCase(action);
+    }
+
+    static Integer parseExpectedStep(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        return Integer.valueOf(Integer.parseInt(value.trim()));
+    }
+
+    static boolean isStaleApprovalRequest(int currentStep, Integer expectedStep) {
+        return expectedStep == null || expectedStep.intValue() != currentStep;
     }
 
     static Integer parseAssignedDeveloperId(String value, boolean required) {

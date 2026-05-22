@@ -53,12 +53,26 @@ public class LoadSubmitServlet extends HttpServlet {
             : "(" + String.join(" OR ", statusConds) + ")";
         String orderDir = "desc".equals(sortParam) ? "DESC" : "ASC";
 
-        String sql =
+        // zennnne แก้ — CTE นำกลับมาใช้ใน count + main query
+        String cteBase =
             "WITH latest_step AS ( " +
             "    SELECT FORMID, STATE_STEP, " +
             "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
             "    FROM APPROVALINFO " +
-            ") " +
+            ") ";
+
+        String countSql = cteBase +
+            "SELECT " +
+            "    COUNT(*) AS TOTAL, " +
+            "    SUM(CASE WHEN NVL(ls.STATE_STEP,0) BETWEEN 0 AND 4 AND RF.DEADLINE >= TRUNC(SYSDATE) THEN 1 ELSE 0 END) AS CNT_PENDING, " +
+            "    SUM(CASE WHEN NVL(ls.STATE_STEP,0) BETWEEN 0 AND 4 AND RF.DEADLINE <  TRUNC(SYSDATE) THEN 1 ELSE 0 END) AS CNT_OVERDUE, " +
+            "    SUM(CASE WHEN NVL(ls.STATE_STEP,0) < 0            THEN 1 ELSE 0 END) AS CNT_REJECTED, " +
+            "    SUM(CASE WHEN NVL(ls.STATE_STEP,0) >= 5           THEN 1 ELSE 0 END) AS CNT_APPROVED " +
+            "FROM REQUISITIONFORM RF " +
+            "LEFT JOIN latest_step ls ON ls.FORMID = RF.FORMID AND ls.RN = 1 " +
+            "WHERE RF.EMPID = ?";
+
+        String sql = cteBase +
             "SELECT RF.FORMID, RF.TITLEFORM, RF.DEADLINE, RF.IS_EDITED, " +
             "       NVL(ls.STATE_STEP, 0) AS STATE_STEP " +
             "FROM REQUISITIONFORM RF " +
@@ -67,36 +81,62 @@ public class LoadSubmitServlet extends HttpServlet {
             "AND " + statusWhere + " " +
             "ORDER BY RF.DEADLINE " + orderDir + ", RF.FORMID DESC " +
             "OFFSET ? ROWS FETCH FIRST ? ROWS ONLY";
+        // zennnne แก้
 
         List<Map<String, Object>> formList = new ArrayList<>();
+        // zennnne แก้
+        int cntTotal = 0, cntPending = 0, cntOverdue = 0, cntRejected = 0, cntApproved = 0;
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection()) {
+            // run count query first
+            try (PreparedStatement psCount = conn.prepareStatement(countSql)) {
+                psCount.setInt(1, empId);
+                try (ResultSet rsCount = psCount.executeQuery()) {
+                    if (rsCount.next()) {
+                        cntTotal    = rsCount.getInt("TOTAL");
+                        cntPending  = rsCount.getInt("CNT_PENDING");
+                        cntOverdue  = rsCount.getInt("CNT_OVERDUE");
+                        cntRejected = rsCount.getInt("CNT_REJECTED");
+                        cntApproved = rsCount.getInt("CNT_APPROVED");
+                    }
+                }
+            }
 
-            pstmt.setInt(1, empId);
-            pstmt.setInt(2, offset);
-            pstmt.setInt(3, pageSize);
+            // run paginated main query
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, empId);
+                pstmt.setInt(2, offset);
+                pstmt.setInt(3, pageSize);
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    Map<String, Object> row = new HashMap<>();
-                    row.put("FORMID",    rs.getInt("FORMID"));
-                    row.put("TITLEFORM", rs.getString("TITLEFORM"));
-                    row.put("DEADLINE",  rs.getDate("DEADLINE"));
-                    row.put("IS_EDITED", rs.getInt("IS_EDITED"));
-                    row.put("STATE_STEP", rs.getInt("STATE_STEP"));
-                    formList.add(row);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    while (rs.next()) {
+                        Map<String, Object> row = new HashMap<>();
+                        row.put("FORMID",    rs.getInt("FORMID"));
+                        row.put("TITLEFORM", rs.getString("TITLEFORM"));
+                        row.put("DEADLINE",  rs.getDate("DEADLINE"));
+                        row.put("IS_EDITED", rs.getInt("IS_EDITED"));
+                        row.put("STATE_STEP", rs.getInt("STATE_STEP"));
+                        formList.add(row);
+                    }
                 }
             }
         } catch (SQLException e) {
             throw new ServletException("Failed to load submit list", e);
         }
+        // zennnne แก้
 
         request.setAttribute("formList",    formList);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("pageSize",    pageSize);
         request.setAttribute("showParam",   showParam);
         request.setAttribute("sortParam",   sortParam);
+        // zennnne แก้
+        request.setAttribute("cntTotal",    cntTotal);
+        request.setAttribute("cntPending",  cntPending);
+        request.setAttribute("cntOverdue",  cntOverdue);
+        request.setAttribute("cntRejected", cntRejected);
+        request.setAttribute("cntApproved", cntApproved);
+        // zennnne แก้
 
         request.getRequestDispatcher("/submit.jsp").forward(request, response);
     }

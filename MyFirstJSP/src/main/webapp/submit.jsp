@@ -82,26 +82,28 @@
     <!-- zennnne แก้ — SUMMARY DASHBOARD + SEARCH -->
     <div class="summary-wrap">
         <div class="summary-cards">
+            <!-- zennnne แก้ — ใช้ EL จาก server-side count แทน JS นับ client-side -->
             <div class="summary-card sc-total" data-filter="all" title="แสดงทั้งหมด">
                 <div class="sc-label"><i class="fa-solid fa-clipboard-list"></i> ทั้งหมด</div>
-                <div class="sc-count" id="cnt-total">0</div>
+                <div class="sc-count">${cntTotal}</div>
             </div>
             <div class="summary-card sc-pending" data-filter="pending" title="คลิกเพื่อ filter เฉพาะรอดำเนินการ">
                 <div class="sc-label"><i class="fa-solid fa-hourglass-half"></i> รอดำเนินการ</div>
-                <div class="sc-count" id="cnt-pending">0</div>
+                <div class="sc-count">${cntPending}</div>
             </div>
             <div class="summary-card sc-overdue" data-filter="overdue" title="คลิกเพื่อ filter เฉพาะหมดเขต">
                 <div class="sc-label"><i class="fa-solid fa-triangle-exclamation"></i> หมดเขต</div>
-                <div class="sc-count" id="cnt-overdue">0</div>
+                <div class="sc-count">${cntOverdue}</div>
             </div>
             <div class="summary-card sc-rejected" data-filter="rejected" title="คลิกเพื่อ filter เฉพาะไม่ผ่าน">
                 <div class="sc-label"><i class="fa-solid fa-circle-xmark"></i> ไม่ผ่าน</div>
-                <div class="sc-count" id="cnt-rejected">0</div>
+                <div class="sc-count">${cntRejected}</div>
             </div>
             <div class="summary-card sc-approved" data-filter="approved" title="คลิกเพื่อ filter เฉพาะอนุมัติแล้ว">
                 <div class="sc-label"><i class="fa-solid fa-circle-check"></i> ผ่าน</div>
-                <div class="sc-count" id="cnt-approved">0</div>
+                <div class="sc-count">${cntApproved}</div>
             </div>
+            <!-- zennnne แก้ -->
         </div>
 
         <div class="search-wrap" id="searchWrap">
@@ -112,7 +114,6 @@
             </button>
         </div>
     </div>
-    <div class="summary-hint">* จำนวนนับเฉพาะหน้าปัจจุบัน — กดที่ card เพื่อ filter ดูทั้งหมด</div>
     <!-- zennnne แก้ -->
 
     <!-- HEADER TABLE (legacy hidden — kept for backward compat) -->
@@ -433,18 +434,7 @@ function toggleNav() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    // zennnne แก้ — summary cards: count per status
-    const allCards = document.querySelectorAll('.request-card');
-    const counts = { all: allCards.length, pending: 0, overdue: 0, rejected: 0, approved: 0 };
-    allCards.forEach(function(c) {
-        const s = c.dataset.status;
-        if (counts[s] !== undefined) counts[s]++;
-    });
-    document.getElementById('cnt-total').textContent    = counts.all;
-    document.getElementById('cnt-pending').textContent  = counts.pending;
-    document.getElementById('cnt-overdue').textContent  = counts.overdue;
-    document.getElementById('cnt-rejected').textContent = counts.rejected;
-    document.getElementById('cnt-approved').textContent = counts.approved;
+    // zennnne แก้ — counts rendered server-side via EL (${cntTotal} etc.) — no JS counting needed
 
     // highlight active summary card based on current filter
     const initParams = new URLSearchParams(window.location.search);

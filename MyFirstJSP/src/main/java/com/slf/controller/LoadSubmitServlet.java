@@ -27,7 +27,7 @@ public class LoadSubmitServlet extends HttpServlet {
         }
 
         String showParam = request.getParameter("show");
-        if (showParam == null || showParam.trim().isEmpty()) showParam = "pending";
+        if (showParam == null || showParam.trim().isEmpty()) showParam = "all"; // zennnne แก้
         String sortParam = request.getParameter("sort");
         if (!"desc".equals(sortParam)) sortParam = "asc";
 
@@ -40,17 +40,24 @@ public class LoadSubmitServlet extends HttpServlet {
         int pageSize = 50;
         int offset = (currentPage - 1) * pageSize;
 
+        // zennnne แก้
         List<String> statusConds = new ArrayList<>();
-        for (String s : showParam.split(",")) {
-            switch (s.trim().toLowerCase()) {
-                case "pending":  statusConds.add("(NVL(ls.STATE_STEP,0) BETWEEN 0 AND 4 AND RF.DEADLINE >= TRUNC(SYSDATE))"); break;
-                case "overdue":  statusConds.add("(NVL(ls.STATE_STEP,0) BETWEEN 0 AND 4 AND RF.DEADLINE < TRUNC(SYSDATE))");  break;
-                case "rejected": statusConds.add("NVL(ls.STATE_STEP,0) < 0");  break;
-                case "approved": statusConds.add("NVL(ls.STATE_STEP,0) >= 5"); break;
+        if ("all".equalsIgnoreCase(showParam.trim())) {
+            statusConds.add("1=1");
+        } else {
+            for (String s : showParam.split(",")) {
+                switch (s.trim().toLowerCase()) {
+                    case "pending":  statusConds.add("(NVL(ls.STATE_STEP,0) BETWEEN 0 AND 3 AND RF.DEADLINE >= TRUNC(SYSDATE))"); break;
+                    case "ready":    statusConds.add("(NVL(ls.STATE_STEP,0) = 4 AND RF.DEADLINE >= TRUNC(SYSDATE))"); break;
+                    case "overdue":  statusConds.add("(NVL(ls.STATE_STEP,0) BETWEEN 0 AND 4 AND RF.DEADLINE < TRUNC(SYSDATE))");  break;
+                    case "rejected": statusConds.add("NVL(ls.STATE_STEP,0) < 0");  break;
+                    case "approved": statusConds.add("NVL(ls.STATE_STEP,0) >= 5"); break;
+                }
             }
         }
         String statusWhere = statusConds.isEmpty() ? "1=0"
             : "(" + String.join(" OR ", statusConds) + ")";
+        // zennnne แก้
         String orderDir = "desc".equals(sortParam) ? "DESC" : "ASC";
 
         String sql =

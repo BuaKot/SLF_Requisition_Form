@@ -227,7 +227,7 @@
         <form action="${pageContext.request.contextPath}/SubmitApprovalServlet" method="post">
             <input type="hidden" name="formId" value="<%= formId %>">
             <input type="hidden" name="expectedStep" value="0">
-            <input type="hidden" name="redirectPage" value="DirectorApprove.jsp">
+            <input type="hidden" name="redirectPage" value="directorApprove">
 
             <!-- Header fields (readonly) -->
             <div class="form-id-note">#<%= (formId != null) ? formId : "-" %></div>

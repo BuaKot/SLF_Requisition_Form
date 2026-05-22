@@ -20,7 +20,8 @@ public class AuthenticationFilter implements Filter {
         if (path.startsWith("/login")           // the login page servlet (GET)
             || path.startsWith("/processLogin") // the login processor (POST)
             || path.startsWith("/css/")         // your stylesheets
-            || path.startsWith("/images/")      // your logos
+            || path.startsWith("/images/")
+            || path.startsWith("/exportPDF")     
             || path.startsWith("/js/")          // any JavaScript files
             || path.startsWith("/fonts/")
             || path.startsWith("/logout")) {    // fonts if you have 'em

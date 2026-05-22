@@ -165,9 +165,12 @@ public class SubmitApprovalServlet extends HttpServlet {
      * "DirectorApprove.jsp" to prevent open-redirect attacks.
      */
     private String sanitizeRedirectPage(String redirectPage) {
+        // zennnne แก้
         final java.util.Set<String> ALLOWED_REDIRECTS = new java.util.HashSet<>(java.util.Arrays.asList(
-            "Process.jsp", "DirectorApprove.jsp", "ITDirectorApprove.jsp", "TechnicalApprove.jsp", "submit.jsp"
+            "Process.jsp", "DirectorApprove.jsp", "ITDirectorApprove.jsp", "TechnicalApprove.jsp",
+            "submit.jsp", "submit", "directorApprove"
         ));
+        // zennnne แก้
         return ALLOWED_REDIRECTS.contains(redirectPage) ? redirectPage : "DirectorApprove.jsp";
     }
     // zennnne แก้

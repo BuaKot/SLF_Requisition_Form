@@ -158,7 +158,7 @@
         .container { max-width: 1300px; margin: 25px auto; padding: 0 20px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 3px solid #3272BB; padding-bottom: 10px; }
         
-        /* 🎛️ กล่องกรองข้อมูลแบบยืดหยุ่นที่ปรับดีไซน์ใหม่ให้รองรับปฏิทิน */
+        
         .filter-container { background: white; border-radius: 15px; padding: 20px 25px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 15px; border: 1px solid #e0e0e0; }
         .filter-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
         .filter-title { font-weight: bold; color: #003366; display: flex; align-items: center; gap: 8px; }
@@ -167,7 +167,7 @@
         .btn-filter:hover { background: #e2e6e9; color: #003366; }
         .btn-filter.active { background: #3272BB; color: white; border-color: #3272BB; box-shadow: 0 3px 6px rgba(50,114,187,0.3); }
 
-        /* 📅 ฟอร์มสไตล์ช่วงปฏิทินเวลา */
+       
         .date-picker-form { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 15px; border-radius: 10px; border: 1px dashed #3272BB; }
         .date-input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.9rem; color: #333; outline: none; }
         .date-input:focus { border-color: #3272BB; }

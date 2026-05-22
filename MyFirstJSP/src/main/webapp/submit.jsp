@@ -316,14 +316,17 @@
                     <!-- zennnne แก้ -->
 
                 <% } else { %>
+                    <!-- zennnne แก้ -->
                     <button class="confirm-btn<%= canConfirm ? "" : "" %>"
                             data-formid="<%= formId %>"
+                            data-expectedstep="<%= stateStep %>"
                             <% if (!canConfirm) { %>
                                 disabled
                                 style="cursor:not-allowed;"
                             <% } %>>
                         <%= canConfirm ? "ยืนยันผลตรวจรับ" : "รอดำเนินการ" %>
                     </button>
+                    <!-- zennnne แก้ -->
                     <!-- zennnne แก้ -->
                     <span class="deadline-tag <%= canConfirm ? "ready" : "pending" %>">
                         <i class="fa-regular fa-calendar-days"></i> <%= deadlineDisplay %>
@@ -479,12 +482,15 @@ document.addEventListener("DOMContentLoaded", function () {
             const form = document.createElement("form");
             form.method = "POST";
             form.action = contextPath + "/SubmitApprovalServlet";
+            // zennnne แก้
             const fields = {
                 formId: currentButton.dataset.formid,
                 action: "approve",
-                redirectPage: "submit", // zennnne แก้
+                expectedStep: currentButton.dataset.expectedstep,
+                redirectPage: "submit",
                 comment: detail
             };
+            // zennnne แก้
             Object.keys(fields).forEach(function (name) {
                 const input = document.createElement("input");
                 input.type = "hidden";

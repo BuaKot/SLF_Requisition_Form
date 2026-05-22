@@ -70,7 +70,7 @@
 </head>
 <body>
 <%
-     String currentRole = (String) session.getAttribute("position");
+    String currentRole = (String) session.getAttribute("position");
     String employeeName = (String) session.getAttribute("loggedInEmpName");
 
     if (currentRole == null || employeeName == null) {
@@ -97,6 +97,29 @@
     });
     function closeDeniedModal() {
         document.getElementById('deniedModal').style.display = 'none';
+    }
+</script>
+<%
+    }
+%>
+<%
+    String accessDeniedMsg = (String) session.getAttribute("accessDeniedMessage");
+    if (accessDeniedMsg != null) {
+        session.removeAttribute("accessDeniedMessage");
+%>
+<div class="modal-overlay" id="accessDeniedModal">
+    <div class="modal-box">
+        <span class="modal-close" onclick="closeAccessDeniedModal()">&times;</span>
+        <p><%= accessDeniedMsg %></p>
+        <button class="modal-ok-btn" onclick="closeAccessDeniedModal()">ตกลง</button>
+    </div>
+</div>
+<script>
+    document.getElementById('accessDeniedModal').addEventListener('click', function(e) {
+        if (e.target === this) closeAccessDeniedModal();
+    });
+    function closeAccessDeniedModal() {
+        document.getElementById('accessDeniedModal').style.display = 'none';
     }
 </script>
 <%

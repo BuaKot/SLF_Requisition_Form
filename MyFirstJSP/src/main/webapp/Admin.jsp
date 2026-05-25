@@ -1,3 +1,4 @@
+<% request.setAttribute("requiredPageKey", "adminPage"); %>
 <%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
@@ -19,7 +20,7 @@
     String employeeName = (String) session.getAttribute("loggedInEmpName");
 
     // เช็คสิทธิ์ว่ามีสิทธิ์ของหน้า Admin ไหม
-    if (currentRole == null || employeeName == null || !AuthUtil.isAllowedForPage(currentRole, "Admin")) {
+    if (currentRole == null || employeeName == null || !AuthUtil.isAllowedForPage(currentRole, "adminPage")) {
         
         String redirectPage = "/login.jsp"; // ค่าเริ่มต้นถ้าไม่พบตำแหน่งใดๆ
         

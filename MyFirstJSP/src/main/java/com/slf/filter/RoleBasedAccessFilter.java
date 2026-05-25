@@ -11,6 +11,7 @@ import java.io.IOException;
 
 @WebFilter(urlPatterns = {
     "/Admin.jsp",
+    "/Dashboard.jsp",
     "/directorApprove",           // if you've mapped this to a servlet
     "/DirectorApprove.jsp",
     "/TechnicalApprove.jsp",
@@ -55,6 +56,8 @@ public class RoleBasedAccessFilter implements Filter {
             // Or just use isAdmin() if all admin roles can view any detail.
         } else if (path.equals("/Admin.jsp")) {
             pageKey = "adminPage";   // add to PAGE_ROLES if needed
+        } else if (path.equals("/Dashboard.jsp")) {
+            pageKey = "dashboard";
         }
 
         // If we have a pageKey, check permission

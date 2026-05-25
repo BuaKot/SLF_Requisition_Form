@@ -1,3 +1,4 @@
+<% request.setAttribute("requiredPageKey", "adminPage"); %>
 <%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>

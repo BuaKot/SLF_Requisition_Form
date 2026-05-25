@@ -16,18 +16,17 @@
 %>
 
 <%
-    // These are available to every scriptlet on the page
     String currentRole = (String) session.getAttribute("position");
     String employeeName = (String) session.getAttribute("loggedInEmpName");
 
-    // Now the security check
-    if (currentRole == null || employeeName == null) {
+    if (currentRole == null || employeeName == null ||
+            !AuthUtil.isAllowedForPage(currentRole, "adminPage")) {
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
 %>
 
-<%@ include file="WEB-INF/checkAuth.jsp" %>
+
 
 <!DOCTYPE html>
 <html lang="th">

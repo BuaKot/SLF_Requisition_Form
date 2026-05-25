@@ -326,6 +326,57 @@
 
         .empty-state i { font-size: 56px; display: block; margin-bottom: 16px; }
 
+        /* zennnne แก้ — search box */
+        .search-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid #ddd;
+            border-radius: 999px;
+            padding: 6px 14px;
+            background: #fff;
+            flex: 1;
+            min-width: 200px;
+            max-width: 340px;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease;
+        }
+        .search-wrap:focus-within {
+            border-color: #3272BB;
+            box-shadow: 0 0 0 3px rgba(50,114,187,0.15);
+        }
+        .search-wrap i { color: #aaa; flex-shrink: 0; }
+        .search-input {
+            border: none;
+            outline: none;
+            font-size: 15px;
+            font-family: inherit;
+            background: transparent;
+            flex: 1;
+            min-width: 0;
+        }
+        .search-clear {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0 2px;
+            color: #bbb;
+            font-size: 14px;
+            display: none;
+            line-height: 1;
+        }
+        .search-wrap.has-text .search-clear { display: inline-flex; }
+        .search-clear:hover { color: #e53935; }
+
+        .empty-search {
+            text-align: center;
+            padding: 40px 20px;
+            color: #aaa;
+            font-size: 16px;
+            display: none;
+        }
+        .empty-search i { font-size: 40px; display: block; margin-bottom: 12px; }
+        /* zennnne แก้ */
+
         /* ─── RESPONSIVE ─── */
         @media (max-width: 900px) {
             .history-card   { flex-direction: column; align-items: flex-start; }
@@ -399,6 +450,16 @@
                 <input type="checkbox" value="approved" checked> อนุมัติแล้ว
             </label>
         </div>
+        <!-- zennnne แก้ — search box -->
+        <div class="search-wrap" id="searchWrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาชื่อฟอร์ม / ชื่อผู้ขอ..." autocomplete="off">
+            <button type="button" class="search-clear" id="searchClear" title="ล้าง">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <!-- zennnne แก้ -->
+
         <div class="sort-controls">
             <span class="sort-label">เรียงตาม Deadline</span>
             <button id="sortAscBtn"  class="sort-btn active" onclick="setSortOrder('deadline','asc')"  title="น้อยไปมาก">
@@ -489,6 +550,8 @@
              data-status="<%= rowStatus %>"
              data-deadline="<%= deadlineSort %>"
              data-formid="<%= formId %>"
+             data-title="<%= titleForm  != null ? titleForm.replace("\"","&quot;")  : "" %>"
+             data-empname="<%= empName != null ? empName.replace("\"","&quot;") : "" %>"
              onclick="location.href='detail.jsp?id=<%= formId %>'">
 
             <div class="card-id-box">ใบขอให้ดำเนินการที่ <%= formId %></div>
@@ -543,6 +606,12 @@
     }
 %>
 
+        <!-- zennnne แก้ — empty search state -->
+        <div id="emptySearch" class="empty-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            ไม่พบฟอร์มที่ตรงกับคำค้นหา
+        </div>
+        <!-- zennnne แก้ -->
     </div><!-- /history-list -->
 
     <!-- PAGINATION -->
@@ -638,6 +707,37 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = '?' + sp.toString();
         });
     });
+
+    // zennnne แก้ — client-side search
+    const searchInput = document.getElementById('searchInput');
+    const searchWrap  = document.getElementById('searchWrap');
+    const searchClear = document.getElementById('searchClear');
+    const emptySearch = document.getElementById('emptySearch');
+
+    function runSearch() {
+        const q = searchInput.value.trim().toLowerCase();
+        searchWrap.classList.toggle('has-text', q.length > 0);
+        let visible = 0;
+        document.querySelectorAll('.history-card').forEach(function(c) {
+            const title   = (c.dataset.title   || '').toLowerCase();
+            const empname = (c.dataset.empname || '').toLowerCase();
+            const id      = (c.dataset.formid  || '').toString();
+            const match = q === '' || title.includes(q) || empname.includes(q) || id.includes(q);
+            c.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+        if (emptySearch) emptySearch.style.display = (q !== '' && visible === 0) ? 'block' : 'none';
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', runSearch);
+        searchClear.addEventListener('click', function() {
+            searchInput.value = '';
+            runSearch();
+            searchInput.focus();
+        });
+    }
+    // zennnne แก้
 });
 // zennnne แก้
 </script>

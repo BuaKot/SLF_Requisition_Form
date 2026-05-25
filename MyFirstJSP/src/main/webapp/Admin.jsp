@@ -19,9 +19,36 @@
     String currentRole = (String) session.getAttribute("position");
     String employeeName = (String) session.getAttribute("loggedInEmpName");
 
-    if (currentRole == null || employeeName == null ||
-            !AuthUtil.isAllowedForPage(currentRole, "adminPage")) {
-        response.sendRedirect(request.getContextPath() + "/login.jsp?error=unauthorized");
+    if (currentRole == null || employeeName == null || !AuthUtil.isAllowedForPage(currentRole, "adminPage")) {
+        
+        String redirectPage = "/login.jsp"; 
+        
+        if (currentRole != null) {
+            switch (currentRole.toLowerCase()) {
+                case "admin":
+                    redirectPage = "/Admin.jsp";
+                    break;
+                case "director":
+                case "itdirector":
+                    redirectPage = "/DirectorApprove.jsp"; 
+                    break;
+                case "technical":
+                    redirectPage = "/TechnicalApprove.jsp";
+                    break;
+                case "employee":
+                case "ITDirectorApprove":
+                    redirectPage = "/ITDirectorApprove.jsp"; 
+                    break;
+                case "staff":
+                    redirectPage = "/indexForm.jsp"; 
+                    break;
+                default:
+                    redirectPage = "/indexForm.jsp"; 
+            }
+        }
+        
+        // ส่งตัวกลับไปหน้าหลังบ้านของตัวเอง พร้อมแนบฟ้องแถมไปด้วยว่า error=nopermission
+        response.sendRedirect(request.getContextPath() + redirectPage + "?error=nopermission");
         return;
     }
 %>

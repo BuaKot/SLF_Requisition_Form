@@ -13,3 +13,13 @@
         return;
     }
 %>
+
+<%
+    String currentRole = (String) session.getAttribute("position");
+
+
+    if (currentRole == null || !AuthUtil.isAllowedForPage(currentRole, "adminPage")) {
+        response.sendRedirect(request.getContextPath() + "/mainForm.jsp?error=nopermission");
+        return;
+    }
+%>

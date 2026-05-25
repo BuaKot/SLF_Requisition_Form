@@ -27,8 +27,8 @@
 
 <%
     String currentRole = (session.getAttribute("position") != null) ? (String)session.getAttribute("position") : "Guest";
-    if (!currentRole.equalsIgnoreCase("Admin") && !currentRole.equalsIgnoreCase("Director")) {
-        response.sendRedirect("login.jsp");
+    if (!currentRole.equalsIgnoreCase("Admin")) {
+        response.sendRedirect("index.jsp");
         return;
     }
     

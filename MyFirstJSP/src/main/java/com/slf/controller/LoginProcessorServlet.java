@@ -43,12 +43,7 @@ public class LoginProcessorServlet extends HttpServlet {
                 newSession.setAttribute("position", emp.getPosition());
                 newSession.setAttribute("empid", emp.getEmpId());
                 
-                String role = emp.getPosition() != null ? emp.getPosition() : "";
-                if (role.equalsIgnoreCase("Admin") || role.equalsIgnoreCase("Director")) {
-                    response.sendRedirect(request.getContextPath() + "/Dashboard.jsp");
-                } else {
-                    response.sendRedirect(request.getContextPath() + "/Admin.jsp");
-                }
+                response.sendRedirect(request.getContextPath() + "/index.jsp");
             } else {
                 response.sendRedirect(request.getContextPath() + "/login.jsp?error=1");
             }

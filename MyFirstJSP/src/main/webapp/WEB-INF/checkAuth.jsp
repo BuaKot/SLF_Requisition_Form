@@ -14,6 +14,8 @@
                        : "Guest";
 
     if (_authRole.equals("Guest")) {
+
+
         response.sendRedirect(request.getContextPath() + "/login.jsp?error=unauthorized");
         return;
     }

@@ -21,10 +21,12 @@ public class AuthenticationFilter implements Filter {
             || path.startsWith("/processLogin") // the login processor (POST)
             || path.startsWith("/css/")         // your stylesheets
             || path.startsWith("/images/")
-            || path.startsWith("/exportPDF")     
+            || path.startsWith("/exportPDF")
+            || path.startsWith("/pdf_test.jsp")
+            || path.startsWith("/pdf_test_2.jsp")     
             || path.startsWith("/js/")          // any JavaScript files
-            || path.startsWith("/fonts/")
-            || path.startsWith("/logout")) {    // fonts if you have 'em
+            || path.startsWith("/fonts/")       // fonts if you have 'em
+            || path.startsWith("/logout")) {    
             chain.doFilter(req, res); // Let 'em through
             return;
         }

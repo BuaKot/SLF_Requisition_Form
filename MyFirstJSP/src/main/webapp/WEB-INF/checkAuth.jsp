@@ -19,7 +19,7 @@
 
 
     if (currentRole == null || !AuthUtil.isAllowedForPage(currentRole, "adminPage")) {
-        response.sendRedirect(request.getContextPath() + "/mainForm.jsp?error=nopermission");
+        response.sendRedirect(request.getContextPath() + "/index.jsp?error=nopermission");
         return;
     }
 %>

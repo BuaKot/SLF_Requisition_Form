@@ -78,7 +78,6 @@
             requestTitle = rsHeader.getString("TITLEFORM");
             requestDate = rsHeader.getString("REQDATE");
             deadline = rsHeader.getString("DDL");
-            status = rsHeader.getString("STATUS");
         }
 
         // ---------- Request items ----------

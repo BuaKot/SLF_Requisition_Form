@@ -189,7 +189,7 @@
             font-family: 'Sarabun', sans-serif;
             margin: 0;
             padding: 0;
-            font-size: 10pt;
+            font-size: 9.5pt;
             line-height: 1.4;
             color: #000;
             background-color: #fff;
@@ -234,7 +234,7 @@
 
         .head-table td.meta-cell {
             width: 25%;
-            font-size: 10pt;
+            font-size: 9.5pt;
             padding: 4px 8px;
         }
 
@@ -250,7 +250,7 @@
         }
 
         .section-title {
-            font-size: 10pt;
+            font-size: 9.5pt;
             font-weight: 700;
             border-bottom: 1.5px solid #000;
             margin: 12px 0 6px 0;
@@ -299,13 +299,13 @@
             border-bottom: 1px solid #000;
             padding: 6px 10px;
             text-align: left;
-            font-size: 10pt;
+            font-size: 9pt;
             font-weight: 700;
         }
 
         .request-card td {
             padding: 8px 10px;
-            font-size: 10pt;
+            font-size: 9pt;
         }
 
         .request-field {
@@ -426,7 +426,7 @@
         </td>
         <td class="title-cell">
             <strong style="font-size: 12pt; display: block; margin-bottom: 2px;">ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</strong>
-            <span style="font-size: 10pt; font-weight: 600; color: #222;">ใบขอให้ดำเนินการ / Requisition Form</span>
+            <span style="font-size: 9.5pt; font-weight: 600; color: #222;">ใบขอให้ดำเนินการ / Requisition Form</span>
         </td>
         <td class="meta-cell">
             <div><strong>เลขที่เอกสาร:</strong> #<%= formId %></div>

@@ -21,7 +21,7 @@ public class AuthenticationFilter implements Filter {
         if (path.equals("/login.jsp")
                 || path.equals("/processLogin")
                 || path.startsWith("/css/")
-                || path.startsWith("/pdf_test.jsp")
+                || path.startsWith("/pdf.jsp")
                 || path.startsWith("/images/")) {
 
             // ปล่อยผ่านไปได้เลย ไม่ต้องเช็คเซสชัน

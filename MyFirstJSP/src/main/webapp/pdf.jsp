@@ -182,14 +182,14 @@
 
         @page {
             size: A4;
-            margin: 10mm 12mm 10mm 12mm; /* Tightened margins for single-page print insurance */
+            margin: 10mm 12mm 10mm 12mm;
         }
 
         body {
             font-family: 'Sarabun', sans-serif;
             margin: 0;
             padding: 0;
-            font-size: 10pt; /* Defensive scaling for precise page budgeting */
+            font-size: 10pt;
             line-height: 1.4;
             color: #000;
             background-color: #fff;
@@ -327,11 +327,25 @@
             border: 1px solid #666;
             padding: 4px 8px;
             text-align: left;
+            vertical-align: middle;
         }
 
         .perm-table th {
             background-color: #fafafa;
             font-weight: 600;
+        }
+
+        .checkbox-item {
+            display: inline-block;
+            margin-right: 12px;
+            white-space: nowrap;
+        }
+
+        .checkbox-char {
+            font-family: 'Sarabun', Arial, sans-serif;
+            font-size: 11pt;
+            margin-right: 3px;
+            font-weight: bold;
         }
 
         .approval-matrix {
@@ -484,8 +498,8 @@
                     <table class="perm-table">
                         <thead>
                             <tr>
-                                <th style="width: 45%;">เส้นทางโฟลเดอร์ (Server / Folder Path)</th>
-                                <th style="width: 55%;">สิทธิ์การเข้าใช้งานที่ได้รับ (Permissions Assigned)</th>
+                                <th style="width: 40%;">เส้นทางโฟลเดอร์ (Server / Folder Path)</th>
+                                <th style="width: 60%;">สิทธิ์การเข้าใช้งานที่ได้รับ (Permissions Assigned)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -511,11 +525,11 @@
                                 <tr>
                                     <td>\\<%= serverName %>\<%= shareName %></td>
                                     <td>
-                                        <%= full ? "Full control " : "" %>
-                                        <%= modify ? "Modify " : "" %>
-                                        <%= readExec ? "Read & Exec " : "" %>
-                                        <%= read ? "Read " : "" %>
-                                        <%= write ? "Write" : "" %>
+                                        <span class="checkbox-item"><span class="checkbox-char"><%= full ? "&#9746;" : "&#9744;" %></span> Full control</span>
+                                        <span class="checkbox-item"><span class="checkbox-char"><%= modify ? "&#9746;" : "&#9744;" %></span> Modify</span>
+                                        <span class="checkbox-item"><span class="checkbox-char"><%= readExec ? "&#9746;" : "&#9744;" %></span> Read & Execute</span>
+                                        <span class="checkbox-item"><span class="checkbox-char"><%= read ? "&#9746;" : "&#9744;" %></span> Read</span>
+                                        <span class="checkbox-item"><span class="checkbox-char"><%= write ? "&#9746;" : "&#9744;" %></span> Write</span>
                                     </td>
                                 </tr>
                             <% } %>

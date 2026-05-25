@@ -40,10 +40,10 @@
                     redirectPage = "/ITDirectorApprove.jsp"; 
                     break;
                 case "staff":
-                    redirectPage = "/indexForm.jsp"; 
+                    redirectPage = "/index.jsp"; 
                     break;
                 default:
-                    redirectPage = "/indexForm.jsp"; 
+                    redirectPage = "/index.jsp"; 
             }
         }
         

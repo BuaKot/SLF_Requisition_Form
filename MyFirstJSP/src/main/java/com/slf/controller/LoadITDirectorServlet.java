@@ -1,6 +1,7 @@
 package com.slf.controller;
 
 import com.slf.dao.DBConnection;
+import com.slf.util.AuthUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,6 +26,12 @@ public class LoadITDirectorServlet extends HttpServlet {
         Integer empId = (Integer) session.getAttribute("loggedInEmpId");
         if (empId == null) {
             response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        String position = (String) session.getAttribute("position");
+        if (!AuthUtil.isAllowedForPage(position, "itDirectorApprove")) {
+            session.setAttribute("accessDeniedMessage", "คุณไม่มีสิทธิ์เข้าถึงหน้านี้");
+            response.sendRedirect(request.getContextPath() + "/");
             return;
         }
 

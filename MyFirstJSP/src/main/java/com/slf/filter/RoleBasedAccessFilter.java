@@ -16,8 +16,11 @@ import java.io.IOException;
     "/memberManage",
     "/directorApprove",           // if you've mapped this to a servlet
     "/DirectorApprove.jsp",
+    "/technicalApprove",
     "/TechnicalApprove.jsp",
+    "/itDirectorApprove",
     "/ITDirectorApprove.jsp",
+    "/process",
     "/Process.jsp",
     "/RequisitionDetail.jsp",
     "/RequisitionDetail_Comment.jsp",

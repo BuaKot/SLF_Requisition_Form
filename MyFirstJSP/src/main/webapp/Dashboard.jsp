@@ -1,3 +1,4 @@
+<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
@@ -182,16 +183,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IT Requisition - Executive Dashboard</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Sarabun', sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; overflow-x: hidden; }
-        .sticky-bar { position: sticky; top: 0; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; align-items: center; padding: 5px 20px; z-index: 999; }
-        .header-logos { display: flex; align-items: center; gap: 15px; margin-left: 15px; }
-        .header-logos img { height: 45px; width: auto; object-fit: contain; }
-        .sidebar { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #003366; overflow-x: hidden; transition: 0.3s; padding-top: 60px; }
-        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.1rem; color: #ecf0f1; display: block; font-weight: bold; }
-        .sidebar .closebtn { position: absolute; top: 10px; right: 25px; font-size: 2rem; cursor: pointer; color: white; }
         .container { max-width: 1300px; margin: 25px auto; padding: 0 20px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 3px solid #3272BB; padding-bottom: 10px; }
         .filter-container { background: white; border-radius: 15px; padding: 20px 25px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 15px; border: 1px solid #e0e0e0; }
@@ -219,25 +215,31 @@
 </head>
 <body>
 
-<div id="mySidebar" class="sidebar">
-    <span class="closebtn" onclick="closeNav()">&times;</span>
-    <a href="Admin.jsp"><i class="fa fa-home"></i> หน้าหลักระบบผู้ดูแล</a>
-    <a href="Dashboard.jsp"><i class="fa fa-chart-line"></i> รายงานแดชบอร์ด (BA)</a>
-    <a href="login.jsp" style="color: #ff7675; margin-top: 30px;"><i class="fa fa-sign-out-alt"></i> ออกจากระบบ</a>
-</div>
+<%@ include file="/WEB-INF/sidebar.jsp" %>
 
-<div class='sticky-bar'>
-    <i class="fa fa-bars" onclick="openNav()" style="font-size:1.8rem; cursor:pointer; padding: 10px;"></i>
-    <div class="header-logos">
-        <img src="images/SLF_logo.png" onerror="this.src='https://placehold.co/150x45?text=SLF+Logo'" alt="SLF Logo">
-        <img src="images/MoF.png" onerror="this.src='https://placehold.co/150x45?text=MoF+Logo'" alt="MoF Logo">
+<div id="main">
+    <div class="sticky-bar">
+        <i id="menuBtn" class="fa-solid fa-bars" onclick="toggleNav()"></i>
+        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
+        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
+
+        <div class="user-info">
+            <i class="fa fa-circle-user"></i>
+            <p>${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}</p>
+        </div>
+        <div class="contact-info">
+            <i class="fa-solid fa-circle-info"></i>
+            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+        </div>
     </div>
-    <p style="margin-left:auto; font-weight: bold; color: #3272BB;">คุณ: <%= employeeName %></p>
-</div>
 
 <div id="data-bridge" 
-     data-pie-labels='["<script>alert(\"XSS_Tested\")</script>", "Technical", "Development"]' 
-     data-pie-values='[13, 6, 5]' 
+     data-trend-labels='<%= escapeHtml(trendLabelsJson) %>'
+     data-trend-values='<%= escapeHtml(trendDataJson) %>'
+     data-pie-labels='<%= escapeHtml(pieLabelsJson) %>'
+     data-pie-values='<%= escapeHtml(pieValuesJson) %>'
+     data-bar-labels='<%= escapeHtml(barLabelsJson) %>'
+     data-bar-values='<%= escapeHtml(barValuesJson) %>'
      style="display: none;">
 </div>
 <div class="container">
@@ -296,10 +298,24 @@
         </div>
     </div>
 </div>
+</div>
 
 <script>
-    function openNav() { document.getElementById("mySidebar").style.width = "260px"; }
-    function closeNav() { document.getElementById("mySidebar").style.width = "0"; }
+    function toggleNav() {
+        var sidebar = document.getElementById("mySidebar");
+        var main = document.getElementById("main");
+
+        if (sidebar.style.width === "250px") {
+            sidebar.style.width = "0";
+            main.style.marginLeft = "0";
+            main.style.width = "100%";
+        } else {
+            sidebar.style.width = "250px";
+            main.style.marginLeft = "250px";
+            main.style.width = "calc(100% - 250px)";
+        }
+    }
+
     function downloadChart(id) {
         const a = document.createElement('a');
         a.href = document.getElementById(id).toDataURL('image/png');

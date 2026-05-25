@@ -22,7 +22,7 @@ public class SecurityHeadersFilter implements Filter {
         httpResponse.setHeader("X-Content-Type-Options", "nosniff");
         httpResponse.setHeader(
             "Content-Security-Policy",
-            "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn-uicons.flaticon.com; font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn-uicons.flaticon.com data:; img-src 'self' data:"
+            "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn-uicons.flaticon.com; font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn-uicons.flaticon.com data:; img-src 'self' data:"
         );
 
         chain.doFilter(request, response);

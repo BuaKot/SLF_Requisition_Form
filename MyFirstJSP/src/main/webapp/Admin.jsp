@@ -14,14 +14,14 @@
                   .replace("/", "&#x2F;");
     }
 %>
-
 <%
     String currentRole = (String) session.getAttribute("position");
     String employeeName = (String) session.getAttribute("loggedInEmpName");
 
-    if (currentRole == null || employeeName == null || !AuthUtil.isAllowedForPage(currentRole, "adminPage")) {
+    // เช็คสิทธิ์ว่ามีสิทธิ์ของหน้า Admin ไหม
+    if (currentRole == null || employeeName == null || !AuthUtil.isAllowedForPage(currentRole, "Admin")) {
         
-        String redirectPage = "/login.jsp"; 
+        String redirectPage = "/login.jsp"; // ค่าเริ่มต้นถ้าไม่พบตำแหน่งใดๆ
         
         if (currentRole != null) {
             switch (currentRole.toLowerCase()) {
@@ -35,9 +35,11 @@
                 case "technical":
                     redirectPage = "/TechnicalApprove.jsp";
                     break;
-                case "employee":
-                case "ITDirectorApprove":
+                case "itdirectorapprove": 
                     redirectPage = "/ITDirectorApprove.jsp"; 
+                    break;
+                case "employee": 
+                    redirectPage = "/index.jsp"; 
                     break;
                 case "staff":
                     redirectPage = "/index.jsp"; 
@@ -47,11 +49,11 @@
             }
         }
         
+        
         response.sendRedirect(request.getContextPath() + redirectPage + "?error=nopermission");
         return;
     }
 %>
-
 
 <!DOCTYPE html>
 <html lang="th">

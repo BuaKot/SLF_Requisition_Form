@@ -148,26 +148,42 @@ public class LookupDAO {
 
     // Correctly named password check (fixed typo)
     public Employee findEmployeeByEmpIdAndPassword(int empId, String password) throws SQLException {
-        String sql = "SELECT EMPID, EMPNAME, POSITION, SECID, PHONE, PASSWORD FROM EMPLOYEE WHERE EMPID = ?";
-        try (Connection conn = DBConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, empId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    String storedPassword = rs.getString("PASSWORD");
-                    // Use the utility to check
-                    if (PasswordUtil.check(password, storedPassword)) {
-                        Employee emp = new Employee();
-                        emp.setEmpId(rs.getInt("EMPID"));
-                        emp.setEmpName(rs.getString("EMPNAME"));
-                        emp.setPosition(rs.getString("POSITION"));
-                        emp.setSecId(rs.getInt("SECID"));
-                        emp.setPhone(rs.getString("PHONE"));
-                        return emp;
+        try (Connection conn = DBConnection.getConnection()) {
+            boolean hasActiveColumn = hasColumn(conn, "EMPLOYEE", "IS_ACTIVE");
+            String sql = hasActiveColumn
+                ? "SELECT EMPID, EMPNAME, POSITION, SECID, PHONE, PASSWORD FROM EMPLOYEE WHERE EMPID = ? AND NVL(IS_ACTIVE, 1) = 1"
+                : "SELECT EMPID, EMPNAME, POSITION, SECID, PHONE, PASSWORD FROM EMPLOYEE WHERE EMPID = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, empId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String storedPassword = rs.getString("PASSWORD");
+                        // Use the utility to check
+                        if (PasswordUtil.check(password, storedPassword)) {
+                            Employee emp = new Employee();
+                            emp.setEmpId(rs.getInt("EMPID"));
+                            emp.setEmpName(rs.getString("EMPNAME"));
+                            emp.setPosition(rs.getString("POSITION"));
+                            emp.setSecId(rs.getInt("SECID"));
+                            emp.setPhone(rs.getString("PHONE"));
+                            return emp;
+                        }
                     }
                 }
             }
         }
         return null;
+    }
+
+    private static boolean hasColumn(Connection conn, String tableName, String columnName) throws SQLException {
+        DatabaseMetaData metaData = conn.getMetaData();
+        try (ResultSet columns = metaData.getColumns(null, null, tableName, columnName)) {
+            if (columns.next()) {
+                return true;
+            }
+        }
+        try (ResultSet columns = metaData.getColumns(null, conn.getSchema(), tableName, columnName)) {
+            return columns.next();
+        }
     }
 }

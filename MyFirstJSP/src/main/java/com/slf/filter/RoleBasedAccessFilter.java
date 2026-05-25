@@ -12,6 +12,8 @@ import java.io.IOException;
 @WebFilter(urlPatterns = {
     "/Admin.jsp",
     "/Dashboard.jsp",
+    "/MemberManage.jsp",
+    "/memberManage",
     "/directorApprove",           // if you've mapped this to a servlet
     "/DirectorApprove.jsp",
     "/TechnicalApprove.jsp",
@@ -58,6 +60,8 @@ public class RoleBasedAccessFilter implements Filter {
             pageKey = "adminPage";   // add to PAGE_ROLES if needed
         } else if (path.equals("/Dashboard.jsp")) {
             pageKey = "dashboard";
+        } else if (path.equals("/memberManage") || path.equals("/MemberManage.jsp")) {
+            pageKey = "memberManage";
         }
 
         // If we have a pageKey, check permission

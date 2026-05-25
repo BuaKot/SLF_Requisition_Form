@@ -47,7 +47,6 @@
             }
         }
         
-        // ส่งตัวกลับไปหน้าหลังบ้านของตัวเอง พร้อมแนบฟ้องแถมไปด้วยว่า error=nopermission
         response.sendRedirect(request.getContextPath() + redirectPage + "?error=nopermission");
         return;
     }

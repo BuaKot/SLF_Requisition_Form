@@ -154,13 +154,19 @@
 
         // ---------- Header ----------
         String headerSQL =
+            "WITH latest_step AS ( " +
+            "    SELECT FORMID, STATE_STEP, " +
+            "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
+            "    FROM APPROVALINFO " +
+            ") " +
             "SELECT E.EMPNAME, E.PHONE, S.SECNAME, D.DEPTNAME, " +
             "RF.TITLEFORM, TO_CHAR(RF.REQUESTDATE, 'DD/MM/YYYY') AS REQDATE, " +
-            "TO_CHAR(RF.DEADLINE, 'DD/MM/YYYY') AS DDL, RF.STATUS " +
+            "TO_CHAR(RF.DEADLINE, 'DD/MM/YYYY') AS DDL, NVL(LS.STATE_STEP, 0) AS STATE_STEP " +
             "FROM REQUISITIONFORM RF " +
             "JOIN EMPLOYEE E ON RF.EMPID = E.EMPID " +
             "LEFT JOIN SECTION S ON E.SECID = S.SECID " +
             "LEFT JOIN DEPARTMENT D ON S.DEPTID = D.DEPTID " +
+            "LEFT JOIN latest_step LS ON LS.FORMID = RF.FORMID AND LS.RN = 1 " +
             "WHERE RF.FORMID = ?";
         psHeader = conn.prepareStatement(headerSQL);
         psHeader.setInt(1, formId);
@@ -177,7 +183,7 @@
             requestTitle = rsHeader.getString("TITLEFORM");
             requestDate = rsHeader.getString("REQDATE");
             deadline = rsHeader.getString("DDL");
-            status = rsHeader.getString("STATUS");
+            status = rsHeader.getString("STATE_STEP");
         }
 
         // ---------- Request items ----------

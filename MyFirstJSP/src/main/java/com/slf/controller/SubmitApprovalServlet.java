@@ -20,6 +20,9 @@ public class SubmitApprovalServlet extends HttpServlet {
     // zennnne แก้
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        // Set character encoding to handle Thai UTF-8 properly
+        request.setCharacterEncoding("UTF-8");
 
         // 1. Identify the reviewer from the session
         HttpSession session = request.getSession();

@@ -8,8 +8,18 @@
 
     String _authRole = (session.getAttribute("position") != null) ? (String)session.getAttribute("position") : "Guest";
     
-    if (_authRole.equals("Guest") || (!_authRole.equalsIgnoreCase("Admin") && !_authRole.equalsIgnoreCase("Director"))) {
+    if (_authRole.equals("Guest")) {
         response.sendRedirect(request.getContextPath() + "/login.jsp?error=unauthorized");
+        return;
+    }
+%>
+
+<%
+    String currentRole = (String) session.getAttribute("position");
+
+
+    if (currentRole == null || !AuthUtil.isAllowedForPage(currentRole, "adminPage")) {
+        response.sendRedirect(request.getContextPath() + "/mainForm.jsp?error=nopermission");
         return;
     }
 %>

@@ -66,6 +66,157 @@
         from { opacity: 0; transform: translateY(-20px); }
         to   { opacity: 1; transform: translateY(0); }
     }
+
+    .index-banner {
+        background: linear-gradient(135deg, #c8ecff 0%, #eaf7ff 100%);
+        border-bottom: 5px solid #3272BB;
+        padding: 42px 20px 36px;
+        text-align: center;
+        color: #003366;
+    }
+
+    .index-banner h1 {
+        margin: 0;
+        font-size: clamp(28px, 4.5vw, 42px);
+        line-height: 1.15;
+        font-weight: 800;
+    }
+
+    .index-banner h2 {
+        margin: 8px 0 0;
+        color: #003366;
+        font-size: clamp(20px, 3vw, 30px);
+        line-height: 1.2;
+        font-weight: 800;
+    }
+
+    .index-banner .subline {
+        margin: 12px auto 0;
+        max-width: 760px;
+        color: #385a78;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .index-content {
+        max-width: 1050px;
+        margin: 0 auto;
+        padding: 48px 24px 56px;
+    }
+
+    .main-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(260px, 1fr));
+        gap: 28px;
+    }
+
+    .action-card {
+        min-height: 270px;
+        background: #ffffff;
+        border: 2px solid #d2e5f6;
+        border-radius: 16px;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        text-decoration: none;
+        color: #003366;
+        box-shadow: 0 12px 28px rgba(0, 51, 102, 0.08);
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        border-color: #3272BB;
+        box-shadow: 0 18px 36px rgba(50, 114, 187, 0.16);
+    }
+
+    .action-top {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .action-icon {
+        width: 76px;
+        height: 76px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        background: #e8f2fb;
+        color: #3272BB;
+        font-size: 34px;
+        flex: 0 0 auto;
+    }
+
+    .action-card.primary {
+        background: #003366;
+        color: #ffffff;
+        border-color: #003366;
+    }
+
+    .action-card.primary .action-icon {
+        background: rgba(255, 255, 255, 0.16);
+        color: #ffffff;
+    }
+
+    .action-card h3 {
+        margin: 0;
+        font-size: 28px;
+        line-height: 1.1;
+        font-weight: 800;
+    }
+
+    .action-card p {
+        margin: 18px 0 0;
+        color: #60758a;
+        font-size: 17px;
+        line-height: 1.55;
+        font-weight: 700;
+    }
+
+    .action-card.primary p {
+        color: rgba(255, 255, 255, 0.82);
+    }
+
+    .action-footer {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 24px;
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .support-strip {
+        margin-top: 24px;
+        background: #ffffff;
+        border: 1px solid #d9e6f2;
+        border-radius: 12px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        color: #003366;
+        font-size: 17px;
+        font-weight: 800;
+        box-shadow: 0 8px 20px rgba(0, 51, 102, 0.05);
+    }
+
+    @media (max-width: 760px) {
+        .main-actions {
+            grid-template-columns: 1fr;
+        }
+
+        .index-content {
+            padding: 34px 16px 42px;
+        }
+
+        .action-card {
+            min-height: 230px;
+        }
+    }
 </style>
 </head>
 <body>
@@ -148,29 +299,39 @@
         
     </div>
 
-    <div class="blue-title">
+    <div class="index-banner">
         <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
         <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
+        <p class="subline">เลือกเมนูหลักเพื่อสร้างคำขอใหม่ หรือติดตามรายการที่ส่งเข้าสู่ระบบแล้ว</p>
     </div>
 
-    <div class="options-div">
+    <main class="index-content">
+        <div class="main-actions">
+            <a href="${pageContext.request.contextPath}/newForm" class="action-card primary">
+                <div>
+                    <div class="action-top">
+                        <div class="action-icon"><i class="fa-solid fa-plus"></i></div>
+                        <h3>สร้างฟอร์มใหม่</h3>
+                    </div>
+                    <p>เปิดใบคำขอใหม่ ระบุรายละเอียดงาน แนบรายการ และส่งเข้าสู่กระบวนการอนุมัติ</p>
+                </div>
+                <div class="action-footer">เริ่มสร้างคำขอ <i class="fa-solid fa-arrow-right"></i></div>
+            </a>
+
+            <a href="${pageContext.request.contextPath}/submit" class="action-card">
+                <div>
+                    <div class="action-top">
+                        <div class="action-icon"><i class="fa-solid fa-paper-plane"></i></div>
+                        <h3>ฟอร์มที่ส่งแล้ว</h3>
+                    </div>
+                    <p>ตรวจสอบสถานะ ติดตาม deadline และเปิดดูรายละเอียดของคำขอที่เคยส่งไว้</p>
+                </div>
+                <div class="action-footer">ดูรายการของฉัน <i class="fa-solid fa-arrow-right"></i></div>
+            </a>
+        </div>
+
         
-        <a href="${pageContext.request.contextPath}/newForm" class="option-box option-box-link">
-            <div class="option-pic">
-                <i class="fa-solid fa-plus"></i>
-            </div>
-            <h1>สร้างฟอร์มใหม่</h1>
-        </a>
-
-        <a href="${pageContext.request.contextPath}/submit" class="option-box option-box-link"><!-- zennnne แก้ -->
-            <div class="option-pic">
-                <i class="fa-solid fa-paper-plane"></i>
-            </div>
-            <h1>ฟอร์มที่ส่งแล้ว</h1>
-        </a>
-
-    </div>
-
+    </main>
 </div>
 
 <script>

@@ -14,7 +14,7 @@
     ResultSet rsHeader = null, rsItems = null, rsPerm = null, rsApproval = null;
 
     String fullName = "", sectionName = "", departmentName = "", phone = "";
-    String requestDate = "", deadline = "", requestTitle = "", status = "";
+    String requestDate = "", deadline = "", requestTitle = "";
     boolean found = false;
 
     java.util.List<java.util.Map<String,String>> items = new java.util.ArrayList<>();
@@ -60,7 +60,7 @@
         String headerSQL =
             "SELECT E.EMPNAME, E.PHONE, S.SECNAME, D.DEPTNAME, " +
             "RF.TITLEFORM, TO_CHAR(RF.REQUESTDATE, 'DD/MM/YYYY') AS REQDATE, " +
-            "TO_CHAR(RF.DEADLINE, 'DD/MM/YYYY') AS DDL, RF.STATUS " +
+            "TO_CHAR(RF.DEADLINE, 'DD/MM/YYYY') AS DDL " +
             "FROM REQUISITIONFORM RF " +
             "JOIN EMPLOYEE E ON RF.EMPID = E.EMPID " +
             "LEFT JOIN SECTION S ON E.SECID = S.SECID " +

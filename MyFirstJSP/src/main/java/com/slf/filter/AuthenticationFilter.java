@@ -16,26 +16,23 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         String path = request.getRequestURI().substring(request.getContextPath().length());
 
-        // 1. Allow access to login-related resources WITHOUT authentication
-        if (path.startsWith("/login")           // the login page servlet (GET)
-            || path.startsWith("/processLogin") // the login processor (POST)
-            || path.startsWith("/css/")         // your stylesheets
-            || path.startsWith("/images/")
-            || path.startsWith("/exportPDF")
-            || path.startsWith("/pdf_test.jsp")
-            || path.startsWith("/pdf_test_2.jsp")     
-            || path.startsWith("/js/")          // any JavaScript files
-            || path.startsWith("/fonts/")       // fonts if you have 'em
-            || path.startsWith("/logout")) {    
-            chain.doFilter(req, res); // Let 'em through
+        // ดักจับ: ถ้าสิ่งที่ขอมาคือหน้า login.jsp, พาร์ทล็อกอิน, หรือไฟล์ตกแต่ง
+        // CSS/Images ให้ปล่อยผ่านฉลุย!
+        if (path.equals("/login.jsp")
+                || path.equals("/processLogin")
+                || path.startsWith("/css/")
+                || path.startsWith("/images/")) {
+
+            // ปล่อยผ่านไปได้เลย ไม่ต้องเช็คเซสชัน
+            chain.doFilter(request, response);
             return;
         }
 
-        // 2. For everything else, check the session
-        HttpSession session = request.getSession(false); // don't create a new one if it doesn't exist
-        if (session == null || session.getAttribute("loggedInEmpId") == null) {
-            // No valid session – send 'em back to the login page
-            response.sendRedirect(request.getContextPath() + "/login");
+        // ---- หลังจากบรรทัดนี้ลงไป ค่อยเป็นโค้ดเช็ค Session ตามปกติของคุณ ----
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            // ถ้าไม่มีสิทธิ์จริง ๆ และไม่ใช่หน้า login ค่อยเตะกลับมาที่นี่
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 

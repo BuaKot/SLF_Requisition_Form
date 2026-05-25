@@ -1,3 +1,4 @@
+<%@ include file="checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.slf.util.AuthUtil" %>
@@ -16,9 +17,9 @@
 %>
 
 <%
-    // These are available to every scriptlet on the page
-    String currentRole = (String) session.getAttribute("position");
+   String currentRole = (String) session.getAttribute("position"); 
     String employeeName = (String) session.getAttribute("loggedInEmpName");
+%>
 
     // Now the security check
     if (currentRole == null || employeeName == null) {
@@ -27,7 +28,7 @@
     }
 %>
 
-<%@ include file="WEB-INF/checkAuth.jsp" %>
+
 
 <!DOCTYPE html>
 <html lang="th">

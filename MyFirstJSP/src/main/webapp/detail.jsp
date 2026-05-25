@@ -421,6 +421,9 @@
 
         <div class="btn-group">
             <button type="button" style="background-color:red;" class="btn btn-back" onclick="history.back()">ย้อนกลับ</button>
+            <a href="${pageContext.request.contextPath}/exportPDF?formId=<%= formId %>" target="_blank" class="btn" style="background-color:red;">
+                <i class="fa-solid fa-file-pdf"></i> ส่งออก PDF
+            </a>
         </div>
     </form>
 </div>

@@ -12,6 +12,7 @@
     <a href="${pageContext.request.contextPath}/submit"><i class="fa-solid fa-paper-plane" style="margin-right: 10px"></i>ฟอร์มที่ส่งแล้ว</a>
     <% if (showDashboard) { %>
     <a href="${pageContext.request.contextPath}/Dashboard.jsp"><i class="fa-solid fa-chart-line" style="margin-right: 10px"></i>Dashboard</a>
+    <a href="${pageContext.request.contextPath}/memberManage"><i class="fa-solid fa-users-gear" style="margin-right: 10px"></i>จัดการสมาชิก</a>
     <% } %>
     <a href="${pageContext.request.contextPath}/logout"><i class="fa-solid fa-arrow-right-from-bracket" style="margin-right: 10px"></i>ออกจากระบบ</a>
     <% if (showAdmin) { %>

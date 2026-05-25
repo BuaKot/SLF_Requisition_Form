@@ -30,6 +30,7 @@ public class AuthUtil {
                                                     "Cyber Security", "Research", "Reseach", "IT Planning")));
         PAGE_ROLES.put("adminPage",          ADMIN_ROLES);
         PAGE_ROLES.put("dashboard",          new HashSet<>(Arrays.asList("Admin")));
+        PAGE_ROLES.put("memberManage",       new HashSet<>(Arrays.asList("Admin")));
         PAGE_ROLES.put("requisitionDetail",  ADMIN_ROLES);
         // Add more keys as you create pages
     }

@@ -282,8 +282,8 @@
     </main>
 </div>
 
-<script>
-function toggleNav() {
+<script type="text/javascript">
+window.toggleNav = () => {
     var sidebar = document.getElementById("mySidebar");
     var main = document.getElementById("main");
 
@@ -296,9 +296,9 @@ function toggleNav() {
         main.style.marginLeft = "250px";
         main.style.width = "calc(100% - 250px)";
     }
-}
+};
 
-function editMember(empId, empName, position, secId, phone, status) {
+window.editMember = (empId, empName, position, secId, phone, status) => {
     document.getElementById('formHeading').textContent = 'แก้ไขข้อมูลสมาชิก';
     document.getElementById('formAction').value = 'update';
     document.getElementById('empId').value = empId;
@@ -312,22 +312,13 @@ function editMember(empId, empName, position, secId, phone, status) {
     document.getElementById('password').required = false;
     document.getElementById('passwordHint').textContent = '(เว้นว่างถ้าไม่เปลี่ยน)';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+};
 
-function resetMemberForm() {
-    document.getElementById('memberForm').reset();
-    document.getElementById('formHeading').textContent = 'เพิ่มสมาชิกใหม่';
-    document.getElementById('formAction').value = 'add';
-    document.getElementById('empId').readOnly = false;
-    document.getElementById('password').required = true;
-    document.getElementById('passwordHint').textContent = '(จำเป็นตอนเพิ่ม)';
-}
-
-function decodeHtml(value) {
+const decodeHtml = (value) => {
     var textarea = document.createElement('textarea');
     textarea.innerHTML = value || '';
     return textarea.value;
-}
+};
 </script>
 </body>
 </html>

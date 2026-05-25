@@ -1,27 +1,22 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.slf.util.AuthUtil" %>
 <%
+    // Prevent direct access to this include file
     String requestURI = request.getRequestURI();
     if (requestURI.endsWith("checkAuth.jsp")) {
-        response.sendError(HttpServletResponse.SC_NOT_FOUND); 
+        response.sendError(HttpServletResponse.SC_NOT_FOUND);
         return;
     }
 
-    String _authRole = (session.getAttribute("position") != null) ? (String)session.getAttribute("position") : "Guest";
-    
+    // Basic authentication: user must have a valid role
+    String _authRole = (session.getAttribute("position") != null)
+                       ? (String) session.getAttribute("position")
+                       : "Guest";
+
     if (_authRole.equals("Guest")) {
 
 
         response.sendRedirect(request.getContextPath() + "/login.jsp?error=unauthorized");
-        return;
-    }
-%>
-
-<%
-    String currentRole = (String) session.getAttribute("position");
-
-
-    if (currentRole == null || !AuthUtil.isAllowedForPage(currentRole, "adminPage")) {
-        response.sendRedirect(request.getContextPath() + "/index.jsp?error=nopermission");
         return;
     }
 %>

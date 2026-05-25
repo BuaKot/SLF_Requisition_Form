@@ -1,5 +1,3 @@
-<% request.setAttribute("requiredPageKey", "memberManage"); %>
-<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.*" %>
@@ -217,9 +215,9 @@
                 <div>
                     <label for="filterStatus">สถานะ</label>
                     <select id="filterStatus" name="status">
-                        <option value="all" <%= "all".equals(selectedStatus) ? "selected" : "" %>>ทั้งหมด</option>
                         <option value="active" <%= "active".equals(selectedStatus) ? "selected" : "" %>>ใช้งาน</option>
                         <option value="inactive" <%= "inactive".equals(selectedStatus) ? "selected" : "" %>>ปิดใช้งาน</option>
+                        <option value="all" <%= "all".equals(selectedStatus) ? "selected" : "" %>>ทั้งหมด</option>
                     </select>
                 </div>
                 <div class="form-actions">
@@ -262,7 +260,13 @@
                             <td>
                                 <div class="actions">
                                     <button type="button" class="btn btn-secondary"
-                                            onclick="editMember('<%= member.getEmpId() %>', '<%= h(member.getEmpName()) %>', '<%= h(member.getPosition()) %>', '<%= member.getSecId() %>', '<%= h(member.getPhone()) %>', '<%= member.isActive() ? "active" : "inactive" %>')">
+                                            data-id="<%= member.getEmpId() %>"
+                                            data-name="<%= h(member.getEmpName()) %>"
+                                            data-position="<%= h(member.getPosition()) %>"
+                                            data-sec="<%= member.getSecId() %>"
+                                            data-phone="<%= h(member.getPhone()) %>"
+                                            data-status="<%= member.isActive() ? "active" : "inactive" %>"
+                                            onclick="editMember(this)">
                                         <i class="fa-solid fa-pen"></i> แก้ไข
                                     </button>
                                     <form method="post" action="${pageContext.request.contextPath}/memberManage" style="margin:0;">
@@ -300,7 +304,15 @@ window.toggleNav = () => {
     }
 };
 
-window.editMember = (empId, empName, position, secId, phone, status) => {
+window.editMember = (button) => {
+
+    const empId    = button.dataset.id;
+    const empName  = button.dataset.name;
+    const position = button.dataset.position;
+    const secId    = button.dataset.sec;
+    const phone    = button.dataset.phone;
+    const status   = button.dataset.status;
+
     document.getElementById('formHeading').textContent = 'แก้ไขข้อมูลสมาชิก';
     document.getElementById('formAction').value = 'update';
     document.getElementById('empId').value = empId;

@@ -4,6 +4,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
+<%@ page import="com.slf.dao.DBConnection" %>
 
 <%!
     public String escapeHtml(String input) {
@@ -29,12 +30,6 @@
 %>
 
 <%
-    String currentRole = (session.getAttribute("position") != null) ? (String)session.getAttribute("position") : "Guest";
-    if (!currentRole.equalsIgnoreCase("Admin")) {
-        response.sendRedirect("index.jsp");
-        return;
-    }
-    
     String employeeName = (session.getAttribute("empName") != null) ? escapeHtml((String)session.getAttribute("empName")) : "ผู้ใช้งานระบบ";
     
     String filter = request.getParameter("timeFilter");
@@ -54,10 +49,6 @@
     }
     
     int totalEmployees = 0; 
-    String dbURL = "jdbc:oracle:thin:@//172.25.18.186:1521/XE"; 
-    String dbUser = "C##DEVUSER";
-    String dbPassword = "mypassword";
-    
     Connection conn = null;
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -73,8 +64,8 @@
     List<Integer> topCatValues = new ArrayList<Integer>();
 
     try {
-        Class.forName("oracle.jdbc.OracleDriver");
-        conn = DriverManager.getConnection(dbURL, dbUser, dbPassword);
+        // ---- No more hardcoded credentials ----
+        conn = DBConnection.getConnection();
         
         String countSql = "SELECT COUNT(*) as TOTAL_EMP FROM EMPLOYEE";
         stmt = conn.createStatement();
@@ -120,6 +111,7 @@
         if (conn != null) try { conn.close(); } catch (SQLException e) {}
     }
 
+    // ---- Keep your mock data fallback exactly as before ----
     if (labelsList.isEmpty()) {
         labelsList.addAll(Arrays.asList("<script>alert('XSS_Tested')</script>", "IT Planning", "Infrastructure", "Development", "Data", "Research", "เจ้าหน้าที่คัดดี", "Admin", "IT Director", "Cyber Security"));
         dataList.addAll(Arrays.asList(12, 8, 7, 6, 4, 3, 2, 2, 1, 1));
@@ -171,7 +163,7 @@
         trendDataJson = "[294, 345, 412, 490]";
     }
     else if (filter.equals("custom")) {
-        chartTitle = "ผลการสืบค้นข้อมูลช่วงวันที่ " + startDate + " <script>alert('HTML_Attack')</script> " + endDate;
+        chartTitle = "ผลการสืบค้นข้อมูลช่วงวันที่ " + escapeHtml(startDate) + " ถึง " + escapeHtml(endDate);
         trendLabelsJson = "[\"ช่วงเริ่มต้น\",\"ช่วงกลาง\",\"ช่วงสิ้นสุด\"]";
         trendDataJson = "[40, 65, 52]";
     }

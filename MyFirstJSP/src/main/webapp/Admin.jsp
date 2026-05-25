@@ -16,43 +16,8 @@
 %>
 <%
     String currentRole = (String) session.getAttribute("position");
-    String employeeName = (String) session.getAttribute("loggedInEmpName");
-
-    // เช็คสิทธิ์ว่ามีสิทธิ์ของหน้า Admin ไหม
-    if (currentRole == null || employeeName == null || !AuthUtil.isAllowedForPage(currentRole, "Admin")) {
-        
-        String redirectPage = "/login.jsp"; // ค่าเริ่มต้นถ้าไม่พบตำแหน่งใดๆ
-        
-        if (currentRole != null) {
-            switch (currentRole.toLowerCase()) {
-                case "admin":
-                    redirectPage = "/Admin.jsp";
-                    break;
-                case "director":
-                case "itdirector":
-                    redirectPage = "/DirectorApprove.jsp"; 
-                    break;
-                case "technical":
-                    redirectPage = "/TechnicalApprove.jsp";
-                    break;
-                case "itdirectorapprove": 
-                    redirectPage = "/ITDirectorApprove.jsp"; 
-                    break;
-                case "employee": 
-                    redirectPage = "/index.jsp"; 
-                    break;
-                case "staff":
-                    redirectPage = "/index.jsp"; 
-                    break;
-                default:
-                    redirectPage = "/index.jsp"; 
-            }
-        }
-        
-        
-        response.sendRedirect(request.getContextPath() + redirectPage + "?error=nopermission");
-        return;
-    }
+    // At this point the session is guaranteed to be valid (checkAuth.jsp already checked).
+    // If you need an extra safety net, keep the null check, but it's optional.
 %>
 
 <!DOCTYPE html>

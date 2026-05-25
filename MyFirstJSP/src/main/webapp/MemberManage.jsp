@@ -215,9 +215,9 @@
                 <div>
                     <label for="filterStatus">สถานะ</label>
                     <select id="filterStatus" name="status">
+                        <option value="all" <%= "all".equals(selectedStatus) ? "selected" : "" %>>ทั้งหมด</option>
                         <option value="active" <%= "active".equals(selectedStatus) ? "selected" : "" %>>ใช้งาน</option>
                         <option value="inactive" <%= "inactive".equals(selectedStatus) ? "selected" : "" %>>ปิดใช้งาน</option>
-                        <option value="all" <%= "all".equals(selectedStatus) ? "selected" : "" %>>ทั้งหมด</option>
                     </select>
                 </div>
                 <div class="form-actions">

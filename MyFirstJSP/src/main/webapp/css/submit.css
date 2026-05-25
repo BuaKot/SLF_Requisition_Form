@@ -1,4 +1,4 @@
-@font-face {
+﻿@font-face {
     font-family: 'DBHelvethaica';
     src: url("../fonts/DB\ HelvethaicaMon\ X\ Bd\ v3.2.ttf") format('ttf');
     font-weight: normal;
@@ -636,27 +636,27 @@ body {
     margin: 0;
 }
 
+/* zennnne แก้ */
 .detail-btn {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    background: transparent;
-    color: #3272BB;
+    background: #3272BB;
+    color: #fff;
     border: none;
     border-bottom: 1px solid #ebebeb;
     border-radius: 0;
-    padding: 0 16px;
+    padding: 0;
     font-size: 14px;
     font-family: 'DBHelvethaica', sans-serif;
     cursor: pointer;
     text-decoration: none;
-    transition: background 0.18s ease, color 0.18s ease;
+    transition: background 0.18s ease;
     white-space: nowrap;
     width: 100%;
 }
-.detail-btn:hover { background: #3272BB; color: #fff; }
+.detail-btn:hover { background: #2560a8; color: #fff; }
 /* zennnne แก้ */
 
 /* ================= PROGRESS TIMELINE ================= */
@@ -776,6 +776,13 @@ body {
     align-items: stretch;
     text-decoration: none;
 }
+
+/* zennnne แก้ */
+.card-action > a.detail-btn {
+    align-items: center;
+    justify-content: center;
+}
+/* zennnne แก้ */
 
 .card-action > a > .confirm-btn,
 .card-action > a > .edit-btn,

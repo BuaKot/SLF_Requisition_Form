@@ -1,4 +1,4 @@
-<%@ page isELIgnored="false" %>
+﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %>
 
@@ -134,13 +134,13 @@
                 <input type="checkbox" value="pending" checked> รอดำเนินการ
             </label>
             <label class="filter-label overdue-label">
-                <input type="checkbox" value="overdue"> หมดเขต
+                <input type="checkbox" value="overdue" checked> หมดเขต
             </label>
             <label class="filter-label rejected-label">
-                <input type="checkbox" value="rejected"> ไม่ผ่านการอนุมัติ
+                <input type="checkbox" value="rejected" checked> ไม่ผ่านการอนุมัติ
             </label>
             <label class="filter-label approved-label">
-                <input type="checkbox" value="approved"> อนุมัติแล้ว
+                <input type="checkbox" value="approved" checked> อนุมัติแล้ว
             </label>
         </div>
         <div class="sort-controls">
@@ -284,7 +284,7 @@
             <!-- zennnne แก้ — BOTTOM ROW: action buttons (full card width, 2 cols) -->
             <div class="card-action">
                 <a href="detail.jsp?id=<%= formId %>" class="detail-btn">
-                    <i class="fa-solid fa-file-lines"></i> รายละเอียด
+                    <span><i class="fa-solid fa-file-lines"></i> รายละเอียด</span>
                 </a>
 <%
                 if (stateStep < 0) {
@@ -464,7 +464,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // highlight active summary card based on current filter
     const initParams = new URLSearchParams(window.location.search);
-    const initShow   = (initParams.get('show') || 'pending').split(',').map(function(s) { return s.trim(); });
+    const initShow   = (initParams.get('show') || 'pending,overdue,rejected,approved').split(',').map(function(s) { return s.trim(); });
     document.querySelectorAll('.summary-card').forEach(function(card) {
         const f = card.dataset.filter;
         if (f === 'all') {

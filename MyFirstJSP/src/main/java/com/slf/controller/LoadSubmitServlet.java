@@ -27,7 +27,7 @@ public class LoadSubmitServlet extends HttpServlet {
         }
 
         String showParam = request.getParameter("show");
-        if (showParam == null || showParam.trim().isEmpty()) showParam = "pending";
+        if (showParam == null || showParam.trim().isEmpty()) showParam = "pending,overdue,rejected,approved";
         String sortParam = request.getParameter("sort");
         if (!"desc".equals(sortParam)) sortParam = "asc";
 
@@ -43,7 +43,7 @@ public class LoadSubmitServlet extends HttpServlet {
         List<String> statusConds = new ArrayList<>();
         for (String s : showParam.split(",")) {
             switch (s.trim().toLowerCase()) {
-                case "pending":  statusConds.add("(NVL(ls.STATE_STEP,0) BETWEEN 0 AND 4 AND RF.DEADLINE >= TRUNC(SYSDATE))"); break;
+                case "pending":  statusConds.add("(NVL(ls.STATE_STEP,0) BETWEEN 0 AND 4 AND (RF.DEADLINE IS NULL OR RF.DEADLINE >= TRUNC(SYSDATE)))"); break;
                 case "overdue":  statusConds.add("(NVL(ls.STATE_STEP,0) BETWEEN 0 AND 4 AND RF.DEADLINE < TRUNC(SYSDATE))");  break;
                 case "rejected": statusConds.add("NVL(ls.STATE_STEP,0) < 0");  break;
                 case "approved": statusConds.add("NVL(ls.STATE_STEP,0) >= 5"); break;

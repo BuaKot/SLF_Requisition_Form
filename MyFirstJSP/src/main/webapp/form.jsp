@@ -159,7 +159,7 @@
                                 </div>
                                 <div class="server-input-row sub-folder-row">
                                     <label>Sub Folder :</label>
-                                    <input type="text" name="subFolder[]" placeholder="โปรดระบุ Sub Folder" required data-maxbytes="500">
+                                    <input type="text" name="subFolder[]" placeholder="โปรดระบุ Sub Folder" data-maxbytes="500">
                                 </div>
                                 <div class="permission-checkbox-row">
                                     <label><input type="checkbox" name="subFolderPermission[]" value="Full control"> Full control</label>
@@ -646,7 +646,8 @@ if (requisitionForm) {
                 if (!serverNameInput || serverNameInput.value.trim() === "") missingFields.push("Server ช่องคำขอที่ " + requestNumber);
                 if (!serverFolderInput || serverFolderInput.value.trim() === "") missingFields.push("Folder ช่องคำขอที่ " + requestNumber);
                 if (!hasCheckedPermission(item, 'input[name^="folderPermission"]')) missingFields.push("สิทธิ์ Folder ช่องคำขอที่ " + requestNumber);
-//                if (!hasCheckedPermission(item, 'input[name^="subFolderPermission"]')) missingFields.push("สิทธิ์ Sub Folder ช่องคำขอที่ " + requestNumber); // Sub Folder ไม่บังคับเลือกสิทธิ์
+                if (subFolderInput && subFolderInput.value.trim() !== "" && !hasCheckedPermission(item, 'input[name^="subFolderPermission"]')) missingFields.push("สิทธิ์ Sub Folder ช่องคำขอที่ " + requestNumber);
+                if (subFolderInput && subFolderInput.value.trim() === "" && hasCheckedPermission(item, 'input[name^="subFolderPermission"]')) missingFields.push("Sub Folder ช่องคำขอที่ " + requestNumber);
             }
         });
 

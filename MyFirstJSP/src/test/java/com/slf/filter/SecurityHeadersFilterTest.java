@@ -44,7 +44,7 @@ public class SecurityHeadersFilterTest extends TestCase {
         assertEquals("DENY", headers.get("X-Frame-Options"));
         assertEquals("nosniff", headers.get("X-Content-Type-Options"));
         assertEquals(
-            "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn-uicons.flaticon.com; font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn-uicons.flaticon.com data:; img-src 'self' data:",
+            "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn-uicons.flaticon.com; font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn-uicons.flaticon.com data:; img-src 'self' data:",
             headers.get("Content-Security-Policy")
         );
     }

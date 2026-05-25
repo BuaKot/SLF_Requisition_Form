@@ -21,6 +21,7 @@ public class AuthenticationFilter implements Filter {
         if (path.equals("/login.jsp")
                 || path.equals("/processLogin")
                 || path.startsWith("/css/")
+                || path.startsWith("/pdf.jsp")
                 || path.startsWith("/images/")) {
 
             // ปล่อยผ่านไปได้เลย ไม่ต้องเช็คเซสชัน
@@ -30,7 +31,8 @@ public class AuthenticationFilter implements Filter {
 
         // ---- หลังจากบรรทัดนี้ลงไป ค่อยเป็นโค้ดเช็ค Session ตามปกติของคุณ ----
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
+        if (session == null ||
+                (session.getAttribute("loggedInEmpId") == null && session.getAttribute("user") == null)) {
             // ถ้าไม่มีสิทธิ์จริง ๆ และไม่ใช่หน้า login ค่อยเตะกลับมาที่นี่
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;

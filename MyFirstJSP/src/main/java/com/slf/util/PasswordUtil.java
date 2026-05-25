@@ -17,11 +17,14 @@ public class PasswordUtil {
      * Check a plain‑text password against a BCrypt hash.
      */
     public static boolean check(String plainPassword, String hashedPassword) {
-        if (hashedPassword == null || !hashedPassword.startsWith("$2a$")) {
-            // Not a valid BCrypt hash – fall back to plain text comparison for old entries?
-            // We'll handle that in the migration step.
+        if (plainPassword == null || hashedPassword == null) {
             return false;
         }
+
+        if (!hashedPassword.startsWith("$2a$")) {
+            return plainPassword.equals(hashedPassword);
+        }
+
         return BCrypt.checkpw(plainPassword, hashedPassword);
     }
 }

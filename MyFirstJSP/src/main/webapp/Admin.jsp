@@ -1,8 +1,8 @@
+<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.slf.util.AuthUtil" %>
 <%!
-    // Keep this if you want, or remove it.
     public String escapeHtml(Object input) {
         if (input == null) return "";
         String str = String.valueOf(input);
@@ -21,11 +21,10 @@
 
     if (currentRole == null || employeeName == null ||
             !AuthUtil.isAllowedForPage(currentRole, "adminPage")) {
-        response.sendRedirect(request.getContextPath() + "/login");
+        response.sendRedirect(request.getContextPath() + "/login.jsp?error=unauthorized");
         return;
     }
 %>
-
 
 
 <!DOCTYPE html>

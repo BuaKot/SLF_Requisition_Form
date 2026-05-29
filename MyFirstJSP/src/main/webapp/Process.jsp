@@ -5,16 +5,16 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-    // ดึงคำตอบจากหน้า login
     String userCaptcha = request.getParameter("captcha_input");
 
-    String correctAnswer = (String) session.getAttribute("captcha_secret");
+    String correctCaptcha = (String) session.getAttribute("captcha_secret");
 
     System.out.println("UserTexts: " + userCaptcha + " | RightAnswer: " + correctCaptcha);
 
-   if (userCaptcha == null || !userCaptcha.equalsIgnoreCase(correctCaptcha)) {
+    // 4. ด่านตรวจเช็กความถูกต้อง
+    if (userCaptcha == null || !userCaptcha.equalsIgnoreCase(correctCaptcha)) {
         response.sendRedirect("login.jsp?error=invalid_captcha");
-        return; 
+        return;
     }
 
 %>

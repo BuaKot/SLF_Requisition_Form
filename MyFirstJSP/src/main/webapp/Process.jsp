@@ -6,16 +6,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     // ดึงคำตอบจากหน้า login
-    String userInput = request.getParameter("captcha_user_input");
+    String userCaptcha = request.getParameter("captcha_input");
 
     String correctAnswer = (String) session.getAttribute("captcha_secret");
 
-    if (userInput == null || !userInput.toLowerCase().equals(correctAnswer)) {
-        out.print("<script>");
-        out.print("alert('รหัสความปลอดภัย (CAPTCHA) ไม่ถูกต้อง! กรุณาลองใหม่อีกครั้ง');");
-        out.print("window.location='login.jsp';");
-        out.print("</script>");
-        
+    System.out.println("UserTexts: " + userCaptcha + " | RightAnswer: " + correctCaptcha);
+
+   if (userCaptcha == null || !userCaptcha.equalsIgnoreCase(correctCaptcha)) {
+        response.sendRedirect("login.jsp?error=invalid_captcha");
         return; 
     }
 

@@ -1,5 +1,4 @@
 <%@ page isELIgnored="false" %>
-<!-- zennnne แก้ — ลบ checkAuth.jsp include ออกจาก login page (เป็นสาเหตุ redirect loop) -->
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.example.captcha.CaptchaBridge" %>
 <%

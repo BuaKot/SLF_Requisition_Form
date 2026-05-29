@@ -1,13 +1,16 @@
 <%@ page isELIgnored="false" %>
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.example.captcha.CaptchaBridge" %>
 <%
-    String captchaData = CaptchaBridge.generateCaptcha();
-    String[] parts = captchaData.split("\\|");
-    String captchaAnswer = parts[0];   
-    String captchaImage = parts[1];    
 
-    session.setAttribute("captcha_secret", captchaAnswer);
+    String captchaData = CaptchaBridge.generateCaptcha(); 
+    
+
+    String[] parts = captchaData.split("\\|");
+    String secretAnswer = parts[0];
+    String base64Image = parts[1];
+
+    session.setAttribute("captcha_secret", secretAnswer);
 %>
 
 <!DOCTYPE html>

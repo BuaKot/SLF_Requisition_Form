@@ -4,10 +4,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LoginAttemptService {
-    public static final int CAPTCHA_THRESHOLD = 3;
-    public static final int BLOCK_THRESHOLD = 10;
-    public static final long WINDOW_MILLIS = 5L * 60L * 1000L;
-    public static final long BLOCK_MILLIS = 15L * 60L * 1000L;
+    public static final int CAPTCHA_THRESHOLD = 4;
+    public static final int DELAY_THRESHOLD = 6;
+    public static final long DELAY_MILLIS = 30L * 1000L;
+    public static final long WINDOW_MILLIS = 10L * 60L * 1000L;
 
     private static final LoginAttemptService INSTANCE = new LoginAttemptService();
 
@@ -22,10 +22,17 @@ public class LoginAttemptService {
         return state.failures >= CAPTCHA_THRESHOLD;
     }
 
-    public boolean isBlocked(String clientIp, String empId) {
+    public boolean isDelayRequired(String clientIp, String empId) {
+        return getRemainingDelaySeconds(clientIp, empId) > 0;
+    }
+
+    public int getRemainingDelaySeconds(String clientIp, String empId) {
         AttemptState state = currentState(buildKey(clientIp, empId));
-        long now = System.currentTimeMillis();
-        return state.blockedUntil > now;
+        long remainingMillis = state.delayedUntil - System.currentTimeMillis();
+        if (remainingMillis <= 0) {
+            return 0;
+        }
+        return (int) Math.ceil(remainingMillis / 1000.0d);
     }
 
     public void recordFailure(String clientIp, String empId) {
@@ -34,8 +41,8 @@ public class LoginAttemptService {
         long now = System.currentTimeMillis();
         state.failures++;
         state.lastFailureAt = now;
-        if (state.failures >= BLOCK_THRESHOLD) {
-            state.blockedUntil = now + BLOCK_MILLIS;
+        if (state.failures >= DELAY_THRESHOLD) {
+            state.delayedUntil = now + DELAY_MILLIS;
         }
         attempts.put(key, state);
     }
@@ -62,8 +69,7 @@ public class LoginAttemptService {
 
         long now = System.currentTimeMillis();
         boolean windowExpired = state.lastFailureAt > 0 && now - state.lastFailureAt > WINDOW_MILLIS;
-        boolean blockActive = state.blockedUntil > now;
-        if (windowExpired && !blockActive) {
+        if (windowExpired) {
             attempts.remove(key);
             return new AttemptState();
         }
@@ -77,6 +83,6 @@ public class LoginAttemptService {
     private static class AttemptState {
         int failures;
         long lastFailureAt;
-        long blockedUntil;
+        long delayedUntil;
     }
 }

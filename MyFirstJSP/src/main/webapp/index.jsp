@@ -20,7 +20,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 2000;  /* higher than the sidebar (1001) */
+        z-index: 2000; 
     }
     .modal-box {
         background: white;

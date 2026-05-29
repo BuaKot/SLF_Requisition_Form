@@ -1,0 +1,12 @@
+[package]
+name = "rust_captcha"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+captcha = "0.0.9"
+jni = "0.21"
+
+[lib]
+name = "rust_captcha"
+crate-type = ["cdylib"]

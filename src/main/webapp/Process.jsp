@@ -2,22 +2,6 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat" %>
-
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    String userCaptcha = request.getParameter("captcha_input");
-
-    String correctCaptcha = (String) session.getAttribute("captcha_secret");
-
-    System.out.println("UserTexts: " + userCaptcha + " | RightAnswer: " + correctCaptcha);
-
-    // 4. ด่านตรวจเช็กความถูกต้อง
-    if (userCaptcha == null || !userCaptcha.equalsIgnoreCase(correctCaptcha)) {
-        response.sendRedirect("login.jsp?error=invalid_captcha");
-        return;
-    }
-
-%>
 <!DOCTYPE html>
 <html lang="th">
 <head>

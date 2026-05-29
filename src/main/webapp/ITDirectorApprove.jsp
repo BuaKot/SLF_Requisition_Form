@@ -2,28 +2,12 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat" %>
-
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    String userCaptcha = request.getParameter("captcha_input");
-
-    String correctCaptcha = (String) session.getAttribute("captcha_secret");
-
-    System.out.println("UserTexts: " + userCaptcha + " | RightAnswer: " + correctCaptcha);
-
-    // 4. ด่านตรวจเช็กความถูกต้อง
-    if (userCaptcha == null || !userCaptcha.equalsIgnoreCase(correctCaptcha)) {
-        response.sendRedirect("login.jsp?error=invalid_captcha");
-        return;
-    }
-
-%>
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายการใบขอให้ดำเนินการ (Process)</title>
+    <title>รายการใบขอให้ดำเนินการ (IT Director Approval)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
@@ -241,49 +225,42 @@
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-    Object loggedInEmpObj = session.getAttribute("loggedInEmpId");
-    if (loggedInEmpObj == null) {
-        loggedInEmpObj = session.getAttribute("empid");
-    }
     // zennnne แก้
-    if (loggedInEmpObj == null) {
+    Object itDirEmpObj = session.getAttribute("loggedInEmpId");
+    if (itDirEmpObj == null) {
+        itDirEmpObj = session.getAttribute("empid");
+    }
+    if (itDirEmpObj == null) {
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
+    int loggedInEmpId = Integer.parseInt(itDirEmpObj.toString());
     // zennnne แก้
-    int loggedInEmpId = Integer.parseInt(loggedInEmpObj.toString());
 
     try {
         conn = DBConnection.getConnection();
 
         // zennnne แก้
-        // เปลี่ยน 2 correlated subqueries → CTE เดียวที่ดึง STATE_STEP + DEV_EMPID จาก row ล่าสุด
+        // เปลี่ยน correlated subquery → CTE (เหมือน DirectorApprove.jsp)
         String sql =
-                "WITH latest_step AS ( " +
-                "    SELECT FORMID, STATE_STEP, DEV_EMPID, " +
-                "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
-                "    FROM APPROVALINFO " +
-                ") " +
-                "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, " +
-                "requester_s.SECNAME AS SECTION_NAME, requester_d.DEPTNAME AS DEPARTMENT_NAME " +
-                "FROM REQUISITIONFORM r " +
-                "JOIN latest_step ls ON ls.FORMID = r.FORMID AND ls.RN = 1 " +
-                "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
-                "LEFT JOIN SECTION requester_s ON e.SECID = requester_s.SECID " +
-                "LEFT JOIN DEPARTMENT requester_d ON requester_s.DEPTID = requester_d.DEPTID " +
-                "WHERE (SELECT ai.STATE_STEP " +
-                "       FROM APPROVALINFO ai " +
-                "       WHERE ai.FORMID = r.FORMID " +
-                "       ORDER BY ai.APPROVALID DESC " +
-                "       FETCH FIRST 1 ROWS ONLY) = 3 " +
-                "AND (SELECT ai.DEV_EMPID " +
-                "       FROM APPROVALINFO ai " +
-                "       WHERE ai.FORMID = r.FORMID " +
-                "       AND ai.DEV_EMPID IS NOT NULL " +
-                "       ORDER BY ai.APPROVALID DESC " +
-                "       FETCH FIRST 1 ROWS ONLY) = ? " +
-                "AND r.DEADLINE >= TRUNC(SYSDATE) " +
-                "ORDER BY r.FORMID DESC";
+            "WITH latest_step AS ( " +
+            "    SELECT FORMID, STATE_STEP, " +
+            "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
+            "    FROM APPROVALINFO " +
+            ") " +
+            "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, " +
+            "s.SECNAME AS SECTION_NAME, d.DEPTNAME AS DEPARTMENT_NAME " +
+            "FROM REQUISITIONFORM r " +
+            "JOIN latest_step ls ON ls.FORMID = r.FORMID AND ls.RN = 1 " +
+            "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
+            "LEFT JOIN SECTION s ON e.SECID = s.SECID " +
+            "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+            "LEFT JOIN SECTION assigned_s ON r.ASSIGN_SECID = assigned_s.SECID " +
+            "LEFT JOIN DEPARTMENT assigned_d ON assigned_s.DEPTID = assigned_d.DEPTID " +
+            "WHERE ls.STATE_STEP = 2 " +
+            "AND assigned_d.DEPTHEAD_EMPID = ? " +
+            "AND r.DEADLINE >= TRUNC(SYSDATE) " +
+            "ORDER BY r.FORMID DESC";
         // zennnne แก้
 
         pstmt = conn.prepareStatement(sql);
@@ -306,7 +283,7 @@
             String titleForm = rs.getString("TITLEFORM") != null ? rs.getString("TITLEFORM") : "-";
 %>
 
-    <div class="requisition-card" onclick="location.href='RequisitionDetail_Process.jsp?id=<%= formId %>'">
+    <div class="requisition-card" onclick="location.href='RequisitionDetail_ITDirector.jsp?id=<%= formId %>'">
         <div class="card-id-box">ใบขอให้ดำเนินการที่ <%= formId %></div>
 
         <div class="card-info">

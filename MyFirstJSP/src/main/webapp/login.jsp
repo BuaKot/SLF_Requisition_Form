@@ -1,15 +1,7 @@
 <%@ page isELIgnored="false" %>
 <!-- zennnne แก้ — ลบ checkAuth.jsp include ออกจาก login page (เป็นสาเหตุ redirect loop) -->
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="com.example.captcha.CaptchaBridge" %>
-<%
-    String captchaData = CaptchaBridge.generateCaptcha();
-    String[] parts = captchaData.split("\\|");
-    String captchaAnswer = parts[0];   
-    String captchaImage = parts[1];    
 
-    session.setAttribute("captcha_secret", captchaAnswer);
-%>
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -428,13 +420,6 @@
                 <div class="form-actions">
                     <div class="forgot-link">
                         ลืมรหัสผ่าน? <a href="#" onclick="return false;">คลิกที่นี่</a>
-                    </div>
-                    <div style="margin: 15px 0;">
-                        <label>รหัสความปลอดภัย:</label>
-                        <div style="margin: 5px 0;">
-                            <img src="<%= captchaImage %>" alt="CAPTCHA" style="border: 1px solid #ccc; display: block;"/>
-                        </div>
-                        <input type="text" name="captcha_user_input" placeholder="พิมพ์ตัวอักษรตามภาพ" required autocomplete="off" />
                     </div>
                     <button type="submit" class="btn-login">เข้าสู่ระบบ</button>
                 </div>

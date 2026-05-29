@@ -2,24 +2,6 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat" %>
-
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    // ดึงคำตอบจากหน้า login
-    String userInput = request.getParameter("captcha_user_input");
-
-    String correctAnswer = (String) session.getAttribute("captcha_secret");
-
-    if (userInput == null || !userInput.toLowerCase().equals(correctAnswer)) {
-        out.print("<script>");
-        out.print("alert('รหัสความปลอดภัย (CAPTCHA) ไม่ถูกต้อง! กรุณาลองใหม่อีกครั้ง');");
-        out.print("window.location='login.jsp';");
-        out.print("</script>");
-        
-        return; 
-    }
-
-%>
 <!DOCTYPE html>
 <html lang="th">
 <head>

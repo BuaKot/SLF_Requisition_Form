@@ -1,28 +1,58 @@
 use jni::JNIEnv;
 use jni::objects::{JClass, JString};
 use jni::sys::jstring;
-use captcha::Captcha;
-use captcha::filters::{Noise, Wave};
+use aes_gcm::{Aes256Gcm, Key, Nonce};
+use aes_gcm::aead::{Aead, KeyInit};
+use rand::RngCore;
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 
-//ทำเป็นตัวอักษรโดยการใช้ AES เข้าKey
-#[unsafe(no_mangle)]
-pub extern "system" fn Java_com_example_captcha_CaptchaBridge_generateCaptcha(
+const SECRET_KEY: &[u8; 32] = b"thisis32byteslongsecretkeyforaes"; 
+
+#[no_mangle]
+pub extern "system" fn Java_com_example_crypto_CryptoBridge_encrypt(
     mut env: JNIEnv,
     _class: JClass,
+    input: JString,
 ) -> jstring {
-    // Bua Random
-    let mut captcha = Captcha::new();
-    captcha
-        .add_chars(5)
-        .apply_filter(Noise::new(0.2)) 
-        .apply_filter(Wave::new(2.0, 10.0)); 
-
-    let text_answer = captcha.chars_as_string().to_lowercase(); 
-    let image_base64 = captcha.as_base64().unwrap(); 
-
-    let result = format!("{}|{}", text_answer, image_base64);
-
+    let input_str: String = env.get_string(&input).unwrap().into();
     
-    let output = env.new_string(result).expect("Failed to create Java string");
-    output.into_raw()
+    
+    let mut nonce_bytes = [0u8; 12];
+    rand::thread_rng().fill_bytes(&mut nonce_bytes);
+    
+    let key = Key::<Aes256Gcm>::from_slice(SECRET_KEY);
+    let cipher = Aes256Gcm::new(key);
+    let nonce = Nonce::from_slice(&nonce_bytes);
+    
+    let ciphertext = cipher.encrypt(nonce, input_str.as_bytes()).expect("Encryption failed");
+    
+
+    let mut combined = nonce_bytes.to_vec();
+    combined.extend(ciphertext);
+    
+    let base64_output = STANDARD.encode(combined);
+    
+    env.new_string(base64_output).unwrap().into_raw()
+}
+
+#[no_mangle]
+pub extern "system" fn Java_com_example_crypto_CryptoBridge_decrypt(
+    mut env: JNIEnv,
+    _class: JClass,
+    input: JString,
+) -> jstring {
+    let input_str: String = env.get_string(&input).unwrap().into();
+    
+    let combined = STANDARD.decode(input_str).expect("Invalid base64 input");
+
+    let (nonce_bytes, ciphertext) = combined.split_at(12);
+    
+    let key = Key::<Aes256Gcm>::from_slice(SECRET_KEY);
+    let cipher = Aes256Gcm::new(key);
+    let nonce = Nonce::from_slice(nonce_bytes);
+
+    let decrypted_bytes = cipher.decrypt(nonce, ciphertext).expect("Decryption failed");
+    let decrypted_str = String::from_utf8(decrypted_bytes).expect("Invalid UTF-8 sequence");
+    
+    env.new_string(decrypted_str).unwrap().into_raw()
 }

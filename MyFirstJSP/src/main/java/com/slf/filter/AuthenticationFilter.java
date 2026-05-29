@@ -19,6 +19,7 @@ public class AuthenticationFilter implements Filter {
         // ดักจับ: ถ้าสิ่งที่ขอมาคือหน้า login.jsp, พาร์ทล็อกอิน, หรือไฟล์ตกแต่ง
         // CSS/Images ให้ปล่อยผ่านฉลุย!
         if (path.equals("/login.jsp")
+                || path.equals("/login")
                 || path.equals("/processLogin")
                 || path.startsWith("/css/")
                 || path.startsWith("/pdf.jsp")

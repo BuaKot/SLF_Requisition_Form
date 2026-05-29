@@ -4,6 +4,10 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
 <%@ page import="com.slf.dao.DBConnection" %>
+<%@ page import="com.slf.dao.LookupDAO" %>
+<%@ page import="com.slf.model.Department" %>
+<%@ page import="com.slf.model.Section" %>
+<%@ page import="com.slf.model.Employee" %>
 
 <%!
     public String escapeHtml(String input) {
@@ -43,10 +47,20 @@
     if (startDate != null && !startDate.trim().equals("") && endDate != null && !endDate.trim().equals("")) {
         filter = "custom";
     } else {
-        startDate = ""; 
+        startDate = "";
         endDate = "";
     }
-    
+
+    // zennnne แก้
+    String deptIdStr = request.getParameter("deptId");
+    String secIdStr  = request.getParameter("secId");
+    String empIdStr  = request.getParameter("empId");
+    int filterDeptId = 0, filterSecId = 0, filterEmpId = 0;
+    try { if (deptIdStr != null && !deptIdStr.trim().isEmpty()) filterDeptId = Integer.parseInt(deptIdStr.trim()); } catch (NumberFormatException ignored) {}
+    try { if (secIdStr  != null && !secIdStr.trim().isEmpty())  filterSecId  = Integer.parseInt(secIdStr.trim());  } catch (NumberFormatException ignored) {}
+    try { if (empIdStr  != null && !empIdStr.trim().isEmpty())  filterEmpId  = Integer.parseInt(empIdStr.trim());  } catch (NumberFormatException ignored) {}
+    // zennnne แก้ end
+
     int totalEmployees = 0; 
     Connection conn = null;
     PreparedStatement pstmt = null;
@@ -61,6 +75,15 @@
     
     List<String> topCatLabels = new ArrayList<String>();
     List<Integer> topCatValues = new ArrayList<Integer>();
+    boolean barQueryOk = false; // zennnne แก้
+
+    // zennnne แก้
+    List<Department> allDepts    = new ArrayList<Department>();
+    List<Section>    allSections = new ArrayList<Section>();
+    List<Employee>   allEmps     = new ArrayList<Employee>();
+    String sectionsJson = "[]";
+    String empsJson     = "[]";
+    // zennnne แก้ end
 
     try {
         // ---- No more hardcoded credentials ----
@@ -80,23 +103,41 @@
             dataList.add(rs.getInt("TOTAL"));
         }
         
-        String top5Sql = "SELECT CATEGORY, COUNT(*) as TOTAL FROM REQUISITION GROUP BY CATEGORY ORDER BY TOTAL DESC FETCH FIRST 5 ROWS ONLY";
-        if (filter.equals("custom")) {
-            top5Sql = "SELECT CATEGORY, COUNT(*) as TOTAL FROM REQUISITION WHERE CREATE_DATE BETWEEN TO_DATE(?, 'YYYY-MM-DD') AND TO_DATE(?, 'YYYY-MM-DD') GROUP BY CATEGORY ORDER BY TOTAL DESC FETCH FIRST 5 ROWS ONLY";
+        // zennnne แก้
+        List<String> barWhere  = new ArrayList<String>();
+        List<Object> barParams = new ArrayList<Object>();
+        if (filter.equals("custom") && !startDate.isEmpty() && !endDate.isEmpty()) {
+            barWhere.add("RF.CREATE_DATE BETWEEN TO_DATE(?, 'YYYY-MM-DD') AND TO_DATE(?, 'YYYY-MM-DD')");
+            barParams.add(startDate); barParams.add(endDate);
         }
-        
+        if (filterEmpId > 0) {
+            barWhere.add("RF.EMPID = ?"); barParams.add(filterEmpId);
+        } else if (filterSecId > 0) {
+            barWhere.add("S.SECID = ?"); barParams.add(filterSecId);
+        } else if (filterDeptId > 0) {
+            barWhere.add("D.DEPTID = ?"); barParams.add(filterDeptId);
+        }
+        String barWhereStr = barWhere.isEmpty() ? "" : " WHERE " + String.join(" AND ", barWhere);
+        String top5Sql =
+            "SELECT RT.TYPENAME AS CATEGORY, COUNT(*) AS TOTAL " +
+            "FROM REQUISITIONFORM RF " +
+            "JOIN REQUEST REQ ON REQ.FORMID = RF.FORMID " +
+            "JOIN REQUESTTYPE RT ON RT.TYPEID = REQ.TYPEID " +
+            "JOIN EMPLOYEE E ON RF.EMPID = E.EMPID " +
+            "JOIN SECTION S ON E.SECID = S.SECID " +
+            "JOIN DEPARTMENT D ON S.DEPTID = D.DEPTID " +
+            barWhereStr +
+            " GROUP BY RT.TYPENAME ORDER BY TOTAL DESC FETCH FIRST 5 ROWS ONLY";
         pstmt2 = conn.prepareStatement(top5Sql);
-        if (filter.equals("custom")) { 
-            pstmt2.setString(1, startDate); 
-            pstmt2.setString(2, endDate); 
-        }
-        
+        for (int i = 0; i < barParams.size(); i++) { pstmt2.setObject(i + 1, barParams.get(i)); }
         rs2 = pstmt2.executeQuery();
         while (rs2.next()) {
             String rawCategory = rs2.getString("CATEGORY");
             topCatLabels.add(rawCategory != null ? escapeHtml(rawCategory) : "ทั่วไป");
             topCatValues.add(rs2.getInt("TOTAL"));
         }
+        barQueryOk = true; // zennnne แก้ — query สำเร็จ (0 rows ก็ถือว่าสำเร็จ ไม่ fallback mock)
+        // zennnne แก้ end
 
     } catch (Exception e) {
         System.out.println("DB Connection Status: Fallback Mode Enabled.");
@@ -110,12 +151,43 @@
         if (conn != null) try { conn.close(); } catch (SQLException e) {}
     }
 
+    // zennnne แก้
+    try {
+        LookupDAO lookupDao = new LookupDAO();
+        allDepts    = lookupDao.getAllDepartments();
+        allSections = lookupDao.getAllSections();
+        allEmps     = lookupDao.getAllEmployees();
+
+        StringBuilder sbSec = new StringBuilder("[");
+        for (int i = 0; i < allSections.size(); i++) {
+            if (i > 0) sbSec.append(",");
+            Section sc = allSections.get(i);
+            sbSec.append("{\"secId\":").append(sc.getSecId())
+                 .append(",\"secName\":\"").append(escapeJson(sc.getSecName())).append("\"")
+                 .append(",\"deptId\":").append(sc.getDeptId()).append("}");
+        }
+        sbSec.append("]");
+        sectionsJson = sbSec.toString();
+
+        StringBuilder sbEmp = new StringBuilder("[");
+        for (int i = 0; i < allEmps.size(); i++) {
+            if (i > 0) sbEmp.append(",");
+            Employee empItem = allEmps.get(i);
+            sbEmp.append("{\"empId\":").append(empItem.getEmpId())
+                 .append(",\"empName\":\"").append(escapeJson(empItem.getEmpName())).append("\"")
+                 .append(",\"secId\":").append(empItem.getSecId()).append("}");
+        }
+        sbEmp.append("]");
+        empsJson = sbEmp.toString();
+    } catch (Exception e) { /* fallback: empty lists */ }
+    // zennnne แก้ end
+
     // ---- Keep your mock data fallback exactly as before ----
     if (labelsList.isEmpty()) {
         labelsList.addAll(Arrays.asList("<script>alert('XSS_Tested')</script>", "IT Planning", "Infrastructure", "Development", "Data", "Research", "เจ้าหน้าที่คัดดี", "Admin", "IT Director", "Cyber Security"));
         dataList.addAll(Arrays.asList(12, 8, 7, 6, 4, 3, 2, 2, 1, 1));
     }
-    if (topCatLabels.isEmpty()) {
+    if (topCatLabels.isEmpty() && !barQueryOk) { // zennnne แก้ — fallback เฉพาะเมื่อ DB พัง ไม่ใช่ผลลัพธ์ว่างจาก filter
         topCatLabels.addAll(Arrays.asList("ปัญหา Network", "ขอสิทธิ์เข้าใช้งาน", "เบิกอุปกรณ์ IT", "ซ่อมบำรุง HW", "ลงโปรแกรม/ซอฟต์แวร์"));
         topCatValues.addAll(Arrays.asList(45, 38, 25, 20, 15));
     }
@@ -166,6 +238,12 @@
         trendLabelsJson = "[\"ช่วงเริ่มต้น\",\"ช่วงกลาง\",\"ช่วงสิ้นสุด\"]";
         trendDataJson = "[40, 65, 52]";
     }
+
+    // zennnne แก้
+    String drillSuffix = (filterDeptId > 0 ? "&deptId=" + filterDeptId : "") +
+                         (filterSecId  > 0 ? "&secId="  + filterSecId  : "") +
+                         (filterEmpId  > 0 ? "&empId="  + filterEmpId  : "");
+    // zennnne แก้ end
 %>
 
 
@@ -204,6 +282,12 @@
         .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .chart-header h3 { color: #003366; margin: 0; font-size: 1.1rem; }
         .btn-export { background: #f0f3f5; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; color: #555; }
+        /* zennnne แก้ */
+        .bar-filter-select { padding: 6px 10px; border: 1px solid #ccc; border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: 0.88rem; color: #333; background: #f8fafc; cursor: pointer; outline: none; min-width: 110px; }
+        .bar-filter-select:focus { border-color: #3272BB; }
+        @keyframes slideInFilter { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+        .bar-filter-reveal { animation: slideInFilter 0.2s ease; }
+        /* zennnne แก้ end */
     </style>
 </head>
 <body>
@@ -226,13 +310,15 @@
         </div>
     </div>
 
-<div id="data-bridge" 
+<div id="data-bridge"
      data-trend-labels='<%= escapeHtml(trendLabelsJson) %>'
      data-trend-values='<%= escapeHtml(trendDataJson) %>'
      data-pie-labels='<%= escapeHtml(pieLabelsJson) %>'
      data-pie-values='<%= escapeHtml(pieValuesJson) %>'
      data-bar-labels='<%= escapeHtml(barLabelsJson) %>'
      data-bar-values='<%= escapeHtml(barValuesJson) %>'
+     data-sections='<%= escapeHtml(sectionsJson) %>'
+     data-emps='<%= escapeHtml(empsJson) %>'
      style="display: none;">
 </div>
 <div class="container">
@@ -245,25 +331,32 @@
         <div class="filter-row">
             <div class="filter-title"><i class="fa-solid fa-filter" style="color: #3272BB;"></i> เลือกมุมมองข้อมูลด่วน:</div>
             <div class="filter-buttons">
-                <a href="Dashboard.jsp?timeFilter=7days" class="btn-filter <%= filter.equals("7days") ? "active" : "" %>">7 วันย้อนหลัง</a>
-                <a href="Dashboard.jsp?timeFilter=30days" class="btn-filter <%= filter.equals("30days") ? "active" : "" %>">30 วันย้อนหลัง</a>
-                <a href="Dashboard.jsp?timeFilter=quarters" class="btn-filter <%= filter.equals("quarters") ? "active" : "" %>">มุมมองรายไตรมาส</a>
-                <a href="Dashboard.jsp?timeFilter=forecast" class="btn-filter <%= filter.equals("forecast") ? "active" : "" %>" style="border-color: #2ecc71; color: <%= filter.equals("forecast") ? "#fff" : "#27ae60" %>;">
+                <!-- zennnne แก้ -->
+                <a href="Dashboard.jsp?timeFilter=7days<%= drillSuffix %>" class="btn-filter <%= filter.equals("7days") ? "active" : "" %>">7 วันย้อนหลัง</a>
+                <a href="Dashboard.jsp?timeFilter=30days<%= drillSuffix %>" class="btn-filter <%= filter.equals("30days") ? "active" : "" %>">30 วันย้อนหลัง</a>
+                <a href="Dashboard.jsp?timeFilter=quarters<%= drillSuffix %>" class="btn-filter <%= filter.equals("quarters") ? "active" : "" %>">มุมมองรายไตรมาส</a>
+                <a href="Dashboard.jsp?timeFilter=forecast<%= drillSuffix %>" class="btn-filter <%= filter.equals("forecast") ? "active" : "" %>" style="border-color: #2ecc71; color: <%= filter.equals("forecast") ? "#fff" : "#27ae60" %>;">
                     <i class="fa-solid fa-wand-magic-sparkles"></i> ทำนายผลอนาคต 3 ปี
                 </a>
+                <!-- zennnne แก้ end -->
             </div>
         </div>
         
         <div class="filter-row" style="border-top: 1px solid #f0f0f0; padding-top: 12px;">
             <div class="filter-title" style="font-size: 0.9rem; color:#555;"><i class="fa-regular fa-calendar-days" style="color: #3272BB;"></i> หรือกำหนดช่วงเวลาด้วยตนเอง:</div>
             <form action="Dashboard.jsp" method="GET" class="date-picker-form">
+                <!-- zennnne แก้ -->
+                <% if (filterDeptId > 0) { %><input type="hidden" name="deptId" value="<%= filterDeptId %>"><% } %>
+                <% if (filterSecId  > 0) { %><input type="hidden" name="secId"  value="<%= filterSecId  %>"><% } %>
+                <% if (filterEmpId  > 0) { %><input type="hidden" name="empId"  value="<%= filterEmpId  %>"><% } %>
+                <!-- zennnne แก้ end -->
                 <label style="font-size:0.85rem; color:#666;">เริ่มต้น:</label>
                 <input type="date" name="startDate" value="<%= escapeHtml(startDate) %>" class="date-input" required>
                 <label style="font-size:0.85rem; color:#666;">สิ้นสุด:</label>
                 <input type="date" name="endDate" value="<%= escapeHtml(endDate) %>" class="date-input" required>
                 <button type="submit" class="btn-submit-date"><i class="fa fa-search"></i> ค้นหา</button>
                 <% if(filter.equals("custom")) { %>
-                    <a href="Dashboard.jsp?timeFilter=30days" style="color:#e74c3c; font-size:0.85rem; font-weight:bold; text-decoration:none; margin-left:5px;"><i class="fa fa-times-circle"></i> ล้างตัวกรอง</a>
+                    <a href="Dashboard.jsp?timeFilter=30days<%= drillSuffix %>" style="color:#e74c3c; font-size:0.85rem; font-weight:bold; text-decoration:none; margin-left:5px;"><i class="fa fa-times-circle"></i> ล้างตัวกรอง</a>
                 <% } %>
             </form>
         </div>
@@ -286,7 +379,57 @@
             <canvas id="pieChart"></canvas>
         </div>
         <div class="chart-card full-chart">
-            <div class="chart-header"><h3><i class="fa fa-trophy" style="color:#f1c40f;"></i> 5 อันดับประเภทใบคำขอที่ถูกแจ้งเข้ามามากที่สุด</h3><button class="btn-export" onclick="downloadChart('topBarChart')"><i class="fa fa-camera"></i></button></div>
+            <!-- zennnne แก้ -->
+            <div class="chart-header" style="flex-wrap:wrap; gap:10px;">
+                <h3><i class="fa fa-trophy" style="color:#f1c40f;"></i> 5 อันดับประเภทใบคำขอที่ถูกแจ้งเข้ามามากที่สุด</h3>
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <select id="deptSelect" class="bar-filter-select" onchange="cascadeSection(this)">
+                            <option value="">แผนก</option>
+                            <% for (Department dept : allDepts) { %>
+                                <option value="<%= dept.getDeptId() %>"
+                                    <%= (filterDeptId == dept.getDeptId() ? "selected" : "") %>>
+                                    <%= escapeHtml(dept.getDeptName()) %>
+                                </option>
+                            <% } %>
+                        </select>
+
+                        <select id="secSelect" class="bar-filter-select bar-filter-reveal"
+                                style="<%= filterDeptId > 0 ? "" : "display:none;" %>"
+                                onchange="cascadeEmployee(this)">
+                            <option value="">ส่วน</option>
+                            <% for (Section sec : allSections) {
+                                   if (filterDeptId == 0 || sec.getDeptId() == filterDeptId) { %>
+                                <option value="<%= sec.getSecId() %>"
+                                    <%= (filterSecId == sec.getSecId() ? "selected" : "") %>>
+                                    <%= escapeHtml(sec.getSecName()) %>
+                                </option>
+                            <% } } %>
+                        </select>
+
+                        <select id="empSelect" class="bar-filter-select bar-filter-reveal"
+                                style="<%= filterSecId > 0 ? "" : "display:none;" %>"
+                                onchange="fetchBarData()">
+                            <option value="">คน</option>
+                            <% for (Employee empItem : allEmps) {
+                                   if (filterSecId == 0 || empItem.getSecId() == filterSecId) { %>
+                                <option value="<%= empItem.getEmpId() %>"
+                                    <%= (filterEmpId == empItem.getEmpId() ? "selected" : "") %>>
+                                    <%= escapeHtml(empItem.getEmpName()) %>
+                                </option>
+                            <% } } %>
+                        </select>
+
+                        <a id="clearBarBtn" href="javascript:clearBarFilter()"
+                           style="color:#e74c3c; font-size:0.85rem; font-weight:bold; text-decoration:none;
+                                  <%= (filterDeptId > 0 || filterSecId > 0 || filterEmpId > 0) ? "" : "display:none;" %>">
+                            <i class="fa fa-times-circle"></i> ล้าง
+                        </a>
+                    </div>
+                    <button class="btn-export" onclick="downloadChart('topBarChart')"><i class="fa fa-camera"></i></button>
+                </div>
+            </div>
+            <!-- zennnne แก้ end -->
             <canvas id="topBarChart" style="max-height: 320px;"></canvas>
         </div>
     </div>
@@ -323,7 +466,84 @@
     const barLabels = JSON.parse(db.getAttribute('data-bar-labels'));
     const barValues = JSON.parse(db.getAttribute('data-bar-values'));
 
-    const currentFilter = '<%= filter %>';
+    // zennnne แก้
+    const allSectionsData = JSON.parse(db.getAttribute('data-sections'));
+    const allEmpsData     = JSON.parse(db.getAttribute('data-emps'));
+
+    function cascadeSection(deptSel) {
+        const deptId = parseInt(deptSel.value) || 0;
+        const secSel = document.getElementById('secSelect');
+        const empSel = document.getElementById('empSelect');
+        secSel.innerHTML = '<option value="">ส่วน</option>';
+        empSel.innerHTML = '<option value="">คน</option>';
+        empSel.style.display = 'none';
+        if (deptId) {
+            allSectionsData.filter(s => s.deptId === deptId).forEach(s => {
+                secSel.add(new Option(s.secName, s.secId));
+            });
+            secSel.style.display = 'inline-block';
+        } else {
+            secSel.style.display = 'none';
+        }
+        fetchBarData();
+    }
+
+    function cascadeEmployee(secSel) {
+        const secId = parseInt(secSel.value) || 0;
+        const empSel = document.getElementById('empSelect');
+        empSel.innerHTML = '<option value="">คน</option>';
+        if (secId) {
+            allEmpsData.filter(e => e.secId === secId).forEach(e => {
+                empSel.add(new Option(e.empName, e.empId));
+            });
+            empSel.style.display = 'inline-block';
+        } else {
+            empSel.style.display = 'none';
+        }
+        fetchBarData();
+    }
+
+    function fetchBarData() {
+        const deptId = document.getElementById('deptSelect').value || '';
+        const secId  = document.getElementById('secSelect').value  || '';
+        const empId  = document.getElementById('empSelect').value  || '';
+
+        const params = new URLSearchParams({ timeFilter: currentFilter, deptId, secId, empId });
+        if (currentFilter === 'custom') {
+            params.set('startDate', currentStartDate);
+            params.set('endDate',   currentEndDate);
+        }
+
+        fetch(contextPath + '/dashboardBarData?' + params.toString())
+            .then(r => r.json())
+            .then(data => {
+                topBarChartInstance.data.labels              = data.labels;
+                topBarChartInstance.data.datasets[0].data   = data.values;
+                topBarChartInstance.update();
+                document.getElementById('clearBarBtn').style.display =
+                    (deptId || secId || empId) ? 'inline' : 'none';
+            })
+            .catch(() => {}); // DB down — chart stays as-is
+    }
+
+    function clearBarFilter() {
+        document.getElementById('deptSelect').value = '';
+        const secSel = document.getElementById('secSelect');
+        const empSel = document.getElementById('empSelect');
+        secSel.innerHTML = '<option value="">ส่วน</option>';
+        secSel.style.display = 'none';
+        empSel.innerHTML = '<option value="">คน</option>';
+        empSel.style.display = 'none';
+        fetchBarData();
+    }
+    // zennnne แก้ end
+
+    // zennnne แก้
+    const contextPath      = '<%= request.getContextPath() %>';
+    const currentFilter    = '<%= filter %>';
+    const currentStartDate = '<%= escapeHtml(startDate) %>';
+    const currentEndDate   = '<%= escapeHtml(endDate) %>';
+    // zennnne แก้ end
     const lineColor = currentFilter === 'forecast' ? '#2ecc71' : '#3272BB';
     const areaColor = currentFilter === 'forecast' ? 'rgba(46, 204, 113, 0.1)' : 'rgba(50, 114, 187, 0.1)';
     
@@ -345,7 +565,7 @@
         options: { plugins: { legend: { position: 'bottom' } } }
     });
 
-    new Chart(document.getElementById('topBarChart'), {
+    const topBarChartInstance = new Chart(document.getElementById('topBarChart'), { // zennnne แก้
         type: 'bar',
         data: {
             labels: barLabels,

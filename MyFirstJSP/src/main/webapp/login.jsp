@@ -1,18 +1,4 @@
 <%@ page isELIgnored="false" %>
-<<<<<<< Updated upstream
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="com.example.captcha.CaptchaBridge" %>
-<%
-
-    String captchaData = CaptchaBridge.generateCaptcha(); 
-    
-
-    String[] parts = captchaData.split("\\|");
-    String secretAnswer = parts[0];
-    String base64Image = parts[1];
-
-    session.setAttribute("captcha_secret", secretAnswer);
-=======
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.slf.security.CaptchaChallenge" %>
 <%@ page import="com.slf.security.JavaCaptchaService" %>
@@ -28,7 +14,7 @@
             waitSeconds = 0;
         }
     }
->>>>>>> Stashed changes
+
 %>
 
 <!DOCTYPE html>
@@ -234,6 +220,65 @@
             box-shadow: 0 0 0 3px rgba(108, 184, 255, 0.18);
         }
 
+        .captcha-panel {
+            display: grid;
+            grid-template-columns: 220px minmax(0, 1fr);
+            gap: 16px;
+            align-items: stretch;
+            margin: 4px 0 24px;
+            padding: 16px;
+            border: 1px solid #d8e8f7;
+            border-radius: 6px;
+            background: #f7fbff;
+        }
+
+        .captcha-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 82px;
+            border: 1px solid #c7dff3;
+            border-radius: 5px;
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        .captcha-visual img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border: 0;
+        }
+
+        .captcha-input-wrap label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            color: #063a6f;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .captcha-input-wrap input[type="text"] {
+            width: 100%;
+            min-height: 52px;
+            padding: 12px 16px;
+            border: 1px solid var(--line);
+            border-radius: 5px;
+            background: #ffffff;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 1.02rem;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .captcha-input-wrap input[type="text"]:focus {
+            border-color: var(--focus);
+            box-shadow: 0 0 0 3px rgba(108, 184, 255, 0.18);
+        }
+
         .error-msg {
             display: flex;
             align-items: center;
@@ -394,6 +439,10 @@
             .btn-login {
                 max-width: none;
             }
+
+            .captcha-panel {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 520px) {
@@ -474,20 +523,23 @@
                     </div>
                 </div>
 
+                <% if (captchaRequired) { %>
+                <div class="captcha-panel">
+                    <div class="captcha-visual">
+                        <img src="<%= captcha.getImageDataUrl() %>" alt="CAPTCHA">
+                    </div>
+                    <div class="captcha-input-wrap">
+                        <label for="captchaAnswer"><i class="fa-solid fa-shield-halved"></i> รหัสความปลอดภัย</label>
+                        <input id="captchaAnswer" type="text" name="captchaAnswer" placeholder="พิมพ์ตัวอักษรตามภาพ" required autocomplete="off">
+                        <input type="hidden" name="captchaToken" value="<%= captcha.getToken() %>">
+                    </div>
+                </div>
+                <% } %>
+
                 <div class="form-actions">
                     <div class="forgot-link">
                         ลืมรหัสผ่าน? <a href="#" onclick="return false;">คลิกที่นี่</a>
                     </div>
-                    <% if (captchaRequired) { %>
-                    <div style="margin: 15px 0;">
-                        <label>รหัสความปลอดภัย:</label>
-                        <div style="margin: 5px 0;">
-                            <img src="<%= captcha.getImageDataUrl() %>" alt="CAPTCHA" style="border: 1px solid #ccc; display: block;"/>
-                        </div>
-                        <input type="hidden" name="captchaToken" value="<%= captcha.getToken() %>" />
-                        <input type="text" name="captchaAnswer" placeholder="พิมพ์ตัวอักษรตามภาพ" required autocomplete="off" />
-                    </div>
-                    <% } %>
                     <button type="submit" class="btn-login" data-wait-seconds="<%= waitSeconds %>" <%= waitSeconds > 0 ? "disabled" : "" %>>เข้าสู่ระบบ</button>
                 </div>
             </form>

@@ -22,6 +22,9 @@ public class LoginCustomCaptchaPageTest extends TestCase {
         assertTrue(source.contains("name=\"captchaToken\""));
         assertTrue(source.contains("name=\"captchaAnswer\""));
         assertTrue(source.contains("captcha.getImageDataUrl()"));
+        assertTrue(source.contains("captcha-panel"));
+        assertTrue(source.contains("captcha-visual"));
+        assertTrue(source.contains("captcha-input-wrap"));
         assertTrue(source.contains("waitSeconds"));
         assertTrue(source.contains("loginCountdown"));
         assertTrue(source.contains("data-wait-seconds"));

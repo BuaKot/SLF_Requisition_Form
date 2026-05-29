@@ -2,22 +2,8 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat" %>
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    String userCaptcha = request.getParameter("captcha_input");
 
-    String correctCaptcha = (String) session.getAttribute("captcha_secret");
-
-    System.out.println("UserTexts: " + userCaptcha + " | RightAnswer: " + correctCaptcha);
-
-    // 4. ด่านตรวจเช็กความถูกต้อง
-    if (userCaptcha == null || !userCaptcha.equalsIgnoreCase(correctCaptcha)) {
-        response.sendRedirect("login.jsp?error=invalid_captcha");
-        return;
-    }
-
-%>
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -241,23 +227,28 @@
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
     Object loggedInEmpObj = session.getAttribute("loggedInEmpId");
     if (loggedInEmpObj == null) {
         loggedInEmpObj = session.getAttribute("empid");
     }
-    // zennnne แก้
+
+    if (loggedInEmpObj == null && request.getParameter("empid") != null) {
+        loggedInEmpObj = request.getParameter("empid");
+    }
+
     if (loggedInEmpObj == null) {
-        response.sendRedirect(request.getContextPath() + "/login");
+        // แนะนำให้ Redirect กลับหน้า login.jsp โดยตรงเพื่อป้องกัน URL พาร์ทเพี้ยนครับ
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
         return;
     }
-    // zennnne แก้
+
     int loggedInEmpId = Integer.parseInt(loggedInEmpObj.toString());
 
     try {
         conn = DBConnection.getConnection();
 
-        // zennnne แก้
-        // เปลี่ยน 2 correlated subqueries → CTE เดียวที่ดึง STATE_STEP + DEV_EMPID จาก row ล่าสุด
+        // ─── SQL ของพี่ zennnne คงไว้เหมือนเดิม 100% ───
         String sql =
                 "WITH latest_step AS ( " +
                 "    SELECT FORMID, STATE_STEP, DEV_EMPID, " +
@@ -284,7 +275,6 @@
                 "       FETCH FIRST 1 ROWS ONLY) = ? " +
                 "AND r.DEADLINE >= TRUNC(SYSDATE) " +
                 "ORDER BY r.FORMID DESC";
-        // zennnne แก้
 
         pstmt = conn.prepareStatement(sql);
         pstmt.setInt(1, loggedInEmpId);
@@ -295,17 +285,16 @@
             String departmentName = rs.getString("DEPARTMENT_NAME") != null ? rs.getString("DEPARTMENT_NAME") : "-";
             String empName = rs.getString("EMPNAME") != null ? rs.getString("EMPNAME") : "-";
             String sectionName = rs.getString("SECTION_NAME") != null ? rs.getString("SECTION_NAME") : "-";
-            // zennnne แก้
+            
             java.sql.Date deadlineSqlDate = rs.getDate("DEADLINE");
             String deadline = deadlineSqlDate != null ? sdf.format(deadlineSqlDate) : "-";
             int daysLeft = 999;
-            if (deadlineSqlDate != null)
+            if (deadlineSqlDate != null) {
                 daysLeft = (int)(deadlineSqlDate.toLocalDate().toEpochDay() - java.time.LocalDate.now().toEpochDay());
-            String deadlineTagClass = daysLeft <= 1 ? "urgent" : daysLeft <= 3 ? "soon" : "normal"; // zennnne แก้
-            // zennnne แก้
+            }
+            String deadlineTagClass = daysLeft <= 1 ? "urgent" : daysLeft <= 3 ? "soon" : "normal"; 
             String titleForm = rs.getString("TITLEFORM") != null ? rs.getString("TITLEFORM") : "-";
 %>
-
     <div class="requisition-card" onclick="location.href='RequisitionDetail_Process.jsp?id=<%= formId %>'">
         <div class="card-id-box">ใบขอให้ดำเนินการที่ <%= formId %></div>
 

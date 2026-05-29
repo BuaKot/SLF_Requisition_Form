@@ -1,17 +1,6 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="com.example.captcha.CaptchaBridge" %>
-<%
 
-    String captchaData = CaptchaBridge.generateCaptcha(); 
-    
-
-    String[] parts = captchaData.split("\\|");
-    String secretAnswer = parts[0];
-    String base64Image = parts[1];
-
-    session.setAttribute("captcha_secret", secretAnswer);
-%>
 
 <!DOCTYPE html>
 <html lang="th">
@@ -435,7 +424,7 @@
                     <div style="margin: 15px 0;">
                         <label>รหัสความปลอดภัย:</label>
                         <div style="margin: 5px 0;">
-                            <img src="<%= captchaImage %>" alt="CAPTCHA" style="border: 1px solid #ccc; display: block;"/>
+                            <img src="${pageContext.request.contextPath}/images/Turklander.png" alt="Turklander" style="border: 1px solid #ccc; display: block; width: 30px"/>
                         </div>
                         <input type="text" name="captcha_user_input" placeholder="พิมพ์ตัวอักษรตามภาพ" required autocomplete="off" />
                     </div>

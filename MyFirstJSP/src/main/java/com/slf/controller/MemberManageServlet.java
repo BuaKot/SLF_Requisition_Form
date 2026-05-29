@@ -31,7 +31,7 @@ public class MemberManageServlet extends HttpServlet {
         String position = trimToNull(request.getParameter("position"));
         String status = trimToNull(request.getParameter("status"));
         if (status == null) {
-            status = "active";
+            status = "all";
         }
 
         try {

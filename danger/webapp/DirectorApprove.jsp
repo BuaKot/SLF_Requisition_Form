@@ -1,33 +1,13 @@
-<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat" %>
-
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    // ดึงคำตอบจากหน้า login
-    String userInput = request.getParameter("captcha_user_input");
-
-    String correctAnswer = (String) session.getAttribute("captcha_secret");
-
-    if (userInput == null || !userInput.toLowerCase().equals(correctAnswer)) {
-        out.print("<script>");
-        out.print("alert('รหัสความปลอดภัย (CAPTCHA) ไม่ถูกต้อง! กรุณาลองใหม่อีกครั้ง');");
-        out.print("window.location='login.jsp';");
-        out.print("</script>");
-        
-        return; 
-    }
-
-%>
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายการใบขอให้ดำเนินการ (Process)</title>
+    <title>รายการใบขอให้ดำเนินการ (Director Approval)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
 
@@ -41,6 +21,34 @@
             margin: 0;
         }
 
+        /* Sticky Bar ตามแบบเป๊ะ */
+        .sticky-bar {
+            background: #fafafa;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sticky-bar a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .contact-info {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .contact-info p {
+            margin: 0;
+            font-size: 14px;
+        }
 
         .banner {
             background: #C3EAFF;
@@ -168,23 +176,6 @@
             color: #ffc107;
         }
 
-        /* zennnne แก้ */
-        .deadline-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 13px;
-            font-family: 'Sarabun', sans-serif;
-            padding: 3px 12px;
-            border-radius: 20px;
-            border: 1px solid;
-            white-space: nowrap;
-        }
-        .deadline-tag.normal { color: #1a6e00; background: #f0fce8; border-color: #2dbb00; }
-        .deadline-tag.soon   { color: #a87000; background: #fff8e6; border-color: #e4a000; }
-        .deadline-tag.urgent { color: #c62828; background: #fef0f0; border-color: #e53935; }
-        /* zennnne แก้ */
-
         @media (max-width: 1000px) {
             .requisition-card {
                 align-items: flex-start;
@@ -207,25 +198,14 @@
 </head>
 <body>
 
-
 <div class="sticky-bar">
-        <a href="Admin.jsp">
-            <i class="fa fa-arrow-left" style="font-size:24px;"></i>
-        </a>
-        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
-        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
-        
-        <div class="user-info">
-            <i class="fa fa-circle-user"></i>
-            <p>
-                ${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}
-            </p>
-        </div>
-        <div class="contact-info">
-            <i class="fa-solid fa-circle-info"></i>
-            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-        </div>
-        
+    <a href="Admin.jsp">
+        <i class="fa fa-arrow-left" style="font-size:24px;"></i>
+    </a>
+    <div class="contact-info">
+        <i class="fa fa-circle-user" style="font-size:1.4rem; color:#333;"></i>
+        <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+    </div>
 </div>
 
 <div class="banner">
@@ -239,57 +219,47 @@
     </a>
 
 <%
+    Object directorEmpObj = session.getAttribute("loggedInEmpId");
+    if (directorEmpObj == null) {
+        directorEmpObj = session.getAttribute("empid");
+    }
+    if (directorEmpObj == null) {
+        response.sendRedirect(request.getContextPath() + "/login");
+        return;
+    }
+    int directorEmpId = Integer.parseInt(directorEmpObj.toString());
+
     Connection conn = null;
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-    Object loggedInEmpObj = session.getAttribute("loggedInEmpId");
-    if (loggedInEmpObj == null) {
-        loggedInEmpObj = session.getAttribute("empid");
-    }
-    // zennnne แก้
-    if (loggedInEmpObj == null) {
-        response.sendRedirect(request.getContextPath() + "/login");
-        return;
-    }
-    // zennnne แก้
-    int loggedInEmpId = Integer.parseInt(loggedInEmpObj.toString());
-
+    
     try {
         conn = DBConnection.getConnection();
-
-        // zennnne แก้
-        // เปลี่ยน 2 correlated subqueries → CTE เดียวที่ดึง STATE_STEP + DEV_EMPID จาก row ล่าสุด
+        
+        // <!-- zennnne แก้ -->
+        // เปลี่ยน correlated subquery → CTE (WITH clause) เพื่อ performance (PERF-3)
         String sql =
-                "WITH latest_step AS ( " +
-                "    SELECT FORMID, STATE_STEP, DEV_EMPID, " +
-                "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
-                "    FROM APPROVALINFO " +
-                ") " +
-                "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, " +
-                "requester_s.SECNAME AS SECTION_NAME, requester_d.DEPTNAME AS DEPARTMENT_NAME " +
-                "FROM REQUISITIONFORM r " +
-                "JOIN latest_step ls ON ls.FORMID = r.FORMID AND ls.RN = 1 " +
-                "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
-                "LEFT JOIN SECTION requester_s ON e.SECID = requester_s.SECID " +
-                "LEFT JOIN DEPARTMENT requester_d ON requester_s.DEPTID = requester_d.DEPTID " +
-                "WHERE (SELECT ai.STATE_STEP " +
-                "       FROM APPROVALINFO ai " +
-                "       WHERE ai.FORMID = r.FORMID " +
-                "       ORDER BY ai.APPROVALID DESC " +
-                "       FETCH FIRST 1 ROWS ONLY) = 3 " +
-                "AND (SELECT ai.DEV_EMPID " +
-                "       FROM APPROVALINFO ai " +
-                "       WHERE ai.FORMID = r.FORMID " +
-                "       AND ai.DEV_EMPID IS NOT NULL " +
-                "       ORDER BY ai.APPROVALID DESC " +
-                "       FETCH FIRST 1 ROWS ONLY) = ? " +
-                "AND r.DEADLINE >= TRUNC(SYSDATE) " +
-                "ORDER BY r.FORMID DESC";
-        // zennnne แก้
+            "WITH latest_step AS ( " +
+            "    SELECT FORMID, STATE_STEP, " +
+            "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
+            "    FROM APPROVALINFO " +
+            ") " +
+            "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, " +
+            "s.SECNAME AS SECTION_NAME, d.DEPTNAME AS DEPARTMENT_NAME " +
+            "FROM REQUISITIONFORM r " +
+            "JOIN latest_step ls ON ls.FORMID = r.FORMID AND ls.RN = 1 " +
+            "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
+            "LEFT JOIN SECTION s ON e.SECID = s.SECID " +
+            "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+            "WHERE ls.STATE_STEP = 0 " +
+            "AND d.DEPTHEAD_EMPID = ? " +
+            "AND r.DEADLINE >= TRUNC(SYSDATE) " +
+            "ORDER BY r.FORMID DESC";
+        // <!-- zennnne แก้ -->
 
         pstmt = conn.prepareStatement(sql);
-        pstmt.setInt(1, loggedInEmpId);
+        pstmt.setInt(1, directorEmpId);
         rs = pstmt.executeQuery();
 
         while (rs.next()) {
@@ -297,18 +267,11 @@
             String departmentName = rs.getString("DEPARTMENT_NAME") != null ? rs.getString("DEPARTMENT_NAME") : "-";
             String empName = rs.getString("EMPNAME") != null ? rs.getString("EMPNAME") : "-";
             String sectionName = rs.getString("SECTION_NAME") != null ? rs.getString("SECTION_NAME") : "-";
-            // zennnne แก้
-            java.sql.Date deadlineSqlDate = rs.getDate("DEADLINE");
-            String deadline = deadlineSqlDate != null ? sdf.format(deadlineSqlDate) : "-";
-            int daysLeft = 999;
-            if (deadlineSqlDate != null)
-                daysLeft = (int)(deadlineSqlDate.toLocalDate().toEpochDay() - java.time.LocalDate.now().toEpochDay());
-            String deadlineTagClass = daysLeft <= 1 ? "urgent" : daysLeft <= 3 ? "soon" : "normal"; // zennnne แก้
-            // zennnne แก้
+            String deadline = rs.getDate("DEADLINE") != null ? sdf.format(rs.getDate("DEADLINE")) : "-";
             String titleForm = rs.getString("TITLEFORM") != null ? rs.getString("TITLEFORM") : "-";
 %>
 
-    <div class="requisition-card" onclick="location.href='RequisitionDetail_Process.jsp?id=<%= formId %>'">
+    <div class="requisition-card" onclick="location.href='RequisitionDetail.jsp?id=<%= formId %>'">
         <div class="card-id-box">ใบขอให้ดำเนินการที่ <%= formId %></div>
 
         <div class="card-info">
@@ -322,17 +285,10 @@
         </div>
 
         <div class="status-section">
-            <!-- zennnne แก้ -->
-            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-                <div class="status-icon status-pending">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                    <span class="status-label">Pending</span>
-                </div>
-                <span class="deadline-tag <%= deadlineTagClass %>">
-                    <i class="fa-regular fa-calendar-days"></i> <%= deadline %>
-                </span>
+            <div class="status-icon status-pending">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span class="status-label">Pending</span>
             </div>
-            <!-- zennnne แก้ -->
             <i class="fa-solid fa-chevron-right" style="color:#ddd"></i>
         </div>
     </div>

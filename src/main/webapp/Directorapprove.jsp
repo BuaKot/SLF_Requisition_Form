@@ -1,31 +1,13 @@
 <%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat" %>
-
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    // ดึงคำตอบจากหน้า login
-    String userInput = request.getParameter("captcha_user_input");
-
-    String correctAnswer = (String) session.getAttribute("captcha_secret");
-
-    if (userInput == null || !userInput.toLowerCase().equals(correctAnswer)) {
-        out.print("<script>");
-        out.print("alert('รหัสความปลอดภัย (CAPTCHA) ไม่ถูกต้อง! กรุณาลองใหม่อีกครั้ง');");
-        out.print("window.location='login.jsp';");
-        out.print("</script>");
-        
-        return; 
-    }
-
-%>
+<%@ page import="java.util.*" %>
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายการใบขอให้ดำเนินการ (Process)</title>
+    <title>รายการใบขอให้ดำเนินการ (Director Approval)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
@@ -239,76 +221,28 @@
     </a>
 
 <%
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-    Object loggedInEmpObj = session.getAttribute("loggedInEmpId");
-    if (loggedInEmpObj == null) {
-        loggedInEmpObj = session.getAttribute("empid");
-    }
     // zennnne แก้
-    if (loggedInEmpObj == null) {
+    if (session.getAttribute("loggedInEmpId") == null) {
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
+
+    @SuppressWarnings("unchecked")
+    List<Map<String, Object>> formList = (List<Map<String, Object>>) request.getAttribute("formList");
+    if (formList == null) formList = new ArrayList<>();
     // zennnne แก้
-    int loggedInEmpId = Integer.parseInt(loggedInEmpObj.toString());
 
-    try {
-        conn = DBConnection.getConnection();
-
-        // zennnne แก้
-        // เปลี่ยน 2 correlated subqueries → CTE เดียวที่ดึง STATE_STEP + DEV_EMPID จาก row ล่าสุด
-        String sql =
-                "WITH latest_step AS ( " +
-                "    SELECT FORMID, STATE_STEP, DEV_EMPID, " +
-                "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
-                "    FROM APPROVALINFO " +
-                ") " +
-                "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, " +
-                "requester_s.SECNAME AS SECTION_NAME, requester_d.DEPTNAME AS DEPARTMENT_NAME " +
-                "FROM REQUISITIONFORM r " +
-                "JOIN latest_step ls ON ls.FORMID = r.FORMID AND ls.RN = 1 " +
-                "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
-                "LEFT JOIN SECTION requester_s ON e.SECID = requester_s.SECID " +
-                "LEFT JOIN DEPARTMENT requester_d ON requester_s.DEPTID = requester_d.DEPTID " +
-                "WHERE (SELECT ai.STATE_STEP " +
-                "       FROM APPROVALINFO ai " +
-                "       WHERE ai.FORMID = r.FORMID " +
-                "       ORDER BY ai.APPROVALID DESC " +
-                "       FETCH FIRST 1 ROWS ONLY) = 3 " +
-                "AND (SELECT ai.DEV_EMPID " +
-                "       FROM APPROVALINFO ai " +
-                "       WHERE ai.FORMID = r.FORMID " +
-                "       AND ai.DEV_EMPID IS NOT NULL " +
-                "       ORDER BY ai.APPROVALID DESC " +
-                "       FETCH FIRST 1 ROWS ONLY) = ? " +
-                "AND r.DEADLINE >= TRUNC(SYSDATE) " +
-                "ORDER BY r.FORMID DESC";
-        // zennnne แก้
-
-        pstmt = conn.prepareStatement(sql);
-        pstmt.setInt(1, loggedInEmpId);
-        rs = pstmt.executeQuery();
-
-        while (rs.next()) {
-            String formId = rs.getString("FORMID") != null ? rs.getString("FORMID").trim() : "";
-            String departmentName = rs.getString("DEPARTMENT_NAME") != null ? rs.getString("DEPARTMENT_NAME") : "-";
-            String empName = rs.getString("EMPNAME") != null ? rs.getString("EMPNAME") : "-";
-            String sectionName = rs.getString("SECTION_NAME") != null ? rs.getString("SECTION_NAME") : "-";
-            // zennnne แก้
-            java.sql.Date deadlineSqlDate = rs.getDate("DEADLINE");
-            String deadline = deadlineSqlDate != null ? sdf.format(deadlineSqlDate) : "-";
-            int daysLeft = 999;
-            if (deadlineSqlDate != null)
-                daysLeft = (int)(deadlineSqlDate.toLocalDate().toEpochDay() - java.time.LocalDate.now().toEpochDay());
-            String deadlineTagClass = daysLeft <= 1 ? "urgent" : daysLeft <= 3 ? "soon" : "normal"; // zennnne แก้
-            // zennnne แก้
-            String titleForm = rs.getString("TITLEFORM") != null ? rs.getString("TITLEFORM") : "-";
+    for (Map<String, Object> row : formList) {
+        String formId        = row.get("FORMID")          != null ? row.get("FORMID").toString().trim() : "";
+        String departmentName= row.get("DEPARTMENT_NAME") != null ? (String) row.get("DEPARTMENT_NAME") : "-";
+        String empName       = row.get("EMPNAME")         != null ? (String) row.get("EMPNAME")         : "-";
+        String sectionName   = row.get("SECTION_NAME")    != null ? (String) row.get("SECTION_NAME")    : "-";
+        String deadline      = row.get("DEADLINE_DISPLAY") != null ? (String) row.get("DEADLINE_DISPLAY") : "-";
+        String deadlineTagClass = row.get("DEADLINE_TAG") != null ? (String) row.get("DEADLINE_TAG")    : "normal";
+        String titleForm     = row.get("TITLEFORM")       != null ? (String) row.get("TITLEFORM")       : "-";
 %>
 
-    <div class="requisition-card" onclick="location.href='RequisitionDetail_Process.jsp?id=<%= formId %>'">
+    <div class="requisition-card" onclick="location.href='RequisitionDetail.jsp?id=<%= formId %>'">
         <div class="card-id-box">ใบขอให้ดำเนินการที่ <%= formId %></div>
 
         <div class="card-info">
@@ -337,14 +271,7 @@
         </div>
     </div>
 <%
-        }
-    } catch (Exception e) { 
-        out.println("<div style='color:red; padding:15px; border:1px solid red; border-radius:12px;'>Error: " + e.getMessage() + "</div>"); 
-    } finally { 
-        if (rs != null) rs.close();
-        if (pstmt != null) pstmt.close();
-        if (conn != null) conn.close(); 
-    }
+    } // zennnne แก้ END FOR
 %>
 </div>
 </body>

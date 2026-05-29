@@ -2,30 +2,12 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat" %>
-
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    // ดึงคำตอบจากหน้า login
-    String userInput = request.getParameter("captcha_user_input");
-
-    String correctAnswer = (String) session.getAttribute("captcha_secret");
-
-    if (userInput == null || !userInput.toLowerCase().equals(correctAnswer)) {
-        out.print("<script>");
-        out.print("alert('รหัสความปลอดภัย (CAPTCHA) ไม่ถูกต้อง! กรุณาลองใหม่อีกครั้ง');");
-        out.print("window.location='login.jsp';");
-        out.print("</script>");
-        
-        return; 
-    }
-
-%>
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายการใบขอให้ดำเนินการ (Process)</title>
+    <title>รายการใบขอให้ดำเนินการ (Director Approval)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
@@ -207,7 +189,6 @@
 </head>
 <body>
 
-
 <div class="sticky-bar">
         <a href="Admin.jsp">
             <i class="fa fa-arrow-left" style="font-size:24px;"></i>
@@ -259,10 +240,10 @@
         conn = DBConnection.getConnection();
 
         // zennnne แก้
-        // เปลี่ยน 2 correlated subqueries → CTE เดียวที่ดึง STATE_STEP + DEV_EMPID จาก row ล่าสุด
+        // เปลี่ยน correlated subquery → CTE (เหมือน DirectorApprove.jsp)
         String sql =
                 "WITH latest_step AS ( " +
-                "    SELECT FORMID, STATE_STEP, DEV_EMPID, " +
+                "    SELECT FORMID, STATE_STEP, " +
                 "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
                 "    FROM APPROVALINFO " +
                 ") " +
@@ -273,23 +254,19 @@
                 "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
                 "LEFT JOIN SECTION requester_s ON e.SECID = requester_s.SECID " +
                 "LEFT JOIN DEPARTMENT requester_d ON requester_s.DEPTID = requester_d.DEPTID " +
+                "LEFT JOIN SECTION assigned_s ON r.ASSIGN_SECID = assigned_s.SECID " +
                 "WHERE (SELECT ai.STATE_STEP " +
                 "       FROM APPROVALINFO ai " +
                 "       WHERE ai.FORMID = r.FORMID " +
                 "       ORDER BY ai.APPROVALID DESC " +
-                "       FETCH FIRST 1 ROWS ONLY) = 3 " +
-                "AND (SELECT ai.DEV_EMPID " +
-                "       FROM APPROVALINFO ai " +
-                "       WHERE ai.FORMID = r.FORMID " +
-                "       AND ai.DEV_EMPID IS NOT NULL " +
-                "       ORDER BY ai.APPROVALID DESC " +
-                "       FETCH FIRST 1 ROWS ONLY) = ? " +
+                "       FETCH FIRST 1 ROWS ONLY) = 1 " +
+                "AND assigned_s.SECTIONHEAD_EMPID = ? " +
                 "AND r.DEADLINE >= TRUNC(SYSDATE) " +
                 "ORDER BY r.FORMID DESC";
         // zennnne แก้
 
         pstmt = conn.prepareStatement(sql);
-        pstmt.setInt(1, loggedInEmpId);
+        pstmt.setString(1, String.valueOf(loggedInEmpId));
         rs = pstmt.executeQuery();
 
         while (rs.next()) {
@@ -307,8 +284,7 @@
             // zennnne แก้
             String titleForm = rs.getString("TITLEFORM") != null ? rs.getString("TITLEFORM") : "-";
 %>
-
-    <div class="requisition-card" onclick="location.href='RequisitionDetail_Process.jsp?id=<%= formId %>'">
+    <div class="requisition-card" onclick="location.href='RequisitionDetail_Comment.jsp?id=<%= formId %>'">
         <div class="card-id-box">ใบขอให้ดำเนินการที่ <%= formId %></div>
 
         <div class="card-info">

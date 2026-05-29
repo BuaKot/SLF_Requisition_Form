@@ -1,4 +1,5 @@
 <%@ page isELIgnored="false" %>
+<<<<<<< Updated upstream
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.example.captcha.CaptchaBridge" %>
 <%
@@ -11,6 +12,23 @@
     String base64Image = parts[1];
 
     session.setAttribute("captcha_secret", secretAnswer);
+=======
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="com.slf.security.CaptchaChallenge" %>
+<%@ page import="com.slf.security.JavaCaptchaService" %>
+<%
+    boolean captchaRequired = "1".equals(request.getParameter("captchaRequired"));
+    CaptchaChallenge captcha = captchaRequired ? JavaCaptchaService.createChallenge(request) : null;
+    int waitSeconds = 0;
+    String waitParam = request.getParameter("wait");
+    if (waitParam != null) {
+        try {
+            waitSeconds = Math.max(0, Integer.parseInt(waitParam));
+        } catch (NumberFormatException ignored) {
+            waitSeconds = 0;
+        }
+    }
+>>>>>>> Stashed changes
 %>
 
 <!DOCTYPE html>
@@ -230,6 +248,20 @@
             font-weight: 600;
         }
 
+        .security-wait-msg {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: -8px 0 22px;
+            padding: 13px 16px;
+            border: 1px solid #f6c26b;
+            border-radius: 5px;
+            background: #fff8ea;
+            color: #9a6200;
+            font-size: 0.98rem;
+            font-weight: 700;
+        }
+
         .form-actions {
             display: grid;
             grid-template-columns: minmax(0, 1fr) 250px;
@@ -280,6 +312,13 @@
 
         .btn-login:active {
             transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            background: #aebdcc;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .office-note {
@@ -411,6 +450,13 @@
                 </div>
             <% } %>
 
+            <% if (waitSeconds > 0) { %>
+                <div class="security-wait-msg">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>เพื่อความปลอดภัย กรุณารอ <strong id="loginCountdown"><%= waitSeconds %></strong> วินาทีก่อนลองเข้าสู่ระบบอีกครั้ง</span>
+                </div>
+            <% } %>
+
             <form action="${pageContext.request.contextPath}/processLogin" method="POST">
                 <div class="form-row">
                     <label for="EMPID">รหัสผู้ใช้งาน</label>
@@ -432,14 +478,17 @@
                     <div class="forgot-link">
                         ลืมรหัสผ่าน? <a href="#" onclick="return false;">คลิกที่นี่</a>
                     </div>
+                    <% if (captchaRequired) { %>
                     <div style="margin: 15px 0;">
                         <label>รหัสความปลอดภัย:</label>
                         <div style="margin: 5px 0;">
-                            <img src="<%= captchaImage %>" alt="CAPTCHA" style="border: 1px solid #ccc; display: block;"/>
+                            <img src="<%= captcha.getImageDataUrl() %>" alt="CAPTCHA" style="border: 1px solid #ccc; display: block;"/>
                         </div>
-                        <input type="text" name="captcha_user_input" placeholder="พิมพ์ตัวอักษรตามภาพ" required autocomplete="off" />
+                        <input type="hidden" name="captchaToken" value="<%= captcha.getToken() %>" />
+                        <input type="text" name="captchaAnswer" placeholder="พิมพ์ตัวอักษรตามภาพ" required autocomplete="off" />
                     </div>
-                    <button type="submit" class="btn-login">เข้าสู่ระบบ</button>
+                    <% } %>
+                    <button type="submit" class="btn-login" data-wait-seconds="<%= waitSeconds %>" <%= waitSeconds > 0 ? "disabled" : "" %>>เข้าสู่ระบบ</button>
                 </div>
             </form>
 
@@ -450,5 +499,34 @@
         </div>
     </section>
 </main>
+<script>
+    (function () {
+        var button = document.querySelector(".btn-login[data-wait-seconds]");
+        var countdown = document.getElementById("loginCountdown");
+        if (!button || !countdown) {
+            return;
+        }
+
+        var remaining = parseInt(button.getAttribute("data-wait-seconds"), 10) || 0;
+        if (remaining <= 0) {
+            return;
+        }
+
+        var originalText = button.textContent;
+        button.textContent = "กรุณารอ " + remaining + " วินาที";
+
+        var timer = window.setInterval(function () {
+            remaining -= 1;
+            countdown.textContent = remaining;
+            button.textContent = "กรุณารอ " + remaining + " วินาที";
+
+            if (remaining <= 0) {
+                window.clearInterval(timer);
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        }, 1000);
+    }());
+</script>
 </body>
 </html>

@@ -4,7 +4,6 @@ import com.slf.dao.LookupDAO;
 import com.slf.model.Employee;
 import com.slf.security.JavaCaptchaService;
 import com.slf.security.LoginAttemptService;
-import com.slf.security.RustCaptchaClient;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +16,6 @@ import java.sql.SQLException;
 @WebServlet("/processLogin")
 public class LoginProcessorServlet extends HttpServlet {
     private final LoginAttemptService loginAttempts = LoginAttemptService.getInstance();
-    private final RustCaptchaClient captchaClient = new RustCaptchaClient();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
@@ -25,21 +23,30 @@ public class LoginProcessorServlet extends HttpServlet {
         String passwordStr = request.getParameter("PASSWORD");
         String clientIp = clientIp(request);
 
-        if (empIdStr == null || passwordStr == null || empIdStr.trim().isEmpty() || passwordStr.trim().isEmpty()) {
-            loginAttempts.recordFailure(clientIp, empIdStr);
-            redirectLogin(request, response, true);
+        int waitSeconds = loginAttempts.getRemainingDelaySeconds(clientIp, empIdStr);
+        if (waitSeconds > 0) {
+            redirectLogin(request, response, true, loginAttempts.isCaptchaRequired(clientIp, empIdStr), waitSeconds);
             return;
         }
 
-        String captchaToken = request.getParameter("captchaToken");
-        String captchaAnswer = request.getParameter("captchaAnswer");
-        boolean captchaOk = JavaCaptchaService.verify(request, captchaToken, captchaAnswer)
-            || captchaClient.verify(captchaToken, captchaAnswer);
-        if (!captchaOk) {
-            redirectLogin(request, response, true);
+        if (empIdStr == null || passwordStr == null || empIdStr.trim().isEmpty() || passwordStr.trim().isEmpty()) {
+            loginAttempts.recordFailure(clientIp, empIdStr);
+            waitSeconds = applyDelayIfNeeded(clientIp, empIdStr);
+            redirectLogin(request, response, true, loginAttempts.isCaptchaRequired(clientIp, empIdStr), waitSeconds);
             return;
         }
-        loginAttempts.recordSuccess(clientIp, empIdStr);
+
+        boolean captchaRequired = loginAttempts.isCaptchaRequired(clientIp, empIdStr);
+        if (captchaRequired) {
+            String captchaToken = request.getParameter("captchaToken");
+            String captchaAnswer = request.getParameter("captchaAnswer");
+            if (!JavaCaptchaService.verify(request, captchaToken, captchaAnswer)) {
+                loginAttempts.recordFailure(clientIp, empIdStr);
+                waitSeconds = applyDelayIfNeeded(clientIp, empIdStr);
+                redirectLogin(request, response, true, true, waitSeconds);
+                return;
+            }
+        }
 
         try {
             int empId = Integer.parseInt(empIdStr.trim());
@@ -65,23 +72,44 @@ public class LoginProcessorServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/index.jsp");
             } else {
                 loginAttempts.recordFailure(clientIp, empIdStr);
-                redirectLogin(request, response, true);
+                waitSeconds = applyDelayIfNeeded(clientIp, empIdStr);
+                redirectLogin(request, response, true, loginAttempts.isCaptchaRequired(clientIp, empIdStr), waitSeconds);
             }
         } catch (NumberFormatException e) {
             loginAttempts.recordFailure(clientIp, empIdStr);
-            redirectLogin(request, response, true);
+            waitSeconds = applyDelayIfNeeded(clientIp, empIdStr);
+            redirectLogin(request, response, true, loginAttempts.isCaptchaRequired(clientIp, empIdStr), waitSeconds);
         } catch (SQLException e) {
             throw new ServletException(e);
         }
     }
 
     private static void redirectLogin(HttpServletRequest request, HttpServletResponse response,
-                                      boolean error) throws IOException {
+                                      boolean error, boolean captchaRequired, int waitSeconds) throws IOException {
         StringBuilder target = new StringBuilder(request.getContextPath()).append("/login.jsp");
-        if (error) {
-            target.append("?error=1");
+        if (error || captchaRequired || waitSeconds > 0) {
+            target.append("?");
+            if (error) {
+                target.append("error=1");
+            }
+            if (captchaRequired) {
+                if (error) {
+                    target.append("&");
+                }
+                target.append("captchaRequired=1");
+            }
+            if (waitSeconds > 0) {
+                if (error || captchaRequired) {
+                    target.append("&");
+                }
+                target.append("wait=").append(waitSeconds);
+            }
         }
         response.sendRedirect(target.toString());
+    }
+
+    private static int applyDelayIfNeeded(String clientIp, String empId) {
+        return LoginAttemptService.getInstance().getRemainingDelaySeconds(clientIp, empId);
     }
 
     private static String clientIp(HttpServletRequest request) {

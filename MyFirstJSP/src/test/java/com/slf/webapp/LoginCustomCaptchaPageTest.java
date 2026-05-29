@@ -15,6 +15,7 @@ public class LoginCustomCaptchaPageTest extends TestCase {
         );
 
         assertTrue(source.contains("RustCaptchaClient"));
+        assertTrue(source.contains("JavaCaptchaService.createChallenge(request)"));
         assertTrue(source.contains("CaptchaChallenge"));
         assertTrue(source.contains("name=\"captchaToken\""));
         assertTrue(source.contains("name=\"captchaAnswer\""));

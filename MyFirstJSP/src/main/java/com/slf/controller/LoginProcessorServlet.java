@@ -2,6 +2,7 @@ package com.slf.controller;
 
 import com.slf.dao.LookupDAO;
 import com.slf.model.Employee;
+import com.slf.security.JavaCaptchaService;
 import com.slf.security.LoginAttemptService;
 import com.slf.security.RustCaptchaClient;
 import javax.servlet.ServletException;
@@ -30,16 +31,15 @@ public class LoginProcessorServlet extends HttpServlet {
             return;
         }
 
-        if (!captchaClient.verify(request.getParameter("captchaToken"), request.getParameter("captchaAnswer"))) {
-            loginAttempts.recordFailure(clientIp, empIdStr);
+        String captchaToken = request.getParameter("captchaToken");
+        String captchaAnswer = request.getParameter("captchaAnswer");
+        boolean captchaOk = JavaCaptchaService.verify(request, captchaToken, captchaAnswer)
+            || captchaClient.verify(captchaToken, captchaAnswer);
+        if (!captchaOk) {
             redirectLogin(request, response, true);
             return;
         }
-
-        if (loginAttempts.isBlocked(clientIp, empIdStr)) {
-            redirectLogin(request, response, true);
-            return;
-        }
+        loginAttempts.recordSuccess(clientIp, empIdStr);
 
         try {
             int empId = Integer.parseInt(empIdStr.trim());

@@ -25,7 +25,9 @@ public class LoginProcessorServletTest extends TestCase {
         );
 
         assertTrue(source.contains("RustCaptchaClient"));
-        assertTrue(source.contains("captchaClient.verify(request.getParameter(\"captchaToken\"), request.getParameter(\"captchaAnswer\"))"));
-        assertTrue(source.indexOf("captchaClient.verify") < source.indexOf("LookupDAO dao = new LookupDAO()"));
+        assertTrue(source.contains("JavaCaptchaService.verify(request, captchaToken, captchaAnswer)"));
+        assertTrue(source.contains("captchaClient.verify(captchaToken, captchaAnswer)"));
+        assertTrue(source.indexOf("captchaOk") < source.indexOf("LookupDAO dao = new LookupDAO()"));
+        assertFalse(source.contains("loginAttempts.isBlocked(clientIp, empIdStr)"));
     }
 }

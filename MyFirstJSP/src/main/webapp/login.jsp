@@ -1,5 +1,15 @@
-<%@ page isELIgnored="false" %>
+﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="com.slf.security.CaptchaChallenge" %>
+<%@ page import="com.slf.security.JavaCaptchaService" %>
+<%@ page import="com.slf.security.RustCaptchaClient" %>
+<%
+    CaptchaChallenge captcha = new RustCaptchaClient().createChallenge();
+    if (!captcha.isAvailable()) {
+        captcha = JavaCaptchaService.createChallenge(request);
+    }
+    boolean captchaAvailable = captcha.isAvailable();
+%>
 
 <!DOCTYPE html>
 <html lang="th">
@@ -218,6 +228,61 @@
             font-weight: 600;
         }
 
+        .captcha-box {
+            display: grid;
+            grid-template-columns: 190px minmax(0, 1fr);
+            gap: 16px;
+            align-items: end;
+            margin: -8px 0 24px;
+        }
+
+        .captcha-image {
+            width: 190px;
+            height: 72px;
+            border: 1px solid var(--line);
+            border-radius: 5px;
+            background: #f6f9fc;
+            object-fit: contain;
+        }
+
+        .captcha-input label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .captcha-input input {
+            width: 100%;
+            min-height: 48px;
+            padding: 0 14px;
+            border: 1px solid var(--line);
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 1.08rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .captcha-input input:focus {
+            outline: none;
+            border-color: var(--focus);
+            box-shadow: 0 0 0 3px rgba(108, 184, 255, 0.18);
+        }
+
+        .captcha-warning {
+            margin: -8px 0 24px;
+            padding: 13px 16px;
+            border: 1px solid #ffd7a8;
+            border-radius: 5px;
+            background: #fff8ed;
+            color: #9a5b00;
+            font-size: 0.98rem;
+            font-weight: 600;
+        }
+
         .form-actions {
             display: grid;
             grid-template-columns: minmax(0, 1fr) 250px;
@@ -268,6 +333,13 @@
 
         .btn-login:active {
             transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            background: #aeb9c5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .office-note {
@@ -338,6 +410,10 @@
             .form-actions {
                 grid-template-columns: 1fr;
                 gap: 18px;
+            }
+
+            .captcha-box {
+                grid-template-columns: 1fr;
             }
 
             .btn-login {
@@ -415,12 +491,26 @@
                         <input id="PASSWORD" type="password" name="PASSWORD" required autocomplete="current-password">
                     </div>
                 </div>
+                <% if (captchaAvailable) { %>
+                    <div class="captcha-box">
+                        <img class="captcha-image" src="<%= captcha.getImageDataUrl() %>" alt="CAPTCHA">
+                        <div class="captcha-input">
+                            <label for="captchaAnswer">กรอกรหัสจากรูปภาพ</label>
+                            <input id="captchaAnswer" type="text" name="captchaAnswer" required autocomplete="off" inputmode="text">
+                        </div>
+                        <input type="hidden" name="captchaToken" value="<%= captcha.getToken() %>">
+                    </div>
+                <% } else { %>
+                    <div class="captcha-warning">
+                        <%= captcha.getMessage() %>
+                    </div>
+                <% } %>
 
                 <div class="form-actions">
                     <div class="forgot-link">
                         ลืมรหัสผ่าน? <a href="#" onclick="return false;">คลิกที่นี่</a>
                     </div>
-                    <button type="submit" class="btn-login">เข้าสู่ระบบ</button>
+                    <button type="submit" class="btn-login" <%= captchaAvailable ? "" : "disabled" %>>เข้าสู่ระบบ</button>
                 </div>
             </form>
 
@@ -433,3 +523,4 @@
 </main>
 </body>
 </html>
+

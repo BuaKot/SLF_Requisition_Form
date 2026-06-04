@@ -7,15 +7,35 @@
     boolean captchaRequired = "1".equals(request.getParameter("captchaRequired"))
         || Boolean.TRUE.equals(session.getAttribute("captchaRequired"));
     CaptchaChallenge captcha = captchaRequired ? JavaCaptchaService.createChallenge(request) : null;
+    
+    // ---- FIXED COOLDOWN LOGIC ----
     int waitSeconds = 0;
-    try {
-        waitSeconds = Integer.parseInt(request.getParameter("waitSeconds"));
-    } catch (Exception ignored) {
-        waitSeconds = 0;
-    }
-    if (waitSeconds <= 0 && session.getAttribute("loginWaitSeconds") instanceof Integer) {
-        waitSeconds = ((Integer) session.getAttribute("loginWaitSeconds")).intValue();
+    // First check the session for an active (non‑expired) cooldown
+    Long expiry = (Long) session.getAttribute("loginWaitExpiry");
+    if (expiry != null && System.currentTimeMillis() < expiry) {
+        // Active cooldown – calculate remaining seconds
+        waitSeconds = (int) ((expiry - System.currentTimeMillis()) / 1000);
+        if (waitSeconds <= 0) {
+            waitSeconds = 0;
+            session.removeAttribute("loginWaitExpiry");
+            session.removeAttribute("loginWaitSeconds");
+        }
+    } else if (expiry != null) {
+        // Expired cooldown – clean up session
+        session.removeAttribute("loginWaitExpiry");
         session.removeAttribute("loginWaitSeconds");
+    } else {
+        // No session expiry, fall back to URL parameter (for the first redirect)
+        try {
+            waitSeconds = Integer.parseInt(request.getParameter("waitSeconds"));
+        } catch (Exception ignored) {
+            waitSeconds = 0;
+        }
+        // Also honour the old session attribute (backwards compatibility)
+        if (waitSeconds <= 0 && session.getAttribute("loginWaitSeconds") instanceof Integer) {
+            waitSeconds = ((Integer) session.getAttribute("loginWaitSeconds")).intValue();
+            session.removeAttribute("loginWaitSeconds");
+        }
     }
 %>
 
@@ -573,36 +593,31 @@
             </form>
 
             <div class="office-note">
-                
                 <span>ระบบใบขอให้ดำเนินการสำหรับเจ้าหน้าที่ ฝ่ายเทคโนโลยีสารสนเทศ กยศ. สอบถามเพิ่มเติม โทร. 411</span>
             </div>
         </div>
     </section>
 </main>
+
 <script>
 (function () {
     var cooldown = document.querySelector('.cooldown-msg[data-wait-seconds]');
     var countdown = document.getElementById('loginCountdown');
-    if (!cooldown || !countdown) {
-        return;
-    }
-
+    if (!cooldown || !countdown) return;
     var remaining = parseInt(cooldown.getAttribute('data-wait-seconds'), 10);
     if (isNaN(remaining) || remaining <= 0) {
         cooldown.style.display = 'none';
         return;
     }
-
-    countdown.textContent = remaining;
     var timer = setInterval(function () {
         remaining -= 1;
         if (remaining <= 0) {
             countdown.textContent = '0';
             cooldown.style.display = 'none';
             clearInterval(timer);
-            return;
+        } else {
+            countdown.textContent = remaining;
         }
-        countdown.textContent = remaining;
     }, 1000);
 })();
 </script>

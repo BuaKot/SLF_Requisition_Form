@@ -102,16 +102,19 @@ public class LoginProcessorServlet extends HttpServlet {
             request.getSession(true).setAttribute("captchaRequired", Boolean.TRUE);
         }
         if (waitSeconds > 0) {
-            request.getSession(true).setAttribute("loginWaitSeconds", Integer.valueOf(waitSeconds));
+            long expiry = System.currentTimeMillis() + (waitSeconds * 1000L);
+            request.getSession(true).setAttribute("loginWaitSeconds", waitSeconds);
+            request.getSession(true).setAttribute("loginWaitExpiry", expiry);
+        } else {
+            request.getSession(true).removeAttribute("loginWaitSeconds");
+            request.getSession(true).removeAttribute("loginWaitExpiry");
         }
 
         String redirect = request.getContextPath() + "/login?error=1";
         if (captchaRequired) {
             redirect += "&captchaRequired=1";
         }
-        if (waitSeconds > 0) {
-            redirect += "&waitSeconds=" + waitSeconds;
-        }
+        // ⚠️ Do NOT add waitSeconds to the URL
         response.sendRedirect(redirect);
     }
 

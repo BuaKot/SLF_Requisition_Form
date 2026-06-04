@@ -16,7 +16,7 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         String path = request.getRequestURI().substring(request.getContextPath().length());
 
-        // ดักจับ: ถ้าสิ่งที่ขอมาคือหน้า login.jsp, พาร์ทล็อกอิน, หรือไฟล์ตกแต่ง
+        // ดักจับ: ถ้าสิ่งที่ขอมาคือหน้า login, พาร์ทล็อกอิน, หรือไฟล์ตกแต่ง
         // CSS/Images ให้ปล่อยผ่านฉลุย!
         if (path.equals("/login")
                 || path.equals("/processLogin")

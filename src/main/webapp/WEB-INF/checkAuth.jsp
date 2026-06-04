@@ -9,16 +9,16 @@
     String _authRole = (session.getAttribute("position") != null) ? (String)session.getAttribute("position") : "Guest";
     
     if (_authRole.equals("Guest")) {
-        response.sendRedirect(request.getContextPath() + "/login.jsp?error=unauthorized");
+        response.sendRedirect(request.getContextPath() + "/login?error=unauthorized");
         return;
     }
 %>
 
 <%
-    String currentRole = (String) session.getAttribute("position");
+    String _authCurrentRole = (String) session.getAttribute("position");
 
 
-    if (currentRole == null || !AuthUtil.isAllowedForPage(currentRole, "adminPage")) {
+    if (_authCurrentRole == null || !AuthUtil.isAllowedForPage(_authCurrentRole, "adminPage")) {
         response.sendRedirect(request.getContextPath() + "/index.jsp?error=nopermission");
         return;
     }

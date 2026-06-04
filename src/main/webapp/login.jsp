@@ -1,6 +1,23 @@
 <%@ page isELIgnored="false" %>
 <!-- zennnne แก้ — ลบ checkAuth.jsp include ออกจาก login page (เป็นสาเหตุ redirect loop) -->
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="com.slf.security.CaptchaChallenge" %>
+<%@ page import="com.slf.security.JavaCaptchaService" %>
+<%
+    boolean captchaRequired = "1".equals(request.getParameter("captchaRequired"))
+        || Boolean.TRUE.equals(session.getAttribute("captchaRequired"));
+    CaptchaChallenge captcha = captchaRequired ? JavaCaptchaService.createChallenge(request) : null;
+    int waitSeconds = 0;
+    try {
+        waitSeconds = Integer.parseInt(request.getParameter("waitSeconds"));
+    } catch (Exception ignored) {
+        waitSeconds = 0;
+    }
+    if (waitSeconds <= 0 && session.getAttribute("loginWaitSeconds") instanceof Integer) {
+        waitSeconds = ((Integer) session.getAttribute("loginWaitSeconds")).intValue();
+        session.removeAttribute("loginWaitSeconds");
+    }
+%>
 
 <!DOCTYPE html>
 <html lang="th">
@@ -8,11 +25,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เข้าสู่ระบบพนักงาน | กยศ.</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
             --brand-blue: #0878c9;
@@ -33,9 +46,26 @@
         body {
             min-height: 100vh;
             margin: 0;
-            font-family: 'Sarabun', sans-serif;
+            font-family: 'DBHelvethaica', 'Tahoma', 'Arial', sans-serif;
             color: var(--text-main);
             background: var(--white);
+        }
+
+        .ui-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.2rem;
+            height: 1.2rem;
+            color: currentColor;
+            line-height: 0;
+        }
+
+        .ui-icon svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            stroke: currentColor;
         }
 
         .login-shell {
@@ -219,6 +249,63 @@
             font-weight: 600;
         }
 
+        .captcha-panel {
+            margin: 0 0 26px;
+            padding: 16px;
+            border: 1px solid #cfe1f5;
+            border-radius: 5px;
+            background: #f8fbff;
+        }
+
+        .captcha-panel label {
+            margin-bottom: 12px;
+        }
+
+        .captcha-visual {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 14px;
+        }
+
+        .captcha-visual img {
+            width: 190px;
+            height: 72px;
+            border: 1px solid #d8e3ef;
+            border-radius: 5px;
+            background: #ffffff;
+        }
+
+        .captcha-input-wrap input {
+            width: 100%;
+            min-height: 52px;
+            padding: 12px 16px;
+            border: 1px solid var(--line);
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 1.04rem;
+            outline: none;
+        }
+
+        .captcha-input-wrap input:focus {
+            border-color: var(--focus);
+            box-shadow: 0 0 0 3px rgba(108, 184, 255, 0.18);
+        }
+
+        .cooldown-msg {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 22px;
+            padding: 13px 16px;
+            border: 1px solid #f4d38a;
+            border-radius: 5px;
+            background: #fff9e8;
+            color: #8a6100;
+            font-size: 0.98rem;
+            font-weight: 700;
+        }
+
         .form-actions {
             display: grid;
             grid-template-columns: minmax(0, 1fr) 250px;
@@ -381,7 +468,12 @@
             <p>Digital Student Loan Fund System</p>
         </div>
         <div class="brand-footer">
-            <i class="fa-regular fa-copyright"></i>
+            <i class="ui-icon icon-copyright" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M15 9.5A4 4 0 1 0 15 14.5"></path>
+                </svg>
+            </i>
             <span>All rights reserved © 2569 DSL</span>
         </div>
     </section>
@@ -395,8 +487,27 @@
 
             <% if (request.getParameter("error") != null) { %>
                 <div class="error-msg">
-                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <i class="ui-icon icon-alert" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M12 7v6"></path>
+                            <path d="M12 17h.01"></path>
+                        </svg>
+                    </i>
                     <span>รหัสผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง</span>
+                </div>
+            <% } %>
+
+            <% if (waitSeconds > 0) { %>
+                <div class="cooldown-msg" data-wait-seconds="<%= waitSeconds %>">
+                    <i class="ui-icon icon-alert" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M12 7v6"></path>
+                            <path d="M12 17h.01"></path>
+                        </svg>
+                    </i>
+                    <span>พยายามเข้าสู่ระบบหลายครั้ง กรุณารอ <strong id="loginCountdown"><%= waitSeconds %></strong> วินาทีก่อนลองใหม่</span>
                 </div>
             <% } %>
 
@@ -404,7 +515,12 @@
                 <div class="form-row">
                     <label for="EMPID">รหัสผู้ใช้งาน</label>
                     <div class="input-frame">
-                        <i class="fa-regular fa-user"></i>
+                        <i class="ui-icon icon-user" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                <circle cx="12" cy="8" r="4"></circle>
+                                <path d="M4 21c1.7-4 4.4-6 8-6s6.3 2 8 6"></path>
+                            </svg>
+                        </i>
                         <input id="EMPID" type="text" name="EMPID" required autocomplete="username" >
                     </div>
                 </div>
@@ -412,10 +528,41 @@
                 <div class="form-row">
                     <label for="PASSWORD">รหัสผ่าน</label>
                     <div class="input-frame">
-                        <i class="fa-solid fa-lock"></i>
+                        <i class="ui-icon icon-lock" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                <rect x="5" y="10" width="14" height="10" rx="2"></rect>
+                                <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+                            </svg>
+                        </i>
                         <input id="PASSWORD" type="password" name="PASSWORD" required autocomplete="current-password">
                     </div>
                 </div>
+
+                <% if (captchaRequired) { %>
+                    <div class="captcha-panel">
+                        <label for="captchaAnswer">ยืนยันตัวอักษรในภาพ</label>
+                        <% if (captcha != null && captcha.isAvailable()) { %>
+                            <div class="captcha-visual">
+                                <img src="<%= captcha.getImageDataUrl() %>" alt="CAPTCHA">
+                            </div>
+                            <input type="hidden" name="captchaToken" value="<%= captcha.getToken() %>">
+                            <div class="captcha-input-wrap">
+                                <input id="captchaAnswer" type="text" name="captchaAnswer" required autocomplete="off">
+                            </div>
+                        <% } else { %>
+                            <div class="error-msg">
+                                <i class="ui-icon icon-alert" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                        <circle cx="12" cy="12" r="9"></circle>
+                                        <path d="M12 7v6"></path>
+                                        <path d="M12 17h.01"></path>
+                                    </svg>
+                                </i>
+                                <span><%= captcha == null ? "ระบบ CAPTCHA ไม่พร้อมใช้งาน" : captcha.getMessage() %></span>
+                            </div>
+                        <% } %>
+                    </div>
+                <% } %>
 
                 <div class="form-actions">
                     <div class="forgot-link">
@@ -432,5 +579,32 @@
         </div>
     </section>
 </main>
+<script>
+(function () {
+    var cooldown = document.querySelector('.cooldown-msg[data-wait-seconds]');
+    var countdown = document.getElementById('loginCountdown');
+    if (!cooldown || !countdown) {
+        return;
+    }
+
+    var remaining = parseInt(cooldown.getAttribute('data-wait-seconds'), 10);
+    if (isNaN(remaining) || remaining <= 0) {
+        cooldown.style.display = 'none';
+        return;
+    }
+
+    countdown.textContent = remaining;
+    var timer = setInterval(function () {
+        remaining -= 1;
+        if (remaining <= 0) {
+            countdown.textContent = '0';
+            cooldown.style.display = 'none';
+            clearInterval(timer);
+            return;
+        }
+        countdown.textContent = remaining;
+    }, 1000);
+})();
+</script>
 </body>
 </html>

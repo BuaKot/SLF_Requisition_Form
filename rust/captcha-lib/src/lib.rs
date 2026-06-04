@@ -24,7 +24,6 @@ pub extern "system" fn Java_com_example_crypto_CryptoBridge_encrypt(
     let cipher = Aes256Gcm::new(key);
     let nonce = Nonce::from_slice(&nonce_bytes);
     
-    // Encrypt
     let ciphertext = cipher.encrypt(nonce, input_str.as_bytes()).expect("Encryption failed");
     
 

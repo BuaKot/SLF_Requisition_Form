@@ -17,6 +17,34 @@ import junit.framework.TestCase;
 
 public class AuthenticationFilterTest extends TestCase {
 
+    public void testAllowsLoginServletWithoutSession() throws Exception {
+        final boolean[] chainCalled = new boolean[] { false };
+        final boolean[] redirected = new boolean[] { false };
+
+        HttpServletRequest request = (HttpServletRequest) Proxy.newProxyInstance(
+            HttpServletRequest.class.getClassLoader(),
+            new Class<?>[] { HttpServletRequest.class },
+            new RequestHandler("/MyFirstJSP", "/MyFirstJSP/login", null)
+        );
+
+        HttpServletResponse response = (HttpServletResponse) Proxy.newProxyInstance(
+            HttpServletResponse.class.getClassLoader(),
+            new Class<?>[] { HttpServletResponse.class },
+            new ResponseHandler(redirected)
+        );
+
+        FilterChain chain = new FilterChain() {
+            public void doFilter(ServletRequest req, ServletResponse res) {
+                chainCalled[0] = true;
+            }
+        };
+
+        new AuthenticationFilter().doFilter(request, response, chain);
+
+        assertTrue(chainCalled[0]);
+        assertFalse(redirected[0]);
+    }
+
     public void testAllowsAuthenticatedSessionUsingLoggedInEmpId() throws Exception {
         final boolean[] chainCalled = new boolean[] { false };
         final boolean[] redirected = new boolean[] { false };

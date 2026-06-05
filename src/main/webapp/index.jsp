@@ -289,7 +289,7 @@
         <div class="user-info">
             <i class="fa fa-circle-user"></i>
             <p>
-                ${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}
+                ${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId} | POS: ${sessionScope.position}
             </p>
         </div>
         <div class="contact-info">

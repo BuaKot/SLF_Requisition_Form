@@ -61,6 +61,12 @@ public class ApprovalNotificationService {
 
             sendAndLog(formId, null, eventType, recipient, subject, body, reviewerEmpId,
                 eventType + ":" + formId + ":" + newStep);
+
+            if (shouldNotifyRequesterSeparately(newStep, recipient, summary.requesterEmpId)) {
+                ApprovalNotificationRecipient requester = recipientResolver.resolveRequester(formId);
+                sendAndLog(formId, null, eventType, requester, subject, body, reviewerEmpId,
+                    eventType + ":REQUESTER:" + formId + ":" + newStep);
+            }
         } catch (Exception e) {
             System.err.println("Unable to send approval notification: " + e.getMessage());
         }
@@ -145,7 +151,7 @@ public class ApprovalNotificationService {
         body.append("Form ID: ").append(formId).append("\n");
         body.append("Requester EMPID: ").append(requesterEmpId).append("\n");
         appendTopic(body, requestTopic);
-        body.append("Current step: ").append(describePendingStep(stateStep)).append("\n");
+        body.append("Current step: ").append(describeWaitingStep(stateStep)).append("\n");
         appendComment(body, comment);
         body.append("\nOpen the SLF Requisition Form system to review it.");
         return body.toString();
@@ -222,6 +228,25 @@ public class ApprovalNotificationService {
             return "REQUESTER_CONFIRMED";
         }
         return "APPROVAL_NEXT_STEP";
+    }
+
+    private static boolean shouldNotifyRequesterSeparately(int newStep,
+                                                           ApprovalNotificationRecipient recipient,
+                                                           int requesterEmpId) {
+        if (newStep <= 0 || newStep >= 4 || requesterEmpId <= 0) {
+            return false;
+        }
+        return recipient == null || recipient.getEmpId() == null || recipient.getEmpId().intValue() != requesterEmpId;
+    }
+
+    private static String describeWaitingStep(int stateStep) {
+        if (stateStep == 4) {
+            return "waiting for Requester confirmation";
+        }
+        if (stateStep == 5) {
+            return "Completed";
+        }
+        return "waiting for " + describePendingStep(stateStep) + " approve";
     }
 
     private static void appendTopic(StringBuilder body, String requestTopic) {

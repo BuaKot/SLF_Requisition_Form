@@ -122,9 +122,8 @@ public class SubmitRequestServlet extends HttpServlet {
                 markOriginalFormAsEdited(editedFormId, empID);
             }
             approvalNotificationService.notifyFormSubmitted(form.getFormId(), empID, form.getRequestTopic());
-            // 4. Forward to success page
-            request.setAttribute("submittedFormId", form.getFormId());
-            request.getRequestDispatcher("/submit-success.jsp").forward(request, response);
+            // 4. Redirect to success page so refresh does not resubmit the POST.
+            response.sendRedirect(request.getContextPath() + "/submit-success.jsp?formId=" + form.getFormId());
         } catch (Exception e) {
             e.printStackTrace();
             // In case of error, send back to form with error message

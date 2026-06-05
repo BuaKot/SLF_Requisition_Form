@@ -1,5 +1,16 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page isELIgnored="false" %>
+<%
+    Object submittedFormId = session.getAttribute("submittedFormId");
+    String submittedFormIdParam = request.getParameter("formId");
+    if (submittedFormIdParam != null && !submittedFormIdParam.trim().isEmpty()) {
+        submittedFormId = submittedFormIdParam.trim();
+    }
+    if (submittedFormId != null) {
+        request.setAttribute("submittedFormId", submittedFormId);
+        session.removeAttribute("submittedFormId");
+    }
+%>
 <!DOCTYPE html>
 <html lang="th">
 <head>

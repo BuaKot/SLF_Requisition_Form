@@ -27,7 +27,7 @@ public class AuthUtil {
         PAGE_ROLES.put("itDirectorApprove",  new HashSet<>(Arrays.asList("Admin", "ITDirector", "IT Director")));
         PAGE_ROLES.put("process",            new HashSet<>(Arrays.asList("Admin", "Technical",
                                                     "Development", "Data", "Infrastructure",
-                                                    "Cyber Security", "Research", "Reseach", "IT Planning")));
+                                                    "Cyber Security", "Research", "IT Planning")));
         PAGE_ROLES.put("adminPage",          ADMIN_ROLES);
         PAGE_ROLES.put("dashboard",          new HashSet<>(Arrays.asList("Admin")));
         PAGE_ROLES.put("memberManage",       new HashSet<>(Arrays.asList("Admin")));

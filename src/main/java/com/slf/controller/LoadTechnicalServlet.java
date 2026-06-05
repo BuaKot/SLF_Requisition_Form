@@ -41,8 +41,9 @@ public class LoadTechnicalServlet extends HttpServlet {
             "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
             "LEFT JOIN SECTION s ON e.SECID = s.SECID " +
             "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+            "LEFT JOIN SECTION assigned_s ON r.ASSIGN_SECID = assigned_s.SECID " +
             "WHERE ls.STATE_STEP = 1 " +
-            "AND d.DEPTHEAD_EMPID = ? " +
+            "AND assigned_s.SECTIONHEAD_EMPID = ? " +
             "AND r.DEADLINE >= TRUNC(SYSDATE) " +
             "ORDER BY r.FORMID DESC";
 

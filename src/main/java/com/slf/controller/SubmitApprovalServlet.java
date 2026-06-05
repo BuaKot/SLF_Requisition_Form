@@ -1,6 +1,7 @@
 package com.slf.controller;
 
 import com.slf.dao.DBConnection;
+import com.slf.notification.ApprovalNotificationService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,6 +17,7 @@ import java.sql.SQLException;
 
 @WebServlet("/SubmitApprovalServlet")
 public class SubmitApprovalServlet extends HttpServlet {
+    private final ApprovalNotificationService approvalNotificationService = new ApprovalNotificationService();
 
     // zennnne แก้
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -127,6 +129,7 @@ public class SubmitApprovalServlet extends HttpServlet {
 
             // 6. Insert the new approval row
             insertApprovalRow(conn, formId, reviewerEmpId, devEmpId, comment, newStep);
+            approvalNotificationService.notifyApprovalTransition(formId, reviewerEmpId, newStep, devEmpId, comment);
 
             // 7. Go back to the calling page with a success flag
             response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?success=" + action);
@@ -279,6 +282,16 @@ public class SubmitApprovalServlet extends HttpServlet {
             }
         }
 
+        if (currentStep == 4) {
+            Integer requesterEmpId = getRequesterEmpId(conn, formId);
+            if (requesterEmpId == null) {
+                return "not_found";
+            }
+            if (!matchesRequester(requesterEmpId.intValue(), reviewerEmpId)) {
+                return "Only the requester can confirm this step";
+            }
+        }
+
         return null; // authorised
     }
     // zennnne แก้
@@ -365,6 +378,23 @@ public class SubmitApprovalServlet extends HttpServlet {
 
     static boolean matchesReviewer(String expectedEmpId, int reviewerEmpId) {
         return expectedEmpId != null && expectedEmpId.trim().equals(String.valueOf(reviewerEmpId));
+    }
+
+    static boolean matchesRequester(int requesterEmpId, int reviewerEmpId) {
+        return requesterEmpId == reviewerEmpId;
+    }
+
+    private Integer getRequesterEmpId(Connection conn, int formId) throws SQLException {
+        String sql = "SELECT EMPID FROM REQUISITIONFORM WHERE FORMID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, formId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Integer.valueOf(rs.getInt("EMPID"));
+                }
+            }
+        }
+        return null;
     }
 
     private boolean isDeveloperInAssignedSection(Connection conn, int formId, int devEmpId) throws SQLException {

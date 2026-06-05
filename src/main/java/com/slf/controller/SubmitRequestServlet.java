@@ -5,10 +5,7 @@ import com.slf.model.RequestItem;
 import com.slf.dao.RequisitionDAO;
 import com.slf.dao.DBConnection;
 import com.slf.dao.OracleRequisitionDAO;
-import com.slf.notification.EmailNotificationLogDAO;
-import com.slf.notification.GmailNotificationService;
-import com.slf.notification.NotificationRecipientResolver;
-import com.slf.notification.NotificationSendResult;
+import com.slf.notification.ApprovalNotificationService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -30,9 +27,7 @@ import java.util.Set;
 public class SubmitRequestServlet extends HttpServlet {
 
     private RequisitionDAO requisitionDAO = new OracleRequisitionDAO();
-    private final GmailNotificationService gmailNotificationService = new GmailNotificationService();
-    private final NotificationRecipientResolver notificationRecipientResolver = new NotificationRecipientResolver();
-    private final EmailNotificationLogDAO emailNotificationLogDAO = new EmailNotificationLogDAO();
+    private final ApprovalNotificationService approvalNotificationService = new ApprovalNotificationService();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -126,7 +121,7 @@ public class SubmitRequestServlet extends HttpServlet {
             if (editedFormId != null) {
                 markOriginalFormAsEdited(editedFormId, empID);
             }
-            sendSubmittedEmailNotification(form.getFormId(), empID, form.getRequestTopic());
+            approvalNotificationService.notifyFormSubmitted(form.getFormId(), empID, form.getRequestTopic());
             // 4. Forward to success page
             request.setAttribute("submittedFormId", form.getFormId());
             request.getRequestDispatcher("/submit-success.jsp").forward(request, response);
@@ -249,38 +244,4 @@ public class SubmitRequestServlet extends HttpServlet {
         }
     }
 
-    private void sendSubmittedEmailNotification(int formId, int empId, String requestTopic) {
-        try {
-            String recipientEmail = notificationRecipientResolver.resolveForSubmittedForm(formId);
-            if (recipientEmail == null) {
-                System.out.println("Gmail notification skipped: EMPLOYEE.EMAIL is empty for form " + formId);
-                return;
-            }
-
-            String subject = gmailNotificationService.buildSubmittedSubject(formId);
-            String body = gmailNotificationService.buildSubmittedBody(formId, empId, requestTopic);
-            long logId = emailNotificationLogDAO.createPendingSubmittedLog(
-                formId,
-                Integer.valueOf(empId),
-                recipientEmail,
-                subject,
-                body,
-                Integer.valueOf(empId)
-            );
-
-            NotificationSendResult result = gmailNotificationService.sendFormSubmittedNotification(
-                formId,
-                empId,
-                requestTopic,
-                recipientEmail
-            );
-            if (result.isSent()) {
-                emailNotificationLogDAO.markSent(logId);
-            } else {
-                emailNotificationLogDAO.markFailed(logId, result.getErrorMessage());
-            }
-        } catch (Exception e) {
-            System.err.println("Unable to create Gmail notification log: " + e.getMessage());
-        }
-    }
 }

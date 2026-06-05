@@ -71,6 +71,27 @@ public class GmailNotificationService {
         return body.toString();
     }
 
+    public NotificationSendResult sendEmailNotification(String subject, String body, String recipient) {
+        if (!config.canSendFrom()) {
+            return NotificationSendResult.skipped(
+                "Gmail notification skipped: set slf.mail.username, slf.mail.password, and slf.mail.from "
+                    + "in C:\\slf-secrets\\gmail.properties or SLF_MAIL_* environment variables."
+            );
+        }
+
+        String resolvedRecipient = GmailNotificationConfig.trimToNull(recipient);
+        if (resolvedRecipient == null) {
+            return NotificationSendResult.skipped("Gmail notification skipped: no recipient email was found.");
+        }
+
+        try {
+            sendEmail(subject, body, resolvedRecipient);
+            return NotificationSendResult.sent();
+        } catch (Exception e) {
+            return NotificationSendResult.failed(errorMessage(e));
+        }
+    }
+
     private void sendEmail(String subject, String body, String recipient) throws MessagingException {
         Message message = new MimeMessage(mailSession());
         message.setFrom(new InternetAddress(config.getFrom()));

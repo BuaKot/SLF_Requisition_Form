@@ -31,4 +31,9 @@ public class SubmitApprovalServletTest extends TestCase {
     public void testReviewerDoesNotMatchDifferentEmployee() {
         assertFalse(SubmitApprovalServlet.matchesReviewer("54", 301));
     }
+
+    public void testRequesterMatchUsesRequesterEmpId() {
+        assertTrue(SubmitApprovalServlet.matchesRequester(678, 678));
+        assertFalse(SubmitApprovalServlet.matchesRequester(678, 54));
+    }
 }

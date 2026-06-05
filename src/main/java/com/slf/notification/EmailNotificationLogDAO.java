@@ -5,34 +5,54 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class EmailNotificationLogDAO {
 
     public long createPendingSubmittedLog(int formId, Integer recipientEmpId, String recipientEmail,
                                           String subject, String body, Integer createdBy) throws SQLException {
+        return createPendingLog(
+            formId,
+            null,
+            "FORM_SUBMITTED",
+            recipientEmpId,
+            recipientEmail,
+            subject,
+            body,
+            createdBy,
+            "FORM_SUBMITTED:" + formId + ":" + recipientEmail
+        );
+    }
+
+    public long createPendingLog(int formId, Integer approvalId, String eventType, Integer recipientEmpId,
+                                 String recipientEmail, String subject, String body, Integer createdBy,
+                                 String dedupeKey) throws SQLException {
         String sql =
             "INSERT INTO EMAIL_NOTIFICATION_LOG " +
-            "(FORMID, EVENT_TYPE, RECIPIENT_EMPID, RECIPIENT_EMAIL, SUBJECT, BODY, STATUS, SEND_ATTEMPT, DEDUPE_KEY, CREATED_BY) " +
-            "VALUES (?, ?, ?, ?, ?, ?, 'PENDING', 0, ?, ?)";
+            "(FORMID, APPROVALID, EVENT_TYPE, RECIPIENT_EMPID, RECIPIENT_EMAIL, SUBJECT, BODY, STATUS, SEND_ATTEMPT, DEDUPE_KEY, CREATED_BY) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, 'PENDING', 0, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, new String[] { "EMAIL_LOG_ID" })) {
             ps.setInt(1, formId);
-            ps.setString(2, "FORM_SUBMITTED");
-            if (recipientEmpId != null) {
-                ps.setInt(3, recipientEmpId);
+            if (approvalId != null) {
+                ps.setInt(2, approvalId.intValue());
             } else {
-                ps.setNull(3, java.sql.Types.INTEGER);
+                ps.setNull(2, java.sql.Types.INTEGER);
             }
-            ps.setString(4, recipientEmail);
-            ps.setString(5, subject);
-            ps.setString(6, body);
-            ps.setString(7, "FORM_SUBMITTED:" + formId + ":" + recipientEmail);
-            if (createdBy != null) {
-                ps.setInt(8, createdBy);
+            ps.setString(3, eventType);
+            if (recipientEmpId != null) {
+                ps.setInt(4, recipientEmpId.intValue());
             } else {
-                ps.setNull(8, java.sql.Types.INTEGER);
+                ps.setNull(4, java.sql.Types.INTEGER);
+            }
+            ps.setString(5, recipientEmail);
+            ps.setString(6, subject);
+            ps.setString(7, body);
+            ps.setString(8, dedupeKey);
+            if (createdBy != null) {
+                ps.setInt(9, createdBy.intValue());
+            } else {
+                ps.setNull(9, java.sql.Types.INTEGER);
             }
             ps.executeUpdate();
 

@@ -194,7 +194,7 @@
 
                 <div class="btn-group full-width">
                     <button type="button" class="btn btn-reject" onclick="history.back()">ย้อนกลับ</button>
-                    <button type="submit" class="btn btn-approve" id="submitBtn">ยืนยันการส่ง</button>
+                    <a href = "${pageContext.request.contextPath}/submitRequest"><button type="submit" class="btn btn-approve" id="submitBtn">ยืนยันการส่ง</button></a>
                 </div>
             </div>
         </form>

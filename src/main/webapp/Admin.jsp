@@ -19,7 +19,7 @@
     String employeeName = (String) session.getAttribute("loggedInEmpName");
 
     // เช็คสิทธิ์ว่ามีสิทธิ์ของหน้า Admin ไหม
-    if (currentRole == null || employeeName == null || !AuthUtil.isAllowedForPage(currentRole, "Admin")) {
+    if (currentRole == null || employeeName == null || !AuthUtil.isAllowedForPage(currentRole, "adminPage")) {
         
         String redirectPage = "/login"; // ค่าเริ่มต้นถ้าไม่พบตำแหน่งใดๆ
         

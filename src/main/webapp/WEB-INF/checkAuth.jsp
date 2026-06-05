@@ -12,14 +12,6 @@
         response.sendRedirect(request.getContextPath() + "/login?error=unauthorized");
         return;
     }
-%>
 
-<%
-    String _authCurrentRole = (String) session.getAttribute("position");
-
-
-    if (_authCurrentRole == null || !AuthUtil.isAllowedForPage(_authCurrentRole, "adminPage")) {
-        response.sendRedirect(request.getContextPath() + "/index.jsp?error=nopermission");
-        return;
-    }
+    String _authCurrentRole = _authRole;
 %>

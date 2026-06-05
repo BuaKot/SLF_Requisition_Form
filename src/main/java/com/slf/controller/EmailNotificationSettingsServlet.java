@@ -20,6 +20,7 @@ public class EmailNotificationSettingsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        setNoCacheHeaders(response);
         Integer empId = getLoggedInEmpId(request);
         if (empId == null) {
             response.sendRedirect(request.getContextPath() + "/login");
@@ -33,8 +34,9 @@ public class EmailNotificationSettingsServlet extends HttpServlet {
                 return;
             }
             request.setAttribute("member", member);
-            request.setAttribute("message", request.getParameter("message"));
-            request.setAttribute("error", request.getParameter("error"));
+            HttpSession session = request.getSession(false);
+            request.setAttribute("message", consumeFlash(session, "emailNotificationMessage"));
+            request.setAttribute("error", consumeFlash(session, "emailNotificationError"));
             RequestDispatcher dispatcher = request.getRequestDispatcher("/EmailNotificationSettings.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException e) {
@@ -45,6 +47,7 @@ public class EmailNotificationSettingsServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        setNoCacheHeaders(response);
         request.setCharacterEncoding("UTF-8");
         Integer empId = getLoggedInEmpId(request);
         if (empId == null) {
@@ -80,16 +83,31 @@ public class EmailNotificationSettingsServlet extends HttpServlet {
 
     private void redirect(HttpServletResponse response, HttpServletRequest request, String message, String error)
             throws IOException {
-        StringBuilder url = new StringBuilder(request.getContextPath()).append("/emailNotifications");
+        HttpSession session = request.getSession(true);
         if (message != null) {
-            url.append("?message=").append(java.net.URLEncoder.encode(message, "UTF-8"));
+            session.setAttribute("emailNotificationMessage", message);
         } else if (error != null) {
-            url.append("?error=").append(java.net.URLEncoder.encode(error, "UTF-8"));
+            session.setAttribute("emailNotificationError", error);
         }
-        response.sendRedirect(url.toString());
+        response.sendRedirect(request.getContextPath() + "/emailNotifications?status=" + (message != null ? "saved" : "error"));
     }
 
     private static String trimToEmpty(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private static Object consumeFlash(HttpSession session, String name) {
+        if (session == null) {
+            return null;
+        }
+        Object value = session.getAttribute(name);
+        session.removeAttribute(name);
+        return value;
+    }
+
+    private static void setNoCacheHeaders(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
     }
 }

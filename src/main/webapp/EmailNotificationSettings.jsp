@@ -26,6 +26,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Email Notifications</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -50,14 +53,32 @@
         .btn { border: 0; border-radius: 7px; min-height: 40px; padding: 0 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
         .btn-primary { background: #003366; color: #fff; }
         .btn-secondary { background: #e8f2fb; color: #003366; }
-        .notice { border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-weight: 700; }
-        .notice-ok { background: #e7f7ee; color: #137a42; border: 1px solid #bde8ce; }
-        .notice-error { background: #fdecec; color: #b42318; border: 1px solid #f5c2c2; }
+        .toast {
+            position: fixed;
+            top: 88px;
+            left: 50%;
+            z-index: 1000;
+            min-width: 280px;
+            max-width: min(420px, calc(100vw - 32px));
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            box-shadow: 0 12px 28px rgba(0, 51, 102, 0.18);
+            transition: opacity 180ms ease, transform 180ms ease;
+            transform: translateX(-50%);
+        }
+        .toast-ok { background: #e7f7ee; color: #137a42; border: 1px solid #bde8ce; }
+        .toast-error { background: #fdecec; color: #b42318; border: 1px solid #f5c2c2; }
+        .toast.is-hiding { opacity: 0; transform: translate(-50%, -8px); }
         @media (max-width: 760px) {
             .settings-page { padding: 18px 14px 34px; }
             .page-head { flex-direction: column; }
             .profile-grid, .settings-form { grid-template-columns: 1fr; }
             .btn { width: 100%; }
+            .toast { top: 76px; left: 50%; width: calc(100vw - 32px); }
         }
     </style>
 </head>
@@ -90,10 +111,16 @@
         </div>
 
         <% if (message != null && !message.trim().isEmpty()) { %>
-            <div class="notice notice-ok"><%= h(message) %></div>
+            <div id="statusToast" class="toast toast-ok" role="status" aria-live="polite">
+                <i class="fa-solid fa-circle-check"></i>
+                <span><%= h(message) %></span>
+            </div>
         <% } %>
         <% if (error != null && !error.trim().isEmpty()) { %>
-            <div class="notice notice-error"><%= h(error) %></div>
+            <div id="statusToast" class="toast toast-error" role="alert" aria-live="assertive">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span><%= h(error) %></span>
+            </div>
         <% } %>
 
         <section class="panel profile-panel">
@@ -154,6 +181,18 @@ window.toggleNav = () => {
         main.style.width = "calc(100% - 250px)";
     }
 };
+
+if (window.location.search.indexOf('status=') >= 0) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+}
+
+const statusToast = document.getElementById('statusToast');
+if (statusToast) {
+    window.setTimeout(() => {
+        statusToast.classList.add('is-hiding');
+        window.setTimeout(() => statusToast.remove(), 220);
+    }, 5000);
+}
 </script>
 </body>
 </html>

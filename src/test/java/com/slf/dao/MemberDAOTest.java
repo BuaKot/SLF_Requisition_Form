@@ -13,6 +13,7 @@ public class MemberDAOTest extends TestCase {
         assertTrue(sql.contains("AND s.SECID = ?"));
         assertTrue(sql.contains("AND e.POSITION = ?"));
         assertTrue(sql.contains("AND NVL(e.IS_ACTIVE, 1) = ?"));
+        assertTrue(sql.contains("e.EMAIL"));
         assertTrue(sql.contains("ORDER BY e.EMPID"));
     }
 

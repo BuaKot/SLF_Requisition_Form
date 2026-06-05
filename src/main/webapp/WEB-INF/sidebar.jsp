@@ -10,6 +10,7 @@
     <a href="${pageContext.request.contextPath}"><i class="fa-solid fa-house" style="margin-right: 10px"></i>หน้าหลัก</a>
     <a href="${pageContext.request.contextPath}/newForm"><i class="fa-solid fa-plus" style="margin-right: 10px"></i>สร้างฟอร์มใหม่</a>
     <a href="${pageContext.request.contextPath}/submit"><i class="fa-solid fa-paper-plane" style="margin-right: 10px"></i>ฟอร์มที่ส่งแล้ว</a>
+    <a href="${pageContext.request.contextPath}/emailNotifications"><i class="fa-solid fa-envelope-circle-check" style="margin-right: 10px"></i>ข้อมูลส่วนตัว</a>
     <% if (showDashboard) { %>
     <a href="${pageContext.request.contextPath}/Dashboard.jsp"><i class="fa-solid fa-chart-line" style="margin-right: 10px"></i>Dashboard</a>
     <a href="${pageContext.request.contextPath}/memberManage"><i class="fa-solid fa-users-gear" style="margin-right: 10px"></i>จัดการสมาชิก</a>

@@ -75,6 +75,7 @@ public class MemberManageServlet extends HttpServlet {
                     trimToEmpty(request.getParameter("position")),
                     parseInt(request.getParameter("secId"), "ส่วนงาน"),
                     trimToEmpty(request.getParameter("phone")),
+                    trimToEmpty(request.getParameter("email")),
                     trimToEmpty(request.getParameter("password")),
                     "active".equalsIgnoreCase(request.getParameter("status"))
                 );
@@ -89,6 +90,7 @@ public class MemberManageServlet extends HttpServlet {
                     trimToEmpty(request.getParameter("position")),
                     parseInt(request.getParameter("secId"), "ส่วนงาน"),
                     trimToEmpty(request.getParameter("phone")),
+                    trimToEmpty(request.getParameter("email")),
                     trimToEmpty(request.getParameter("password")),
                     "active".equalsIgnoreCase(request.getParameter("status"))
                 );

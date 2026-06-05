@@ -71,7 +71,7 @@
         .notice-ok { background: #e7f7ee; color: #137a42; border: 1px solid #bde8ce; }
         .notice-error { background: #fdecec; color: #b42318; border: 1px solid #f5c2c2; }
         .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 940px; }
+        table { width: 100%; border-collapse: collapse; min-width: 1060px; }
         th, td { padding: 12px 14px; border-bottom: 1px solid #e5eef6; text-align: left; vertical-align: middle; }
         th { background: #f0f6fc; color: #003366; font-size: 14px; }
         td { font-size: 15px; }
@@ -170,6 +170,10 @@
                     <input id="phone" name="phone" type="text" maxlength="40">
                 </div>
                 <div>
+                    <label for="email">Email รับแจ้งเตือน</label>
+                    <input id="email" name="email" type="email" maxlength="255" required>
+                </div>
+                <div>
                     <label for="password">รหัสผ่าน <span id="passwordHint">(จำเป็นตอนเพิ่ม)</span></label>
                     <input id="password" name="password" type="password" autocomplete="new-password" required>
                 </div>
@@ -235,6 +239,7 @@
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Email แจ้งเตือน</th>
                             <th>ชื่อสมาชิก</th>
                             <th>ตำแหน่ง</th>
                             <th>ส่วนงาน</th>
@@ -247,6 +252,7 @@
                     <% for (MemberProfile member : members) { %>
                         <tr>
                             <td class="member-id"><%= member.getEmpId() %></td>
+                            <td><%= h(member.getEmail()) %></td>
                             <td><%= h(member.getEmpName()) %></td>
                             <td><%= h(member.getPosition()) %></td>
                             <td><%= h(member.getSecName()) %></td>
@@ -265,6 +271,7 @@
                                             data-position="<%= h(member.getPosition()) %>"
                                             data-sec="<%= member.getSecId() %>"
                                             data-phone="<%= h(member.getPhone()) %>"
+                                            data-email="<%= h(member.getEmail()) %>"
                                             data-status="<%= member.isActive() ? "active" : "inactive" %>"
                                             onclick="editMember(this)">
                                         <i class="fa-solid fa-pen"></i> แก้ไข
@@ -311,6 +318,7 @@ window.editMember = (button) => {
     const position = button.dataset.position;
     const secId    = button.dataset.sec;
     const phone    = button.dataset.phone;
+    const email    = button.dataset.email;
     const status   = button.dataset.status;
 
     document.getElementById('formHeading').textContent = 'แก้ไขข้อมูลสมาชิก';
@@ -321,6 +329,7 @@ window.editMember = (button) => {
     document.getElementById('position').value = decodeHtml(position);
     document.getElementById('secId').value = secId;
     document.getElementById('phone').value = decodeHtml(phone);
+    document.getElementById('email').value = decodeHtml(email);
     document.getElementById('status').value = status;
     document.getElementById('password').value = '';
     document.getElementById('password').required = false;

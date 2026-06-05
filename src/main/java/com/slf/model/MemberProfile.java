@@ -9,6 +9,8 @@ public class MemberProfile {
     private int deptId;
     private String deptName;
     private String phone;
+    private String email;
+    private boolean emailNotificationEnabled = true;
     private boolean active;
 
     public int getEmpId() { return empId; }
@@ -34,6 +36,12 @@ public class MemberProfile {
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public boolean isEmailNotificationEnabled() { return emailNotificationEnabled; }
+    public void setEmailNotificationEnabled(boolean emailNotificationEnabled) { this.emailNotificationEnabled = emailNotificationEnabled; }
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }

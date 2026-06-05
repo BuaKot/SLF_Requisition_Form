@@ -21,11 +21,15 @@ public class ExportPDFServlet extends HttpServlet {
         
         // ---- 1. Session and Security Check ----
         HttpSession session = request.getSession();
-        Integer loggedInEmpId = (Integer) session.getAttribute("loggedInEmpId");
-        if (loggedInEmpId == null) {
+        Object empObj = session.getAttribute("loggedInEmpId");
+        if (empObj == null) {
+            empObj = session.getAttribute("empid");
+        }
+        if (empObj == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
+        int loggedInEmpId = Integer.parseInt(empObj.toString());
 
         String formIdStr = request.getParameter("formId");
         if (formIdStr == null || formIdStr.trim().isEmpty()) {
@@ -51,7 +55,11 @@ public class ExportPDFServlet extends HttpServlet {
 
         // ---- 3. Database Retrieval Pipeline ----
         try (Connection conn = DBConnection.getConnection()) {
-            
+            if (!isAuthorizedToViewPdf(conn, formId, loggedInEmpId)) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not allowed to view this PDF.");
+                return;
+            }
+             
             // Query A: Header Blocks
             String headerSQL =
                 "SELECT E.EMPNAME, E.PHONE, S.SECNAME, D.DEPTNAME, " +
@@ -378,5 +386,21 @@ public class ExportPDFServlet extends HttpServlet {
 
     private String nvl(String s) {
         return (s == null || s.trim().isEmpty()) ? "-" : s.trim();
+    }
+
+    private boolean isAuthorizedToViewPdf(Connection conn, int formId, int empId) throws SQLException {
+        String sql =
+            "SELECT 1 " +
+            "FROM REQUISITIONFORM rf " +
+            "WHERE rf.FORMID = ? " +
+            "AND rf.EMPID = ? " +
+            "FETCH FIRST 1 ROWS ONLY";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, formId);
+            ps.setInt(2, empId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
     }
 }

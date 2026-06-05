@@ -50,11 +50,40 @@
     private String approvalActionText(int stateStep) {
         return stateStep < 0 ? "ไม่อนุมัติ" : "อนุมัติ";
     }
+
+    private boolean isAuthorizedToViewPdf(Connection conn, int formId, int empId) throws SQLException {
+        String sql =
+            "SELECT 1 " +
+            "FROM REQUISITIONFORM rf " +
+            "WHERE rf.FORMID = ? " +
+            "AND rf.EMPID = ? " +
+            "FETCH FIRST 1 ROWS ONLY";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, formId);
+            ps.setInt(2, empId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
 %>
 
 <%
     try {
         conn = DBConnection.getConnection();
+        Object empObj = session.getAttribute("loggedInEmpId");
+        if (empObj == null) {
+            empObj = session.getAttribute("empid");
+        }
+        if (empObj == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        int loggedInEmpId = Integer.parseInt(empObj.toString());
+        if (!isAuthorizedToViewPdf(conn, formId, loggedInEmpId)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not allowed to view this PDF.");
+            return;
+        }
 
         // ---------- Header ----------
         String headerSQL =

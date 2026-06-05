@@ -9,212 +9,95 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+    /* ==========================================================================
+       Contextual Modernization Override Blocks
+       ========================================================================== */
     .modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(0, 33, 102, 0.4); /* Softer brand-tinted overlay */
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 2000; 
     }
+    
     .modal-box {
-        background: white;
-        border-radius: 12px;
+        background: var(--color-bg-card, #ffffff);
+        border-radius: var(--radius-md, 12px);
         padding: 30px 40px;
         max-width: 480px;
         width: 90%;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        box-shadow: 0 20px 40px rgba(0, 51, 102, 0.16);
         position: relative;
         text-align: center;
         font-family: 'Sarabun', sans-serif;
-        animation: fadeIn 0.3s ease;
+        /* Replaced quick fade with formal, smoother cubic-bezier easing */
+        animation: fadeInUp 0.4s cubic-bezier(0.4, 0.0, 0.2, 1) both;
     }
+    
     .modal-close {
         position: absolute;
-        top: 10px;
-        right: 15px;
+        top: 12px;
+        right: 18px;
         font-size: 28px;
-        font-weight: bold;
+        font-weight: 400;
         cursor: pointer;
         color: #aaa;
+        transition: color 0.2s ease;
     }
-    .modal-close:hover { color: #333; }
+    
+    .modal-close:hover { 
+        color: var(--color-primary-dark, #003366); 
+    }
+    
+    .modal-close:focus-visible {
+        outline: 2px solid var(--color-brand-blue, #3272BB);
+        border-radius: 4px;
+    }
+    
     .modal-box p {
         font-size: 16px;
-        color: #003366;
+        color: var(--color-primary-dark, #003366);
         margin: 20px 0;
         line-height: 1.6;
+        font-weight: 400;
     }
+    
     .modal-ok-btn {
-        background-color: #3272BB;
+        background-color: var(--color-brand-blue, #3272BB);
         color: white;
         border: none;
         padding: 10px 30px;
-        border-radius: 6px;
+        border-radius: var(--radius-sm, 6px);
         font-size: 16px;
+        font-weight: 500;
         cursor: pointer;
         margin-top: 10px;
+        transition: var(--transition-smooth, all 0.3s ease);
     }
+    
     .modal-ok-btn:hover {
-        background-color: #003366;
+        background-color: var(--color-primary-dark, #003366);
     }
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-20px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .index-banner {
-        background: linear-gradient(135deg, #c8ecff 0%, #eaf7ff 100%);
-        border-bottom: 5px solid #3272BB;
-        padding: 42px 20px 36px;
-        text-align: center;
-        color: #003366;
+    
+    .modal-ok-btn:focus-visible {
+        outline: 2px solid var(--color-primary-dark, #003366);
+        outline-offset: 3px;
     }
 
-    .index-banner h1 {
-        margin: 0;
-        font-size: clamp(28px, 4.5vw, 42px);
-        line-height: 1.15;
-        font-weight: 800;
-    }
-
-    .index-banner h2 {
-        margin: 8px 0 0;
-        color: #003366;
-        font-size: clamp(20px, 3vw, 30px);
-        line-height: 1.2;
-        font-weight: 800;
-    }
-
-    .index-banner .subline {
-        margin: 12px auto 0;
-        max-width: 760px;
-        color: #385a78;
-        font-size: 18px;
-        font-weight: 700;
-    }
-
-    .index-content {
-        max-width: 1050px;
-        margin: 0 auto;
-        padding: 48px 24px 56px;
-    }
-
-    .main-actions {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(260px, 1fr));
-        gap: 28px;
-    }
-
-    .action-card {
-        min-height: 270px;
-        background: #ffffff;
-        border: 2px solid #d2e5f6;
-        border-radius: 16px;
-        padding: 30px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        text-decoration: none;
-        color: #003366;
-        box-shadow: 0 12px 28px rgba(0, 51, 102, 0.08);
-        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .action-card:hover {
-        transform: translateY(-5px);
-        border-color: #3272BB;
-        box-shadow: 0 18px 36px rgba(50, 114, 187, 0.16);
-    }
-
-    .action-top {
-        display: flex;
-        align-items: center;
-        gap: 18px;
-    }
-
-    .action-icon {
-        width: 76px;
-        height: 76px;
-        border-radius: 18px;
-        display: grid;
-        place-items: center;
-        background: #e8f2fb;
-        color: #3272BB;
-        font-size: 34px;
-        flex: 0 0 auto;
-    }
-
-    .action-card.primary {
-        background: #003366;
-        color: #ffffff;
-        border-color: #003366;
-    }
-
-    .action-card.primary .action-icon {
-        background: rgba(255, 255, 255, 0.16);
-        color: #ffffff;
-    }
-
-    .action-card h3 {
-        margin: 0;
-        font-size: 28px;
-        line-height: 1.1;
-        font-weight: 800;
-    }
-
-    .action-card p {
-        margin: 18px 0 0;
-        color: #60758a;
-        font-size: 17px;
-        line-height: 1.55;
-        font-weight: 700;
-    }
-
-    .action-card.primary p {
-        color: rgba(255, 255, 255, 0.82);
-    }
-
-    .action-footer {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 24px;
-        font-size: 17px;
-        font-weight: 800;
-    }
-
-    .support-strip {
-        margin-top: 24px;
-        background: #ffffff;
-        border: 1px solid #d9e6f2;
-        border-radius: 12px;
-        padding: 16px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        color: #003366;
-        font-size: 17px;
-        font-weight: 800;
-        box-shadow: 0 8px 20px rgba(0, 51, 102, 0.05);
-    }
-
-    @media (max-width: 760px) {
-        .main-actions {
-            grid-template-columns: 1fr;
+    /* Modal Animation Keyframe System */
+    @keyframes fadeInUp {
+        from { 
+            opacity: 0; 
+            transform: translateY(12px) scale(0.98); 
         }
-
-        .index-content {
-            padding: 34px 16px 42px;
-        }
-
-        .action-card {
-            min-height: 230px;
+        to   { 
+            opacity: 1; 
+            transform: translateY(0) scale(1); 
         }
     }
 </style>
@@ -242,7 +125,6 @@
     </div>
 </div>
 <script>
-    // Optional: automatically close if they click the overlay background
     document.getElementById('deniedModal').addEventListener('click', function(e) {
         if (e.target === this) closeDeniedModal();
     });
@@ -287,7 +169,7 @@
         <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
         
         <div class="user-info">
-            <i class="fa fa-circle-user"></i>
+            <i class="fa var(--color-primary-dark) fa-circle-user"></i>
             <p>
                 ${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId} | POS: ${sessionScope.position}
             </p>
@@ -329,7 +211,6 @@
                 <div class="action-footer">ดูรายการของฉัน <i class="fa-solid fa-arrow-right"></i></div>
             </a>
         </div>
-
         
     </main>
 </div>

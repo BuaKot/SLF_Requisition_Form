@@ -1,5 +1,45 @@
 /* ==========================================================================
-   Typography & Baseline Setup
+   1. DESIGN TOKENS & SYSTEM VARIABLES
+   ========================================================================== */
+:root {
+    /* Brand & Contextual Colors */
+    --color-primary-dark: #003366;
+    --color-brand-blue: #3272BB;
+    --color-brand-hover: #1e5596;
+    --color-accent-gold: #C9A85C; /* Elegant accent border for primary path */
+    --color-bg-main: #f4f8fc;
+    --color-bg-card: #ffffff;
+    --color-bg-pill: #f0f6fc;
+    --color-bg-icon: #e8f2fb;
+    
+    /* Typography Colors */
+    --color-text-dark: #003366;
+    --color-text-muted: #4a607a; /* Optimized contrast over previous #60758a */
+    --color-text-light: #ffffff;
+    --color-text-subline: #385a78;
+
+    /* Spacing System (8px Grid Baseline) */
+    --space-xs: 8px;
+    --space-sm: 12px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-xxl: 48px;
+
+    /* Component Geometry & Layout */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --border-width: 2px;
+    
+    /* Slower, formal animation values using custom curves */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+    --transition-fast: transform 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* ==========================================================================
+   2. TYPOGRAPHY & BASELINE SETUP
    ========================================================================== */
 @font-face {
     font-family: 'DBHelvethaica';
@@ -18,90 +58,83 @@ html, body {
     font-family: 'DBHelvethaica', 'Sarabun', sans-serif;
     width: 100%;
     height: 100%;
-    background-color: #f4f8fc; /* Softer light background tint */
+    background-color: var(--color-bg-main);
+    /* Prevent browser tabular layout shifting across hardware */
+    font-feature-settings: "tnum" on, "lnum" on;
 }
 
 /* Container transition smoothing */
 #main {
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: var(--transition-smooth);
     width: 100%;
     margin-left: 0;
 }
 
 /* ==========================================================================
-   Header Top Bar Layout
+   3. HEADER TOP BAR LAYOUT
    ========================================================================== */
 .sticky-bar {
     position: sticky;
     top: 0;
-    background: #ffffff;
+    background: var(--color-bg-card);
     width: 100%;
     height: 70px;
-    border-bottom: 5px solid #3272BB;
+    border-bottom: 5px solid var(--color-brand-blue);
     display: flex;
     align-items: center;
-    padding: 0 30px;
+    padding: 0 var(--space-xl);
     z-index: 999;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .sticky-bar .fa-bars {
     font-size: 28px;
-    color: #003366;
+    color: var(--color-primary-dark);
     cursor: pointer;
-    margin-right: 15px;
-    transition: transform 0.2s ease;
+    margin-right: var(--space-md);
+    transition: var(--transition-fast);
 }
 
 .sticky-bar .fa-bars:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .sticky-bar img {
     height: 44px;
-    margin-left: 8px;
+    margin-left: var(--space-xs);
     margin-right: 4px;
 }
 
-.contact-info {
-    margin-left: 10px;
+.contact-info, .user-info {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: #003366;
-    background-color: #f0f6fc;
-    padding: 6px 16px;
+    gap: var(--space-xs);
+    color: var(--color-primary-dark);
+    background-color: var(--color-bg-pill);
+    padding: 6px var(--space-md);
     border-radius: 20px;
 }
 
-.contact-info i {
-    font-size: 16px;
+.contact-info {
+    margin-left: var(--space-sm);
 }
 
 .user-info {
     margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #003366;
-    background-color: #f0f6fc;
-    padding: 6px 16px;
-    border-radius: 20px;
 }
 
-.user-info i {
+.contact-info i, .user-info i {
     font-size: 16px;
 }
 
-
 .sticky-bar p, .sticky-bar span {
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 500; /* Scaled down weight from bold to prevent visual density */
     margin: 0;
 }
 
 /* ==========================================================================
-   Hero Header Banner Section
+   4. HERO HEADER BANNER SECTION (Synchronized with .index-banner)
    ========================================================================== */
 .blue-title {
     background: linear-gradient(135deg, #C3EAFF 0%, #e3f4ff 100%);
@@ -113,25 +146,68 @@ html, body {
     align-items: center;
     text-align: center;
     box-shadow: inset 0 -2px 10px rgba(50, 114, 187, 0.05);
-    padding: 0 20px;
+    padding: 0 var(--space-lg);
 }
 
 .blue-title h1 {
     font-size: 32px;
     margin: 0 0 4px 0;
-    color: #003366;
-    font-weight: bold;
+    color: var(--color-primary-dark);
+    font-weight: 700;
 }
 
 .blue-title h2 {
     font-size: 22px;
     margin: 0;
-    color: #3272BB;
+    color: var(--color-brand-blue);
+    font-weight: 500;
+}
+
+/* Base Modernizations for index.jsp Headings */
+.index-banner {
+    background: linear-gradient(135deg, #c8ecff 0%, #eaf7ff 100%);
+    border-bottom: 5px solid var(--color-brand-blue);
+    padding: 42px var(--space-lg) 36px;
+    text-align: center;
+    color: var(--color-primary-dark);
+}
+
+.index-banner h1 {
+    margin: 0;
+    font-size: 36px; /* Optimized down from 42px clamp */
+    line-height: 1.25;
+    font-weight: 700; /* Subtle weight break from intense 800 */
+}
+
+.index-banner h2 {
+    margin: var(--space-xs) 0 0;
+    color: var(--color-brand-blue); /* Calmed color identity */
+    font-size: 24px; /* Reduced from 30px */
+    line-height: 1.25;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+.index-banner .subline {
+    margin: var(--space-md) auto 0; /* Added breathing room */
+    max-width: 760px;
+    color: var(--color-text-subline);
+    font-size: 17px;
+    line-height: 1.5;
+    font-weight: 400; /* Neutral structure for heavy descriptions */
 }
 
 /* ==========================================================================
-   Navigation Options Cards Hub
+   5. NAVIGATION OPTIONS & ACTION CARDS
    ========================================================================== */
+.index-content {
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: var(--space-xxl) var(--space-lg) 56px;
+    animation: slideUpFade 0.6s cubic-bezier(0.4, 0.0, 0.2, 1) both;
+}
+
+/* Unified Hub Layouts */
 .options-div {
     display: flex;
     flex-direction: row;
@@ -139,50 +215,95 @@ html, body {
     justify-content: center;
     align-items: center;
     width: 100%;
-    padding: 60px 20px;
-    gap: 40px; /* Modern spacing layout using standard gaps instead of margins */
+    padding: 60px var(--space-lg);
+    gap: 40px; 
+}
+
+.main-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+    gap: 28px;
+}
+
+/* Base Interaction Cards (.option-box and .action-card normalized) */
+.option-box, .action-card {
+    min-height: 270px;
+    background: var(--color-bg-card);
+    border: var(--border-width) solid #d2e5f6;
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-decoration: none;
+    color: var(--color-text-dark);
+    box-shadow: 0 12px 28px rgba(0, 51, 102, 0.04);
+    transition: var(--transition-smooth);
 }
 
 .option-box {
-    border: 3px solid #C3EAFF; /* Modernized edge accent border */
-    background: #ffffff;
+    border-color: #C3EAFF;
     height: 400px;
-    width: 100%;
     max-width: 360px;
-    border-radius: 24px;
-    display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 30px;
-    box-shadow: 0 10px 30px rgba(50, 114, 187, 0.06);
-    transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Typography elements within structural cards */
+.action-card h3, .option-box h1 {
+    margin: 0;
+    font-size: 26px;
+    line-height: 1.2;
+    font-weight: 700;
 }
 
 .option-box h1 {
-    font-size: 28px;
-    color: #003366;
     margin: 20px 0 0 0;
-    font-weight: bold;
 }
 
-/* State Transformations on Card Interactions */
-.option-box:hover {
-    background-color: #ffffff;
-    border-color: #3272BB;
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(50, 114, 187, 0.15);
+.action-card p {
+    margin: var(--space-md) 0 0;
+    color: var(--color-text-muted); /* WCAG 4.5:1 Target Compliance Pass */
+    font-size: 16px;
+    line-height: 1.55;
+    font-weight: 400;
 }
 
-.option-box:active {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 16px rgba(50, 114, 187, 0.1);
+/* --- PRIMARY ACTION CARD ARCHITECTURE --- */
+.action-card.primary {
+    background: var(--color-primary-dark);
+    color: var(--color-text-light);
+    border-color: var(--color-primary-dark);
+    position: relative;
+    overflow: hidden;
 }
 
-.option-box-link {
-    text-decoration: none;
-    color: inherit;
+.action-card.primary p {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* --- ICON & GEOMETRY SETUPS --- */
+.action-top {
     display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.action-icon {
+    width: 76px;
+    height: 76px;
+    border-radius: var(--radius-lg);
+    display: grid;
+    place-items: center;
+    background: var(--color-bg-icon);
+    color: var(--color-brand-blue);
+    font-size: 30px;
+    flex: 0 0 auto;
+}
+
+.action-card.primary .action-icon {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--color-text-light);
 }
 
 .option-pic {
@@ -190,18 +311,57 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 110px; /* Reduced box icon sizing weight to match card geometry gracefully */
-    color: #3272BB;
-    transition: transform 0.35s ease;
+    font-size: 100px;
+    color: var(--color-brand-blue);
+    transition: var(--transition-smooth);
+}
+
+.action-footer {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-top: var(--space-lg);
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* --- INTERACTIVE STATE TRANSFORMATIONS (Formal Easing Curves) --- */
+.option-box:hover, .action-card:hover {
+    transform: translateY(-3px); /* Restrained from bouncy -10px */
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 16px 32px rgba(50, 114, 187, 0.12);
+}
+
+.action-card.primary:hover {
+    background-color: #002244;
+    border-color: #002244;
+}
+
+.option-box:active, .action-card:active {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(50, 114, 187, 0.08);
 }
 
 .option-box:hover .option-pic {
-    color: #003366;
-    transform: scale(1.12);
+    color: var(--color-primary-dark);
+    transform: scale(1.03); /* Restrained structural animation scaling */
+}
+
+/* --- ACCESSIBILITY FOCUS INDICATORS (WCAG Compliance) --- */
+.option-box-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+}
+
+.option-box:focus-visible,
+.action-card:focus-visible {
+    outline: 2px solid var(--color-brand-blue);
+    outline-offset: 4px;
 }
 
 /* ==========================================================================
-   Interactive Navigation Drawer System (Sidebar)
+   6. INTERACTIVE SIDEBAR NAV SYSTEM
    ========================================================================== */
 .sidebar {
     height: 100%;
@@ -209,33 +369,38 @@ html, body {
     position: fixed;
     top: 0;
     left: 0;
-    background-color: #ffffff; /* Swapped to modern solid white panel */
+    background-color: var(--color-bg-card);
     overflow-x: hidden;
-    transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: width 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
     padding-top: 80px;
-    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.08);
+    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.06);
     z-index: 1000;
 }
 
 .sidebar a {
-    padding: 14px 5px;
+    padding: 14px var(--space-xs);
     text-decoration: none;
     font-size: 1.25rem;
-    font-weight: bold;
+    font-weight: 500;
     color: #555555;
     display: block;
-    transition: all 0.25s ease;
-    margin: 8px 20px;
-    border-radius: 12px;
+    transition: var(--transition-smooth);
+    margin: var(--space-xs) var(--space-lg);
+    border-radius: var(--radius-md);
     text-align: left;
     border-left: 4px solid transparent;
 }
 
 .sidebar a:hover:not(.closebtn):not(.admin-tab) {
-    background-color: #f0f6fc;
-    color: #3272BB;
-    border-left-color: #3272BB;
-    padding-left: 25px;
+    background-color: var(--color-bg-pill);
+    color: var(--color-brand-blue);
+    border-left-color: var(--color-brand-blue);
+    padding-left: var(--space-xl);
+}
+
+.sidebar a:focus-visible {
+    outline: 2px solid var(--color-brand-blue);
+    outline-offset: -2px;
 }
 
 .sidebar .closebtn {
@@ -253,17 +418,17 @@ html, body {
 }
 
 .sidebar .closebtn:hover {
-    color: #003366;
+    color: var(--color-primary-dark);
 }
 
-/* Fixed Persistent Bottom Admin Deck Tab */
+/* Persistent Admin Footer Placement */
 .sidebar .admin-tab {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: #003366;
-    color: #ffffff;
+    background-color: var(--color-primary-dark);
+    color: var(--color-text-light);
     border: none;
     border-radius: 0;
     padding: 20px 30px;
@@ -280,6 +445,86 @@ html, body {
 }
 
 .sidebar .admin-tab:hover {
-    background-color: #3272BB;
-    color: #ffffff;
+    background-color: var(--color-brand-blue);
+    color: var(--color-text-light);
+}
+
+/* ==========================================================================
+   7. AUXILIARY COMPONENT STRIPS & INLINE ALIGNMENTS
+   ========================================================================== */
+.support-strip {
+    margin-top: var(--space-lg);
+    background: var(--color-bg-card);
+    border: 1px solid #d9e6f2;
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--color-primary-dark);
+    font-size: 16px;
+    font-weight: 500;
+    box-shadow: 0 8px 20px rgba(0, 51, 102, 0.03);
+}
+
+/* Modernized Modal Overlays injected into style registry */
+.modal-box {
+    animation: fadeInUp 0.4s cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+}
+
+.modal-close:focus-visible,
+.modal-ok-btn:focus-visible {
+    outline: 2px solid var(--color-primary-dark);
+    outline-offset: 4px;
+}
+
+/* ==========================================================================
+   8. SYSTEM KEYFRAMES & KEYBOARD RESPONSIVENESS
+   ========================================================================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98); /* Slower, subtle scale entry */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes slideUpFade {
+    from { 
+        opacity: 0; 
+        transform: translateY(24px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* ==========================================================================
+   9. MEDIA QUERIES (RWD BREAKPOINTS)
+   ========================================================================== */
+@media (max-width: 760px) {
+    .main-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .index-content {
+        padding: 34px var(--space-md) var(--space-xl);
+    }
+
+    .action-card {
+        min-height: 230px;
+    }
+    
+    .index-banner h1 {
+        font-size: 28px;
+    }
+    
+    .index-banner h2 {
+        font-size: 20px;
+    }
 }

@@ -139,7 +139,7 @@ public class ApprovalNotificationService {
         body.append("Form ID: ").append(formId).append("\n");
         body.append("Requester EMPID: ").append(requesterEmpId).append("\n");
         appendTopic(body, requestTopic);
-        body.append("Current step: ").append(describePendingStep(0)).append(" approval").append("\n");
+        body.append("Current step: ").append(describeWaitingStep(0)).append("\n");
         body.append("\nOpen the SLF Requisition Form system to view details.");
         return body.toString();
     }

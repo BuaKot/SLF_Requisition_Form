@@ -25,11 +25,17 @@ public class ApprovalNotificationService {
 
     public void notifyFormSubmitted(int formId, int requesterEmpId, String requestTopic) {
         try {
-            ApprovalNotificationRecipient recipient = recipientResolver.resolveInitialDirector(formId);
-            String subject = buildPendingStepSubject(formId, 0);
-            String body = buildPendingStepBody(formId, requesterEmpId, requestTopic, 0, null);
-            sendAndLog(formId, null, "FORM_SUBMITTED", recipient, subject, body, requesterEmpId,
-                "FORM_SUBMITTED:" + formId);
+            ApprovalNotificationRecipient director = recipientResolver.resolveInitialDirector(formId);
+            String directorSubject = buildPendingStepSubject(formId, 0);
+            String directorBody = buildPendingStepBody(formId, requesterEmpId, requestTopic, 0, null);
+            sendAndLog(formId, null, "FORM_SUBMITTED", director, directorSubject, directorBody, requesterEmpId,
+                "FORM_SUBMITTED:DIRECTOR:" + formId);
+
+            ApprovalNotificationRecipient requester = recipientResolver.resolveRequester(formId);
+            String requesterSubject = buildSubmittedRequesterSubject(formId);
+            String requesterBody = buildSubmittedRequesterBody(formId, requesterEmpId, requestTopic);
+            sendAndLog(formId, null, "FORM_SUBMITTED", requester, requesterSubject, requesterBody, requesterEmpId,
+                "FORM_SUBMITTED:REQUESTER:" + formId);
         } catch (Exception e) {
             System.err.println("Unable to send submitted approval notification: " + e.getMessage());
         }
@@ -117,6 +123,21 @@ public class ApprovalNotificationService {
         return "[SLF] Requisition form #" + formId + " pending " + describePendingStep(stateStep) + " approval";
     }
 
+    static String buildSubmittedRequesterSubject(int formId) {
+        return "[SLF] Requisition form #" + formId + " submitted successfully";
+    }
+
+    private String buildSubmittedRequesterBody(int formId, int requesterEmpId, String requestTopic) {
+        StringBuilder body = new StringBuilder();
+        body.append("Your requisition form was submitted successfully.").append("\n\n");
+        body.append("Form ID: ").append(formId).append("\n");
+        body.append("Requester EMPID: ").append(requesterEmpId).append("\n");
+        appendTopic(body, requestTopic);
+        body.append("Current step: ").append(describePendingStep(0)).append(" approval").append("\n");
+        body.append("\nOpen the SLF Requisition Form system to view details.");
+        return body.toString();
+    }
+
     private String buildPendingStepBody(int formId, int requesterEmpId, String requestTopic,
                                         int stateStep, String comment) {
         StringBuilder body = new StringBuilder();
@@ -151,17 +172,22 @@ public class ApprovalNotificationService {
             return;
         }
 
-        long logId = logDAO.createPendingLog(
-            formId,
-            approvalId,
-            eventType,
-            recipient.getEmpId(),
-            recipient.getEmail(),
-            subject,
-            body,
-            Integer.valueOf(createdBy),
-            dedupeKey + ":" + recipient.getEmail()
-        );
+        long logId = -1L;
+        try {
+            logId = logDAO.createPendingLog(
+                formId,
+                approvalId,
+                eventType,
+                recipient.getEmpId(),
+                recipient.getEmail(),
+                subject,
+                body,
+                Integer.valueOf(createdBy),
+                dedupeKey + ":" + recipient.getEmail()
+            );
+        } catch (SQLException e) {
+            System.err.println("Unable to create email notification log; sending anyway: " + e.getMessage());
+        }
 
         NotificationSendResult result = mailService.sendEmailNotification(subject, body, recipient.getEmail());
         if (result.isSent()) {

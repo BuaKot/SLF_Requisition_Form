@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class EmailNotificationLogDAO {
+    public static final String STATUS_READY = "READY";
 
     public boolean enqueueIfAbsent(int formId, Integer approvalId, String eventType, Integer recipientEmpId,
                                    String recipientEmail, String subject, String body, Integer createdBy,
@@ -43,7 +44,7 @@ public class EmailNotificationLogDAO {
             "INSERT INTO EMAIL_NOTIFICATION_LOG " +
             "(FORMID, APPROVALID, EVENT_TYPE, RECIPIENT_EMPID, RECIPIENT_EMAIL, SUBJECT, BODY, STATUS, " +
             "SEND_ATTEMPT, DEDUPE_KEY, CREATED_BY, NEXT_ATTEMPT_AT) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, 'PENDING', 0, ?, ?, SYSTIMESTAMP)";
+            "VALUES (?, ?, ?, ?, ?, ?, ?, '" + STATUS_READY + "', 0, ?, ?, SYSTIMESTAMP)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, new String[] { "EMAIL_LOG_ID" })) {
@@ -70,13 +71,11 @@ public class EmailNotificationLogDAO {
     public Long findNextDueId(int maxAttempts) throws SQLException {
         String sql =
             "SELECT EMAIL_LOG_ID FROM EMAIL_NOTIFICATION_LOG " +
-            "WHERE STATUS = 'PENDING' " +
-            "OR (STATUS = 'FAILED' AND SEND_ATTEMPT < ? AND NVL(NEXT_ATTEMPT_AT, SYSTIMESTAMP) <= SYSTIMESTAMP) " +
+            "WHERE (STATUS = '" + STATUS_READY + "' AND NVL(NEXT_ATTEMPT_AT, SYSTIMESTAMP) <= SYSTIMESTAMP) " +
             "OR (STATUS = 'SENDING' AND LAST_ATTEMPT_AT < SYSTIMESTAMP - INTERVAL '10' MINUTE) " +
             "ORDER BY CREATED_AT FETCH FIRST 1 ROWS ONLY";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, maxAttempts);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? Long.valueOf(rs.getLong("EMAIL_LOG_ID")) : null;
             }
@@ -88,13 +87,11 @@ public class EmailNotificationLogDAO {
             "UPDATE EMAIL_NOTIFICATION_LOG SET STATUS = 'SENDING', " +
             "SEND_ATTEMPT = NVL(SEND_ATTEMPT, 0) + 1, LAST_ATTEMPT_AT = SYSTIMESTAMP, ERROR_MESSAGE = NULL " +
             "WHERE EMAIL_LOG_ID = ? AND (" +
-            "STATUS = 'PENDING' " +
-            "OR (STATUS = 'FAILED' AND SEND_ATTEMPT < ? AND NVL(NEXT_ATTEMPT_AT, SYSTIMESTAMP) <= SYSTIMESTAMP) " +
+            "(STATUS = '" + STATUS_READY + "' AND NVL(NEXT_ATTEMPT_AT, SYSTIMESTAMP) <= SYSTIMESTAMP) " +
             "OR (STATUS = 'SENDING' AND LAST_ATTEMPT_AT < SYSTIMESTAMP - INTERVAL '10' MINUTE))";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, emailLogId);
-            ps.setInt(2, maxAttempts);
             return ps.executeUpdate() == 1;
         }
     }
@@ -182,7 +179,8 @@ public class EmailNotificationLogDAO {
     }
 
     public void markFailed(long emailLogId, String errorMessage, Timestamp nextAttemptAt) throws SQLException {
-        updateFinalStatus(emailLogId, "FAILED", truncate(errorMessage, 1000), nextAttemptAt);
+        String status = nextAttemptAt == null ? "FAILED" : STATUS_READY;
+        updateFinalStatus(emailLogId, status, truncate(errorMessage, 1000), nextAttemptAt);
     }
 
     private void updateFinalStatus(long emailLogId, String status, String errorMessage, Timestamp nextAttemptAt)

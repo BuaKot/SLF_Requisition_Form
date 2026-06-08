@@ -15,6 +15,7 @@
     <a href="${pageContext.request.contextPath}/Dashboard.jsp"><i class="fa-solid fa-chart-line" style="margin-right: 10px"></i>Dashboard</a>
     <a href="${pageContext.request.contextPath}/memberManage"><i class="fa-solid fa-users-gear" style="margin-right: 10px"></i>จัดการสมาชิก</a>
     <a href="${pageContext.request.contextPath}/mailLog"><i class="fa-solid fa-envelope-open-text" style="margin-right: 10px"></i>mailLog</a>
+    <a href="${pageContext.request.contextPath}/thirdPartyLinks"><i class="fa-solid fa-link" style="margin-right: 10px"></i>Third-party Links</a>
     <% } %>
     <a href="${pageContext.request.contextPath}/logout"><i class="fa-solid fa-arrow-right-from-bracket" style="margin-right: 10px"></i>ออกจากระบบ</a>
     <% if (showAdmin) { %>

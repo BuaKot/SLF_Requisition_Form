@@ -20,6 +20,8 @@ public class AuthenticationFilter implements Filter {
         // CSS/Images ให้ปล่อยผ่านฉลุย!
         if (path.equals("/login")
                 || path.equals("/processLogin")
+                || path.equals("/thirdparty/form")
+                || path.equals("/thirdparty/submit")
                 || path.startsWith("/css/")
                 || path.startsWith("/images/")) {
 

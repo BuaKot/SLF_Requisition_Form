@@ -179,6 +179,13 @@
             </div>
         <% } %>
 
+        <% if (AuthUtil.isAllowedForPage(currentRole, "thirdPartyLinks")) { %>
+            <div class="card" onclick="location.href='${pageContext.request.contextPath}/thirdPartyLinks'">
+                <i class="fa-solid fa-link"></i>
+                <p>Third-party Form Links</p>
+            </div>
+        <% } %>
+
     </div>
     </div>
 

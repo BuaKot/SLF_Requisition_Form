@@ -1,3 +1,17 @@
+<!-- ================================================================= ==
+     SLF Requisition Form - Landing Page (index.jsp)
+     ================================================================
+
+     This is the main landing/dashboard page for the Student Loan Fund
+     (SLF) IT Department's "Requisition Form" system. It serves as a central
+     hub where users can either create new requisition forms or view their
+     submitted/reviewed forms.
+
+     Architecture: JSP with JavaServer Pages, embedded CSS stylesheets,
+     and client-side JavaScript for interactivity. Uses EL expressions for
+     session data rendering.
+
+     =================================================================== -->
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
@@ -8,20 +22,57 @@
     <title>ระบบใบขอให้ดำเนินการ IT</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 2000; 
-    }
-    .modal-box {
+<!-- ================================================================= ==
+     EMBEDDED CSS STYLESHEET - Modal and Layout Components
+     =========================================================
+
+     This inline style block defines the visual styling for key UI components:
+
+     MODAL OVERLAY (lines 26-37):
+       - Full-screen backdrop with semi-transparent dark background (#000/50)
+       - Flexbox centering to position modal in viewport middle
+       - z-index: 2000 ensures it sits above other UI elements
+
+     MODAL BOX (lines 38-49):
+       - White card with rounded corners, padding for comfortable spacing
+       - Max-width 480px prevents excessive width on large screens
+       - Sarabun font family for Thai text readability
+       - fadeIn animation: subtle slide-up entry effect
+
+     MODAL CLOSE BUTTON (lines 50-61):
+       - Absolute positioned top-right corner with × symbol
+       - Hover color change improves UX feedback
+
+     MODAL CONTENT STYLING (lines 60-78):
+       - Paragraph text in #003366 brand color for consistency
+       - OK button uses primary blue (#3272BB) with hover state to #003366
+
+     INDEX BANNER (lines 84-113):
+       - Gradient background: light cyan (#c8ecff → #eaf7ff)
+       - Bottom border in brand color for visual separation
+       - Responsive typography using clamp() for fluid scaling on all devices
+       - Subline text constrained to max-width for readability
+
+     MAIN CONTENT AREA (lines 115-120):
+       - Centered container with max-width: 1050px
+       - Generous padding for breathing room around content
+
+     ACTION CARDS GRID (lines 121-134, lines 221-234 media query):
+       - CSS Grid layout with 2 columns on desktop, single column on mobile (<760px)
+       - Cards have min-height: 270px for consistent visual weight
+       - Border and shadow effects create depth; hover state lifts card up
+
+     ACTION CARD COMPONENT (lines 135-204):
+       - Flexbox layout with icon + title in top section, footer at bottom
+       - Primary variant uses dark background (#003366) for emphasis
+       - Hover states: transform translateY(-5px), border color change
+
+     SUPPORT STRIP (lines 205-219):
+       - Bottom informational bar with contact details
+       - Same styling as cards but without hover effects
+
+     =================================================================== -->
+    <style>    .modal-box {
         background: white;
         border-radius: 12px;
         padding: 30px 40px;

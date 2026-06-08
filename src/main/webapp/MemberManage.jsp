@@ -71,7 +71,7 @@
         .notice-ok { background: #e7f7ee; color: #137a42; border: 1px solid #bde8ce; }
         .notice-error { background: #fdecec; color: #b42318; border: 1px solid #f5c2c2; }
         .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 1060px; }
+        table { width: 100%; border-collapse: collapse; min-width: 920px; }
         th, td { padding: 12px 14px; border-bottom: 1px solid #e5eef6; text-align: left; vertical-align: middle; }
         th { background: #f0f6fc; color: #003366; font-size: 14px; }
         td { font-size: 15px; }
@@ -239,7 +239,6 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Email แจ้งเตือน</th>
                             <th>ชื่อสมาชิก</th>
                             <th>ตำแหน่ง</th>
                             <th>ส่วนงาน</th>
@@ -252,7 +251,6 @@
                     <% for (MemberProfile member : members) { %>
                         <tr>
                             <td class="member-id"><%= member.getEmpId() %></td>
-                            <td><%= h(member.getEmail()) %></td>
                             <td><%= h(member.getEmpName()) %></td>
                             <td><%= h(member.getPosition()) %></td>
                             <td><%= h(member.getSecName()) %></td>

@@ -105,10 +105,14 @@ public class ApprovalNotificationRecipientResolver {
     }
 
     private String addNotificationFilter(Connection conn, String sql) throws SQLException {
+        StringBuilder filteredSql = new StringBuilder(sql);
         if (hasColumn(conn, "EMPLOYEE", "EMAIL_NOTIFICATION_ENABLED")) {
-            return sql + " AND NVL(recipient.EMAIL_NOTIFICATION_ENABLED, 1) = 1";
+            filteredSql.append(" AND NVL(recipient.EMAIL_NOTIFICATION_ENABLED, 1) = 1");
         }
-        return sql;
+        if (hasColumn(conn, "EMPLOYEE", "IS_ACTIVE")) {
+            filteredSql.append(" AND NVL(recipient.IS_ACTIVE, 1) = 1");
+        }
+        return filteredSql.toString();
     }
 
     private static boolean hasColumn(Connection conn, String tableName, String columnName) throws SQLException {

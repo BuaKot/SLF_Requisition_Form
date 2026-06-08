@@ -18,6 +18,13 @@ public class AuthUtilTest extends TestCase {
         assertFalse(AuthUtil.isAllowedForPage("Infrastructure", "memberManage"));
     }
 
+    public void testMailLogAllowsOnlyAdminRole() {
+        assertTrue(AuthUtil.isAllowedForPage("Admin", "mailLog"));
+        assertTrue(AuthUtil.isAllowedForPage("admin", "mailLog"));
+        assertFalse(AuthUtil.isAllowedForPage("Director", "mailLog"));
+        assertFalse(AuthUtil.isAllowedForPage("Technical", "mailLog"));
+    }
+
     public void testAdminPageAllowsAllOperationalRolesCaseInsensitively() {
         assertTrue(AuthUtil.isAllowedForPage("admin", "adminPage"));
         assertTrue(AuthUtil.isAllowedForPage("Director", "adminPage"));

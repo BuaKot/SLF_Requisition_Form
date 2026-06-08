@@ -43,6 +43,8 @@ public class GmailNotificationServiceTest extends TestCase {
         NotificationSendResult result = service.sendFormSubmittedNotification(42, 1001, "VPN access");
 
         assertFalse(result.isSent());
+        assertTrue(result.isSkipped());
+        assertEquals(NotificationSendResult.Status.SKIPPED, result.getStatus());
         assertTrue(result.getErrorMessage().contains("slf.mail.password"));
     }
 }

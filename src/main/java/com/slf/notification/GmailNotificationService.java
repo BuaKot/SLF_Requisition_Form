@@ -93,11 +93,11 @@ public class GmailNotificationService {
     }
 
     private void sendEmail(String subject, String body, String recipient) throws MessagingException {
-        Message message = new MimeMessage(mailSession());
+        MimeMessage message = new MimeMessage(mailSession());
         message.setFrom(new InternetAddress(config.getFrom()));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient, false));
-        message.setSubject(subject);
-        message.setText(body);
+        message.setSubject(subject, "UTF-8");
+        message.setText(body, "UTF-8");
 
         Transport.send(message);
     }

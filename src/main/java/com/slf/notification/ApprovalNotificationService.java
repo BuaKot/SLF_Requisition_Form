@@ -8,18 +8,21 @@ import java.sql.SQLException;
 
 public class ApprovalNotificationService {
     private final ApprovalNotificationRecipientResolver recipientResolver;
-    private final GmailNotificationService mailService;
     private final EmailNotificationLogDAO logDAO;
 
     public ApprovalNotificationService() {
-        this(new ApprovalNotificationRecipientResolver(), new GmailNotificationService(), new EmailNotificationLogDAO());
+        this(new ApprovalNotificationRecipientResolver(), new EmailNotificationLogDAO());
     }
 
     ApprovalNotificationService(ApprovalNotificationRecipientResolver recipientResolver,
                                 GmailNotificationService mailService,
                                 EmailNotificationLogDAO logDAO) {
+        this(recipientResolver, logDAO);
+    }
+
+    ApprovalNotificationService(ApprovalNotificationRecipientResolver recipientResolver,
+                                EmailNotificationLogDAO logDAO) {
         this.recipientResolver = recipientResolver;
-        this.mailService = mailService;
         this.logDAO = logDAO;
     }
 
@@ -30,22 +33,33 @@ public class ApprovalNotificationService {
             String directorBody = buildPendingStepBody(formId, requesterEmpId, requestTopic, 0, null);
             sendAndLog(formId, null, "FORM_SUBMITTED", director, directorSubject, directorBody, requesterEmpId,
                 "FORM_SUBMITTED:DIRECTOR:" + formId);
-
+        } catch (Exception e) {
+            logEnqueueFailure("submitted director", formId, e);
+        }
+        try {
             ApprovalNotificationRecipient requester = recipientResolver.resolveRequester(formId);
             String requesterSubject = buildSubmittedRequesterSubject(formId);
             String requesterBody = buildSubmittedRequesterBody(formId, requesterEmpId, requestTopic);
             sendAndLog(formId, null, "FORM_SUBMITTED", requester, requesterSubject, requesterBody, requesterEmpId,
                 "FORM_SUBMITTED:REQUESTER:" + formId);
         } catch (Exception e) {
-            System.err.println("Unable to send submitted approval notification: " + e.getMessage());
+            logEnqueueFailure("submitted requester", formId, e);
         }
     }
 
     public void notifyApprovalTransition(int formId, int reviewerEmpId, int newStep,
                                          Integer assignedDeveloperId, String comment) {
+        FormSummary summary;
         try {
-            FormSummary summary = loadFormSummary(formId);
-            ApprovalNotificationRecipient recipient = recipientResolver.resolveNextApprover(
+            summary = loadFormSummary(formId);
+        } catch (Exception e) {
+            logEnqueueFailure("approval transition summary", formId, e);
+            return;
+        }
+
+        ApprovalNotificationRecipient recipient = null;
+        try {
+            recipient = recipientResolver.resolveNextApprover(
                 formId,
                 newStep,
                 assignedDeveloperId
@@ -61,14 +75,23 @@ public class ApprovalNotificationService {
 
             sendAndLog(formId, null, eventType, recipient, subject, body, reviewerEmpId,
                 eventType + ":" + formId + ":" + newStep);
+        } catch (Exception e) {
+            logEnqueueFailure("approval transition recipient", formId, e);
+        }
 
-            if (shouldNotifyRequesterSeparately(newStep, recipient, summary.requesterEmpId)) {
+        if (shouldNotifyRequesterSeparately(newStep, recipient, summary.requesterEmpId)) {
+            try {
+                String eventType = eventTypeForStep(newStep);
+                String subject = buildApprovalResultSubject(formId, newStep);
+                String body = buildApprovalResultBody(
+                    formId, summary.requesterEmpId, summary.title, newStep, comment
+                );
                 ApprovalNotificationRecipient requester = recipientResolver.resolveRequester(formId);
                 sendAndLog(formId, null, eventType, requester, subject, body, reviewerEmpId,
                     eventType + ":REQUESTER:" + formId + ":" + newStep);
+            } catch (Exception e) {
+                logEnqueueFailure("approval transition requester", formId, e);
             }
-        } catch (Exception e) {
-            System.err.println("Unable to send approval notification: " + e.getMessage());
         }
     }
 
@@ -178,29 +201,17 @@ public class ApprovalNotificationService {
             return;
         }
 
-        long logId = -1L;
-        try {
-            logId = logDAO.createPendingLog(
-                formId,
-                approvalId,
-                eventType,
-                recipient.getEmpId(),
-                recipient.getEmail(),
-                subject,
-                body,
-                Integer.valueOf(createdBy),
-                dedupeKey + ":" + recipient.getEmail()
-            );
-        } catch (SQLException e) {
-            System.err.println("Unable to create email notification log; sending anyway: " + e.getMessage());
-        }
-
-        NotificationSendResult result = mailService.sendEmailNotification(subject, body, recipient.getEmail());
-        if (result.isSent()) {
-            logDAO.markSent(logId);
-        } else {
-            logDAO.markFailed(logId, result.getErrorMessage());
-        }
+        logDAO.enqueueIfAbsent(
+            formId,
+            approvalId,
+            eventType,
+            recipient.getEmpId(),
+            recipient.getEmail(),
+            subject,
+            body,
+            Integer.valueOf(createdBy),
+            dedupeKey + ":" + recipient.getEmail()
+        );
     }
 
     private FormSummary loadFormSummary(int formId) throws SQLException {
@@ -261,6 +272,13 @@ public class ApprovalNotificationService {
         if (trimmed != null) {
             body.append("Comment: ").append(trimmed).append("\n");
         }
+    }
+
+    private static void logEnqueueFailure(String notificationType, int formId, Exception exception) {
+        System.err.println(
+            "Unable to enqueue " + notificationType + " notification for form " + formId + ": "
+                + exception.getMessage()
+        );
     }
 
     private static class FormSummary {

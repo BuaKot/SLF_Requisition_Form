@@ -20,6 +20,13 @@ import java.io.IOException;
     "/thirdPartyLinks",
     "/ThirdPartySubmission.jsp",
     "/thirdPartySubmission",
+    "/newForm",
+    "/formSelection",
+    "/forms/select",
+    "/itRequisition/new",
+    "/newForm/requisition",
+    "/thirdParty/request/new",
+    "/thirdParty/request/link",
     "/directorApprove",           // if you've mapped this to a servlet
     "/DirectorApprove.jsp",
     "/TechnicalApprove.jsp",
@@ -74,6 +81,11 @@ public class RoleBasedAccessFilter implements Filter {
             pageKey = "thirdPartyLinks";
         } else if (path.equals("/thirdPartySubmission") || path.equals("/ThirdPartySubmission.jsp")) {
             pageKey = "thirdPartySubmission";
+        } else if (path.equals("/newForm") || path.equals("/formSelection")
+                || path.equals("/forms/select") || path.equals("/itRequisition/new")
+                || path.equals("/newForm/requisition") || path.equals("/thirdParty/request/new")
+                || path.equals("/thirdParty/request/link")) {
+            pageKey = "formSelection";
         }
 
         // If we have a pageKey, check permission

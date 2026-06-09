@@ -1,10 +1,10 @@
 <!-- ================================================================= ==
-     SLF Requisition Form - Landing Page (index.jsp)
+     ศูนย์รวมแบบฟอร์ม SLF - Landing Page (index.jsp)
      ================================================================
 
      This is the main landing/dashboard page for the Student Loan Fund
-     (SLF) IT Department's "Requisition Form" system. It serves as a central
-     hub where users can either create new requisition forms or view their
+     (SLF) IT Department form system. It serves as a central
+     hub where users can choose a form type, create new requests, or view their
      submitted/reviewed forms.
 
      Architecture: JSP with JavaServer Pages, embedded CSS stylesheets,
@@ -366,7 +366,7 @@
 
     <div class="index-banner">
         <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
-        <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
+        <h2>ศูนย์รวมแบบฟอร์มฝ่ายเทคโนโลยีสารสนเทศ</h2>
         <p class="subline">เลือกเมนูหลักเพื่อสร้างคำขอใหม่ หรือติดตามรายการที่ส่งเข้าสู่ระบบแล้ว</p>
     </div>
 

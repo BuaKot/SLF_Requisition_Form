@@ -7,6 +7,7 @@ public class MailLogServletTest extends TestCase {
     public void testNormalizesSupportedStatuses() {
         assertEquals("SENT", MailLogServlet.normalizeStatus(" sent "));
         assertEquals("FAILED", MailLogServlet.normalizeStatus("failed"));
+        assertEquals("READY", MailLogServlet.normalizeStatus("ready"));
         assertNull(MailLogServlet.normalizeStatus("all"));
         assertNull(MailLogServlet.normalizeStatus("unknown"));
     }

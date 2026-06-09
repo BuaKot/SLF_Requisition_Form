@@ -1,6 +1,7 @@
 package com.slf.controller;
 
 import com.slf.dao.ThirdPartyFormLinkDAO;
+import com.slf.dao.ThirdPartyAuditLogDAO;
 import com.slf.dao.ThirdPartyFormSubmissionDAO;
 import com.slf.model.ThirdPartyFormLink;
 import com.slf.model.ThirdPartyFormSubmission;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ThirdPartySubmitServlet extends HttpServlet {
     private final ThirdPartyFormLinkDAO linkDAO = new ThirdPartyFormLinkDAO();
     private final ThirdPartyFormSubmissionDAO submissionDAO = new ThirdPartyFormSubmissionDAO();
+    private final ThirdPartyAuditLogDAO auditDAO = new ThirdPartyAuditLogDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -32,6 +34,7 @@ public class ThirdPartySubmitServlet extends HttpServlet {
         try {
             ThirdPartyFormLink link = linkDAO.findUsableByTokenHash(ThirdPartyLinkToken.sha256Hex(rawToken));
             if (link == null) {
+                auditDAO.log("THIRD_PARTY_SUBMIT_REJECTED", null, null, null, "EXTERNAL", "Submit rejected because token is invalid or unavailable.");
                 forwardResult(request, response, false, "ลิงก์นี้หมดอายุ ถูกใช้แล้ว ถูกยกเลิก หรือไม่ถูกต้อง");
                 return;
             }
@@ -42,6 +45,8 @@ public class ThirdPartySubmitServlet extends HttpServlet {
             ThirdPartyFormSubmission submission = buildSubmission(request, link.getLinkId(), ThirdPartyConsentContent.VERSION);
             validateSubmission(submission);
             submissionDAO.submitOnce(submission);
+            auditDAO.log("THIRD_PARTY_FORM_SUBMITTED", link.getRequestId(), Long.valueOf(link.getLinkId()),
+                null, "EXTERNAL", "External user submitted third-party form.");
             forwardResult(request, response, true, "ส่งแบบฟอร์มเรียบร้อยแล้ว เจ้าหน้าที่จะตรวจสอบข้อมูลก่อนนำเข้าสู่ workflow หลัก");
         } catch (SQLException e) {
             throw new ServletException("Unable to submit third-party form", e);

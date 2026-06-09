@@ -27,11 +27,6 @@
 
 %>
 <%
-    String currentRole = (String) session.getAttribute("position");
-    if (!AuthUtil.isAllowedForPage(currentRole, "thirdPartySubmission")) {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN);
-        return;
-    }
     ThirdPartyFormSubmission submission = (ThirdPartyFormSubmission) request.getAttribute("submission");
     if (submission == null) {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);

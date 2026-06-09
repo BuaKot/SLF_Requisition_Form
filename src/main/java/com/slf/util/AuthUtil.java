@@ -33,8 +33,9 @@ public class AuthUtil {
         PAGE_ROLES.put("memberManage",       new HashSet<>(Arrays.asList("Admin")));
         PAGE_ROLES.put("mailLog",            new HashSet<>(Arrays.asList("Admin")));
         PAGE_ROLES.put("thirdPartyLinks",    new HashSet<>(Arrays.asList("Admin")));
-        PAGE_ROLES.put("thirdPartySubmission", new HashSet<>(Arrays.asList("Admin")));
+        PAGE_ROLES.put("thirdPartySubmission", new HashSet<>(Arrays.asList("*")));
         PAGE_ROLES.put("requisitionDetail",  ADMIN_ROLES);
+        PAGE_ROLES.put("formSelection",      new HashSet<>(Arrays.asList("*")));
         // Add more keys as you create pages
     }
 
@@ -43,8 +44,10 @@ public class AuthUtil {
      * identified by pageKey.
      */
     public static boolean isAllowedForPage(String position, String pageKey) {
-        if (position == null || pageKey == null) return false;
+        if (pageKey == null) return false;
         Set<String> allowed = PAGE_ROLES.get(pageKey);
+        if (allowed != null && allowed.contains("*")) return true;
+        if (position == null) return false;
         return allowed != null && containsRole(allowed, position);
     }
 

@@ -1,129 +1,130 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.slf.model.ThirdPartyFormLink" %>
+<%@ page import="com.slf.model.ThirdPartyRequest" %>
 <%!
-    public String h(Object input) {
+    private String h(Object input) {
         if (input == null) return "";
         return String.valueOf(input)
             .replace("&", "&amp;")
             .replace("<", "&lt;")
             .replace(">", "&gt;")
             .replace("\"", "&quot;")
-            .replace("'", "&#x27;");
+            .replace("'", "&#39;");
+    }
+
+    private boolean hasText(Object input) {
+        return input != null && String.valueOf(input).trim().length() > 0;
     }
 %>
 <%
     ThirdPartyFormLink link = (ThirdPartyFormLink) request.getAttribute("thirdPartyLink");
-    String consentVersion = (String) request.getAttribute("consentVersion");
+    ThirdPartyRequest thirdPartyRequest = (ThirdPartyRequest) request.getAttribute("thirdPartyRequest");
     String token = (String) request.getAttribute("token");
+    String consentVersion = (String) request.getAttribute("consentVersion");
     String invalidLinkMessage = (String) request.getAttribute("invalidLinkMessage");
     boolean valid = link != null && consentVersion != null && invalidLinkMessage == null;
+    boolean hasRequestSummary = thirdPartyRequest != null
+        && (hasText(thirdPartyRequest.getExternalCompanyName())
+            || hasText(thirdPartyRequest.getExternalContactName())
+            || hasText(thirdPartyRequest.getExternalEmail())
+            || hasText(thirdPartyRequest.getExternalPhone())
+            || hasText(thirdPartyRequest.getPurpose())
+            || hasText(thirdPartyRequest.getTargetSystem()));
 %>
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Third-party Requisition Form</title>
+    <title>แบบฟอร์มผู้ให้บริการภายนอก</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; min-height: 100vh; background: #f4f8fc; color: #102a43; font-family: 'Sarabun', Tahoma, Arial, sans-serif; }
-        .page { max-width: 980px; margin: 0 auto; padding: 36px 18px 52px; }
-        .header { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }
-        .header img { height: 62px; width: auto; }
-        h1 { margin: 0; color: #003366; font-size: 28px; }
-        .subtitle { margin: 6px 0 0; color: #60758a; }
-        .panel { background: #fff; border: 1px solid #d9e6f2; border-radius: 10px; box-shadow: 0 8px 22px rgba(0, 51, 102, 0.08); padding: 22px; }
-        .alert { background: #fdecec; border: 1px solid #f4b8b8; color: #b42318; border-radius: 8px; padding: 16px; font-weight: 800; }
-        .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-        .full { grid-column: 1 / -1; }
-        label { display: block; color: #003366; font-weight: 800; margin-bottom: 6px; }
-        input, textarea, select { width: 100%; border: 1px solid #c7d7e6; border-radius: 7px; padding: 10px 12px; font-family: inherit; font-size: 15px; background: #fff; }
-        textarea { min-height: 120px; resize: vertical; }
-        .actions { display: flex; justify-content: flex-end; margin-top: 18px; }
-        .btn { border: 0; border-radius: 7px; min-height: 42px; padding: 0 18px; font-family: inherit; font-weight: 800; cursor: pointer; }
-        .btn-primary { background: #003366; color: #fff; }
-        .hint { margin-top: 10px; color: #64748b; font-size: 13px; }
-        .consent { grid-column: 1 / -1; border: 1px solid #c7d7e6; border-radius: 7px; overflow: hidden; margin-top: 4px; }
-        .consent-head { background: #edf5fc; padding: 13px 16px; color: #003366; font-weight: 800; }
-        .consent-body { max-height: 420px; overflow-y: auto; padding: 16px; line-height: 1.65; }
-        .consent-text { margin: 0; white-space: pre-wrap; }
-        .consent-note, .consent-extra { margin: 14px 0 0; color: #52677b; font-size: 13px; line-height: 1.6; }
-        .consent-check { display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; padding: 14px; border: 1px solid #b9cfe2; border-radius: 7px; background: #f7fbff; }
-        .consent-check input { width: 18px; height: 18px; margin-top: 2px; flex: 0 0 auto; }
-        .consent-check label { margin: 0; line-height: 1.55; cursor: pointer; }
-        .access-section { margin-top: 22px; padding-top: 20px; border-top: 1px solid #d9e6f2; }
-        .access-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-        .access-head h2 { margin: 0; color: #003366; font-size: 20px; }
-        .access-card { border: 1px solid #c7d7e6; border-radius: 7px; padding: 16px; margin-bottom: 14px; background: #fbfdff; }
-        .access-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-        .access-number { color: #003366; font-weight: 800; }
-        .btn-add { background: #e8f2fb; color: #003366; }
-        .btn-remove { background: #fdecec; color: #b42318; min-height: 34px; padding: 0 12px; }
-        .table-note { color: #52677b; font-size: 13px; line-height: 1.6; margin: 4px 0 16px; }
-        @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } .header { align-items: flex-start; } }
-    </style>
 </head>
-<body>
-<main class="page">
-    <div class="header">
+<body class="external-form-body">
+<main class="external-form-page">
+    <header class="external-form-header">
         <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
         <div>
-            <h1>Third-party Requisition Form</h1>
-            <p class="subtitle">แบบฟอร์มสำหรับบุคคลภายนอก</p>
+            <p class="eyebrow">กองทุนเงินให้กู้ยืมเพื่อการศึกษา</p>
+            <h1>แบบฟอร์มการขอลงทะเบียนผู้ใช้ระบบงานสารสนเทศ สำหรับผู้ให้บริการภายนอก</h1>
+            <p>กรุณากรอกข้อมูลให้ครบถ้วน ลิงก์นี้ใช้ได้เฉพาะรายการที่ได้รับอนุญาตเท่านั้น</p>
         </div>
-    </div>
+    </header>
 
     <% if (!valid) { %>
-        <section class="panel">
-            <div class="alert"><%= h(invalidLinkMessage) %></div>
+        <section class="external-panel invalid-token-panel">
+            <div class="invalid-token-icon">!</div>
+            <h2>ไม่สามารถเปิดแบบฟอร์มได้</h2>
+            <p><%= h(invalidLinkMessage) %></p>
+            <p class="muted-text">หากต้องการใช้งาน กรุณาติดต่อเจ้าหน้าที่ผู้ส่งลิงก์เพื่อขอลิงก์ใหม่</p>
         </section>
     <% } else { %>
-        <section class="panel">
+        <% if (hasRequestSummary) { %>
+            <section class="external-panel">
+                <h2>ข้อมูลคำขอเบื้องต้น</h2>
+                <div class="summary-grid">
+                    <div><span>บริษัท/หน่วยงาน</span><strong><%= h(thirdPartyRequest.getExternalCompanyName()) %></strong></div>
+                    <div><span>ผู้ติดต่อ</span><strong><%= h(thirdPartyRequest.getExternalContactName()) %></strong></div>
+                    <div><span>Email</span><strong><%= h(thirdPartyRequest.getExternalEmail()) %></strong></div>
+                    <div><span>เบอร์โทร</span><strong><%= h(thirdPartyRequest.getExternalPhone()) %></strong></div>
+                    <div class="full"><span>ระบบงานที่ต้องการให้เข้าถึง</span><strong><%= h(thirdPartyRequest.getTargetSystem()) %></strong></div>
+                    <div class="full"><span>วัตถุประสงค์</span><strong><%= h(thirdPartyRequest.getPurpose()) %></strong></div>
+                </div>
+            </section>
+        <% } %>
+
+        <section class="external-panel">
+            <h2>ข้อมูลผู้กรอกแบบฟอร์ม</h2>
             <form method="post" action="${pageContext.request.contextPath}/thirdparty/submit">
                 <input type="hidden" name="token" value="<%= h(token) %>">
                 <input type="hidden" name="consentVersion" value="<%= h(consentVersion) %>">
-                <div class="grid">
-                    <div>
+                <div class="third-party-form-grid">
+                    <div class="form-field">
                         <label for="fullNameTh">ชื่อ-สกุล ภาษาไทย</label>
-                        <input id="fullNameTh" name="fullNameTh" type="text" maxlength="255" required>
+                        <input id="fullNameTh" name="fullNameTh" type="text" maxlength="255" required
+                               value="<%= h(thirdPartyRequest == null ? null : thirdPartyRequest.getExternalContactName()) %>">
                     </div>
-                    <div>
+                    <div class="form-field">
                         <label for="fullNameEn">ชื่อ-สกุล ภาษาอังกฤษ</label>
                         <input id="fullNameEn" name="fullNameEn" type="text" maxlength="255">
                     </div>
-                    <div>
-                        <label for="organization">หน่วยงาน</label>
-                        <input id="organization" name="organization" type="text" maxlength="255" required>
+                    <div class="form-field">
+                        <label for="organization">บริษัท/หน่วยงาน</label>
+                        <input id="organization" name="organization" type="text" maxlength="255" required
+                               value="<%= h(thirdPartyRequest == null ? null : thirdPartyRequest.getExternalCompanyName()) %>">
                     </div>
-                    <div>
-                        <label for="phone">เบอร์โทรศัพท์</label>
-                        <input id="phone" name="phone" type="tel" maxlength="50" required>
+                    <div class="form-field">
+                        <label for="phone">เบอร์โทร</label>
+                        <input id="phone" name="phone" type="tel" maxlength="50" required
+                               value="<%= h(thirdPartyRequest == null ? null : thirdPartyRequest.getExternalPhone()) %>">
                     </div>
-                    <div class="full">
+                    <div class="form-field">
                         <label for="email">Email</label>
-                        <input id="email" name="email" type="email" maxlength="320" required>
+                        <input id="email" name="email" type="email" maxlength="320" required
+                               value="<%= h(thirdPartyRequest == null ? null : thirdPartyRequest.getExternalEmail()) %>">
                     </div>
-                    <div class="full">
-                        <label for="reasonObjective">เหตุผลและวัตถุประสงค์การขอ</label>
-                        <textarea id="reasonObjective" name="reasonObjective" required></textarea>
+                    <div class="form-field full">
+                        <label for="reasonObjective">เหตุผลและวัตถุประสงค์การขอใช้งาน</label>
+                        <textarea id="reasonObjective" name="reasonObjective" required><%= h(thirdPartyRequest == null ? null : thirdPartyRequest.getPurpose()) %></textarea>
                     </div>
-                    <div class="full">
-                        <label for="projectName">เพื่อใช้ในโครงการ</label>
-                        <input id="projectName" name="projectName" type="text" maxlength="500">
+                    <div class="form-field full">
+                        <label for="projectName">ระบบงาน/โครงการที่เกี่ยวข้อง</label>
+                        <input id="projectName" name="projectName" type="text" maxlength="500"
+                               value="<%= h(thirdPartyRequest == null ? null : thirdPartyRequest.getTargetSystem()) %>">
                     </div>
-                    <div>
-                        <label for="accessStartDate">วันที่เริ่มต้นใช้ระบบงาน</label>
-                        <input id="accessStartDate" name="accessStartDate" type="date" required>
+                    <div class="form-field">
+                        <label for="accessStartDate">วันที่เริ่มต้นการใช้งาน</label>
+                        <input id="accessStartDate" name="accessStartDate" type="date" required
+                               value="<%= thirdPartyRequest == null || thirdPartyRequest.getAccessStartDate() == null ? "" : h(thirdPartyRequest.getAccessStartDate()) %>">
                     </div>
-                    <div>
-                        <label for="accessEndDate">ถึงวันที่</label>
-                        <input id="accessEndDate" name="accessEndDate" type="date" required>
+                    <div class="form-field">
+                        <label for="accessEndDate">วันที่สิ้นสุดการใช้งาน</label>
+                        <input id="accessEndDate" name="accessEndDate" type="date" required
+                               value="<%= thirdPartyRequest == null || thirdPartyRequest.getAccessEndDate() == null ? "" : h(thirdPartyRequest.getAccessEndDate()) %>">
                     </div>
                 </div>
-                <div class="hint">ลิงก์นี้ใช้ส่งข้อมูลได้เพียง 1 ครั้ง และจะหมดอายุภายใน 24 ชั่วโมงหลังสร้าง</div>
+                <p class="muted-text">เมื่อส่งแบบฟอร์มแล้ว ลิงก์นี้จะถูกเปลี่ยนสถานะเป็นใช้แล้วและไม่สามารถส่งซ้ำได้</p>
                 <section class="access-section">
                     <div class="access-head">
                         <h2>รายชื่อผู้ขอรับสิทธิ์การเข้าถึง</h2>
@@ -144,7 +145,7 @@
                     <input id="consentAccepted" name="consentAccepted" type="checkbox" value="accepted" required>
                     <label for="consentAccepted">ข้าพเจ้าได้อ่าน เข้าใจ และยินยอมรับเงื่อนไขตามหนังสือยินยอมฉบับ</label>
                 </div>
-                <div class="actions">
+                <div class="form-actions">
                     <button class="btn btn-primary" type="submit">ส่งแบบฟอร์ม</button>
                 </div>
             </form>
@@ -157,18 +158,18 @@
             <span class="access-number"></span>
             <button class="btn btn-remove" type="button">ลบรายชื่อ</button>
         </div>
-        <div class="grid">
-            <div><label>รหัสพนักงาน</label><input name="accessEmployeeCode" maxlength="100"></div>
-            <div><label>ชื่อผู้ใช้งาน</label><input name="accessUsername" maxlength="150"></div>
-            <div><label>เลขที่บัตรประชาชน</label><input name="accessNationalId" inputmode="numeric" maxlength="17" placeholder="ระบุเมื่อขอใช้ระบบ DSL"></div>
-            <div><label>ชื่อ-สกุล (TH)</label><input name="accessFullNameTh" maxlength="255" required></div>
-            <div><label>ชื่อ-สกุล (EN)</label><input name="accessFullNameEn" maxlength="255"></div>
-            <div><label>ตำแหน่ง</label><input name="accessPosition" maxlength="255" required></div>
-            <div><label>เบอร์โทรศัพท์มือถือ</label><input name="accessMobile" type="tel" maxlength="50" required></div>
-            <div><label>ฝ่าย/กลุ่มงาน</label><input name="accessDepartment" maxlength="255" required></div>
-            <div><label>Email</label><input name="accessEmail" type="email" maxlength="320" required></div>
-            <div><label>ระบบงาน</label><input name="accessSystem" maxlength="255" required></div>
-            <div><label>สิทธิ์การใช้งาน (Role)</label><input name="accessRole" maxlength="1000" placeholder="เช่น ชื่อโปรแกรมย่อย ชื่อเมนู ชื่อรายงาน" required></div>
+        <div class="third-party-form-grid">
+            <div class="form-field"><label>รหัสพนักงาน</label><input name="accessEmployeeCode" maxlength="100"></div>
+            <div class="form-field"><label>ชื่อผู้ใช้งาน</label><input name="accessUsername" maxlength="150"></div>
+            <div class="form-field"><label>เลขที่บัตรประชาชน</label><input name="accessNationalId" inputmode="numeric" maxlength="17" placeholder="ระบุเมื่อขอใช้ระบบ DSL"></div>
+            <div class="form-field"><label>ชื่อ-สกุล (TH)</label><input name="accessFullNameTh" maxlength="255" required></div>
+            <div class="form-field"><label>ชื่อ-สกุล (EN)</label><input name="accessFullNameEn" maxlength="255"></div>
+            <div class="form-field"><label>ตำแหน่ง</label><input name="accessPosition" maxlength="255" required></div>
+            <div class="form-field"><label>เบอร์โทรศัพท์มือถือ</label><input name="accessMobile" type="tel" maxlength="50" required></div>
+            <div class="form-field"><label>ฝ่าย/กลุ่มงาน</label><input name="accessDepartment" maxlength="255" required></div>
+            <div class="form-field"><label>Email</label><input name="accessEmail" type="email" maxlength="320" required></div>
+            <div class="form-field"><label>ระบบงาน</label><input name="accessSystem" maxlength="255" required></div>
+            <div class="form-field full"><label>สิทธิ์การใช้งาน (Role)</label><input name="accessRole" maxlength="1000" placeholder="เช่น ชื่อโปรแกรมย่อย ชื่อเมนู ชื่อรายงาน" required></div>
         </div>
     </div>
 </template>

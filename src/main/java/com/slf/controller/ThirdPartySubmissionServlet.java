@@ -20,10 +20,6 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (!isAdmin(request, response)) {
-            return;
-        }
-
         long submissionId;
         try {
             submissionId = parseSubmissionId(request.getParameter("id"));
@@ -38,6 +34,10 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
+            if (!canView(request, submission)) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
             request.setAttribute("submission", submission);
             RequestDispatcher dispatcher = request.getRequestDispatcher("/ThirdPartySubmission.jsp");
             dispatcher.forward(request, response);
@@ -46,14 +46,20 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
         }
     }
 
-    private static boolean isAdmin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private static boolean canView(HttpServletRequest request, ThirdPartyFormSubmission submission) {
         HttpSession session = request.getSession(false);
         String position = session == null ? null : (String) session.getAttribute("position");
-        if (!AuthUtil.isAllowedForPage(position, "thirdPartySubmission")) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        if (AuthUtil.isAllowedForPage(position, "thirdPartySubmission")) {
+            return true;
+        }
+        Object empObj = session == null ? null : session.getAttribute("loggedInEmpId");
+        if (empObj == null && session != null) {
+            empObj = session.getAttribute("empid");
+        }
+        if (empObj == null || submission.getInternalOwnerEmpId() == null) {
             return false;
         }
-        return true;
+        return submission.getInternalOwnerEmpId().intValue() == Integer.parseInt(empObj.toString());
     }
 
     static long parseSubmissionId(String value) {

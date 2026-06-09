@@ -1,7 +1,10 @@
 package com.slf.controller;
 
 import com.slf.dao.ThirdPartyFormLinkDAO;
+import com.slf.dao.ThirdPartyAuditLogDAO;
+import com.slf.dao.ThirdPartyRequestDAO;
 import com.slf.model.ThirdPartyFormLink;
+import com.slf.model.ThirdPartyRequest;
 import com.slf.util.ThirdPartyConsentContent;
 import com.slf.util.ThirdPartyLinkToken;
 import java.io.IOException;
@@ -16,12 +19,15 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/thirdparty/form")
 public class ThirdPartyPublicFormServlet extends HttpServlet {
     private final ThirdPartyFormLinkDAO linkDAO = new ThirdPartyFormLinkDAO();
+    private final ThirdPartyRequestDAO requestDAO = new ThirdPartyRequestDAO();
+    private final ThirdPartyAuditLogDAO auditDAO = new ThirdPartyAuditLogDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String rawToken = request.getParameter("token");
         if (rawToken == null || rawToken.trim().isEmpty()) {
+            auditDAO.log("THIRD_PARTY_TOKEN_INVALID", null, null, null, "EXTERNAL", "Missing token.");
             forwardInvalid(request, response, "ลิงก์ไม่ถูกต้องหรือไม่มี token");
             return;
         }
@@ -29,6 +35,7 @@ public class ThirdPartyPublicFormServlet extends HttpServlet {
         try {
             ThirdPartyFormLink link = linkDAO.findUsableByTokenHash(ThirdPartyLinkToken.sha256Hex(rawToken));
             if (link == null) {
+                auditDAO.log("THIRD_PARTY_TOKEN_INVALID", null, null, null, "EXTERNAL", "Invalid, expired, used, or revoked token.");
                 forwardInvalid(request, response, "ลิงก์นี้หมดอายุ ถูกใช้แล้ว ถูกยกเลิก หรือไม่ถูกต้อง");
                 return;
             }
@@ -36,11 +43,18 @@ public class ThirdPartyPublicFormServlet extends HttpServlet {
             request.setAttribute("thirdPartyLink", link);
             request.setAttribute("token", rawToken.trim());
             request.setAttribute("consentVersion", ThirdPartyConsentContent.VERSION);
+            if (link.getRequestId() != null) {
+                ThirdPartyRequest thirdPartyRequest = requestDAO.findByLinkId(link.getLinkId());
+                request.setAttribute("thirdPartyRequest", thirdPartyRequest);
+            }
+            auditDAO.log("THIRD_PARTY_LINK_OPENED", link.getRequestId(), Long.valueOf(link.getLinkId()),
+                null, "EXTERNAL", "External user opened third-party form link.");
             RequestDispatcher dispatcher = request.getRequestDispatcher("/thirdpartyForm.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to load third-party form link", e);
         } catch (IllegalArgumentException e) {
+            auditDAO.log("THIRD_PARTY_TOKEN_INVALID", null, null, null, "EXTERNAL", "Token hash rejected.");
             forwardInvalid(request, response, "ลิงก์ไม่ถูกต้อง");
         }
     }

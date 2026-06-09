@@ -16,6 +16,10 @@ import java.io.IOException;
     "/memberManage",
     "/MailLog.jsp",
     "/mailLog",
+    "/ThirdPartyLinks.jsp",
+    "/thirdPartyLinks",
+    "/ThirdPartySubmission.jsp",
+    "/thirdPartySubmission",
     "/directorApprove",           // if you've mapped this to a servlet
     "/DirectorApprove.jsp",
     "/TechnicalApprove.jsp",
@@ -66,6 +70,10 @@ public class RoleBasedAccessFilter implements Filter {
             pageKey = "memberManage";
         } else if (path.equals("/mailLog") || path.equals("/MailLog.jsp")) {
             pageKey = "mailLog";
+        } else if (path.equals("/thirdPartyLinks") || path.equals("/ThirdPartyLinks.jsp")) {
+            pageKey = "thirdPartyLinks";
+        } else if (path.equals("/thirdPartySubmission") || path.equals("/ThirdPartySubmission.jsp")) {
+            pageKey = "thirdPartySubmission";
         }
 
         // If we have a pageKey, check permission

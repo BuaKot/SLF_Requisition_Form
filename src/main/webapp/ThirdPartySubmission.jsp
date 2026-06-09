@@ -2,6 +2,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="com.slf.model.ThirdPartyFormSubmission" %>
+<%@ page import="com.slf.model.ThirdPartyAccessRequest" %>
 <%@ page import="com.slf.util.AuthUtil" %>
 <%!
     public String h(Object input) {
@@ -18,6 +19,12 @@
         if (input == null || String.valueOf(input).trim().isEmpty()) return "-";
         return h(input);
     }
+
+    public String maskNationalId(String input) {
+        if (input == null || input.length() != 13) return "-";
+        return h(input.substring(0, 1) + "-xxxx-xxxxx-" + input.substring(11, 13));
+    }
+
 %>
 <%
     String currentRole = (String) session.getAttribute("position");
@@ -58,6 +65,9 @@
         .status { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 10px; font-weight: 900; font-size: 12px; background: #e8f2fb; color: #00509e; }
         .btn { border: 0; border-radius: 7px; min-height: 40px; padding: 0 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-weight: 800; cursor: pointer; text-decoration: none; white-space: nowrap; }
         .btn-secondary { background: #e8f2fb; color: #003366; }
+        .access-item { border: 1px solid #d9e6f2; border-radius: 7px; padding: 16px; margin-top: 14px; }
+        .access-item-title { color: #003366; font-weight: 900; margin-bottom: 14px; }
+        .table-note { color: #64748b; font-size: 13px; margin-top: 14px; }
         @media (max-width: 800px) {
             .page { padding: 18px 14px 34px; }
             .page-head { flex-direction: column; }
@@ -170,6 +180,53 @@
                     <div class="value"><%= submission.getAccessEndDate() == null ? "-" : dateOnly.format(submission.getAccessEndDate()) %></div>
                 </div>
             </div>
+        </section>
+        <section class="panel">
+            <h2 class="section-title">หลักฐานการยินยอมรับเงื่อนไข</h2>
+            <div class="grid">
+                <div class="field">
+                    <div class="label">สถานะการยินยอม</div>
+                    <div class="value"><%= submission.isConsentAccepted() ? "ยินยอมแล้ว" : "ไม่พบการยินยอม" %></div>
+                </div>
+                <div class="field">
+                    <div class="label">ฉบับหนังสือยินยอม</div>
+                    <div class="value"><%= display(submission.getConsentVersion()) %></div>
+                </div>
+                <div class="field">
+                    <div class="label">เวลาที่ยินยอม</div>
+                    <div class="value"><%= submission.getConsentAcceptedAt() == null ? "-" : dateTime.format(submission.getConsentAcceptedAt()) %></div>
+                </div>
+                <div class="field">
+                    <div class="label">IP Address</div>
+                    <div class="value"><%= display(submission.getConsentIpAddress()) %></div>
+                </div>
+                <div class="field full">
+                    <div class="label">User-Agent</div>
+                    <div class="value"><%= display(submission.getConsentUserAgent()) %></div>
+                </div>
+            </div>
+        </section>
+        <section class="panel">
+            <h2 class="section-title">รายชื่อผู้ขอรับสิทธิ์การเข้าถึง</h2>
+            <% for (ThirdPartyAccessRequest item : submission.getAccessRequests()) { %>
+                <div class="access-item">
+                    <div class="access-item-title">รายชื่อคนที่ <%= item.getDisplayOrder() %></div>
+                    <div class="grid">
+                        <div class="field"><div class="label">รหัสพนักงาน</div><div class="value"><%= display(item.getEmployeeCode()) %></div></div>
+                        <div class="field"><div class="label">ชื่อผู้ใช้งาน</div><div class="value"><%= display(item.getUsername()) %></div></div>
+                        <div class="field"><div class="label">เลขที่บัตรประชาชน</div><div class="value"><%= maskNationalId(item.getNationalId()) %></div></div>
+                        <div class="field"><div class="label">ชื่อ-สกุล (TH)</div><div class="value"><%= display(item.getFullNameTh()) %></div></div>
+                        <div class="field"><div class="label">ชื่อ-สกุล (EN)</div><div class="value"><%= display(item.getFullNameEn()) %></div></div>
+                        <div class="field"><div class="label">ตำแหน่ง</div><div class="value"><%= display(item.getPositionName()) %></div></div>
+                        <div class="field"><div class="label">เบอร์โทรศัพท์มือถือ</div><div class="value"><%= display(item.getMobilePhone()) %></div></div>
+                        <div class="field"><div class="label">ฝ่าย/กลุ่มงาน</div><div class="value"><%= display(item.getDepartmentName()) %></div></div>
+                        <div class="field"><div class="label">Email</div><div class="value"><%= display(item.getEmail()) %></div></div>
+                        <div class="field"><div class="label">ระบบงาน</div><div class="value"><%= display(item.getSystemName()) %></div></div>
+                        <div class="field full"><div class="label">สิทธิ์การใช้งาน (Role)</div><div class="value"><%= display(item.getRequestedRole()) %></div></div>
+                    </div>
+                </div>
+            <% } %>
+            <div class="table-note"><strong>หมายเหตุ*</strong> โปรดระบุเลขที่บัตรประชาชนหากขอใช้ระบบงานกองทุนเงินให้กู้ยืมเพื่อการศึกษาแบบดิจิทัล (DSL)</div>
         </section>
     </main>
 </div>

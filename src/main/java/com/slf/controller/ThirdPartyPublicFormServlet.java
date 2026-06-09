@@ -2,6 +2,7 @@ package com.slf.controller;
 
 import com.slf.dao.ThirdPartyFormLinkDAO;
 import com.slf.model.ThirdPartyFormLink;
+import com.slf.util.ThirdPartyConsentContent;
 import com.slf.util.ThirdPartyLinkToken;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -34,6 +35,7 @@ public class ThirdPartyPublicFormServlet extends HttpServlet {
 
             request.setAttribute("thirdPartyLink", link);
             request.setAttribute("token", rawToken.trim());
+            request.setAttribute("consentVersion", ThirdPartyConsentContent.VERSION);
             RequestDispatcher dispatcher = request.getRequestDispatcher("/thirdpartyForm.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException e) {

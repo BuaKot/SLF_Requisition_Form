@@ -2,6 +2,8 @@ package com.slf.model;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ThirdPartyFormSubmission {
     private long submissionId;
@@ -23,10 +25,16 @@ public class ThirdPartyFormSubmission {
     private Timestamp reviewedAt;
     private Integer importedFormId;
     private String internalNote;
+    private boolean consentAccepted;
+    private String consentVersion;
+    private Timestamp consentAcceptedAt;
+    private String consentIpAddress;
+    private String consentUserAgent;
     private String linkStatus;
     private Timestamp linkCreatedAt;
     private Timestamp linkExpiresAt;
     private String linkNote;
+    private List<ThirdPartyAccessRequest> accessRequests = new ArrayList<>();
 
     public long getSubmissionId() { return submissionId; }
     public void setSubmissionId(long submissionId) { this.submissionId = submissionId; }
@@ -66,6 +74,16 @@ public class ThirdPartyFormSubmission {
     public void setImportedFormId(Integer importedFormId) { this.importedFormId = importedFormId; }
     public String getInternalNote() { return internalNote; }
     public void setInternalNote(String internalNote) { this.internalNote = internalNote; }
+    public boolean isConsentAccepted() { return consentAccepted; }
+    public void setConsentAccepted(boolean consentAccepted) { this.consentAccepted = consentAccepted; }
+    public String getConsentVersion() { return consentVersion; }
+    public void setConsentVersion(String consentVersion) { this.consentVersion = consentVersion; }
+    public Timestamp getConsentAcceptedAt() { return consentAcceptedAt; }
+    public void setConsentAcceptedAt(Timestamp consentAcceptedAt) { this.consentAcceptedAt = consentAcceptedAt; }
+    public String getConsentIpAddress() { return consentIpAddress; }
+    public void setConsentIpAddress(String consentIpAddress) { this.consentIpAddress = consentIpAddress; }
+    public String getConsentUserAgent() { return consentUserAgent; }
+    public void setConsentUserAgent(String consentUserAgent) { this.consentUserAgent = consentUserAgent; }
     public String getLinkStatus() { return linkStatus; }
     public void setLinkStatus(String linkStatus) { this.linkStatus = linkStatus; }
     public Timestamp getLinkCreatedAt() { return linkCreatedAt; }
@@ -74,4 +92,8 @@ public class ThirdPartyFormSubmission {
     public void setLinkExpiresAt(Timestamp linkExpiresAt) { this.linkExpiresAt = linkExpiresAt; }
     public String getLinkNote() { return linkNote; }
     public void setLinkNote(String linkNote) { this.linkNote = linkNote; }
+    public List<ThirdPartyAccessRequest> getAccessRequests() { return accessRequests; }
+    public void setAccessRequests(List<ThirdPartyAccessRequest> accessRequests) {
+        this.accessRequests = accessRequests == null ? new ArrayList<ThirdPartyAccessRequest>() : accessRequests;
+    }
 }

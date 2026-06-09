@@ -32,8 +32,8 @@ public class GmailNotificationService {
     public NotificationSendResult sendFormSubmittedNotification(int formId, int requesterEmpId,
                                                                 String requestTopic, String recipient) {
         if (!config.canSendFrom()) {
-            return NotificationSendResult.skipped(
-                "Gmail notification skipped: set slf.mail.username, slf.mail.password, and slf.mail.from "
+            return NotificationSendResult.failed(
+                "Gmail notification failed: set slf.mail.username, slf.mail.password, and slf.mail.from "
                     + "in C:\\slf-secrets\\gmail.properties or SLF_MAIL_* environment variables."
             );
         }
@@ -73,8 +73,8 @@ public class GmailNotificationService {
 
     public NotificationSendResult sendEmailNotification(String subject, String body, String recipient) {
         if (!config.canSendFrom()) {
-            return NotificationSendResult.skipped(
-                "Gmail notification skipped: set slf.mail.username, slf.mail.password, and slf.mail.from "
+            return NotificationSendResult.failed(
+                "Gmail notification failed: set slf.mail.username, slf.mail.password, and slf.mail.from "
                     + "in C:\\slf-secrets\\gmail.properties or SLF_MAIL_* environment variables."
             );
         }

@@ -21,6 +21,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบใบขอให้ดำเนินการ IT</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <!-- ================================================================= ==
      EMBEDDED CSS STYLESHEET - Modal and Layout Components
@@ -72,7 +73,20 @@
        - Same styling as cards but without hover effects
 
      =================================================================== -->
-    <style>    .modal-box {
+    <style>
+     .modal-overlay {
+             position: fixed;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+             background-color: rgba(0, 0, 0, 0.5);
+             display: flex;
+             justify-content: center;
+            align-items: center;
+            z-index: 2000;
+          }
+    .modal-box {
         background: white;
         border-radius: 12px;
         padding: 30px 40px;

@@ -49,7 +49,7 @@ public class MailLogServlet extends HttpServlet {
             return null;
         }
         String normalized = value.trim().toUpperCase();
-        if ("PENDING".equals(normalized) || "SENDING".equals(normalized) || "SENT".equals(normalized)
+        if ("READY".equals(normalized) || "PENDING".equals(normalized) || "SENDING".equals(normalized) || "SENT".equals(normalized)
                 || "FAILED".equals(normalized) || "SKIPPED".equals(normalized)) {
             return normalized;
         }

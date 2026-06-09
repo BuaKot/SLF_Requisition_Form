@@ -26,7 +26,7 @@ public class GmailNotificationServiceTest extends TestCase {
         assertTrue(body.contains("Topic: VPN access"));
     }
 
-    public void testSkipsWhenSmtpPasswordIsMissing() {
+    public void testFailsWhenSmtpPasswordIsMissingSoItCanRetry() {
         GmailNotificationService service = new GmailNotificationService(
             new GmailNotificationConfig(
                 true,
@@ -43,8 +43,8 @@ public class GmailNotificationServiceTest extends TestCase {
         NotificationSendResult result = service.sendFormSubmittedNotification(42, 1001, "VPN access");
 
         assertFalse(result.isSent());
-        assertTrue(result.isSkipped());
-        assertEquals(NotificationSendResult.Status.SKIPPED, result.getStatus());
+        assertFalse(result.isSkipped());
+        assertEquals(NotificationSendResult.Status.FAILED, result.getStatus());
         assertTrue(result.getErrorMessage().contains("slf.mail.password"));
     }
 }

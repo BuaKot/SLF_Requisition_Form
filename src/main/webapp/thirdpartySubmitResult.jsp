@@ -21,6 +21,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Third-party Form Result</title>
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <style>
         body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f4f8fc; font-family: Tahoma, Arial, sans-serif; color: #102a43; }
         .panel { width: min(640px, calc(100% - 32px)); background: #fff; border: 1px solid #d9e6f2; border-radius: 10px; padding: 28px; box-shadow: 0 8px 22px rgba(0, 51, 102, 0.08); }

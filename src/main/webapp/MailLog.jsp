@@ -50,6 +50,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mailLog</title>
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -77,6 +78,7 @@
         td { font-size: 14px; }
         .status { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 10px; font-weight: 800; font-size: 12px; }
         .status-PENDING { background: #fff4d6; color: #8a5a00; }
+        .status-READY { background: #fff4d6; color: #8a5a00; }
         .status-SENDING { background: #e8f2fb; color: #00509e; }
         .status-SENT { background: #e7f7ee; color: #137a42; }
         .status-FAILED { background: #fdecec; color: #b42318; }
@@ -123,7 +125,7 @@
         </div>
 
         <section class="summary-grid">
-            <% String[] summaryStatuses = {"PENDING", "SENDING", "SENT", "FAILED", "SKIPPED"};
+            <% String[] summaryStatuses = {"READY", "PENDING", "SENDING", "SENT", "FAILED", "SKIPPED"};
                for (String summaryStatus : summaryStatuses) { %>
                 <a class="panel summary-card" href="${pageContext.request.contextPath}/mailLog?status=<%= summaryStatus %>">
                     <span><%= summaryStatus %></span>

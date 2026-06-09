@@ -2,21 +2,26 @@ package com.slf.notification;
 
 import com.slf.model.EmailNotificationLogEntry;
 import java.sql.Timestamp;
+import java.util.function.Supplier;
 
 public class EmailNotificationDispatcher {
     static final int MAX_ATTEMPTS = 5;
     private static final int BATCH_SIZE = 20;
 
     private final EmailNotificationLogDAO logDAO;
-    private final GmailNotificationService mailService;
+    private final Supplier<GmailNotificationService> mailServiceSupplier;
 
     public EmailNotificationDispatcher() {
-        this(new EmailNotificationLogDAO(), new GmailNotificationService());
+        this(new EmailNotificationLogDAO(), GmailNotificationService::new);
     }
 
     EmailNotificationDispatcher(EmailNotificationLogDAO logDAO, GmailNotificationService mailService) {
+        this(logDAO, () -> mailService);
+    }
+
+    EmailNotificationDispatcher(EmailNotificationLogDAO logDAO, Supplier<GmailNotificationService> mailServiceSupplier) {
         this.logDAO = logDAO;
-        this.mailService = mailService;
+        this.mailServiceSupplier = mailServiceSupplier;
     }
 
     public void dispatchBatch() {
@@ -32,7 +37,7 @@ public class EmailNotificationDispatcher {
                     continue;
                 }
 
-                NotificationSendResult result = mailService.sendEmailNotification(
+                NotificationSendResult result = mailServiceSupplier.get().sendEmailNotification(
                     entry.getSubject(), entry.getBody(), entry.getRecipientEmail()
                 );
                 if (result.isSent()) {

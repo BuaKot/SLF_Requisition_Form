@@ -26,6 +26,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Third-party Requisition Form</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <style>
         * { box-sizing: border-box; }
         body { margin: 0; min-height: 100vh; background: #f4f8fc; color: #102a43; font-family: 'Sarabun', Tahoma, Arial, sans-serif; }

@@ -20,9 +20,10 @@ public class ThirdPartyFormSubmissionDAO {
             "s.STATUS, s.CREATED_AT, s.REVIEWED_BY, s.REVIEWED_AT, s.IMPORTED_FORMID, s.INTERNAL_NOTE, " +
             "s.CONSENT_ACCEPTED, s.CONSENT_VERSION, s.CONSENT_ACCEPTED_AT, s.CONSENT_IP_ADDRESS, s.CONSENT_USER_AGENT, " +
             "CASE WHEN l.STATUS = 'ACTIVE' AND l.EXPIRES_AT < SYSTIMESTAMP THEN 'EXPIRED' ELSE l.STATUS END AS LINK_STATUS, " +
-            "l.CREATED_AT AS LINK_CREATED_AT, l.EXPIRES_AT AS LINK_EXPIRES_AT, l.NOTE AS LINK_NOTE " +
+            "l.REQUEST_ID, r.INTERNAL_OWNER_EMPID, l.CREATED_AT AS LINK_CREATED_AT, l.EXPIRES_AT AS LINK_EXPIRES_AT, l.NOTE AS LINK_NOTE " +
             "FROM THIRD_PARTY_FORM_SUBMISSION s " +
             "JOIN THIRD_PARTY_FORM_LINK l ON l.LINK_ID = s.LINK_ID " +
+            "LEFT JOIN THIRD_PARTY_REQUEST r ON r.REQUEST_ID = l.REQUEST_ID " +
             "WHERE s.SUBMISSION_ID = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -55,6 +56,11 @@ public class ThirdPartyFormSubmissionDAO {
             "(SUBMISSION_ID, DISPLAY_ORDER, EMPLOYEE_CODE, USERNAME, NATIONAL_ID, FULL_NAME_TH, " +
             "FULL_NAME_EN, POSITION_NAME, MOBILE_PHONE, DEPARTMENT_NAME, EMAIL, SYSTEM_NAME, REQUESTED_ROLE) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String updateRequestSql =
+            "UPDATE THIRD_PARTY_REQUEST r SET STATUS = 'SUBMITTED', EXTERNAL_COMPANY_NAME = ?, " +
+            "EXTERNAL_CONTACT_NAME = ?, EXTERNAL_EMAIL = ?, EXTERNAL_PHONE = ?, PURPOSE = ?, TARGET_SYSTEM = ?, " +
+            "ACCESS_START_DATE = ?, ACCESS_END_DATE = ?, SUBMITTED_AT = SYSTIMESTAMP, UPDATED_AT = SYSTIMESTAMP " +
+            "WHERE EXISTS (SELECT 1 FROM THIRD_PARTY_FORM_LINK l WHERE l.LINK_ID = ? AND l.REQUEST_ID = r.REQUEST_ID)";
 
         try (Connection conn = DBConnection.getConnection()) {
             boolean oldAutoCommit = conn.getAutoCommit();
@@ -110,6 +116,18 @@ public class ThirdPartyFormSubmissionDAO {
                     }
                     accessRequest.executeBatch();
                 }
+                try (PreparedStatement updateRequest = conn.prepareStatement(updateRequestSql)) {
+                    updateRequest.setString(1, submission.getOrganization());
+                    updateRequest.setString(2, submission.getFullNameTh());
+                    updateRequest.setString(3, submission.getEmail());
+                    updateRequest.setString(4, submission.getPhone());
+                    updateRequest.setString(5, submission.getReasonObjective());
+                    updateRequest.setString(6, trimToNull(submission.getProjectName()));
+                    updateRequest.setDate(7, submission.getAccessStartDate());
+                    updateRequest.setDate(8, submission.getAccessEndDate());
+                    updateRequest.setLong(9, submission.getLinkId());
+                    updateRequest.executeUpdate();
+                }
                 conn.commit();
             } catch (SQLException e) {
                 conn.rollback();
@@ -128,6 +146,10 @@ public class ThirdPartyFormSubmissionDAO {
         ThirdPartyFormSubmission submission = new ThirdPartyFormSubmission();
         submission.setSubmissionId(rs.getLong("SUBMISSION_ID"));
         submission.setLinkId(rs.getLong("LINK_ID"));
+        long requestId = rs.getLong("REQUEST_ID");
+        submission.setRequestId(rs.wasNull() ? null : Long.valueOf(requestId));
+        int internalOwnerEmpId = rs.getInt("INTERNAL_OWNER_EMPID");
+        submission.setInternalOwnerEmpId(rs.wasNull() ? null : Integer.valueOf(internalOwnerEmpId));
         submission.setDocumentReceiveNo(rs.getString("DOCUMENT_RECEIVE_NO"));
         java.sql.Timestamp filledAt = rs.getTimestamp("FILLED_AT");
         submission.setFilledDate(filledAt == null ? null : new java.sql.Date(filledAt.getTime()));

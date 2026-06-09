@@ -235,7 +235,7 @@
         <form action="SubmitApprovalServlet" method="post">
             <input type="hidden" name="formId" value="<%= formId %>">
             <input type="hidden" name="expectedStep" value="<%= EXPECTED_STEP %>">
-            <input type="hidden" name="redirectPage" value="Process.jsp">
+            <input type="hidden" name="redirectPage" value="process">
 
             <!-- Header fields -->
             <div class="form-id-note">#<%= (formId != null) ? formId : "-" %></div>

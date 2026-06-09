@@ -17,6 +17,14 @@ import junit.framework.TestCase;
 
 public class AuthenticationFilterTest extends TestCase {
 
+    public void testRequesterPagesAreIdentifiedForApprovalOnlyRoles() {
+        assertTrue(AuthenticationFilter.isRequesterOnlyPath("/newForm"));
+        assertTrue(AuthenticationFilter.isRequesterOnlyPath("/submit"));
+        assertTrue(AuthenticationFilter.isRequesterOnlyPath("/form.jsp"));
+        assertFalse(AuthenticationFilter.isRequesterOnlyPath("/directorApprove"));
+        assertFalse(AuthenticationFilter.isRequesterOnlyPath("/itDirectorApprove"));
+    }
+
     public void testAllowsAuthenticatedSessionUsingLoggedInEmpId() throws Exception {
         final boolean[] chainCalled = new boolean[] { false };
         final boolean[] redirected = new boolean[] { false };

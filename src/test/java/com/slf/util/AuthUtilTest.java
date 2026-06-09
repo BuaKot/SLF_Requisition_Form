@@ -4,6 +4,14 @@ import junit.framework.TestCase;
 
 public class AuthUtilTest extends TestCase {
 
+    public void testApprovalOnlyRolesHaveDedicatedApprovalPages() {
+        assertTrue(AuthUtil.isApprovalOnlyRole("Director"));
+        assertTrue(AuthUtil.isApprovalOnlyRole("IT Director"));
+        assertFalse(AuthUtil.isApprovalOnlyRole("Admin"));
+        assertEquals("/directorApprove", AuthUtil.approvalPageForRole("Director"));
+        assertEquals("/itDirectorApprove", AuthUtil.approvalPageForRole("ITDirector"));
+    }
+
     public void testDashboardAllowsOnlyAdminRole() {
         assertTrue(AuthUtil.isAllowedForPage("Admin", "dashboard"));
         assertFalse(AuthUtil.isAllowedForPage("Director", "dashboard"));
@@ -34,12 +42,21 @@ public class AuthUtilTest extends TestCase {
         assertFalse(AuthUtil.isAllowedForPage("Director", "thirdPartySubmission"));
     }
 
-    public void testAdminPageAllowsAllOperationalRolesCaseInsensitively() {
+    public void testAdminPageAllowsOnlyAdmin() {
         assertTrue(AuthUtil.isAllowedForPage("admin", "adminPage"));
-        assertTrue(AuthUtil.isAllowedForPage("Director", "adminPage"));
-        assertTrue(AuthUtil.isAllowedForPage("Technical", "adminPage"));
-        assertTrue(AuthUtil.isAllowedForPage("Infrastructure", "adminPage"));
-        assertTrue(AuthUtil.isAllowedForPage("IT Director", "adminPage"));
-        assertTrue(AuthUtil.isAllowedForPage("Reseach", "adminPage"));
+        assertFalse(AuthUtil.isAllowedForPage("Technical", "adminPage"));
+        assertFalse(AuthUtil.isAllowedForPage("Infrastructure", "adminPage"));
+        assertFalse(AuthUtil.isAllowedForPage("Reseach", "adminPage"));
+        assertFalse(AuthUtil.isAllowedForPage("Director", "adminPage"));
+        assertFalse(AuthUtil.isAllowedForPage("ITDirector", "adminPage"));
+        assertFalse(AuthUtil.isAllowedForPage("IT Director", "adminPage"));
+    }
+
+    public void testHistoryAllowsWorkflowRolesButNotRegularEmployee() {
+        assertTrue(AuthUtil.isAllowedForPage("Admin", "history"));
+        assertTrue(AuthUtil.isAllowedForPage("Director", "history"));
+        assertTrue(AuthUtil.isAllowedForPage("Technical", "history"));
+        assertTrue(AuthUtil.isAllowedForPage("Development", "history"));
+        assertFalse(AuthUtil.isAllowedForPage("Employee", "history"));
     }
 }

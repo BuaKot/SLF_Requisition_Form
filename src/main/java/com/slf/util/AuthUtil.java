@@ -11,8 +11,36 @@ public class AuthUtil {
         "Cyber Security", "Research", "Reseach", "IT Planning"
     ));
 
+    private static final Set<String> ADMIN_PAGE_ROLES = new HashSet<>(Collections.singletonList("Admin"));
+
     public static boolean isAdmin(String position) {
         return containsRole(ADMIN_ROLES, position);
+    }
+
+    public static boolean isApprovalOnlyRole(String position) {
+        return roleEquals(position, "Director")
+            || roleEquals(position, "ITDirector")
+            || roleEquals(position, "IT Director");
+    }
+
+    public static String approvalPageForRole(String position) {
+        if (roleEquals(position, "Director")) {
+            return "/directorApprove";
+        }
+        if (roleEquals(position, "ITDirector") || roleEquals(position, "IT Director")) {
+            return "/itDirectorApprove";
+        }
+        return null;
+    }
+
+    public static String approvalLabelForRole(String position) {
+        if (roleEquals(position, "Director")) {
+            return "รายการรออนุมัติของผู้อำนวยการฝ่าย";
+        }
+        if (roleEquals(position, "ITDirector") || roleEquals(position, "IT Director")) {
+            return "รายการรออนุมัติของผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ";
+        }
+        return "รายการรออนุมัติ";
     }
 
     // ----- New: page‑level permissions -----
@@ -28,7 +56,8 @@ public class AuthUtil {
         PAGE_ROLES.put("process",            new HashSet<>(Arrays.asList("Admin", "Technical",
                                                     "Development", "Data", "Infrastructure",
                                                     "Cyber Security", "Research", "Reseach", "IT Planning")));
-        PAGE_ROLES.put("adminPage",          ADMIN_ROLES);
+        PAGE_ROLES.put("adminPage",          ADMIN_PAGE_ROLES);
+        PAGE_ROLES.put("history",            ADMIN_ROLES);
         PAGE_ROLES.put("dashboard",          new HashSet<>(Arrays.asList("Admin")));
         PAGE_ROLES.put("memberManage",       new HashSet<>(Arrays.asList("Admin")));
         PAGE_ROLES.put("mailLog",            new HashSet<>(Arrays.asList("Admin")));
@@ -57,5 +86,9 @@ public class AuthUtil {
             }
         }
         return false;
+    }
+
+    private static boolean roleEquals(String position, String expected) {
+        return position != null && expected.equalsIgnoreCase(position.trim());
     }
 }

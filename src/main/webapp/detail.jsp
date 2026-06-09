@@ -1,14 +1,25 @@
+<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection" %>
 
 <%
     String idParam = request.getParameter("id");
+    String fromPage = request.getParameter("from");
+    String backPath = "history".equals(fromPage) ? "history.jsp" : "submit";
+    String backLabel = "history".equals(fromPage) ? "กลับหน้าประวัติ" : "กลับหน้าฟอร์มที่ส่งแล้ว";
     if (idParam == null || idParam.trim().isEmpty()) {
         response.sendRedirect("submit"); // zennnne แก้
         return;
     }
     int formId = Integer.parseInt(idParam);
+    Object viewerEmpObj = session.getAttribute("loggedInEmpId");
+    if (viewerEmpObj == null) viewerEmpObj = session.getAttribute("empid");
+    if (viewerEmpObj == null) {
+        response.sendRedirect(request.getContextPath() + "/login");
+        return;
+    }
+    int viewerEmpId = Integer.parseInt(viewerEmpObj.toString());
 
     Connection conn = null;
     PreparedStatement psHeader = null, psItems = null, psPerm = null, psApproval = null;
@@ -137,7 +148,9 @@
 
 <!-- Header and Banner (unchanged) -->
 <div class="sticky-bar">
-    <a href="submit" style="text-decoration:none; color:#333;"><i class="fa fa-arrow-left"></i> กลับ</a><!-- zennnne แก้ -->
+    <a href="<%= backPath %>" style="text-decoration:none; color:#003f73; font-weight:700;">
+        <i class="fa fa-arrow-left"></i> <%= backLabel %>
+    </a>
 
     <div class="contact-info">
         <i class="fa-solid fa-circle-info"></i>
@@ -168,9 +181,16 @@
             "LEFT JOIN SECTION S ON E.SECID = S.SECID " +
             "LEFT JOIN DEPARTMENT D ON S.DEPTID = D.DEPTID " +
             "LEFT JOIN latest_step LS ON LS.FORMID = RF.FORMID AND LS.RN = 1 " +
-            "WHERE RF.FORMID = ?";
+            "WHERE RF.FORMID = ? " +
+            "AND (RF.EMPID = ? OR EXISTS ( " +
+            "    SELECT 1 FROM APPROVALINFO VIEWER_AI " +
+            "    WHERE VIEWER_AI.FORMID = RF.FORMID " +
+            "    AND VIEWER_AI.REVIEWER_EMPID = ? " +
+            "))";
         psHeader = conn.prepareStatement(headerSQL);
         psHeader.setInt(1, formId);
+        psHeader.setInt(2, viewerEmpId);
+        psHeader.setInt(3, viewerEmpId);
         rsHeader = psHeader.executeQuery();
         if (rsHeader.next()) {
             found = true;

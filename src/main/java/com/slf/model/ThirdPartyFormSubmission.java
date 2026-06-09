@@ -8,6 +8,8 @@ import java.util.List;
 public class ThirdPartyFormSubmission {
     private long submissionId;
     private long linkId;
+    private Long requestId;
+    private Integer internalOwnerEmpId;
     private String documentReceiveNo;
     private Date filledDate;
     private String fullNameTh;
@@ -40,6 +42,10 @@ public class ThirdPartyFormSubmission {
     public void setSubmissionId(long submissionId) { this.submissionId = submissionId; }
     public long getLinkId() { return linkId; }
     public void setLinkId(long linkId) { this.linkId = linkId; }
+    public Long getRequestId() { return requestId; }
+    public void setRequestId(Long requestId) { this.requestId = requestId; }
+    public Integer getInternalOwnerEmpId() { return internalOwnerEmpId; }
+    public void setInternalOwnerEmpId(Integer internalOwnerEmpId) { this.internalOwnerEmpId = internalOwnerEmpId; }
     public String getDocumentReceiveNo() { return documentReceiveNo; }
     public void setDocumentReceiveNo(String documentReceiveNo) { this.documentReceiveNo = documentReceiveNo; }
     public Date getFilledDate() { return filledDate; }

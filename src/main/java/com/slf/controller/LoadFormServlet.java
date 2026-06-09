@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet("/newForm")
+@WebServlet({"/itRequisition/new", "/newForm/requisition"})
 public class LoadFormServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

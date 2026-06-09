@@ -13,10 +13,15 @@ public class ThirdPartyFormLinkDAO {
     private static final long LINK_TTL_MILLIS = 24L * 60L * 60L * 1000L;
 
     public long createLink(String tokenHash, String rawToken, int createdBy, String note) throws SQLException {
+        return createLink(tokenHash, rawToken, createdBy, note, null, null, null);
+    }
+
+    public long createLink(String tokenHash, String rawToken, int createdBy, String note,
+                           String formCode, Long requestId, Integer createdByEmpId) throws SQLException {
         String sql =
             "INSERT INTO THIRD_PARTY_FORM_LINK " +
-            "(TOKEN_HASH, RAW_TOKEN, STATUS, MAX_SUBMIT_COUNT, SUBMIT_COUNT, CREATED_BY, EXPIRES_AT, NOTE) " +
-            "VALUES (?, ?, 'ACTIVE', 1, 0, ?, ?, ?)";
+            "(TOKEN_HASH, RAW_TOKEN, STATUS, MAX_SUBMIT_COUNT, SUBMIT_COUNT, CREATED_BY, EXPIRES_AT, NOTE, " +
+            "FORM_CODE, REQUEST_ID, CREATED_BY_EMPID) VALUES (?, ?, 'ACTIVE', 1, 0, ?, ?, ?, ?, ?, ?)";
         Timestamp expiresAt = new Timestamp(System.currentTimeMillis() + LINK_TTL_MILLIS);
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, new String[] { "LINK_ID" })) {
@@ -25,6 +30,9 @@ public class ThirdPartyFormLinkDAO {
             ps.setInt(3, createdBy);
             ps.setTimestamp(4, expiresAt);
             ps.setString(5, trimToNull(note));
+            ps.setString(6, trimToNull(formCode));
+            if (requestId == null) ps.setNull(7, java.sql.Types.NUMERIC); else ps.setLong(7, requestId.longValue());
+            if (createdByEmpId == null) ps.setNull(8, java.sql.Types.NUMERIC); else ps.setInt(8, createdByEmpId.intValue());
             ps.executeUpdate();
             try (ResultSet keys = ps.getGeneratedKeys()) {
                 if (keys.next()) {
@@ -39,7 +47,8 @@ public class ThirdPartyFormLinkDAO {
         String sql =
             "SELECT l.LINK_ID, l.TOKEN_HASH, l.RAW_TOKEN, " +
             "CASE WHEN l.STATUS = 'ACTIVE' AND l.EXPIRES_AT < SYSTIMESTAMP THEN 'EXPIRED' ELSE l.STATUS END AS EFFECTIVE_STATUS, " +
-            "l.MAX_SUBMIT_COUNT, l.SUBMIT_COUNT, l.CREATED_BY, l.CREATED_AT, l.EXPIRES_AT, " +
+            "l.MAX_SUBMIT_COUNT, l.SUBMIT_COUNT, l.CREATED_BY, l.FORM_CODE, l.REQUEST_ID, l.CREATED_BY_EMPID, " +
+            "l.CREATED_AT, l.EXPIRES_AT, " +
             "l.USED_AT, l.REVOKED_AT, l.REVOKED_BY, l.NOTE, " +
             "s.SUBMISSION_ID, s.STATUS AS SUBMISSION_STATUS, s.CREATED_AT AS SUBMITTED_AT " +
             "FROM THIRD_PARTY_FORM_LINK l " +
@@ -75,7 +84,8 @@ public class ThirdPartyFormLinkDAO {
         String sql =
             "SELECT l.LINK_ID, l.TOKEN_HASH, l.RAW_TOKEN, " +
             "CASE WHEN l.STATUS = 'ACTIVE' AND l.EXPIRES_AT < SYSTIMESTAMP THEN 'EXPIRED' ELSE l.STATUS END AS EFFECTIVE_STATUS, " +
-            "l.MAX_SUBMIT_COUNT, l.SUBMIT_COUNT, l.CREATED_BY, l.CREATED_AT, l.EXPIRES_AT, " +
+            "l.MAX_SUBMIT_COUNT, l.SUBMIT_COUNT, l.CREATED_BY, l.FORM_CODE, l.REQUEST_ID, l.CREATED_BY_EMPID, " +
+            "l.CREATED_AT, l.EXPIRES_AT, " +
             "l.USED_AT, l.REVOKED_AT, l.REVOKED_BY, l.NOTE, " +
             "s.SUBMISSION_ID, s.STATUS AS SUBMISSION_STATUS, s.CREATED_AT AS SUBMITTED_AT " +
             "FROM THIRD_PARTY_FORM_LINK l " +
@@ -119,6 +129,11 @@ public class ThirdPartyFormLinkDAO {
         link.setSubmitCount(rs.getInt("SUBMIT_COUNT"));
         int createdBy = rs.getInt("CREATED_BY");
         link.setCreatedBy(rs.wasNull() ? null : Integer.valueOf(createdBy));
+        link.setFormCode(rs.getString("FORM_CODE"));
+        long requestId = rs.getLong("REQUEST_ID");
+        link.setRequestId(rs.wasNull() ? null : Long.valueOf(requestId));
+        int createdByEmpId = rs.getInt("CREATED_BY_EMPID");
+        link.setCreatedByEmpId(rs.wasNull() ? null : Integer.valueOf(createdByEmpId));
         link.setCreatedAt(rs.getTimestamp("CREATED_AT"));
         link.setExpiresAt(rs.getTimestamp("EXPIRES_AT"));
         link.setUsedAt(rs.getTimestamp("USED_AT"));

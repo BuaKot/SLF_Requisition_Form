@@ -19,12 +19,15 @@ import java.io.IOException;
     "/ThirdPartyLinks.jsp",
     "/thirdPartyLinks",
     "/ThirdPartySubmission.jsp",
-    "/thirdPartySubmission",
-    "/directorApprove",           // if you've mapped this to a servlet
+    "/directorApprove",
+    "/technicalApprove",
+    "/itDirectorApprove",
+    "/process",
     "/DirectorApprove.jsp",
     "/TechnicalApprove.jsp",
     "/ITDirectorApprove.jsp",
     "/Process.jsp",
+    "/history.jsp",
     "/RequisitionDetail.jsp",
     "/RequisitionDetail_Comment.jsp",
     "/RequisitionDetail_ITDirector.jsp",
@@ -64,6 +67,8 @@ public class RoleBasedAccessFilter implements Filter {
             // Or just use isAdmin() if all admin roles can view any detail.
         } else if (path.equals("/Admin.jsp")) {
             pageKey = "adminPage";   // add to PAGE_ROLES if needed
+        } else if (path.equals("/history.jsp")) {
+            pageKey = "history";
         } else if (path.equals("/Dashboard.jsp")) {
             pageKey = "dashboard";
         } else if (path.equals("/memberManage") || path.equals("/MemberManage.jsp")) {
@@ -72,7 +77,7 @@ public class RoleBasedAccessFilter implements Filter {
             pageKey = "mailLog";
         } else if (path.equals("/thirdPartyLinks") || path.equals("/ThirdPartyLinks.jsp")) {
             pageKey = "thirdPartyLinks";
-        } else if (path.equals("/thirdPartySubmission") || path.equals("/ThirdPartySubmission.jsp")) {
+        } else if (path.equals("/ThirdPartySubmission.jsp")) {
             pageKey = "thirdPartySubmission";
         }
 

@@ -33,31 +33,6 @@
     int pageSize = 50;
     int offset   = (currentPage - 1) * pageSize;
 
-    /* ===============================
-       ROLE-BASED SQL FILTER
-    =============================== */
-    // zennnne แก้
-    String roleWhere    = "";
-    boolean needsEmpParam = false;
-
-    if (currentRole.equalsIgnoreCase("Director")) {
-        roleWhere     = "AND D.DEPTHEAD_EMPID = ? ";
-        needsEmpParam = true;
-    } else if (
-        currentRole.equalsIgnoreCase("Technical")       ||
-        currentRole.equalsIgnoreCase("Development")     ||
-        currentRole.equalsIgnoreCase("Data")            ||
-        currentRole.equalsIgnoreCase("Infrastructure")  ||
-        currentRole.equalsIgnoreCase("Cyber Security")  ||
-        currentRole.equalsIgnoreCase("Reseach")         ||
-        currentRole.equalsIgnoreCase("IT Planning")
-    ) {
-        roleWhere     = "AND RF.ASSIGN_SECID = (SELECT SECID FROM EMPLOYEE WHERE EMPID = ?) ";
-        needsEmpParam = true;
-    }
-    // Admin, ITDirector → no additional filter (see all completed forms)
-    // zennnne แก้
-
     // zennnne แก้
     String showParam = request.getParameter("show");
     if (showParam == null || showParam.trim().isEmpty()) showParam = "rejected,approved";
@@ -116,6 +91,34 @@
             color: #003366;
             margin-block-start: 0.1em;
             margin-block-end: 0.1em;
+        }
+
+        .history-home-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 40px;
+            padding: 8px 13px;
+            border: 1px solid #c5d4e2;
+            border-radius: 8px;
+            background: #f5f9fc;
+            color: #003f73;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .history-home-button:hover {
+            border-color: #3272bb;
+            background: #e8f3fb;
+        }
+
+        .filter-separator {
+            width: 1px;
+            height: 30px;
+            background: #d8e2eb;
+            margin: 0 4px;
         }
 
         /* ─── FILTER BAR ─── */
@@ -390,6 +393,7 @@
         @media (max-width: 540px) {
             .info-row { grid-template-columns: 1fr; }
             .filter-bar { padding: 12px 16px; }
+            .filter-separator { display: none; }
         }
     </style>
 </head>
@@ -399,24 +403,7 @@
 <!-- ===============================
      SIDEBAR
 ================================ -->
-<div id="mySidebar" class="sidebar">
-    <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
-    <a href="${pageContext.request.contextPath}">
-        <i class="fa-solid fa-house" style="margin-right:10px"></i>หน้าหลัก
-    </a>
-    <a href="${pageContext.request.contextPath}/newForm">
-        <i class="fa-solid fa-plus" style="margin-right:10px"></i>สร้างฟอร์มใหม่
-    </a>
-    <a href="${pageContext.request.contextPath}/submit"><!-- zennnne แก้ -->
-        <i class="fa-solid fa-paper-plane" style="margin-right:10px"></i>ฟอร์มที่ส่งแล้ว
-    </a>
-    <a href="${pageContext.request.contextPath}/logout">
-        <i class="fa-solid fa-arrow-right-from-bracket" style="margin-right:10px"></i>ออกจากระบบ
-    </a>
-    <a href="${pageContext.request.contextPath}/Admin.jsp" class="admin-tab">
-        <i class="fa-solid fa-circle-user"></i>Admin
-    </a>
-</div>
+<%@ include file="/WEB-INF/sidebar.jsp" %>
 
 <div id="main">
 
@@ -438,12 +425,16 @@
     <!-- BLUE TITLE -->
     <div class="blue-title">
         <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</h1>
-        <h2>ประวัติใบขอให้ดำเนินการ / History</h2>
+        <h2>ประวัติรายการที่ฉันอนุมัติ / Approval History</h2>
     </div>
 
     <!-- zennnne แก้ -->
     <!-- FILTER BAR -->
     <div class="filter-bar">
+        <a class="history-home-button" href="${pageContext.request.contextPath}/">
+            <i class="fa-solid fa-arrow-left"></i> หน้าหลัก
+        </a>
+        <span class="filter-separator" aria-hidden="true"></span>
         <div class="filter-checkboxes">
             <label class="filter-label rejected-label">
                 <input type="checkbox" value="rejected" checked> ไม่ผ่านการอนุมัติ
@@ -511,14 +502,19 @@
             "LEFT JOIN SECTION    S ON E.SECID   = S.SECID " +
             "LEFT JOIN DEPARTMENT D ON S.DEPTID  = D.DEPTID " +
             "WHERE " + histStatusWhere + " " +
-            roleWhere +
+            "AND EXISTS ( " +
+            "    SELECT 1 FROM APPROVALINFO MY_AI " +
+            "    WHERE MY_AI.FORMID = RF.FORMID " +
+            "    AND MY_AI.REVIEWER_EMPID = ? " +
+            "    AND ABS(MY_AI.STATE_STEP) BETWEEN 1 AND 4 " +
+            ") " +
             "ORDER BY RF.DEADLINE " + orderDir + ", RF.FORMID DESC " +
             "OFFSET ? ROWS FETCH FIRST ? ROWS ONLY";
         // zennnne แก้
 
         pstmt = conn.prepareStatement(sql);
         int pi = 1;
-        if (needsEmpParam) pstmt.setInt(pi++, empid);
+        pstmt.setInt(pi++, empid);
         pstmt.setInt(pi++, offset);
         pstmt.setInt(pi,   pageSize);
         rs = pstmt.executeQuery();
@@ -554,7 +550,7 @@
              data-formid="<%= formId %>"
              data-title="<%= titleForm  != null ? titleForm.replace("\"","&quot;")  : "" %>"
              data-empname="<%= empName != null ? empName.replace("\"","&quot;") : "" %>"
-             onclick="location.href='detail.jsp?id=<%= formId %>'">
+             onclick="location.href='detail.jsp?id=<%= formId %>&from=history'">
 
             <div class="card-id-box">ใบขอให้ดำเนินการที่ <%= formId %></div>
 
@@ -588,7 +584,7 @@
 %>
         <div class="empty-state">
             <i class="fa-solid fa-clock-rotate-left"></i>
-            ยังไม่มีประวัติฟอร์มที่จบแล้ว
+            ยังไม่มีประวัติรายการที่คุณอนุมัติและจบกระบวนการแล้ว
         </div>
 <%
         }

@@ -40,6 +40,36 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-straight/css/uicons-bold-straight.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-straight/css/uicons-regular-straight.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css">
+    <style>
+        .submit-home-button {
+            min-height: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 13px;
+            border: 1px solid #c5d4e2;
+            border-radius: 8px;
+            background: #f5f9fc;
+            color: #003f73;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        .submit-home-button:hover {
+            border-color: #3272bb;
+            background: #e8f3fb;
+        }
+        .submit-filter-separator {
+            width: 1px;
+            height: 30px;
+            background: #d8e2eb;
+            margin: 0 4px;
+        }
+        @media (max-width: 540px) {
+            .submit-filter-separator { display: none; }
+        }
+    </style>
 </head>
 
 <body>
@@ -130,6 +160,10 @@
     <!-- zennnne แก้ -->
     <!-- FILTER BAR -->
     <div class="filter-bar">
+        <a class="submit-home-button" href="${pageContext.request.contextPath}/">
+            <i class="fa-solid fa-arrow-left"></i> หน้าหลัก
+        </a>
+        <span class="submit-filter-separator" aria-hidden="true"></span>
         <div class="filter-checkboxes">
             <label class="filter-label pending-label">
                 <input type="checkbox" value="pending" checked> รอดำเนินการ
@@ -248,7 +282,7 @@
             <div class="card-left">
                 <div class="card-title-wrap">
                     <span class="card-formid">#<%= formId %></span>
-                    <a href="detail.jsp?id=<%= formId %>" class="card-title" title="<%= title %>">
+                    <a href="detail.jsp?id=<%= formId %>&from=submit" class="card-title" title="<%= title %>">
                         <%= title %>
                     </a>
                 </div>

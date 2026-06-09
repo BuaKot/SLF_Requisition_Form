@@ -30,13 +30,19 @@
                     break;
                 case "director":
                 case "itdirector":
-                    redirectPage = "/DirectorApprove.jsp"; 
+                case "it director":
+                    redirectPage = "/index.jsp";
                     break;
                 case "technical":
-                    redirectPage = "/TechnicalApprove.jsp";
-                    break;
                 case "itdirectorapprove": 
-                    redirectPage = "/ITDirectorApprove.jsp"; 
+                case "development":
+                case "data":
+                case "infrastructure":
+                case "cyber security":
+                case "research":
+                case "reseach":
+                case "it planning":
+                    redirectPage = "/index.jsp";
                     break;
                 case "employee": 
                     redirectPage = "/index.jsp"; 
@@ -183,7 +189,28 @@
         <% if (AuthUtil.isAllowedForPage(currentRole, "thirdPartyLinks")) { %>
             <div class="card" onclick="location.href='${pageContext.request.contextPath}/thirdPartyLinks'">
                 <i class="fa-solid fa-link"></i>
-                <p>Third-party Form Links</p>
+                <p>จัดการลิงก์บุคคลภายนอก</p>
+            </div>
+        <% } %>
+
+        <% if (AuthUtil.isAllowedForPage(currentRole, "dashboard")) { %>
+            <div class="card" onclick="location.href='${pageContext.request.contextPath}/Dashboard.jsp'">
+                <i class="fa-solid fa-chart-line"></i>
+                <p>แดชบอร์ด</p>
+            </div>
+        <% } %>
+
+        <% if (AuthUtil.isAllowedForPage(currentRole, "memberManage")) { %>
+            <div class="card" onclick="location.href='${pageContext.request.contextPath}/memberManage'">
+                <i class="fa-solid fa-users-gear"></i>
+                <p>จัดการสมาชิก</p>
+            </div>
+        <% } %>
+
+        <% if (AuthUtil.isAllowedForPage(currentRole, "mailLog")) { %>
+            <div class="card" onclick="location.href='${pageContext.request.contextPath}/mailLog'">
+                <i class="fa-solid fa-envelope-open-text"></i>
+                <p>บันทึกการส่งอีเมล</p>
             </div>
         <% } %>
 

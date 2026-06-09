@@ -12,6 +12,9 @@
     }
 %>
 <%
+    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0L);
     boolean success = Boolean.TRUE.equals(request.getAttribute("submitSuccess"));
     String message = (String) request.getAttribute("submitMessage");
 %>

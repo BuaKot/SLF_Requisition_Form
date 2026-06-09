@@ -1,5 +1,6 @@
 package com.slf.filter;
 
+import com.slf.util.AuthUtil;
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +41,23 @@ public class AuthenticationFilter implements Filter {
         }
 
         // 3. Logged in – carry on, you're grand
+        String position = (String) session.getAttribute("position");
+        if (AuthUtil.isApprovalOnlyRole(position) && isRequesterOnlyPath(path)) {
+            response.sendRedirect(request.getContextPath() + AuthUtil.approvalPageForRole(position));
+            return;
+        }
+
         chain.doFilter(req, res);
+    }
+
+    static boolean isRequesterOnlyPath(String path) {
+        return path.equals("/newForm")
+            || path.equals("/formSelection")
+            || path.equals("/forms/select")
+            || path.equals("/itRequisition/new")
+            || path.equals("/newForm/requisition")
+            || path.equals("/form.jsp")
+            || path.equals("/submit")
+            || path.equals("/submit.jsp");
     }
 }

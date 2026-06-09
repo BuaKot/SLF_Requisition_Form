@@ -13,6 +13,9 @@
     }
 %>
 <%
+    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0L);
     ThirdPartyFormLink link = (ThirdPartyFormLink) request.getAttribute("thirdPartyLink");
     String consentVersion = (String) request.getAttribute("consentVersion");
     String token = (String) request.getAttribute("token");
@@ -202,6 +205,12 @@
     addButton.addEventListener("click", addRow);
     addRow();
 }());
+
+window.addEventListener("pageshow", function (event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
 </script>
 </body>
 </html>

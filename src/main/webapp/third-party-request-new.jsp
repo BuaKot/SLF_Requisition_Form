@@ -1,0 +1,203 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Collections" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.slf.model.ThirdPartyRequest" %>
+<%@ page import="com.slf.util.ThirdPartyAccessPolicy" %>
+<%!
+    private String h(Object input) {
+        if (input == null) return "";
+        return String.valueOf(input)
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("\"", "&quot;")
+            .replace("'", "&#39;");
+    }
+
+    private String requestStatusText(String status) {
+        if ("SUBMITTED".equals(status)) return "ส่งฟอร์มแล้ว";
+        if ("LINK_CREATED".equals(status)) return "รอผู้ให้บริการกรอก";
+        if ("APPROVED".equals(status)) return "อนุมัติแล้ว";
+        if ("REJECTED".equals(status)) return "ไม่อนุมัติ";
+        if ("CANCELLED".equals(status)) return "ยกเลิกแล้ว";
+        return status == null ? "-" : status;
+    }
+
+    private String linkStatusText(String status) {
+        if ("ACTIVE".equals(status)) return "ลิงก์ใช้งานได้";
+        if ("USED".equals(status)) return "ลิงก์ถูกใช้แล้ว";
+        if ("EXPIRED".equals(status)) return "ลิงก์หมดอายุ";
+        if ("REVOKED".equals(status)) return "ลิงก์ถูกยกเลิก";
+        return status == null ? "-" : status;
+    }
+
+    private String badgeClass(String status) {
+        if ("SUBMITTED".equals(status) || "USED".equals(status) || "APPROVED".equals(status)) return "ok";
+        if ("EXPIRED".equals(status) || "REJECTED".equals(status) || "REVOKED".equals(status) || "CANCELLED".equals(status)) return "danger";
+        return "wait";
+    }
+%>
+<%
+    if (!ThirdPartyAccessPolicy.canCreateOwnLinks(ThirdPartyAccessPolicy.sessionEmpId(session))) {
+        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        return;
+    }
+    List<ThirdPartyRequest> thirdPartyRequests =
+        (List<ThirdPartyRequest>) request.getAttribute("thirdPartyRequests");
+    if (thirdPartyRequests == null) {
+        thirdPartyRequests = Collections.emptyList();
+    }
+    String csrfToken = (String) request.getAttribute("csrfToken");
+    SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    String createdRequestId = request.getParameter("createdRequestId");
+    String status = request.getParameter("status");
+%>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการลิงก์แบบฟอร์มผู้ให้บริการภายนอก</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+<%@ include file="/WEB-INF/sidebar.jsp" %>
+<div id="main">
+    <div class="sticky-bar">
+        <i id="menuBtn" class="fa-solid fa-bars" onclick="toggleNav()"></i>
+        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
+        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
+        <div class="user-info">
+            <i class="fa fa-circle-user"></i>
+            <p>${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}</p>
+        </div>
+        <div class="contact-info">
+            <i class="fa-solid fa-circle-info"></i>
+            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+        </div>
+    </div>
+
+    <main class="third-party-request-page">
+        <section class="third-party-page-head third-party-toolbar-head">
+            <div>
+                <p class="eyebrow">แบบฟอร์มสำหรับผู้ให้บริการภายนอก</p>
+                <h1>ติดตามลิงก์ลงทะเบียนผู้ใช้ระบบงานสารสนเทศ</h1>
+                <p>สร้างลิงก์ใหม่ ดูสถานะ และยกเลิกลิงก์ที่ยังไม่ถูกส่งแบบฟอร์มได้จากหน้านี้</p>
+            </div>
+            <div class="page-head-actions">
+                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/newForm">
+                    <i class="fa-solid fa-arrow-left"></i> กลับ
+                </a>
+                <form method="post" action="${pageContext.request.contextPath}/thirdParty/request/new">
+                    <input type="hidden" name="csrfToken" value="<%= h(csrfToken) %>">
+                    <input type="hidden" name="action" value="create">
+                    <button class="btn btn-primary primary-action" type="submit">
+                        <i class="fa-solid fa-plus"></i> สร้างลิงก์ใหม่
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <% if (createdRequestId != null && !createdRequestId.trim().isEmpty()) { %>
+            <div class="form-alert neutral">สร้างลิงก์ใหม่เรียบร้อยแล้ว รายการ #<%= h(createdRequestId) %> พร้อมให้เปิดดูหรือคัดลอกจากปุ่ม “ดูลิงก์”</div>
+        <% } else if ("cancelled".equals(status)) { %>
+            <div class="form-alert neutral">ยกเลิกและลบลิงก์ที่ยังไม่ถูกใช้งานเรียบร้อยแล้ว</div>
+        <% } else if ("not_cancelled".equals(status)) { %>
+            <div class="form-alert">ไม่สามารถยกเลิกได้ อาจถูกส่งฟอร์มแล้ว หมดอายุ หรือถูกยกเลิกไปก่อนหน้า</div>
+        <% } %>
+
+        <section class="third-party-panel">
+            <div class="third-party-list-head">
+                <div>
+                    <div class="form-section-title">รายการลิงก์ที่สร้าง</div>
+                    <p class="muted-text">แสดงสถานะล่าสุดของแต่ละรายการ</p>
+                </div>
+                <span class="third-party-count"><%= thirdPartyRequests.size() %> รายการ</span>
+            </div>
+
+            <% if (thirdPartyRequests.isEmpty()) { %>
+                <div class="empty-link-state">
+                    <i class="fa-solid fa-link"></i>
+                    <h2>ยังไม่มีลิงก์ Third Party</h2>
+                    <p>กด “สร้างลิงก์ใหม่” เพื่อสร้าง token link สำหรับส่งให้ผู้ให้บริการภายนอกกรอกข้อมูล</p>
+                </div>
+            <% } else { %>
+                <div class="third-party-link-list compact-list">
+                    <% for (ThirdPartyRequest item : thirdPartyRequests) {
+                        boolean canCancel = "LINK_CREATED".equals(item.getStatus())
+                            && "ACTIVE".equals(item.getLinkStatus())
+                            && item.getSubmissionId() == null
+                            && item.getLinkId() != null;
+                    %>
+                        <article class="third-party-link-card compact-card">
+                            <div class="link-card-main">
+                                <div class="link-card-title-row">
+                                    <div>
+                                        <h2>คำขอ #<%= item.getRequestId() %></h2>
+                                        <p class="muted-text compact-note">
+                                            สร้างเมื่อ <%= item.getCreatedAt() == null ? "-" : dateTime.format(item.getCreatedAt()) %>
+                                        </p>
+                                    </div>
+                                    <div class="link-card-badges">
+                                        <span class="status-badge <%= badgeClass(item.getStatus()) %>"><%= h(requestStatusText(item.getStatus())) %></span>
+                                        <span class="status-badge <%= badgeClass(item.getLinkStatus()) %>"><%= h(linkStatusText(item.getLinkStatus())) %></span>
+                                    </div>
+                                </div>
+
+                                <div class="status-strip">
+                                    <div><span>หมดอายุ</span><strong><%= item.getLinkExpiresAt() == null ? "-" : dateTime.format(item.getLinkExpiresAt()) %></strong></div>
+                                    <div><span>ส่งฟอร์มเมื่อ</span><strong><%= item.getSubmittedAt() == null ? "-" : dateTime.format(item.getSubmittedAt()) %></strong></div>
+                                    <div><span>ผู้ให้บริการ</span><strong><%= item.getExternalCompanyName() == null ? "-" : h(item.getExternalCompanyName()) %></strong></div>
+                                </div>
+                            </div>
+
+                            <div class="link-card-actions clean-actions">
+                                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdParty/request/link?requestId=<%= item.getRequestId() %>&linkId=<%= item.getLinkId() == null ? "" : item.getLinkId() %>">
+                                    <i class="fa-solid fa-link"></i> ดูลิงก์
+                                </a>
+                                <% if (item.getSubmissionId() != null) { %>
+                                    <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdPartySubmission?id=<%= item.getSubmissionId() %>">
+                                        <i class="fa-solid fa-file-lines"></i> รายละเอียด
+                                    </a>
+                                <% } %>
+                                <% if (canCancel) { %>
+                                    <form method="post" action="${pageContext.request.contextPath}/thirdParty/request/new" onsubmit="return confirmCancelThirdPartyLink();">
+                                        <input type="hidden" name="csrfToken" value="<%= h(csrfToken) %>">
+                                        <input type="hidden" name="action" value="cancel">
+                                        <input type="hidden" name="requestId" value="<%= item.getRequestId() %>">
+                                        <input type="hidden" name="linkId" value="<%= item.getLinkId() %>">
+                                        <button class="btn btn-danger-soft" type="submit">
+                                            <i class="fa-solid fa-trash-can"></i> ยกเลิกลิงก์
+                                        </button>
+                                    </form>
+                                <% } %>
+                            </div>
+                        </article>
+                    <% } %>
+                </div>
+            <% } %>
+        </section>
+    </main>
+</div>
+<script>
+function confirmCancelThirdPartyLink() {
+    return window.confirm("ยืนยันยกเลิกลิงก์นี้หรือไม่? รายการที่ยังไม่ถูกใช้งานจะถูกลบออกจากประวัติและฐานข้อมูล");
+}
+function toggleNav() {
+    var sidebar = document.getElementById("mySidebar");
+    var main = document.getElementById("main");
+    if (sidebar.style.width === "250px") {
+        sidebar.style.width = "0";
+        main.style.marginLeft = "0";
+        main.style.width = "100%";
+    } else {
+        sidebar.style.width = "250px";
+        main.style.marginLeft = "250px";
+        main.style.width = "calc(100% - 250px)";
+    }
+}
+</script>
+</body>
+</html>

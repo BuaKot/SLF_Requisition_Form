@@ -14,6 +14,7 @@
      =================================================================== -->
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="com.slf.util.AuthUtil" %>
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -133,33 +134,70 @@
     }
 
     .index-banner {
-        background: linear-gradient(135deg, #c8ecff 0%, #eaf7ff 100%);
-        border-bottom: 5px solid #3272BB;
-        padding: 42px 20px 36px;
-        text-align: center;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(180deg, #edf8ff 0%, #d8eefb 100%);
+        border-top: 1px solid #b7d6ec;
+        border-bottom: 4px solid #3272BB;
+        padding: 38px 24px 34px;
         color: #003366;
+        text-align: center;
+    }
+
+    .index-banner::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: min(820px, 70%);
+        height: 3px;
+        transform: translateX(-50%);
+        background: #07528e;
+    }
+
+    .index-banner::after {
+        content: "";
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        width: min(420px, 45%);
+        height: 1px;
+        transform: translateX(-50%);
+        background: #8ebcdc;
+    }
+
+    .index-banner-inner {
+        width: min(1280px, 100%);
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    .index-banner-copy {
+        min-width: 0;
     }
 
     .index-banner h1 {
         margin: 0;
-        font-size: clamp(28px, 4.5vw, 42px);
-        line-height: 1.15;
+        font-size: 38px;
+        line-height: 1.18;
         font-weight: 800;
     }
 
     .index-banner h2 {
         margin: 8px 0 0;
-        color: #003366;
-        font-size: clamp(20px, 3vw, 30px);
+        color: #003f73;
+        font-size: 28px;
         line-height: 1.2;
         font-weight: 800;
     }
 
     .index-banner .subline {
         margin: 12px auto 0;
-        max-width: 760px;
-        color: #385a78;
+        max-width: 800px;
+        color: #385f7d;
         font-size: 18px;
+        line-height: 1.4;
         font-weight: 700;
     }
 
@@ -173,6 +211,11 @@
         display: grid;
         grid-template-columns: repeat(2, minmax(260px, 1fr));
         gap: 28px;
+    }
+
+    .main-actions.approval-only-actions {
+        grid-template-columns: minmax(300px, 610px);
+        justify-content: center;
     }
 
     .action-card {
@@ -269,7 +312,51 @@
         box-shadow: 0 8px 20px rgba(0, 51, 102, 0.05);
     }
 
+    .index-history-fab {
+        position: fixed;
+        right: 28px;
+        bottom: 24px;
+        z-index: 20;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        background: #003f73;
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 17px;
+        font-weight: 800;
+        box-shadow: 0 8px 20px rgba(0, 51, 102, 0.2);
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .index-history-fab:hover {
+        background: #3272bb;
+        transform: translateY(-2px);
+    }
+
     @media (max-width: 760px) {
+        .index-banner {
+            padding: 26px 16px 24px;
+        }
+
+        .index-banner-inner {
+            width: 100%;
+        }
+
+        .index-banner h1 {
+            font-size: 28px;
+        }
+
+        .index-banner h2 {
+            font-size: 22px;
+        }
+
+        .index-banner .subline {
+            font-size: 16px;
+        }
+
         .main-actions {
             grid-template-columns: 1fr;
         }
@@ -280,6 +367,11 @@
 
         .action-card {
             min-height: 230px;
+        }
+
+        .index-history-fab {
+            right: 16px;
+            bottom: 16px;
         }
     }
 </style>
@@ -293,6 +385,18 @@
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
+    boolean approvalOnlyRole = AuthUtil.isApprovalOnlyRole(currentRole);
+    String approvalPage = AuthUtil.approvalPageForRole(currentRole);
+    String approvalLabel = AuthUtil.approvalLabelForRole(currentRole);
+    boolean operationalWorkflowRole = !approvalOnlyRole
+        && !currentRole.trim().equalsIgnoreCase("Admin")
+        && (AuthUtil.isAllowedForPage(currentRole, "technicalApprove")
+            || AuthUtil.isAllowedForPage(currentRole, "process"));
+    boolean showTechnicalWork = operationalWorkflowRole
+        && AuthUtil.isAllowedForPage(currentRole, "technicalApprove");
+    boolean showProcessWork = operationalWorkflowRole
+        && AuthUtil.isAllowedForPage(currentRole, "process");
+    boolean canViewHistory = AuthUtil.isAllowedForPage(currentRole, "history");
 
     String deniedMessage = (String) session.getAttribute("formDeniedMessage");
     if (deniedMessage != null) {
@@ -365,13 +469,29 @@
     </div>
 
     <div class="index-banner">
-        <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
-        <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
-        <p class="subline">เลือกเมนูหลักเพื่อสร้างคำขอใหม่ หรือติดตามรายการที่ส่งเข้าสู่ระบบแล้ว</p>
+        <div class="index-banner-inner">
+            <div class="index-banner-copy">
+                <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
+                <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
+                <p class="subline">เลือกเมนูหลักเพื่อสร้างคำขอใหม่ ติดตามสถานะ หรือดำเนินงานตามหน้าที่รับผิดชอบ</p>
+            </div>
+        </div>
     </div>
 
     <main class="index-content">
-        <div class="main-actions">
+        <div class="main-actions<%= approvalOnlyRole ? " approval-only-actions" : "" %>">
+            <% if (approvalOnlyRole && approvalPage != null) { %>
+            <a href="${pageContext.request.contextPath}<%= approvalPage %>" class="action-card primary approval-action-card">
+                <div>
+                    <div class="action-top">
+                        <div class="action-icon"><i class="fa-solid fa-file-signature"></i></div>
+                        <h3><%= approvalLabel %></h3>
+                    </div>
+                    <p>ตรวจสอบรายละเอียดคำขอ พิจารณาความถูกต้อง และดำเนินการอนุมัติรายการที่อยู่ในความรับผิดชอบ</p>
+                </div>
+                <div class="action-footer">ไปยังรายการรออนุมัติ <i class="fa-solid fa-arrow-right"></i></div>
+            </a>
+            <% } else { %>
             <a href="${pageContext.request.contextPath}/newForm" class="action-card primary">
                 <div>
                     <div class="action-top">
@@ -393,10 +513,44 @@
                 </div>
                 <div class="action-footer">ดูรายการของฉัน <i class="fa-solid fa-arrow-right"></i></div>
             </a>
+
+            <% if (showTechnicalWork) { %>
+            <a href="${pageContext.request.contextPath}/technicalApprove" class="action-card">
+                <div>
+                    <div class="action-top">
+                        <div class="action-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                        <h3>ความเห็นและการอนุมัติเชิงเทคนิค</h3>
+                    </div>
+                    <p>ตรวจสอบรายละเอียดคำขอ แสดงความคิดเห็น และดำเนินการรายการที่อยู่ในความรับผิดชอบ</p>
+                </div>
+                <div class="action-footer">ไปยังรายการรอตรวจสอบ <i class="fa-solid fa-arrow-right"></i></div>
+            </a>
+            <% } %>
+
+            <% if (showProcessWork) { %>
+            <a href="${pageContext.request.contextPath}/process" class="action-card">
+                <div>
+                    <div class="action-top">
+                        <div class="action-icon"><i class="fa-solid fa-bars-progress"></i></div>
+                        <h3>รายการรอดำเนินการ</h3>
+                    </div>
+                    <p>เปิดดูรายละเอียดและดำเนินการรายการที่ได้รับมอบหมายให้แล้วเสร็จ</p>
+                </div>
+                <div class="action-footer">ไปยังรายการรอดำเนินการ <i class="fa-solid fa-arrow-right"></i></div>
+            </a>
+            <% } %>
+            <% } %>
         </div>
 
         
     </main>
+
+    <% if (canViewHistory) { %>
+    <a href="${pageContext.request.contextPath}/history.jsp" class="index-history-fab" title="ดูประวัติรายการ">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>ประวัติ</span>
+    </a>
+    <% } %>
 </div>
 
 <script>

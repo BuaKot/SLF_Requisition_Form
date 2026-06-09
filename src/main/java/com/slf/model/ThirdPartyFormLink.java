@@ -10,6 +10,9 @@ public class ThirdPartyFormLink {
     private int maxSubmitCount;
     private int submitCount;
     private Integer createdBy;
+    private String formCode;
+    private Long requestId;
+    private Integer createdByEmpId;
     private Timestamp createdAt;
     private Timestamp expiresAt;
     private Timestamp usedAt;
@@ -34,6 +37,12 @@ public class ThirdPartyFormLink {
     public void setSubmitCount(int submitCount) { this.submitCount = submitCount; }
     public Integer getCreatedBy() { return createdBy; }
     public void setCreatedBy(Integer createdBy) { this.createdBy = createdBy; }
+    public String getFormCode() { return formCode; }
+    public void setFormCode(String formCode) { this.formCode = formCode; }
+    public Long getRequestId() { return requestId; }
+    public void setRequestId(Long requestId) { this.requestId = requestId; }
+    public Integer getCreatedByEmpId() { return createdByEmpId; }
+    public void setCreatedByEmpId(Integer createdByEmpId) { this.createdByEmpId = createdByEmpId; }
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
     public Timestamp getExpiresAt() { return expiresAt; }

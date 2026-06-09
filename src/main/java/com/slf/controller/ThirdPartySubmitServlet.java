@@ -27,6 +27,7 @@ public class ThirdPartySubmitServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        preventCaching(response);
         request.setCharacterEncoding("UTF-8");
         String rawToken = request.getParameter("token");
         try {
@@ -230,5 +231,11 @@ public class ThirdPartySubmitServlet extends HttpServlet {
         request.setAttribute("submitMessage", message);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/thirdpartySubmitResult.jsp");
         dispatcher.forward(request, response);
+    }
+
+    private static void preventCaching(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0L);
     }
 }

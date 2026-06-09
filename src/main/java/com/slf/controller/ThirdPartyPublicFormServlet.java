@@ -20,6 +20,7 @@ public class ThirdPartyPublicFormServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        preventCaching(response);
         String rawToken = request.getParameter("token");
         if (rawToken == null || rawToken.trim().isEmpty()) {
             forwardInvalid(request, response, "ลิงก์ไม่ถูกต้องหรือไม่มี token");
@@ -51,5 +52,11 @@ public class ThirdPartyPublicFormServlet extends HttpServlet {
         request.setAttribute("invalidLinkMessage", message);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/thirdpartyForm.jsp");
         dispatcher.forward(request, response);
+    }
+
+    private static void preventCaching(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0L);
     }
 }

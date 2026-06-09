@@ -28,13 +28,18 @@
 %>
 <%
     String currentRole = (String) session.getAttribute("position");
-    if (!AuthUtil.isAllowedForPage(currentRole, "thirdPartySubmission")) {
+    if (!Boolean.TRUE.equals(request.getAttribute("thirdPartySubmissionAuthorized"))) {
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
         return;
     }
     ThirdPartyFormSubmission submission = (ThirdPartyFormSubmission) request.getAttribute("submission");
     if (submission == null) {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        return;
+    }
+    String backUrl = (String) request.getAttribute("thirdPartySubmissionBackUrl");
+    if (backUrl == null) {
+        response.sendError(HttpServletResponse.SC_FORBIDDEN);
         return;
     }
     SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -100,7 +105,7 @@
                 <h1><i class="fa-solid fa-file-lines"></i> Submission #<%= submission.getSubmissionId() %></h1>
                 <p>เลขที่รับเอกสาร <strong><%= display(submission.getDocumentReceiveNo()) %></strong></p>
             </div>
-            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdPartyLinks">
+            <a class="btn btn-secondary" href="<%= h(backUrl) %>">
                 <i class="fa-solid fa-arrow-left"></i> กลับหน้า Third-party Links
             </a>
         </div>

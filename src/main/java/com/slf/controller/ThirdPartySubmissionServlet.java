@@ -2,7 +2,7 @@ package com.slf.controller;
 
 import com.slf.dao.ThirdPartyFormSubmissionDAO;
 import com.slf.model.ThirdPartyFormSubmission;
-import com.slf.util.AuthUtil;
+import com.slf.util.ThirdPartyAccessPolicy;
 import java.io.IOException;
 import java.sql.SQLException;
 import javax.servlet.RequestDispatcher;
@@ -20,10 +20,6 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (!isAdmin(request, response)) {
-            return;
-        }
-
         long submissionId;
         try {
             submissionId = parseSubmissionId(request.getParameter("id"));
@@ -38,22 +34,26 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
+            HttpSession session = request.getSession(false);
+            String position = session == null ? null : (String) session.getAttribute("position");
+            Integer empId = ThirdPartyAccessPolicy.sessionEmpId(session);
+            if (!ThirdPartyAccessPolicy.canViewSubmission(position, empId, submission.getInternalOwnerEmpId())) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+            request.setAttribute("thirdPartySubmissionAuthorized", Boolean.TRUE);
             request.setAttribute("submission", submission);
+            boolean viewingOwnSubmission = ThirdPartyAccessPolicy.canCreateOwnLinks(empId)
+                && empId.equals(submission.getInternalOwnerEmpId());
+            request.setAttribute("thirdPartySubmissionBackUrl",
+                request.getContextPath() + (viewingOwnSubmission
+                    ? "/thirdParty/request/new"
+                    : "/thirdPartyLinks"));
             RequestDispatcher dispatcher = request.getRequestDispatcher("/ThirdPartySubmission.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to load third-party submission", e);
         }
-    }
-
-    private static boolean isAdmin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession(false);
-        String position = session == null ? null : (String) session.getAttribute("position");
-        if (!AuthUtil.isAllowedForPage(position, "thirdPartySubmission")) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return false;
-        }
-        return true;
     }
 
     static long parseSubmissionId(String value) {

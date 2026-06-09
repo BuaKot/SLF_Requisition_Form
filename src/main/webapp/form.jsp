@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
         .byte-counter { font-size: 0.75rem; color: #888; display: block; text-align: right; margin-top: 2px; width: 100%; order: 999; flex-basis: 100%; }

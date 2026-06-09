@@ -45,6 +45,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เข้าสู่ระบบพนักงาน | กยศ.</title>
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
         :root {

@@ -205,6 +205,7 @@
 <head>
     <meta charset="UTF-8">
     <title>ใบขอให้ดำเนินการ #<%= formId %></title>
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
 

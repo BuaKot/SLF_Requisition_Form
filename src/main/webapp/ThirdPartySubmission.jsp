@@ -40,6 +40,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Third-party Submission #<%= submission.getSubmissionId() %></title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * { box-sizing: border-box; }

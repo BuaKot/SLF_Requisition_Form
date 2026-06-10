@@ -1,26 +1,30 @@
 package com.slf.dao;
 
 import com.slf.model.ThirdPartyRequest;
+import com.slf.util.BangkokTimeUtil;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ThirdPartyRequestDAO {
 
     public long createRequest(int ownerEmpId) throws SQLException {
+        java.sql.Timestamp now = BangkokTimeUtil.nowTimestamp();
         String sql =
             "INSERT INTO THIRD_PARTY_REQUEST " +
-            "(FORM_CODE, INTERNAL_OWNER_EMPID, STATUS) " +
-            "VALUES (?, ?, 'LINK_CREATED')";
+            "(FORM_CODE, INTERNAL_OWNER_EMPID, STATUS, CREATED_AT, UPDATED_AT) " +
+            "VALUES (?, ?, 'LINK_CREATED', ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, new String[] { "REQUEST_ID" })) {
             ps.setString(1, "THIRD_PARTY_USER_REGISTRATION");
             ps.setInt(2, ownerEmpId);
+            ps.setTimestamp(3, now, BangkokTimeUtil.newCalendar());
+            ps.setTimestamp(4, now, BangkokTimeUtil.newCalendar());
             ps.executeUpdate();
             return generatedId(ps);
         }
@@ -77,7 +81,7 @@ public class ThirdPartyRequestDAO {
             "SELECT r.REQUEST_ID, r.FORM_CODE, r.INTERNAL_OWNER_EMPID, r.EXTERNAL_COMPANY_NAME, " +
             "r.EXTERNAL_CONTACT_NAME, r.EXTERNAL_EMAIL, r.EXTERNAL_PHONE, r.PURPOSE, r.TARGET_SYSTEM, " +
             "r.ACCESS_START_DATE, r.ACCESS_END_DATE, r.STATUS, r.CREATED_AT, r.SUBMITTED_AT, r.UPDATED_AT, " +
-            "l.LINK_ID, l.RAW_TOKEN, CASE WHEN l.STATUS = 'ACTIVE' AND l.EXPIRES_AT < SYSTIMESTAMP THEN 'EXPIRED' ELSE l.STATUS END AS LINK_STATUS, " +
+            "l.LINK_ID, l.RAW_TOKEN, CASE WHEN l.STATUS = 'ACTIVE' AND l.EXPIRES_AT < ? THEN 'EXPIRED' ELSE l.STATUS END AS LINK_STATUS, " +
             "l.CREATED_AT AS LINK_CREATED_AT, l.EXPIRES_AT AS LINK_EXPIRES_AT, l.USED_AT AS LINK_USED_AT, " +
             "s.SUBMISSION_ID " +
             "FROM THIRD_PARTY_REQUEST r " +
@@ -86,8 +90,9 @@ public class ThirdPartyRequestDAO {
             "WHERE r.REQUEST_ID = ? AND r.INTERNAL_OWNER_EMPID = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, requestId);
-            ps.setInt(2, ownerEmpId);
+            ps.setTimestamp(1, BangkokTimeUtil.nowTimestamp(), BangkokTimeUtil.newCalendar());
+            ps.setLong(2, requestId);
+            ps.setInt(3, ownerEmpId);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? mapRequest(rs) : null;
             }
@@ -99,7 +104,7 @@ public class ThirdPartyRequestDAO {
             "SELECT r.REQUEST_ID, r.FORM_CODE, r.INTERNAL_OWNER_EMPID, r.EXTERNAL_COMPANY_NAME, " +
             "r.EXTERNAL_CONTACT_NAME, r.EXTERNAL_EMAIL, r.EXTERNAL_PHONE, r.PURPOSE, r.TARGET_SYSTEM, " +
             "r.ACCESS_START_DATE, r.ACCESS_END_DATE, r.STATUS, r.CREATED_AT, r.SUBMITTED_AT, r.UPDATED_AT, " +
-            "l.LINK_ID, l.RAW_TOKEN, CASE WHEN l.STATUS = 'ACTIVE' AND l.EXPIRES_AT < SYSTIMESTAMP THEN 'EXPIRED' ELSE l.STATUS END AS LINK_STATUS, " +
+            "l.LINK_ID, l.RAW_TOKEN, CASE WHEN l.STATUS = 'ACTIVE' AND l.EXPIRES_AT < ? THEN 'EXPIRED' ELSE l.STATUS END AS LINK_STATUS, " +
             "l.CREATED_AT AS LINK_CREATED_AT, l.EXPIRES_AT AS LINK_EXPIRES_AT, l.USED_AT AS LINK_USED_AT, " +
             "s.SUBMISSION_ID " +
             "FROM THIRD_PARTY_REQUEST r " +
@@ -111,8 +116,9 @@ public class ThirdPartyRequestDAO {
         List<ThirdPartyRequest> requests = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, ownerEmpId);
-            ps.setInt(2, Math.max(1, limit));
+            ps.setTimestamp(1, BangkokTimeUtil.nowTimestamp(), BangkokTimeUtil.newCalendar());
+            ps.setInt(2, ownerEmpId);
+            ps.setInt(3, Math.max(1, limit));
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     requests.add(mapRequest(rs));
@@ -127,7 +133,7 @@ public class ThirdPartyRequestDAO {
             "SELECT r.REQUEST_ID, r.FORM_CODE, r.INTERNAL_OWNER_EMPID, r.EXTERNAL_COMPANY_NAME, " +
             "r.EXTERNAL_CONTACT_NAME, r.EXTERNAL_EMAIL, r.EXTERNAL_PHONE, r.PURPOSE, r.TARGET_SYSTEM, " +
             "r.ACCESS_START_DATE, r.ACCESS_END_DATE, r.STATUS, r.CREATED_AT, r.SUBMITTED_AT, r.UPDATED_AT, " +
-            "l.LINK_ID, l.RAW_TOKEN, CASE WHEN l.STATUS = 'ACTIVE' AND l.EXPIRES_AT < SYSTIMESTAMP THEN 'EXPIRED' ELSE l.STATUS END AS LINK_STATUS, " +
+            "l.LINK_ID, l.RAW_TOKEN, CASE WHEN l.STATUS = 'ACTIVE' AND l.EXPIRES_AT < ? THEN 'EXPIRED' ELSE l.STATUS END AS LINK_STATUS, " +
             "l.CREATED_AT AS LINK_CREATED_AT, l.EXPIRES_AT AS LINK_EXPIRES_AT, l.USED_AT AS LINK_USED_AT, " +
             "s.SUBMISSION_ID " +
             "FROM THIRD_PARTY_FORM_LINK l " +
@@ -136,7 +142,8 @@ public class ThirdPartyRequestDAO {
             "WHERE l.LINK_ID = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, linkId);
+            ps.setTimestamp(1, BangkokTimeUtil.nowTimestamp(), BangkokTimeUtil.newCalendar());
+            ps.setLong(2, linkId);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? mapRequest(rs) : null;
             }
@@ -154,19 +161,19 @@ public class ThirdPartyRequestDAO {
         request.setExternalPhone(rs.getString("EXTERNAL_PHONE"));
         request.setPurpose(rs.getString("PURPOSE"));
         request.setTargetSystem(rs.getString("TARGET_SYSTEM"));
-        request.setAccessStartDate(rs.getDate("ACCESS_START_DATE"));
-        request.setAccessEndDate(rs.getDate("ACCESS_END_DATE"));
+        request.setAccessStartDate(getBangkokDate(rs, "ACCESS_START_DATE"));
+        request.setAccessEndDate(getBangkokDate(rs, "ACCESS_END_DATE"));
         request.setStatus(rs.getString("STATUS"));
-        request.setCreatedAt(rs.getTimestamp("CREATED_AT"));
-        request.setSubmittedAt(rs.getTimestamp("SUBMITTED_AT"));
-        request.setUpdatedAt(rs.getTimestamp("UPDATED_AT"));
+        request.setCreatedAt(rs.getTimestamp("CREATED_AT", BangkokTimeUtil.newCalendar()));
+        request.setSubmittedAt(rs.getTimestamp("SUBMITTED_AT", BangkokTimeUtil.newCalendar()));
+        request.setUpdatedAt(rs.getTimestamp("UPDATED_AT", BangkokTimeUtil.newCalendar()));
         long linkId = rs.getLong("LINK_ID");
         request.setLinkId(rs.wasNull() ? null : Long.valueOf(linkId));
         request.setRawToken(rs.getString("RAW_TOKEN"));
         request.setLinkStatus(rs.getString("LINK_STATUS"));
-        request.setLinkCreatedAt(rs.getTimestamp("LINK_CREATED_AT"));
-        request.setLinkExpiresAt(rs.getTimestamp("LINK_EXPIRES_AT"));
-        request.setLinkUsedAt(rs.getTimestamp("LINK_USED_AT"));
+        request.setLinkCreatedAt(rs.getTimestamp("LINK_CREATED_AT", BangkokTimeUtil.newCalendar()));
+        request.setLinkExpiresAt(rs.getTimestamp("LINK_EXPIRES_AT", BangkokTimeUtil.newCalendar()));
+        request.setLinkUsedAt(rs.getTimestamp("LINK_USED_AT", BangkokTimeUtil.newCalendar()));
         long submissionId = rs.getLong("SUBMISSION_ID");
         request.setSubmissionId(rs.wasNull() ? null : Long.valueOf(submissionId));
         return request;
@@ -179,5 +186,9 @@ public class ThirdPartyRequestDAO {
             }
         }
         throw new SQLException("Unable to read generated third-party request id.");
+    }
+
+    private static Date getBangkokDate(ResultSet rs, String columnLabel) throws SQLException {
+        return rs.getDate(columnLabel, BangkokTimeUtil.newCalendar());
     }
 }

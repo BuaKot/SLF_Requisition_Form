@@ -1,4 +1,4 @@
-<%@ page isELIgnored="false" %>
+﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.*" %>
 <%!
@@ -72,15 +72,9 @@
     </style>
 </head>
 <body>
-<%@ include file="/WEB-INF/sidebar.jsp" %>
+<%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 <div id="main" class="approval-main">
-    <div class="sticky-bar">
-        <i id="menuBtn" class="fa-solid fa-bars" onclick="toggleNav()"></i>
-        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="ตรากระทรวงการคลัง">
-        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="ตรากองทุนเงินให้กู้ยืมเพื่อการศึกษา">
-        <div class="user-info"><i class="fa fa-circle-user"></i><p>${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}</p></div>
-        <div class="contact-info"><i class="fa-solid fa-circle-info"></i><p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p></div>
-    </div>
+    <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
     <header class="approval-header">
         <div class="approval-header-inner">
             <div class="approval-title"><div class="approval-title-icon"><i class="fa-solid fa-file-signature"></i></div><div><h1><%= approvalTitle %></h1><p><%= approvalSubtitle %></p></div></div>
@@ -125,3 +119,4 @@ function toggleNav() {
 </script>
 </body>
 </html>
+

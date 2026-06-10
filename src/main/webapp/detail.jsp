@@ -1,4 +1,4 @@
-<%@ include file="/WEB-INF/checkAuth.jsp" %>
+﻿<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection" %>
@@ -145,18 +145,10 @@
     </style>
 </head>
 <body>
-
-<!-- Header and Banner (unchanged) -->
-<div class="sticky-bar">
-    <a href="<%= backPath %>" style="text-decoration:none; color:#003f73; font-weight:700;">
-        <i class="fa fa-arrow-left"></i> <%= backLabel %>
-    </a>
-
-    <div class="contact-info">
-        <i class="fa-solid fa-circle-info"></i>
-        <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-    </div>
-</div>
+<%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
+<div id="main">
+<%@ include file="/WEB-INF/jspf/topbar.jspf" %>
+<div class="topbar-back-row"><a href="<%= backPath %>"><i class="fa fa-arrow-left"></i> <%= backLabel %></a></div>
 <div class="banner">
     <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</h1>
     <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
@@ -455,5 +447,9 @@
     </form>
 </div>
 
+</div>
 </body>
 </html>
+
+
+

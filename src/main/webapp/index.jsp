@@ -1,17 +1,6 @@
-<%@ page isELIgnored="false" %>
+﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.slf.util.AuthUtil" %>
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบใบขอให้ดำเนินการ IT</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
-    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body>
 <%
     String currentRole = (String) session.getAttribute("position");
     String employeeName = (String) session.getAttribute("loggedInEmpName");
@@ -20,6 +9,7 @@
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
+
     boolean approvalOnlyRole = AuthUtil.isApprovalOnlyRole(currentRole);
     String approvalPage = AuthUtil.approvalPageForRole(currentRole);
     String approvalLabel = AuthUtil.approvalLabelForRole(currentRole);
@@ -32,92 +22,61 @@
     boolean showProcessWork = operationalWorkflowRole
         && AuthUtil.isAllowedForPage(currentRole, "process");
     boolean canViewHistory = AuthUtil.isAllowedForPage(currentRole, "history");
-
-    String deniedMessage = (String) session.getAttribute("formDeniedMessage");
-    if (deniedMessage != null) {
-        session.removeAttribute("formDeniedMessage");
 %>
-<div class="modal-overlay" id="deniedModal">
-    <div class="modal-box">
-        <span class="modal-close" onclick="closeDeniedModal()">&times;</span>
-        <p><%= deniedMessage %></p>
-        <button class="modal-ok-btn" onclick="closeDeniedModal()">ตกลง</button>
-    </div>
-</div>
-<script>
-    document.getElementById('deniedModal').addEventListener('click', function(e) {
-        if (e.target === this) closeDeniedModal();
-    });
-    function closeDeniedModal() {
-        document.getElementById('deniedModal').style.display = 'none';
-    }
-</script>
-<%
-    }
-
-    String accessDeniedMsg = (String) session.getAttribute("accessDeniedMessage");
-    if (accessDeniedMsg != null) {
-        session.removeAttribute("accessDeniedMessage");
-%>
-<div class="modal-overlay" id="accessDeniedModal">
-    <div class="modal-box">
-        <span class="modal-close" onclick="closeAccessDeniedModal()">&times;</span>
-        <p><%= accessDeniedMsg %></p>
-        <button class="modal-ok-btn" onclick="closeAccessDeniedModal()">ตกลง</button>
-    </div>
-</div>
-<script>
-    document.getElementById('accessDeniedModal').addEventListener('click', function(e) {
-        if (e.target === this) closeAccessDeniedModal();
-    });
-    function closeAccessDeniedModal() {
-        document.getElementById('accessDeniedModal').style.display = 'none';
-    }
-</script>
-<%
-    }
-%>
-
-<%@ include file="/WEB-INF/sidebar.jsp" %>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบใบขอให้ดำเนินการ IT</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+<%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 
 <div id="main" class="enterprise-index-shell">
-    <header class="sticky-bar index-topbar">
-        <div class="index-topbar-left">
-            <button id="menuBtn" class="index-menu-button" type="button" onclick="toggleNav()" aria-label="เปิดเมนู">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <div class="index-brand-lockup">
-                <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
-                <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
-                <div>
-                    <span class="brand-kicker">Student Loan Fund</span>
-                    <strong>ระบบ Requisition Form</strong>
-                </div>
-            </div>
-        </div>
+    <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
-        <div class="index-topbar-right">
-            <div class="user-info index-info-pill">
-                <i class="fa fa-circle-user"></i>
-                <p>${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}</p>
-            </div>
-            <div class="contact-info index-info-pill">
-                <i class="fa-solid fa-circle-info"></i>
-                <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-            </div>
+    <%
+        String _indexDeniedMessage = (String) session.getAttribute("formDeniedMessage");
+        if (_indexDeniedMessage != null) {
+            session.removeAttribute("formDeniedMessage");
+    %>
+    <div id="formDeniedModal" class="modal-overlay" role="dialog" aria-modal="true">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeDeniedModal()">&times;</span>
+            <p><%= _indexDeniedMessage %></p>
+            <button class="modal-ok-btn" type="button" onclick="closeDeniedModal()">ตกลง</button>
         </div>
-    </header>
+    </div>
+    <% } %>
+
+    <%
+        String _indexAccessDeniedMessage = (String) session.getAttribute("accessDeniedMessage");
+        if (_indexAccessDeniedMessage != null) {
+            session.removeAttribute("accessDeniedMessage");
+    %>
+    <div id="accessDeniedModal" class="modal-overlay" role="dialog" aria-modal="true">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeAccessDeniedModal()">&times;</span>
+            <p><%= _indexAccessDeniedMessage %></p>
+            <button class="modal-ok-btn" type="button" onclick="closeAccessDeniedModal()">ตกลง</button>
+        </div>
+    </div>
+    <% } %>
 
     <main class="enterprise-index-main">
-        <section class="enterprise-hero index-banner">
+        <section class="enterprise-hero index-banner" aria-labelledby="indexHeroTitle">
             <div class="enterprise-hero-copy index-banner-inner">
                 <p class="enterprise-eyebrow">ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</p>
-                <h1>ระบบใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</h1>
+                <h1 id="indexHeroTitle">ระบบใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</h1>
                 <p class="enterprise-hero-lead">
                     ศูนย์กลางสำหรับสร้างคำขอ ติดตามรายการที่ส่งแล้ว และดำเนินงานตามบทบาทของผู้ใช้งานภายในระบบ
                 </p>
             </div>
-            <div class="enterprise-hero-meta">
+            <div class="enterprise-hero-meta" aria-label="สถานะผู้ใช้งาน">
                 <span>สถานะผู้ใช้งาน</span>
                 <strong>${sessionScope.position}</strong>
             </div>
@@ -130,7 +89,7 @@
                     <h2>เลือกการดำเนินการ</h2>
                 </div>
                 <% if (canViewHistory) { %>
-                <a href="${pageContext.request.contextPath}/history.jsp" class="history-link-card index-history-fab">
+                <a class="history-link-card index-history-fab" href="${pageContext.request.contextPath}/history.jsp">
                     <i class="fa-solid fa-clock-rotate-left"></i>
                     <span>ประวัติรายการ</span>
                 </a>
@@ -139,52 +98,52 @@
 
             <div class="enterprise-action-grid<%= approvalOnlyRole ? " approval-only-actions" : "" %>">
                 <% if (approvalOnlyRole && approvalPage != null) { %>
-                <a href="${pageContext.request.contextPath}<%= approvalPage %>" class="enterprise-action-card primary">
+                <a class="enterprise-action-card primary" href="${pageContext.request.contextPath}<%= approvalPage %>">
                     <span class="enterprise-card-icon"><i class="fa-solid fa-file-signature"></i></span>
                     <span class="enterprise-card-content">
                         <strong><%= approvalLabel %></strong>
-                        <small>ตรวจสอบรายละเอียดคำขอและดำเนินการอนุมัติรายการที่อยู่ในความรับผิดชอบ</small>
+                        <small>ไปยังรายการรออนุมัติตามสิทธิ์และบทบาทของผู้ใช้งาน</small>
                     </span>
-                    <span class="enterprise-card-arrow" aria-label="ไปยังรายการรออนุมัติ"><i class="fa-solid fa-arrow-right"></i></span>
+                    <span class="enterprise-card-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
                 </a>
                 <% } else { %>
-                <a href="${pageContext.request.contextPath}/newForm" class="enterprise-action-card primary">
+                <a class="enterprise-action-card primary" href="${pageContext.request.contextPath}/newForm">
                     <span class="enterprise-card-icon"><i class="fa-solid fa-plus"></i></span>
                     <span class="enterprise-card-content">
                         <strong>สร้างฟอร์มใหม่</strong>
-                        <small>เลือกประเภทฟอร์มและเริ่มสร้างคำขอเข้าสู่กระบวนการดำเนินงาน</small>
+                        <small>เลือกประเภทแบบฟอร์มและเริ่มสร้างคำขอตามขั้นตอนของระบบ</small>
                     </span>
-                    <span class="enterprise-card-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                    <span class="enterprise-card-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
                 </a>
 
-                <a href="${pageContext.request.contextPath}/submit" class="enterprise-action-card">
+                <a class="enterprise-action-card" href="${pageContext.request.contextPath}/submit">
                     <span class="enterprise-card-icon"><i class="fa-solid fa-paper-plane"></i></span>
                     <span class="enterprise-card-content">
                         <strong>ฟอร์มที่ส่งแล้ว</strong>
-                        <small>ติดตามสถานะ ตรวจสอบกำหนดเวลา และดูรายละเอียดคำขอของคุณ</small>
+                        <small>ตรวจสอบคำขอที่ส่งไปแล้วและติดตามสถานะล่าสุด</small>
                     </span>
-                    <span class="enterprise-card-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                    <span class="enterprise-card-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
                 </a>
 
                 <% if (showTechnicalWork) { %>
-                <a href="${pageContext.request.contextPath}/technicalApprove" class="enterprise-action-card">
+                <a class="enterprise-action-card" href="${pageContext.request.contextPath}/technicalApprove">
                     <span class="enterprise-card-icon"><i class="fa-solid fa-screwdriver-wrench"></i></span>
                     <span class="enterprise-card-content">
                         <strong>ตรวจสอบเชิงเทคนิค</strong>
-                        <small>พิจารณารายละเอียดคำขอและให้ความเห็นตามหน้าที่ที่ได้รับมอบหมาย</small>
+                        <small>ตรวจสอบรายละเอียดทางเทคนิคก่อนเข้าสู่ขั้นตอนดำเนินงาน</small>
                     </span>
-                    <span class="enterprise-card-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                    <span class="enterprise-card-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
                 </a>
                 <% } %>
 
                 <% if (showProcessWork) { %>
-                <a href="${pageContext.request.contextPath}/process" class="enterprise-action-card">
+                <a class="enterprise-action-card" href="${pageContext.request.contextPath}/process">
                     <span class="enterprise-card-icon"><i class="fa-solid fa-bars-progress"></i></span>
                     <span class="enterprise-card-content">
                         <strong>รายการรอดำเนินการ</strong>
-                        <small>เปิดดูและดำเนินการรายการที่ได้รับมอบหมายให้แล้วเสร็จ</small>
+                        <small>ดูและจัดการคำขอที่เข้าสู่คิวการดำเนินงานของฝ่ายที่เกี่ยวข้อง</small>
                     </span>
-                    <span class="enterprise-card-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                    <span class="enterprise-card-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
                 </a>
                 <% } %>
                 <% } %>
@@ -208,15 +167,18 @@ function toggleNav() {
     main.style.width = "calc(100% - 250px)";
   }
 }
+
+function closeDeniedModal() {
+  var modal = document.getElementById("formDeniedModal");
+  if (modal) modal.style.display = "none";
+}
+
+function closeAccessDeniedModal() {
+  var modal = document.getElementById("accessDeniedModal");
+  if (modal) modal.style.display = "none";
+}
 </script>
-<%--
-    Legacy layout smoke-test markers retained while the visible page has moved to
-    the enterprise menu redesign:
-    linear-gradient(180deg, #edf8ff 0%, #d8eefb 100%)
-    .index-banner::before
-    .index-banner::after
-    เธเนเธฒเธขเน€เธ—เธเนเธเนเธฅเธขเธตเธชเธฒเธฃเธชเธเน€เธ—เธจ เธเธญเธเธ—เธธเธเน€เธเธดเธเนเธซเนเธเธนเนเธขเธทเธกเน€เธเธทเนเธญเธเธฒเธฃเธจเธถเธเธฉเธฒ
-    เนเธเธขเธฑเธเธฃเธฒเธขเธเธฒเธฃเธฃเธญเธญเธเธธเธกเธฑเธ•เธด
---%>
 </body>
 </html>
+
+

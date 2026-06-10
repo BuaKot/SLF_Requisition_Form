@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
     Boolean canCreateThirdPartyLinks = (Boolean) request.getAttribute("canCreateThirdPartyLinks");
     if (canCreateThirdPartyLinks == null) {
@@ -16,21 +16,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-<%@ include file="/WEB-INF/sidebar.jsp" %>
+<%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 <div id="main">
-    <div class="sticky-bar">
-        <i id="menuBtn" class="fa-solid fa-bars" onclick="toggleNav()"></i>
-        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
-        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
-        <div class="user-info">
-            <i class="fa fa-circle-user"></i>
-            <p>${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}</p>
-        </div>
-        <div class="contact-info">
-            <i class="fa-solid fa-circle-info"></i>
-            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-        </div>
-    </div>
+    <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
     <main class="form-selection-page">
         <section class="form-selection-hero">
@@ -94,3 +82,4 @@ function toggleNav() {
 </script>
 </body>
 </html>
+

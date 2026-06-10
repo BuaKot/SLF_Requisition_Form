@@ -4,6 +4,7 @@ import com.slf.dao.LookupDAO;
 import com.slf.model.Employee;
 import com.slf.security.JavaCaptchaService;
 import com.slf.security.LoginAttemptService;
+import com.slf.util.RequestMetadataUtil;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +20,7 @@ public class LoginProcessorServlet extends HttpServlet {
         throws ServletException, IOException {
         String empIdStr = request.getParameter("EMPID");
         String passwordStr = request.getParameter("PASSWORD");
-        String clientIp = getClientIp(request);
+        String clientIp = RequestMetadataUtil.getClientIp(request);
         String empIdKey = empIdStr == null ? "" : empIdStr.trim();
 
         if (empIdStr == null || passwordStr == null || empIdStr.trim().isEmpty() || passwordStr.trim().isEmpty()) {
@@ -116,13 +117,5 @@ public class LoginProcessorServlet extends HttpServlet {
         }
         // ⚠️ Do NOT add waitSeconds to the URL
         response.sendRedirect(redirect);
-    }
-
-    private String getClientIp(HttpServletRequest request) {
-        String forwardedFor = request.getHeader("X-Forwarded-For");
-        if (forwardedFor != null && forwardedFor.trim().length() > 0) {
-            return forwardedFor.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
     }
 }

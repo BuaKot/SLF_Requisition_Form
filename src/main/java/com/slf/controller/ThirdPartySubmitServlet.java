@@ -7,6 +7,7 @@ import com.slf.model.ThirdPartyFormSubmission;
 import com.slf.model.ThirdPartyAccessRequest;
 import com.slf.util.ThirdPartyLinkToken;
 import com.slf.util.ThirdPartyConsentContent;
+import com.slf.util.RequestMetadataUtil;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -65,7 +66,7 @@ public class ThirdPartySubmitServlet extends HttpServlet {
         submission.setAccessEndDate(parseDate(request.getParameter("accessEndDate"), "ถึงวันที่"));
         submission.setConsentAccepted("accepted".equals(request.getParameter("consentAccepted")));
         submission.setConsentVersion(consentVersion);
-        submission.setConsentIpAddress(limit(trimToNull(request.getRemoteAddr()), 45));
+        submission.setConsentIpAddress(limit(trimToNull(RequestMetadataUtil.getClientIp(request)), 45));
         submission.setConsentUserAgent(limit(trimToNull(request.getHeader("User-Agent")), 500));
         submission.setAccessRequests(buildAccessRequests(request));
         return submission;

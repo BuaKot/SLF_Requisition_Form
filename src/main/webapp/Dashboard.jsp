@@ -3,9 +3,15 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
+<%@ page import="java.time.LocalDate" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="java.time.format.DateTimeParseException" %>
 <%@ page import="com.slf.dao.DBConnection" %>
 
 <%!
+    private static final DateTimeFormatter ISO_DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter DISPLAY_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     public String escapeHtml(String input) {
         if (input == null) return "";
         return input.replace("&", "&amp;")
@@ -26,6 +32,19 @@
                     .replace("\r", "\\r")
                     .replace("\t", "\\t");
     }
+
+    public LocalDate parseIsoDate(String input) {
+        if (input == null || input.trim().isEmpty()) return null;
+        try {
+            return LocalDate.parse(input.trim(), ISO_DATE_FORMAT);
+        } catch (DateTimeParseException ignored) {
+            return null;
+        }
+    }
+
+    public String formatDisplayDate(LocalDate input) {
+        return input == null ? "" : input.format(DISPLAY_DATE_FORMAT);
+    }
 %>
 
 <%
@@ -43,14 +62,15 @@
     List<String> allowedFilters = Arrays.asList("7days", "30days", "quarters", "forecast", "custom");
     if (!allowedFilters.contains(filter)) { filter = "30days"; }
 
-    String startDate = request.getParameter("startDate");
-    String endDate = request.getParameter("endDate");
+    LocalDate startDateValue = parseIsoDate(request.getParameter("startDate"));
+    LocalDate endDateValue = parseIsoDate(request.getParameter("endDate"));
+    String startDate = "";
+    String endDate = "";
     
-    if (startDate != null && !startDate.trim().equals("") && endDate != null && !endDate.trim().equals("")) {
+    if (startDateValue != null && endDateValue != null && !endDateValue.isBefore(startDateValue)) {
         filter = "custom";
-    } else {
-        startDate = ""; 
-        endDate = "";
+        startDate = startDateValue.format(ISO_DATE_FORMAT);
+        endDate = endDateValue.format(ISO_DATE_FORMAT);
     }
     
     int totalEmployees = 0; 
@@ -130,7 +150,7 @@
     }
 
     if (labelsList.isEmpty()) {
-        labelsList.addAll(Arrays.asList("<script>alert('XSS_Tested')</script>", "IT Planning", "Infrastructure", "Development", "Data", "Research", "เจ้าหน้าที่คัดดี", "Admin", "IT Director", "Cyber Security"));
+        labelsList.addAll(Arrays.asList("Operations", "IT Planning", "Infrastructure", "Development", "Data", "Research", "เจ้าหน้าที่คัดดี", "Admin", "IT Director", "Cyber Security"));
         dataList.addAll(Arrays.asList(12, 8, 7, 6, 4, 3, 2, 2, 1, 1));
     }
     if (topCatLabels.isEmpty()) {
@@ -180,7 +200,7 @@
         trendDataJson = "[294, 345, 412, 490]";
     }
     else if (filter.equals("custom")) {
-        chartTitle = "ผลการสืบค้นข้อมูลช่วงวันที่ " + startDate + " <script>alert('HTML_Attack')</script> " + endDate;
+        chartTitle = "ผลการสืบค้นข้อมูลช่วงวันที่ " + formatDisplayDate(startDateValue) + " ถึง " + formatDisplayDate(endDateValue);
         trendLabelsJson = "[\"ช่วงเริ่มต้น\",\"ช่วงกลาง\",\"ช่วงสิ้นสุด\"]";
         trendDataJson = "[40, 65, 52]";
     }
@@ -230,22 +250,9 @@
 <%@ include file="/WEB-INF/sidebar.jsp" %>
 
 <div id="main">
-    <div class="sticky-bar">
-        <i id="menuBtn" class="fa-solid fa-bars" onclick="toggleNav()"></i>
-        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
-        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
+    <%@ include file="/WEB-INF/sticky-bar.jsp" %>
 
-        <div class="user-info">
-            <i class="fa fa-circle-user"></i>
-            <p>${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}</p>
-        </div>
-        <div class="contact-info">
-            <i class="fa-solid fa-circle-info"></i>
-            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-        </div>
-    </div>
-
-<div id="data-bridge" 
+    <div id="data-bridge" 
      data-trend-labels='<%= escapeHtml(trendLabelsJson) %>'
      data-trend-values='<%= escapeHtml(trendDataJson) %>'
      data-pie-labels='<%= escapeHtml(pieLabelsJson) %>'
@@ -297,7 +304,7 @@
 
     <div class="grid-charts">
         <div class="chart-card">
-            <div class="chart-header"><h3><%= chartTitle %></h3><button class="btn-export" onclick="downloadChart('trendChart')"><i class="fa fa-camera"></i></button></div>
+            <div class="chart-header"><h3><%= escapeHtml(chartTitle) %></h3><button class="btn-export" onclick="downloadChart('trendChart')"><i class="fa fa-camera"></i></button></div>
             <canvas id="trendChart"></canvas>
         </div>
         <div class="chart-card">

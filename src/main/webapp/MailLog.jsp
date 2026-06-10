@@ -99,19 +99,7 @@
 <body>
 <%@ include file="/WEB-INF/sidebar.jsp" %>
 <div id="main">
-    <div class="sticky-bar">
-        <i id="menuBtn" class="fa-solid fa-bars" onclick="toggleNav()"></i>
-        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
-        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
-        <div class="user-info">
-            <i class="fa fa-circle-user"></i>
-            <p>${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}</p>
-        </div>
-        <div class="contact-info">
-            <i class="fa-solid fa-circle-info"></i>
-            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-        </div>
-    </div>
+    <%@ include file="/WEB-INF/sticky-bar.jsp" %>
 
     <main class="mail-log-page">
         <div class="page-head">

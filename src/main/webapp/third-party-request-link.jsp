@@ -1,5 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Locale" %>
+<%@ page import="java.util.TimeZone" %>
 <%@ page import="com.slf.model.ThirdPartyRequest" %>
 <%@ page import="com.slf.util.ThirdPartyAccessPolicy" %>
 <%!
@@ -28,7 +30,8 @@
     }
     ThirdPartyRequest thirdPartyRequest = (ThirdPartyRequest) request.getAttribute("thirdPartyRequest");
     String publicLink = (String) request.getAttribute("publicLink");
-    SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US);
+    dateTime.setTimeZone(TimeZone.getTimeZone("Asia/Bangkok"));
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -42,19 +45,7 @@
 <body>
 <%@ include file="/WEB-INF/sidebar.jsp" %>
 <div id="main">
-    <div class="sticky-bar">
-        <i id="menuBtn" class="fa-solid fa-bars" onclick="toggleNav()"></i>
-        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
-        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
-        <div class="user-info">
-            <i class="fa fa-circle-user"></i>
-            <p>${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}</p>
-        </div>
-        <div class="contact-info">
-            <i class="fa-solid fa-circle-info"></i>
-            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-        </div>
-    </div>
+    <%@ include file="/WEB-INF/sticky-bar.jsp" %>
 
     <main class="third-party-request-page">
         <section class="third-party-page-head">

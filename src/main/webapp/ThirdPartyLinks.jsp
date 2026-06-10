@@ -44,7 +44,8 @@
     String csrfToken = (String) request.getAttribute("csrfToken");
     String status = (String) request.getAttribute("status");
     String publicBaseUrl = (String) request.getAttribute("publicBaseUrl");
-    SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US);
+    dateTime.setTimeZone(TimeZone.getTimeZone("Asia/Bangkok"));
 
     int activeCount = 0, usedCount = 0, expiredCount = 0, revokedCount = 0;
     for (ThirdPartyFormLink link : links) {
@@ -67,13 +68,7 @@
 <body>
 <%@ include file="/WEB-INF/sidebar.jsp" %>
 <div id="main">
-    <div class="sticky-bar">
-        <i id="menuBtn" class="fa-solid fa-bars" onclick="toggleNav()"></i>
-        <img src="${pageContext.request.contextPath}/images/MoF.png" alt="MoF Logo">
-        <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
-        <div class="user-info"><i class="fa fa-circle-user"></i><p>${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}</p></div>
-        <div class="contact-info"><i class="fa-solid fa-circle-info"></i><p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p></div>
-    </div>
+    <%@ include file="/WEB-INF/sticky-bar.jsp" %>
 
     <main class="third-party-request-page admin-third-party-page">
         <section class="third-party-page-head third-party-toolbar-head">

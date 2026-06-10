@@ -3,6 +3,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
+<%@ page import="com.slf.dao.DBConnection" %>
 
 <%!
     public String escapeHtml(String input) {
@@ -53,9 +54,6 @@
     }
     
     int totalEmployees = 0; 
-    String dbURL = "jdbc:oracle:thin:@//172.25.18.186:1521/XE"; 
-    String dbUser = "C##DEVUSER";
-    String dbPassword = "mypassword";
     
     Connection conn = null;
     PreparedStatement pstmt = null;
@@ -72,8 +70,7 @@
     List<Integer> topCatValues = new ArrayList<Integer>();
 
     try {
-        Class.forName("oracle.jdbc.OracleDriver");
-        conn = DriverManager.getConnection(dbURL, dbUser, dbPassword);
+        conn = DBConnection.getConnection();
         
         String countSql = "SELECT COUNT(*) as TOTAL_EMP FROM EMPLOYEE";
         stmt = conn.createStatement();
@@ -89,9 +86,22 @@
             dataList.add(rs.getInt("TOTAL"));
         }
         
-        String top5Sql = "SELECT CATEGORY, COUNT(*) as TOTAL FROM REQUISITION GROUP BY CATEGORY ORDER BY TOTAL DESC FETCH FIRST 5 ROWS ONLY";
+        String top5Sql =
+            "SELECT NVL(rt.TYPENAME, 'ทั่วไป') AS CATEGORY, COUNT(*) as TOTAL " +
+            "FROM REQUEST req " +
+            "LEFT JOIN REQUESTTYPE rt ON req.TYPEID = rt.TYPEID " +
+            "GROUP BY NVL(rt.TYPENAME, 'ทั่วไป') " +
+            "ORDER BY TOTAL DESC FETCH FIRST 5 ROWS ONLY";
         if (filter.equals("custom")) {
-            top5Sql = "SELECT CATEGORY, COUNT(*) as TOTAL FROM REQUISITION WHERE CREATE_DATE BETWEEN TO_DATE(?, 'YYYY-MM-DD') AND TO_DATE(?, 'YYYY-MM-DD') GROUP BY CATEGORY ORDER BY TOTAL DESC FETCH FIRST 5 ROWS ONLY";
+            top5Sql =
+                "SELECT NVL(rt.TYPENAME, 'ทั่วไป') AS CATEGORY, COUNT(*) as TOTAL " +
+                "FROM REQUEST req " +
+                "JOIN REQUISITIONFORM rf ON req.FORMID = rf.FORMID " +
+                "LEFT JOIN REQUESTTYPE rt ON req.TYPEID = rt.TYPEID " +
+                "WHERE rf.REQUESTDATE >= TO_DATE(?, 'YYYY-MM-DD') " +
+                "AND rf.REQUESTDATE < TO_DATE(?, 'YYYY-MM-DD') + 1 " +
+                "GROUP BY NVL(rt.TYPENAME, 'ทั่วไป') " +
+                "ORDER BY TOTAL DESC FETCH FIRST 5 ROWS ONLY";
         }
         
         pstmt2 = conn.prepareStatement(top5Sql);

@@ -2,6 +2,14 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.slf.util.AuthUtil" %>
 <%@ page import="com.slf.util.ThirdPartyAccessPolicy" %>
+<%!
+    private String h(Object input) {
+        if (input == null) return "";
+        return String.valueOf(input)
+            .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            .replace("\"", "&quot;").replace("'", "&#39;");
+    }
+%>
 <%
     String currentRole = (String) session.getAttribute("position");
     String employeeName = (String) session.getAttribute("loggedInEmpName");
@@ -15,6 +23,13 @@
     boolean canCreateInternalForms = !approvalOnlyRole;
     boolean canCreateThirdPartyLinks = !approvalOnlyRole
         && ThirdPartyAccessPolicy.canCreateOwnLinks(ThirdPartyAccessPolicy.sessionEmpId(session));
+    boolean isTechnical = "Technical".equalsIgnoreCase(currentRole);
+    boolean isItDirector = "ITDirector".equalsIgnoreCase(currentRole)
+        || "IT Director".equalsIgnoreCase(currentRole);
+    boolean isInfrastructure = "Infrastructure".equalsIgnoreCase(currentRole);
+    boolean hasRoleWorkMenu = isTechnical || isItDirector || isInfrastructure;
+    String requisitionWorkUrl = isTechnical ? "/technicalApprove"
+        : isItDirector ? "/itDirectorApprove" : "/process";
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -71,6 +86,50 @@
             </div>
         </section>
 
+        <% if (hasRoleWorkMenu) { %>
+        <section class="enterprise-menu-section" aria-label="เลือกประเภทงาน">
+            <div class="enterprise-section-head">
+                <div>
+                    <p class="enterprise-eyebrow">Workflow Inbox</p>
+                    <h2>เลือกประเภทงานที่ต้องดำเนินการ</h2>
+                </div>
+            </div>
+
+            <div class="index-form-grid">
+                <a class="index-form-card index-form-card-link" href="${pageContext.request.contextPath}<%= requisitionWorkUrl %>">
+                    <div class="form-type-icon"><i class="fa-solid fa-file-signature"></i></div>
+                    <div class="index-form-card-body">
+                        <span class="form-status available">เปิดใช้งาน</span>
+                        <h3>Requisition Form</h3>
+                        <p>เข้าสู่รายการคำขอและดำเนินงานตามขั้นตอนของตำแหน่ง <%= h(currentRole) %></p>
+                    </div>
+                    <span class="form-type-action secondary">เข้าสู่รายการงาน</span>
+                </a>
+
+                <% if (isTechnical) { %>
+                <a class="index-form-card index-form-card-link" href="${pageContext.request.contextPath}/thirdParty/sectionHead">
+                    <div class="form-type-icon"><i class="fa-solid fa-user-shield"></i></div>
+                    <div class="index-form-card-body">
+                        <span class="form-status available">เปิดใช้งาน</span>
+                        <h3>Third-party Form</h3>
+                        <p>พิจารณาคำขอ ให้ความเห็น และมอบหมายผู้ดำเนินการ ผู้ยกเลิกสิทธิ์ และผู้ตรวจทาน</p>
+                    </div>
+                    <span class="form-type-action secondary">เข้าสู่รายการงาน</span>
+                </a>
+                <% } else { %>
+                <div class="index-form-card">
+                    <div class="form-type-icon"><i class="fa-solid fa-user-shield"></i></div>
+                    <div class="index-form-card-body">
+                        <span class="form-status">ยังไม่เปิดใช้งาน</span>
+                        <h3>Third-party Form</h3>
+                        <p>ขั้นตอนสำหรับตำแหน่ง <%= h(currentRole) %> อยู่ระหว่างการพัฒนา</p>
+                    </div>
+                    <span class="form-type-action disabled">ยังไม่มีรายการงาน</span>
+                </div>
+                <% } %>
+            </div>
+        </section>
+        <% } else { %>
         <section class="enterprise-menu-section" aria-label="เลือกประเภทแบบฟอร์ม">
             <div class="enterprise-section-head">
                 <div>
@@ -101,6 +160,7 @@
                 </a>
             </div>
         </section>
+        <% } %>
     </main>
     <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>

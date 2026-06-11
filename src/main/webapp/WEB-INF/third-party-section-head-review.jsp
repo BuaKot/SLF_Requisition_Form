@@ -225,6 +225,12 @@
     <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 <script>
+window.addEventListener("pageshow", function(event) {
+    if (event.persisted) {
+        window.location.replace("${pageContext.request.contextPath}/thirdParty/sectionHead");
+    }
+});
+
 function toggleRevoker() {
     var checkbox = document.getElementById("separateRevoker");
     var field = document.getElementById("revokeOperatorField");

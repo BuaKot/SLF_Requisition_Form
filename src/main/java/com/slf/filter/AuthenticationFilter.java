@@ -23,6 +23,8 @@ public class AuthenticationFilter implements Filter {
                 || path.equals("/processLogin")
                 || path.equals("/thirdparty/form")
                 || path.equals("/thirdparty/submit")
+                || path.equals("/thirdparty/accept")
+                || path.equals("/thirdparty/accept/submit")
                 || path.startsWith("/css/")
                 || path.startsWith("/images/")) {
 

@@ -17,14 +17,17 @@ public class RoleWorkflowIndexTest extends TestCase {
         assertTrue(index.contains("/itDirectorApprove"));
         assertTrue(index.contains("/process"));
         assertTrue(index.contains("/thirdParty/sectionHead"));
+        assertTrue(index.contains("/thirdParty/itDirector"));
+        assertTrue(index.contains("/thirdParty/operator"));
         assertTrue(index.contains("isTechnical"));
-        assertTrue(index.contains("ยังไม่เปิดใช้งาน"));
 
         assertTrue(inbox.contains("/thirdParty/sectionHead/review?id="));
-        assertTrue(inbox.contains("คำขอที่รอพิจารณา"));
-        assertTrue(inbox.contains("พิจารณาคำขอ"));
+        assertTrue(inbox.contains("/thirdParty/sectionHead/report?id="));
+        assertTrue(inbox.contains("คำขอรอพิจารณา"));
+        assertTrue(inbox.contains("คำขอรอเขียนรายงานสรุป"));
         assertTrue(servlet.contains("ThirdPartySectionHeadReviewServlet.isTechnicalPosition"));
         assertTrue(servlet.contains("PENDING_SECTION_HEAD"));
+        assertTrue(servlet.contains("PENDING_SECTION_HEAD_REPORT"));
         assertTrue(servlet.contains("/WEB-INF/third-party-section-head-inbox.jsp"));
     }
 

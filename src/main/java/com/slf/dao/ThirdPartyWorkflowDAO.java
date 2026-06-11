@@ -1,6 +1,7 @@
 package com.slf.dao;
 
 import com.slf.model.Employee;
+import com.slf.model.ThirdPartyWorkflowAssignment;
 import com.slf.util.BangkokTimeUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -103,6 +104,329 @@ public class ThirdPartyWorkflowDAO {
         }
     }
 
+    public List<ThirdPartyWorkflowAssignment> findAssignments(long requestId) throws SQLException {
+        String sql =
+            "SELECT a.ASSIGNMENT_ROLE, a.ASSIGNED_EMPID, assigned.EMPNAME AS ASSIGNED_EMPNAME, " +
+            "a.ASSIGNED_BY_EMPID, assigned_by.EMPNAME AS ASSIGNED_BY_EMPNAME, a.ASSIGNED_AT " +
+            "FROM THIRD_PARTY_WORKFLOW_ASSIGNMENT a " +
+            "JOIN EMPLOYEE assigned ON assigned.EMPID = a.ASSIGNED_EMPID " +
+            "JOIN EMPLOYEE assigned_by ON assigned_by.EMPID = a.ASSIGNED_BY_EMPID " +
+            "WHERE a.REQUEST_ID = ? " +
+            "ORDER BY CASE a.ASSIGNMENT_ROLE WHEN 'GRANT_OPERATOR' THEN 1 " +
+            "WHEN 'REVOKE_OPERATOR' THEN 2 WHEN 'REVOKE_REVIEWER' THEN 3 ELSE 4 END";
+        List<ThirdPartyWorkflowAssignment> assignments = new ArrayList<ThirdPartyWorkflowAssignment>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, requestId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ThirdPartyWorkflowAssignment assignment = new ThirdPartyWorkflowAssignment();
+                    assignment.setAssignmentRole(rs.getString("ASSIGNMENT_ROLE"));
+                    assignment.setAssignedEmpId(rs.getInt("ASSIGNED_EMPID"));
+                    assignment.setAssignedEmpName(rs.getString("ASSIGNED_EMPNAME"));
+                    assignment.setAssignedByEmpId(rs.getInt("ASSIGNED_BY_EMPID"));
+                    assignment.setAssignedByEmpName(rs.getString("ASSIGNED_BY_EMPNAME"));
+                    assignment.setAssignedAt(rs.getTimestamp("ASSIGNED_AT", BangkokTimeUtil.newCalendar()));
+                    assignments.add(assignment);
+                }
+            }
+        }
+        return assignments;
+    }
+
+    public String findLatestActionComment(long requestId, String actionType) throws SQLException {
+        String sql =
+            "SELECT COMMENT_TEXT FROM THIRD_PARTY_WORKFLOW_ACTION " +
+            "WHERE REQUEST_ID = ? AND ACTION_TYPE = ? " +
+            "ORDER BY ACTION_ID DESC FETCH FIRST 1 ROW ONLY";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, requestId);
+            ps.setString(2, actionType);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getString("COMMENT_TEXT") : null;
+            }
+        }
+    }
+
+    public boolean submitItDirectorDecision(long requestId, int actorEmpId, String comment,
+                                             boolean approved) throws SQLException {
+        Timestamp now = BangkokTimeUtil.nowTimestamp();
+        String toStatus = approved ? "PENDING_OPERATOR" : "REJECTED";
+        String actionType = approved ? "IT_DIRECTOR_APPROVED" : "IT_DIRECTOR_REJECTED";
+        String updateRequestSql =
+            "UPDATE THIRD_PARTY_REQUEST SET STATUS = ?, UPDATED_AT = ? " +
+            "WHERE REQUEST_ID = ? AND STATUS = 'PENDING_IT_DIRECTOR'";
+        String insertActionSql =
+            "INSERT INTO THIRD_PARTY_WORKFLOW_ACTION " +
+            "(REQUEST_ID, ACTION_TYPE, FROM_STATUS, TO_STATUS, ACTOR_TYPE, ACTOR_EMPID, COMMENT_TEXT, ACTED_AT) " +
+            "VALUES (?, ?, 'PENDING_IT_DIRECTOR', ?, 'INTERNAL', ?, ?, ?)";
+
+        try (Connection conn = DBConnection.getConnection()) {
+            boolean oldAutoCommit = conn.getAutoCommit();
+            conn.setAutoCommit(false);
+            try {
+                requireItDirector(conn, actorEmpId);
+                try (PreparedStatement update = conn.prepareStatement(updateRequestSql)) {
+                    update.setString(1, toStatus);
+                    setTimestamp(update, 2, now);
+                    update.setLong(3, requestId);
+                    if (update.executeUpdate() != 1) {
+                        conn.rollback();
+                        return false;
+                    }
+                }
+                try (PreparedStatement action = conn.prepareStatement(insertActionSql)) {
+                    action.setLong(1, requestId);
+                    action.setString(2, actionType);
+                    action.setString(3, toStatus);
+                    action.setInt(4, actorEmpId);
+                    action.setString(5, comment);
+                    setTimestamp(action, 6, now);
+                    action.executeUpdate();
+                }
+                conn.commit();
+                return true;
+            } catch (SQLException | RuntimeException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(oldAutoCommit);
+            }
+        }
+    }
+
+    public boolean isAssigned(long requestId, String assignmentRole, int empId) throws SQLException {
+        String sql =
+            "SELECT 1 FROM THIRD_PARTY_WORKFLOW_ASSIGNMENT " +
+            "WHERE REQUEST_ID = ? AND ASSIGNMENT_ROLE = ? AND ASSIGNED_EMPID = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, requestId);
+            ps.setString(2, assignmentRole);
+            ps.setInt(3, empId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    public boolean submitOperatorCompletion(long requestId, int actorEmpId, String detail,
+                                             String acceptanceTokenHash, String acceptanceRawToken)
+            throws SQLException {
+        Timestamp now = BangkokTimeUtil.nowTimestamp();
+        Timestamp expiresAt = new Timestamp(now.getTime() + (7L * 24L * 60L * 60L * 1000L));
+        String updateRequestSql =
+            "UPDATE THIRD_PARTY_REQUEST SET STATUS = 'PENDING_EXTERNAL_ACCEPTANCE', UPDATED_AT = ? " +
+            "WHERE REQUEST_ID = ? AND STATUS = 'PENDING_OPERATOR' " +
+            "AND EXISTS (SELECT 1 FROM THIRD_PARTY_WORKFLOW_ASSIGNMENT a " +
+            "WHERE a.REQUEST_ID = THIRD_PARTY_REQUEST.REQUEST_ID " +
+            "AND a.ASSIGNMENT_ROLE = 'GRANT_OPERATOR' AND a.ASSIGNED_EMPID = ?)";
+        String insertActionSql =
+            "INSERT INTO THIRD_PARTY_WORKFLOW_ACTION " +
+            "(REQUEST_ID, ACTION_TYPE, FROM_STATUS, TO_STATUS, ACTOR_TYPE, ACTOR_EMPID, COMMENT_TEXT, ACTED_AT) " +
+            "VALUES (?, 'OPERATOR_COMPLETED', 'PENDING_OPERATOR', 'PENDING_EXTERNAL_ACCEPTANCE', " +
+            "'INTERNAL', ?, ?, ?)";
+        String insertAcceptanceTokenSql =
+            "INSERT INTO THIRD_PARTY_ACCEPTANCE_TOKEN " +
+            "(REQUEST_ID, TOKEN_HASH, RAW_TOKEN, STATUS, CREATED_AT, EXPIRES_AT) " +
+            "VALUES (?, ?, ?, 'ACTIVE', ?, ?)";
+        try (Connection conn = DBConnection.getConnection()) {
+            boolean oldAutoCommit = conn.getAutoCommit();
+            conn.setAutoCommit(false);
+            try {
+                requireEmployeePosition(conn, actorEmpId, INFRASTRUCTURE_POSITION);
+                try (PreparedStatement update = conn.prepareStatement(updateRequestSql)) {
+                    setTimestamp(update, 1, now);
+                    update.setLong(2, requestId);
+                    update.setInt(3, actorEmpId);
+                    if (update.executeUpdate() != 1) {
+                        conn.rollback();
+                        return false;
+                    }
+                }
+                try (PreparedStatement action = conn.prepareStatement(insertActionSql)) {
+                    action.setLong(1, requestId);
+                    action.setInt(2, actorEmpId);
+                    action.setString(3, detail);
+                    setTimestamp(action, 4, now);
+                    action.executeUpdate();
+                }
+                try (PreparedStatement token = conn.prepareStatement(insertAcceptanceTokenSql)) {
+                    token.setLong(1, requestId);
+                    token.setString(2, acceptanceTokenHash);
+                    token.setString(3, acceptanceRawToken);
+                    setTimestamp(token, 4, now);
+                    setTimestamp(token, 5, expiresAt);
+                    token.executeUpdate();
+                }
+                conn.commit();
+                return true;
+            } catch (SQLException | RuntimeException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(oldAutoCommit);
+            }
+        }
+    }
+
+    public boolean submitRevokerCompletion(long requestId, int actorEmpId, String detail)
+            throws SQLException {
+        return submitAssignedCompletion(requestId, actorEmpId, detail, "REVOKE_OPERATOR",
+            "PENDING_REVOKER", "PENDING_REVOKE_REVIEWER", "REVOKER_COMPLETED");
+    }
+
+    public boolean submitRevokeReviewerCompletion(long requestId, int actorEmpId, String detail)
+            throws SQLException {
+        return submitAssignedCompletion(requestId, actorEmpId, detail, "REVOKE_REVIEWER",
+            "PENDING_REVOKE_REVIEWER", "PENDING_SECTION_HEAD_REPORT", "REVOKE_REVIEWER_APPROVED");
+    }
+
+    public boolean submitSectionHeadReport(long requestId, int actorEmpId, String report)
+            throws SQLException {
+        return submitPositionCompletion(requestId, actorEmpId, report, TECHNICAL_POSITION,
+            "PENDING_SECTION_HEAD_REPORT", "PENDING_FINAL_CERTIFICATION", "SECTION_HEAD_REPORTED");
+    }
+
+    public boolean submitFinalCertification(long requestId, int actorEmpId) throws SQLException {
+        Timestamp now = BangkokTimeUtil.nowTimestamp();
+        String updateRequestSql =
+            "UPDATE THIRD_PARTY_REQUEST SET STATUS = 'COMPLETED', UPDATED_AT = ? " +
+            "WHERE REQUEST_ID = ? AND STATUS = 'PENDING_FINAL_CERTIFICATION'";
+        String insertActionSql =
+            "INSERT INTO THIRD_PARTY_WORKFLOW_ACTION " +
+            "(REQUEST_ID, ACTION_TYPE, FROM_STATUS, TO_STATUS, ACTOR_TYPE, ACTOR_EMPID, COMMENT_TEXT, ACTED_AT) " +
+            "VALUES (?, 'FINAL_CERTIFIED', 'PENDING_FINAL_CERTIFICATION', 'COMPLETED', 'INTERNAL', ?, NULL, ?)";
+        try (Connection conn = DBConnection.getConnection()) {
+            boolean oldAutoCommit = conn.getAutoCommit();
+            conn.setAutoCommit(false);
+            try {
+                requireItDirector(conn, actorEmpId);
+                try (PreparedStatement update = conn.prepareStatement(updateRequestSql)) {
+                    setTimestamp(update, 1, now);
+                    update.setLong(2, requestId);
+                    if (update.executeUpdate() != 1) {
+                        conn.rollback();
+                        return false;
+                    }
+                }
+                try (PreparedStatement action = conn.prepareStatement(insertActionSql)) {
+                    action.setLong(1, requestId);
+                    action.setInt(2, actorEmpId);
+                    setTimestamp(action, 3, now);
+                    action.executeUpdate();
+                }
+                conn.commit();
+                return true;
+            } catch (SQLException | RuntimeException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(oldAutoCommit);
+            }
+        }
+    }
+
+    private boolean submitAssignedCompletion(long requestId, int actorEmpId, String detail,
+                                             String assignmentRole, String fromStatus,
+                                             String toStatus, String actionType) throws SQLException {
+        Timestamp now = BangkokTimeUtil.nowTimestamp();
+        String updateRequestSql =
+            "UPDATE THIRD_PARTY_REQUEST SET STATUS = ?, UPDATED_AT = ? " +
+            "WHERE REQUEST_ID = ? AND STATUS = ? " +
+            "AND EXISTS (SELECT 1 FROM THIRD_PARTY_WORKFLOW_ASSIGNMENT a " +
+            "WHERE a.REQUEST_ID = THIRD_PARTY_REQUEST.REQUEST_ID " +
+            "AND a.ASSIGNMENT_ROLE = ? AND a.ASSIGNED_EMPID = ?)";
+        String insertActionSql =
+            "INSERT INTO THIRD_PARTY_WORKFLOW_ACTION " +
+            "(REQUEST_ID, ACTION_TYPE, FROM_STATUS, TO_STATUS, ACTOR_TYPE, ACTOR_EMPID, COMMENT_TEXT, ACTED_AT) " +
+            "VALUES (?, ?, ?, ?, 'INTERNAL', ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection()) {
+            boolean oldAutoCommit = conn.getAutoCommit();
+            conn.setAutoCommit(false);
+            try {
+                requireEmployeePosition(conn, actorEmpId, INFRASTRUCTURE_POSITION);
+                try (PreparedStatement update = conn.prepareStatement(updateRequestSql)) {
+                    update.setString(1, toStatus);
+                    setTimestamp(update, 2, now);
+                    update.setLong(3, requestId);
+                    update.setString(4, fromStatus);
+                    update.setString(5, assignmentRole);
+                    update.setInt(6, actorEmpId);
+                    if (update.executeUpdate() != 1) {
+                        conn.rollback();
+                        return false;
+                    }
+                }
+                try (PreparedStatement action = conn.prepareStatement(insertActionSql)) {
+                    action.setLong(1, requestId);
+                    action.setString(2, actionType);
+                    action.setString(3, fromStatus);
+                    action.setString(4, toStatus);
+                    action.setInt(5, actorEmpId);
+                    action.setString(6, detail);
+                    setTimestamp(action, 7, now);
+                    action.executeUpdate();
+                }
+                conn.commit();
+                return true;
+            } catch (SQLException | RuntimeException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(oldAutoCommit);
+            }
+        }
+    }
+
+    private boolean submitPositionCompletion(long requestId, int actorEmpId, String detail,
+                                             String position, String fromStatus,
+                                             String toStatus, String actionType) throws SQLException {
+        Timestamp now = BangkokTimeUtil.nowTimestamp();
+        String updateRequestSql =
+            "UPDATE THIRD_PARTY_REQUEST SET STATUS = ?, UPDATED_AT = ? " +
+            "WHERE REQUEST_ID = ? AND STATUS = ?";
+        String insertActionSql =
+            "INSERT INTO THIRD_PARTY_WORKFLOW_ACTION " +
+            "(REQUEST_ID, ACTION_TYPE, FROM_STATUS, TO_STATUS, ACTOR_TYPE, ACTOR_EMPID, COMMENT_TEXT, ACTED_AT) " +
+            "VALUES (?, ?, ?, ?, 'INTERNAL', ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection()) {
+            boolean oldAutoCommit = conn.getAutoCommit();
+            conn.setAutoCommit(false);
+            try {
+                requireEmployeePosition(conn, actorEmpId, position);
+                try (PreparedStatement update = conn.prepareStatement(updateRequestSql)) {
+                    update.setString(1, toStatus);
+                    setTimestamp(update, 2, now);
+                    update.setLong(3, requestId);
+                    update.setString(4, fromStatus);
+                    if (update.executeUpdate() != 1) {
+                        conn.rollback();
+                        return false;
+                    }
+                }
+                try (PreparedStatement action = conn.prepareStatement(insertActionSql)) {
+                    action.setLong(1, requestId);
+                    action.setString(2, actionType);
+                    action.setString(3, fromStatus);
+                    action.setString(4, toStatus);
+                    action.setInt(5, actorEmpId);
+                    action.setString(6, detail);
+                    setTimestamp(action, 7, now);
+                    action.executeUpdate();
+                }
+                conn.commit();
+                return true;
+            } catch (SQLException | RuntimeException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(oldAutoCommit);
+            }
+        }
+    }
+
     private static void requireEmployeePosition(Connection conn, int empId, String position) throws SQLException {
         String sql =
             "SELECT 1 FROM EMPLOYEE " +
@@ -113,6 +437,20 @@ public class ThirdPartyWorkflowDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) {
                     throw new IllegalArgumentException("พนักงานที่เลือกไม่มีสิทธิ์รับบทบาทนี้");
+                }
+            }
+        }
+    }
+
+    private static void requireItDirector(Connection conn, int empId) throws SQLException {
+        String sql =
+            "SELECT 1 FROM EMPLOYEE WHERE EMPID = ? AND NVL(IS_ACTIVE, 1) = 1 " +
+            "AND UPPER(REPLACE(TRIM(POSITION), ' ', '')) = 'ITDIRECTOR'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, empId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    throw new IllegalArgumentException("พนักงานไม่มีสิทธิ์อนุมัติในขั้นตอน IT Director");
                 }
             }
         }

@@ -3,6 +3,7 @@
 <%@ page import="java.util.Collections" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.slf.model.ThirdPartyRequest" %>
+<%@ page import="com.slf.model.ThirdPartyAcceptanceToken" %>
 <%@ page import="com.slf.util.ThirdPartyAccessPolicy" %>
 <%!
     private String h(Object input) {
@@ -45,6 +46,10 @@
         if ("EXPIRED".equals(status) || "REJECTED".equals(status) || "REVOKED".equals(status) || "CANCELLED".equals(status)) return "danger";
         return "wait";
     }
+
+    private String displayAcceptance(String value) {
+        return value == null || value.trim().isEmpty() ? "-" : h(value);
+    }
 %>
 <%
     if (!ThirdPartyAccessPolicy.canCreateOwnLinks(ThirdPartyAccessPolicy.sessionEmpId(session))) {
@@ -56,6 +61,10 @@
     if (thirdPartyRequests == null) {
         thirdPartyRequests = Collections.emptyList();
     }
+    List<ThirdPartyAcceptanceToken> acceptanceTokens =
+        (List<ThirdPartyAcceptanceToken>) request.getAttribute("acceptanceTokens");
+    if (acceptanceTokens == null) acceptanceTokens = Collections.emptyList();
+    String acceptanceLinkPrefix = (String) request.getAttribute("acceptanceLinkPrefix");
     String csrfToken = (String) request.getAttribute("csrfToken");
     SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     String createdRequestId = request.getParameter("createdRequestId");
@@ -94,6 +103,49 @@
                     </button>
                 </form>
             </div>
+        </section>
+
+        <section class="third-party-panel">
+            <div class="third-party-list-head">
+                <div>
+                    <div class="form-section-title">ลิงก์สำหรับตรวจรับและประเมิน</div>
+                    <p class="muted-text">ลิงก์จะถูกสร้างอัตโนมัติเมื่อผู้ดำเนินการบันทึกงานเสร็จ</p>
+                </div>
+                <span class="third-party-count"><%= acceptanceTokens.size() %> รายการ</span>
+            </div>
+            <% if (acceptanceTokens.isEmpty()) { %>
+                <div class="empty-link-state">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    <h2>ยังไม่มีลิงก์ตรวจรับและประเมิน</h2>
+                    <p>เมื่องานของผู้ดำเนินการเสร็จ ลิงก์สำหรับส่งให้ผู้ขอภายนอกจะปรากฏที่นี่</p>
+                </div>
+            <% } else { %>
+                <div class="third-party-link-list compact-list">
+                <% for (ThirdPartyAcceptanceToken item : acceptanceTokens) {
+                    String publicLink = item.getRawToken() == null ? null : acceptanceLinkPrefix + item.getRawToken();
+                %>
+                    <article class="third-party-link-card compact-card">
+                        <div class="link-card-main">
+                            <div class="link-card-title-row">
+                                <div><h2>คำขอ #<%= item.getRequestId() %></h2><p class="muted-text compact-note">สำหรับตรวจรับและประเมิน</p></div>
+                                <span class="status-badge <%= badgeClass(item.getStatus()) %>"><%= h(linkStatusText(item.getStatus())) %></span>
+                            </div>
+                            <div class="status-strip">
+                                <div><span>ผู้ขอ</span><strong><%= displayAcceptance(item.getExternalContactName()) %></strong></div>
+                                <div><span>หน่วยงาน</span><strong><%= displayAcceptance(item.getExternalCompanyName()) %></strong></div>
+                                <div><span>หมดอายุ</span><strong><%= item.getExpiresAt()==null?"-":dateTime.format(item.getExpiresAt()) %></strong></div>
+                            </div>
+                            <% if (publicLink != null && "ACTIVE".equals(item.getStatus())) { %>
+                                <div class="generated-link-box" style="margin-top:12px">
+                                    <input id="acceptanceLink<%= item.getAcceptanceTokenId() %>" type="text" value="<%= h(publicLink) %>" readonly>
+                                    <button class="btn btn-secondary" type="button" onclick="copyAcceptanceLink('acceptanceLink<%= item.getAcceptanceTokenId() %>')"><i class="fa-solid fa-copy"></i> คัดลอกลิงก์</button>
+                                </div>
+                            <% } %>
+                        </div>
+                    </article>
+                <% } %>
+                </div>
+            <% } %>
         </section>
 
         <% if (createdRequestId != null && !createdRequestId.trim().isEmpty()) { %>
@@ -181,6 +233,11 @@
 <script>
 function confirmCancelThirdPartyLink() {
     return window.confirm("ยืนยันยกเลิกลิงก์นี้หรือไม่? รายการที่ยังไม่ถูกใช้งานจะถูกลบออกจากประวัติและฐานข้อมูล");
+}
+function copyAcceptanceLink(id) {
+    var input = document.getElementById(id);
+    input.select();
+    navigator.clipboard.writeText(input.value);
 }
 function toggleNav() {
     var sidebar = document.getElementById("mySidebar");

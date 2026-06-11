@@ -23,6 +23,14 @@ public class ThirdPartyFormNavigationTest extends TestCase {
         assertTrue(page.contains("window.location.reload()"));
     }
 
+    public void testIndexSkipsThirdPartyDetailForAuthorizedCreators() throws Exception {
+        String page = read("src/main/webapp/index.jsp");
+
+        assertTrue(page.contains("String thirdPartyCreateUrl = canCreateThirdPartyLinks"));
+        assertTrue(page.contains("? \"/thirdParty/request/new\" : \"/third-party-form-detail.jsp\""));
+        assertTrue(page.contains("<%= thirdPartyCreateUrl %>"));
+    }
+
     private static String read(String path) throws Exception {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

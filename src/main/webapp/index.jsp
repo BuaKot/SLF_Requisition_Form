@@ -30,6 +30,8 @@
     boolean hasRoleWorkMenu = isTechnical || isItDirector || isInfrastructure;
     String requisitionWorkUrl = isTechnical ? "/technicalApprove"
         : isItDirector ? "/itDirectorApprove" : "/process";
+    String thirdPartyCreateUrl = canCreateThirdPartyLinks
+        ? "/thirdParty/request/new" : "/third-party-form-detail.jsp";
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -106,13 +108,17 @@
                     <span class="form-type-action secondary">เข้าสู่รายการงาน</span>
                 </a>
 
-                <% if (isTechnical) { %>
-                <a class="index-form-card index-form-card-link" href="${pageContext.request.contextPath}/thirdParty/sectionHead">
+                <% if (isTechnical || isItDirector || isInfrastructure) { %>
+                <a class="index-form-card index-form-card-link" href="${pageContext.request.contextPath}<%= isTechnical ? "/thirdParty/sectionHead" : isItDirector ? "/thirdParty/itDirector" : "/thirdParty/operator" %>">
                     <div class="form-type-icon"><i class="fa-solid fa-user-shield"></i></div>
                     <div class="index-form-card-body">
                         <span class="form-status available">เปิดใช้งาน</span>
                         <h3>Third-party Form</h3>
-                        <p>พิจารณาคำขอ ให้ความเห็น และมอบหมายผู้ดำเนินการ ผู้ยกเลิกสิทธิ์ และผู้ตรวจทาน</p>
+                        <p><%= isTechnical
+                            ? "พิจารณาคำขอ ให้ความเห็น และมอบหมายผู้ดำเนินการ ผู้ยกเลิกสิทธิ์ และผู้ตรวจทาน"
+                            : isItDirector
+                                ? "ตรวจสอบความเห็นหัวหน้าส่วนและผู้รับผิดชอบ เพื่ออนุมัติหรือไม่อนุมัติคำขอ"
+                                : "ดำเนินการให้สิทธิ์ตามงานที่ได้รับมอบหมายและบันทึกรายละเอียดการดำเนินการ" %></p>
                     </div>
                     <span class="form-type-action secondary">เข้าสู่รายการงาน</span>
                 </a>
@@ -149,7 +155,7 @@
                     <span class="form-type-action secondary">ดูรายละเอียด</span>
                 </a>
 
-                <a class="index-form-card index-form-card-link" href="${pageContext.request.contextPath}/third-party-form-detail.jsp">
+                <a class="index-form-card index-form-card-link" href="${pageContext.request.contextPath}<%= thirdPartyCreateUrl %>">
                     <div class="form-type-icon"><i class="fa-solid fa-user-shield"></i></div>
                     <div class="index-form-card-body">
                         <span class="form-status available">เปิดใช้งาน</span>

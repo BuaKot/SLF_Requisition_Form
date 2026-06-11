@@ -17,14 +17,19 @@ public class ThirdPartySectionHeadInboxServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
         if (!isTechnical(request.getSession(false))) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
         try {
-            request.setAttribute("thirdPartyRequests",
+            request.setAttribute("reviewRequests",
                 requestDAO.findByStatus("PENDING_SECTION_HEAD", 100));
+            request.setAttribute("reportRequests",
+                requestDAO.findByStatus("PENDING_SECTION_HEAD_REPORT", 100));
             request.getRequestDispatcher("/WEB-INF/third-party-section-head-inbox.jsp")
                 .forward(request, response);
         } catch (SQLException e) {

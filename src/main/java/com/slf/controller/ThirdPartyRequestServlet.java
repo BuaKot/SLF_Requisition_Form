@@ -3,6 +3,7 @@ package com.slf.controller;
 import com.slf.dao.ThirdPartyAuditLogDAO;
 import com.slf.dao.ThirdPartyFormLinkDAO;
 import com.slf.dao.ThirdPartyRequestDAO;
+import com.slf.dao.ThirdPartyAcceptanceDAO;
 import com.slf.model.ThirdPartyRequest;
 import com.slf.util.ThirdPartyLinkToken;
 import com.slf.util.ThirdPartyAccessPolicy;
@@ -25,6 +26,7 @@ public class ThirdPartyRequestServlet extends HttpServlet {
     private final ThirdPartyRequestDAO requestDAO = new ThirdPartyRequestDAO();
     private final ThirdPartyFormLinkDAO linkDAO = new ThirdPartyFormLinkDAO();
     private final ThirdPartyAuditLogDAO auditDAO = new ThirdPartyAuditLogDAO();
+    private final ThirdPartyAcceptanceDAO acceptanceDAO = new ThirdPartyAcceptanceDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -38,6 +40,8 @@ public class ThirdPartyRequestServlet extends HttpServlet {
             int ownerEmpId = allowedEmpId.intValue();
             List<ThirdPartyRequest> requests = requestDAO.findRecentForOwner(ownerEmpId, 100);
             request.setAttribute("thirdPartyRequests", requests);
+            request.setAttribute("acceptanceTokens", acceptanceDAO.findRecentForOwner(ownerEmpId, 100));
+            request.setAttribute("acceptanceLinkPrefix", buildAcceptanceLinkPrefix(request));
             request.setAttribute("csrfToken", ensureCsrfToken(request));
             request.getRequestDispatcher("/third-party-request-new.jsp").forward(request, response);
         } catch (SQLException e) {
@@ -142,5 +146,11 @@ public class ThirdPartyRequestServlet extends HttpServlet {
 
     private static String trimToEmpty(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private static String buildAcceptanceLinkPrefix(HttpServletRequest request) {
+        return request.getScheme() + "://" + request.getServerName()
+            + (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : ":" + request.getServerPort())
+            + request.getContextPath() + "/thirdparty/accept?token=";
     }
 }

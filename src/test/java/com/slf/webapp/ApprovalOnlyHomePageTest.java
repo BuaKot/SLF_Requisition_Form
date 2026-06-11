@@ -17,6 +17,7 @@ public class ApprovalOnlyHomePageTest extends TestCase {
         assertTrue(index.contains("canCreateInternalForms"));
         assertTrue(index.contains("canCreateThirdPartyLinks"));
         assertTrue(index.contains("/it-requisition-form-detail.jsp"));
+        assertTrue(index.contains("/thirdParty/request/new"));
         assertTrue(index.contains("/third-party-form-detail.jsp"));
 
         assertTrue(itDetail.contains("approvalOnlyRole"));

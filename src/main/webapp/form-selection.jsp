@@ -2,7 +2,7 @@
 <%
     Boolean canCreateThirdPartyLinks = (Boolean) request.getAttribute("canCreateThirdPartyLinks");
     if (canCreateThirdPartyLinks == null) {
-        response.sendRedirect(request.getContextPath() + "/newForm");
+        response.sendRedirect(request.getContextPath() + "/");
         return;
     }
 %>

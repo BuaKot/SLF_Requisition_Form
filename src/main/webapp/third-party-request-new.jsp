@@ -75,7 +75,7 @@
                 <p>สร้างลิงก์ใหม่ ดูสถานะ และยกเลิกลิงก์ที่ยังไม่ถูกส่งแบบฟอร์มได้จากหน้านี้</p>
             </div>
             <div class="page-head-actions">
-                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/newForm">
+                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/third-party-form-detail.jsp">
                     <i class="fa-solid fa-arrow-left"></i> กลับ
                 </a>
                 <form method="post" action="${pageContext.request.contextPath}/thirdParty/request/new">

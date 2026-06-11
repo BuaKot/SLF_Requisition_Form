@@ -419,8 +419,8 @@
     <!-- zennnne แก้ -->
     <!-- FILTER BAR -->
     <div class="filter-bar">
-        <a class="history-home-button" href="${pageContext.request.contextPath}/">
-            <i class="fa-solid fa-arrow-left"></i> หน้าหลัก
+        <a class="history-home-button" href="${pageContext.request.contextPath}/it-requisition-form-detail.jsp">
+            <i class="fa-solid fa-arrow-left"></i> รายละเอียดฟอร์ม
         </a>
         <span class="filter-separator" aria-hidden="true"></span>
         <div class="filter-checkboxes">

@@ -20,6 +20,10 @@
             <i class="fa fa-circle-user"></i>
             <p>${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}</p>
         </div>
+        <div class="user-info index-info-pill topbar-role-pill">
+            <i class="fa-solid fa-id-badge"></i>
+            <p>สถานะ: ${sessionScope.position}</p>
+        </div>
         <div class="contact-info index-info-pill topbar-help-pill">
             <i class="fa-solid fa-circle-info"></i>
             <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>

@@ -145,8 +145,8 @@
     <!-- zennnne แก้ -->
     <!-- FILTER BAR -->
     <div class="filter-bar">
-        <a class="submit-home-button" href="${pageContext.request.contextPath}/">
-            <i class="fa-solid fa-arrow-left"></i> หน้าหลัก
+        <a class="submit-home-button" href="${pageContext.request.contextPath}/it-requisition-form-detail.jsp">
+            <i class="fa-solid fa-arrow-left"></i> รายละเอียดฟอร์ม
         </a>
         <span class="submit-filter-separator" aria-hidden="true"></span>
         <div class="filter-checkboxes">
@@ -359,7 +359,7 @@
             <div class="empty-state-icon"><i class="fa-solid fa-folder-open"></i></div>
             <h3>ยังไม่มีฟอร์มคำร้องของคุณ</h3>
             <p>ยังไม่มีรายการในหมวดที่เลือก ลองปรับ filter ด้านบน หรือสร้างฟอร์มใหม่เพื่อเริ่มต้น</p>
-            <a href="${pageContext.request.contextPath}/newForm" class="empty-state-btn">
+            <a href="${pageContext.request.contextPath}/it-requisition-form-detail.jsp" class="empty-state-btn">
                 <i class="fa-solid fa-plus"></i> สร้างฟอร์มใหม่
             </a>
         </div>

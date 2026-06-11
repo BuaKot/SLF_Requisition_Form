@@ -7,18 +7,27 @@ import junit.framework.TestCase;
 
 public class ApprovalOnlyHomePageTest extends TestCase {
 
-    public void testHomeAndSidebarBranchForApprovalOnlyRoles() throws Exception {
+    public void testHomeUsesFormFirstNavigationWithoutWeakeningApprovalOnlyGuards() throws Exception {
         String index = read("src/main/webapp/index.jsp");
+        String itDetail = read("src/main/webapp/it-requisition-form-detail.jsp");
+        String thirdPartyDetail = read("src/main/webapp/third-party-form-detail.jsp");
         String sidebar = read("src/main/webapp/WEB-INF/jspf/sidebar.jspf");
 
         assertTrue(index.contains("approvalOnlyRole"));
-        assertTrue(index.contains("approval-only-actions"));
-        assertTrue(index.contains("/history.jsp"));
-        assertTrue(index.contains("index-history-fab"));
-        assertTrue(index.contains("showTechnicalWork"));
-        assertTrue(index.contains("showProcessWork"));
-        assertFalse(sidebar.contains(">ประวัติรายการ</a>"));
-        assertTrue(index.contains("ไปยังรายการรออนุมัติ"));
+        assertTrue(index.contains("canCreateInternalForms"));
+        assertTrue(index.contains("canCreateThirdPartyLinks"));
+        assertTrue(index.contains("/it-requisition-form-detail.jsp"));
+        assertTrue(index.contains("/third-party-form-detail.jsp"));
+
+        assertTrue(itDetail.contains("approvalOnlyRole"));
+        assertTrue(itDetail.contains("IT_REQUISITION_REQUEST"));
+        assertTrue(itDetail.contains("/forms/select?code=IT_REQUISITION_REQUEST"));
+        assertTrue(thirdPartyDetail.contains("ThirdPartyAccessPolicy.canCreateOwnLinks"));
+        assertTrue(thirdPartyDetail.contains("THIRD_PARTY_USER_REGISTRATION"));
+        assertTrue(thirdPartyDetail.contains("/forms/select?code=THIRD_PARTY_USER_REGISTRATION"));
+        assertTrue(thirdPartyDetail.contains("form-type-action disabled"));
+
+        assertFalse(index.contains("index-history-fab"));
         assertTrue(sidebar.contains("_sidebarApprovalOnlyRole && _sidebarApprovalPage != null"));
         assertTrue(sidebar.contains("!_sidebarApprovalOnlyRole && (_sidebarShowAdmin || _sidebarShowDashboard)"));
         assertFalse(sidebar.contains("boolean approvalOnlyRole"));

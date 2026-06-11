@@ -73,6 +73,7 @@ public class AuthUtil {
      */
     public static boolean isAllowedForPage(String position, String pageKey) {
         if (position == null || pageKey == null) return false;
+        if ("history".equals(pageKey)) return true;
         Set<String> allowed = PAGE_ROLES.get(pageKey);
         return allowed != null && containsRole(allowed, position);
     }

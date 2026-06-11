@@ -167,7 +167,8 @@ button {
    ========================================================= */
 
 .form-container {
-    max-width: 900px;
+    width: min(1280px, calc(100% - 64px));
+    max-width: none;
     margin: 20px auto;
     background: white;
     padding: 30px;
@@ -577,7 +578,8 @@ button {
 
 @media (max-width: 900px) {
     .form-container {
-        margin: 15px;
+        width: calc(100% - 30px);
+        margin: 15px auto;
         padding: 20px;
     }
 

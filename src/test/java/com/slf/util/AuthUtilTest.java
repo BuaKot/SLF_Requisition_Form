@@ -57,6 +57,6 @@ public class AuthUtilTest extends TestCase {
         assertTrue(AuthUtil.isAllowedForPage("Director", "history"));
         assertTrue(AuthUtil.isAllowedForPage("Technical", "history"));
         assertTrue(AuthUtil.isAllowedForPage("Development", "history"));
-        assertFalse(AuthUtil.isAllowedForPage("Employee", "history"));
+        assertTrue(AuthUtil.isAllowedForPage("Employee", "history"));
     }
 }

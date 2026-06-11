@@ -62,10 +62,17 @@ public class ThirdPartyFormSubmissionDAO {
             "FULL_NAME_EN, POSITION_NAME, MOBILE_PHONE, DEPARTMENT_NAME, EMAIL, SYSTEM_NAME, REQUESTED_ROLE, CREATED_AT) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         String updateRequestSql =
-            "UPDATE THIRD_PARTY_REQUEST r SET STATUS = 'SUBMITTED', EXTERNAL_COMPANY_NAME = ?, " +
+            "UPDATE THIRD_PARTY_REQUEST r SET STATUS = 'PENDING_SECTION_HEAD', EXTERNAL_COMPANY_NAME = ?, " +
             "EXTERNAL_CONTACT_NAME = ?, EXTERNAL_EMAIL = ?, EXTERNAL_PHONE = ?, PURPOSE = ?, TARGET_SYSTEM = ?, " +
             "ACCESS_START_DATE = ?, ACCESS_END_DATE = ?, SUBMITTED_AT = ?, UPDATED_AT = ? " +
             "WHERE EXISTS (SELECT 1 FROM THIRD_PARTY_FORM_LINK l WHERE l.LINK_ID = ? AND l.REQUEST_ID = r.REQUEST_ID)";
+        String workflowActionSql =
+            "INSERT INTO THIRD_PARTY_WORKFLOW_ACTION " +
+            "(REQUEST_ID, ACTION_TYPE, FROM_STATUS, TO_STATUS, ACTOR_TYPE, ACTOR_EMPID, COMMENT_TEXT, ACTED_AT) " +
+            "SELECT r.REQUEST_ID, 'EXTERNAL_SUBMITTED', 'LINK_CREATED', 'PENDING_SECTION_HEAD', " +
+            "'EXTERNAL', NULL, 'External requester submitted the form.', ? " +
+            "FROM THIRD_PARTY_REQUEST r JOIN THIRD_PARTY_FORM_LINK l ON l.REQUEST_ID = r.REQUEST_ID " +
+            "WHERE l.LINK_ID = ?";
 
         try (Connection conn = DBConnection.getConnection()) {
             boolean oldAutoCommit = conn.getAutoCommit();
@@ -140,6 +147,11 @@ public class ThirdPartyFormSubmissionDAO {
                     setBangkokTimestamp(updateRequest, 10, eventTimestamp);
                     updateRequest.setLong(11, submission.getLinkId());
                     updateRequest.executeUpdate();
+                }
+                try (PreparedStatement workflowAction = conn.prepareStatement(workflowActionSql)) {
+                    setBangkokTimestamp(workflowAction, 1, eventTimestamp);
+                    workflowAction.setLong(2, submission.getLinkId());
+                    workflowAction.executeUpdate();
                 }
                 conn.commit();
             } catch (SQLException e) {

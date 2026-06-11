@@ -170,7 +170,6 @@
                                 <div><span>สร้างเมื่อ</span><strong><%= link.getCreatedAt() == null ? "-" : dateTime.format(link.getCreatedAt()) %></strong></div>
                                 <div><span>หมดอายุ</span><strong><%= link.getExpiresAt() == null ? "-" : dateTime.format(link.getExpiresAt()) %></strong></div>
                                 <div><span>Submit</span><strong><%= link.getSubmitCount() %> / <%= link.getMaxSubmitCount() %></strong></div>
-                                <div class="hash-meta"><span>Token Hash</span><strong title="<%= h(link.getTokenHash()) %>"><%= display(link.getTokenHash()) %></strong></div>
                             </div>
                         </div>
 

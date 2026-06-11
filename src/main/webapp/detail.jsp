@@ -447,9 +447,11 @@
     </form>
 </div>
 
+<%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 </body>
 </html>
+
 
 
 

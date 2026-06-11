@@ -18,6 +18,7 @@ html, body {
     font-family: 'DBHelvethaica', 'Sarabun', sans-serif;
     width: 100%;
     height: 100%;
+    min-height: 100%;
     background-color: #f4f8fc; /* Softer light background tint */
 }
 
@@ -26,6 +27,9 @@ html, body {
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     width: 100%;
     margin-left: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ==========================================================================
@@ -355,6 +359,8 @@ html, body {
 
 .enterprise-index-shell {
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     background:
         linear-gradient(180deg, rgba(237, 246, 253, 0.86) 0%, rgba(247, 250, 253, 0.98) 34%, #f6f9fc 100%);
 }
@@ -501,6 +507,76 @@ html, body {
     color: #3272BB;
 }
 
+.app-footer {
+    width: 100%;
+    margin-top: auto;
+    border-top: 1px solid #dce9f5;
+    background: rgba(248, 251, 254, 0.96);
+    color: #5f7285;
+    flex-shrink: 0;
+}
+
+.app-footer-inner {
+    width: min(1240px, calc(100% - 28px));
+    min-height: 48px;
+    margin: 0 auto;
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.app-footer-brand,
+.app-footer-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.app-footer-brand strong {
+    color: #003366;
+    font-size: 15px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.app-footer-brand span,
+.app-footer-meta span {
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.app-footer-version {
+    border-left: 1px solid #cbdbea;
+    padding-left: 12px;
+    white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+    .app-footer-inner {
+        min-height: auto;
+        padding: 12px 0;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .app-footer-brand,
+    .app-footer-meta {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .app-footer-brand span,
+    .app-footer-meta span {
+        font-size: 12px;
+    }
+}
+
 .index-info-pill p {
     font-size: 15px;
     line-height: 1.2;
@@ -511,6 +587,14 @@ html, body {
     width: 100%;
     margin: 0;
     padding: 0 0 52px;
+    flex: 1 0 auto;
+}
+
+#main > main,
+#main > .container,
+#main > .admin-grid,
+#main > .form-container {
+    flex: 1 0 auto;
 }
 
 .enterprise-hero {
@@ -546,6 +630,7 @@ html, body {
 .enterprise-hero-copy {
     position: relative;
     z-index: 1;
+    max-width: min(1120px, 100%);
 }
 
 .enterprise-eyebrow {
@@ -559,11 +644,17 @@ html, body {
 .enterprise-hero h1 {
     margin: 0;
     color: #ffffff;
-    font-size: clamp(29px, 3.65vw, 43px);
+    font-size: clamp(28px, 3vw, 40px);
     line-height: 1.14;
     font-weight: 900;
-    max-width: 980px;
+    max-width: none;
     text-shadow: 0 1px 8px rgba(0, 25, 62, 0.18);
+}
+
+@media (min-width: 1180px) {
+    .enterprise-hero h1 {
+        white-space: nowrap;
+    }
 }
 
 .enterprise-hero-lead {

@@ -223,6 +223,7 @@
             <div class="table-note"><strong>หมายเหตุ*</strong> โปรดระบุเลขที่บัตรประชาชนหากขอใช้ระบบงานกองทุนเงินให้กู้ยืมเพื่อการศึกษาแบบดิจิทัล (DSL)</div>
         </section>
     </main>
+    <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 <script>
 function toggleNav() {
@@ -241,4 +242,5 @@ function toggleNav() {
 </script>
 </body>
 </html>
+
 

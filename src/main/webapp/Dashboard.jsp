@@ -287,6 +287,7 @@
         </div>
     </div>
 </div>
+<%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 
 <script>
@@ -361,4 +362,6 @@
 </script>
 </body>
 </html>
+
+
 

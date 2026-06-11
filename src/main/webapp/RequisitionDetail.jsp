@@ -372,9 +372,11 @@ window.addEventListener("pageshow", function (event) {
     }
 });
 </script>
+<%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 </body>
 </html>
+
 
 
 

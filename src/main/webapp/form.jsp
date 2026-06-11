@@ -783,6 +783,9 @@ if (requisitionForm) {
 </script>
 </c:if>
 
+<%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </body>
 </html>
+
+
 

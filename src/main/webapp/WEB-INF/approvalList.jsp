@@ -106,6 +106,7 @@
         </a>
         <% } %>
     </main>
+    <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 <script>
 function toggleNav() {
@@ -119,4 +120,5 @@ function toggleNav() {
 </script>
 </body>
 </html>
+
 

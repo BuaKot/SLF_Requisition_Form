@@ -728,6 +728,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // zennnne แก้
 </script>
 
+<%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </body>
 </html>
+
+
 

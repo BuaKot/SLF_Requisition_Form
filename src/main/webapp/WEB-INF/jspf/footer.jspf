@@ -1,0 +1,12 @@
+<footer class="app-footer" role="contentinfo">
+    <div class="app-footer-inner">
+        <div class="app-footer-brand">
+            <strong>SLF Requisition Form</strong>
+            <span>Internal Use Only</span>
+        </div>
+        <div class="app-footer-meta">
+            <span>&copy; 2026 Siam Lucky Food Co., Ltd.</span>
+            <span class="app-footer-version">v1.0.0</span>
+        </div>
+    </div>
+</footer>

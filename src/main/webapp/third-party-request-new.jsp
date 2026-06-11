@@ -168,6 +168,7 @@
             <% } %>
         </section>
     </main>
+    <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 <script>
 function confirmCancelThirdPartyLink() {
@@ -189,4 +190,5 @@ function toggleNav() {
 </script>
 </body>
 </html>
+
 

@@ -280,6 +280,7 @@
             <% } %>
         </section>
     </main>
+    <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 
 <script type="text/javascript">
@@ -332,4 +333,5 @@ const decodeHtml = (value) => {
 </script>
 </body>
 </html>
+
 

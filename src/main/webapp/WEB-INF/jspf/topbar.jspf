@@ -1,0 +1,28 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+
+<header class="sticky-bar index-topbar topbar-enterprise">
+    <div class="index-topbar-left">
+        <button id="menuBtn" class="index-menu-button" type="button" onclick="toggleNav()" aria-label="เปิดเมนู">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="index-brand-lockup topbar-brand-lockup">
+            <img src="${pageContext.request.contextPath}/images/MoF.png" alt="โลโก้กระทรวงการคลัง">
+            <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="โลโก้ กยศ.">
+            <div>
+                <span class="brand-kicker">Student Loan Fund</span>
+                <strong>แบบฟอร์มระบบสารสนเทศ</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="index-topbar-right topbar-status-group">
+        <div class="user-info index-info-pill topbar-user-pill">
+            <i class="fa fa-circle-user"></i>
+            <p>${sessionScope.loggedInEmpName} | ID: ${sessionScope.loggedInEmpId}</p>
+        </div>
+        <div class="contact-info index-info-pill topbar-help-pill">
+            <i class="fa-solid fa-circle-info"></i>
+            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
+        </div>
+    </div>
+</header>

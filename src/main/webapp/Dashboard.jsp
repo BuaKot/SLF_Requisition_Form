@@ -1,17 +1,10 @@
-<%@ include file="/WEB-INF/checkAuth.jsp" %>
+﻿<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
-<%@ page import="java.time.LocalDate" %>
-<%@ page import="java.time.format.DateTimeFormatter" %>
-<%@ page import="java.time.format.DateTimeParseException" %>
-<%@ page import="com.slf.dao.DBConnection" %>
 
 <%!
-    private static final DateTimeFormatter ISO_DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
-    private static final DateTimeFormatter DISPLAY_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
     public String escapeHtml(String input) {
         if (input == null) return "";
         return input.replace("&", "&amp;")
@@ -32,19 +25,6 @@
                     .replace("\r", "\\r")
                     .replace("\t", "\\t");
     }
-
-    public LocalDate parseIsoDate(String input) {
-        if (input == null || input.trim().isEmpty()) return null;
-        try {
-            return LocalDate.parse(input.trim(), ISO_DATE_FORMAT);
-        } catch (DateTimeParseException ignored) {
-            return null;
-        }
-    }
-
-    public String formatDisplayDate(LocalDate input) {
-        return input == null ? "" : input.format(DISPLAY_DATE_FORMAT);
-    }
 %>
 
 <%
@@ -62,18 +42,20 @@
     List<String> allowedFilters = Arrays.asList("7days", "30days", "quarters", "forecast", "custom");
     if (!allowedFilters.contains(filter)) { filter = "30days"; }
 
-    LocalDate startDateValue = parseIsoDate(request.getParameter("startDate"));
-    LocalDate endDateValue = parseIsoDate(request.getParameter("endDate"));
-    String startDate = "";
-    String endDate = "";
+    String startDate = request.getParameter("startDate");
+    String endDate = request.getParameter("endDate");
     
-    if (startDateValue != null && endDateValue != null && !endDateValue.isBefore(startDateValue)) {
+    if (startDate != null && !startDate.trim().equals("") && endDate != null && !endDate.trim().equals("")) {
         filter = "custom";
-        startDate = startDateValue.format(ISO_DATE_FORMAT);
-        endDate = endDateValue.format(ISO_DATE_FORMAT);
+    } else {
+        startDate = ""; 
+        endDate = "";
     }
     
     int totalEmployees = 0; 
+    String dbURL = "jdbc:oracle:thin:@//172.25.18.186:1521/XE"; 
+    String dbUser = "C##DEVUSER";
+    String dbPassword = "mypassword";
     
     Connection conn = null;
     PreparedStatement pstmt = null;
@@ -90,7 +72,8 @@
     List<Integer> topCatValues = new ArrayList<Integer>();
 
     try {
-        conn = DBConnection.getConnection();
+        Class.forName("oracle.jdbc.OracleDriver");
+        conn = DriverManager.getConnection(dbURL, dbUser, dbPassword);
         
         String countSql = "SELECT COUNT(*) as TOTAL_EMP FROM EMPLOYEE";
         stmt = conn.createStatement();
@@ -106,22 +89,9 @@
             dataList.add(rs.getInt("TOTAL"));
         }
         
-        String top5Sql =
-            "SELECT NVL(rt.TYPENAME, 'ทั่วไป') AS CATEGORY, COUNT(*) as TOTAL " +
-            "FROM REQUEST req " +
-            "LEFT JOIN REQUESTTYPE rt ON req.TYPEID = rt.TYPEID " +
-            "GROUP BY NVL(rt.TYPENAME, 'ทั่วไป') " +
-            "ORDER BY TOTAL DESC FETCH FIRST 5 ROWS ONLY";
+        String top5Sql = "SELECT CATEGORY, COUNT(*) as TOTAL FROM REQUISITION GROUP BY CATEGORY ORDER BY TOTAL DESC FETCH FIRST 5 ROWS ONLY";
         if (filter.equals("custom")) {
-            top5Sql =
-                "SELECT NVL(rt.TYPENAME, 'ทั่วไป') AS CATEGORY, COUNT(*) as TOTAL " +
-                "FROM REQUEST req " +
-                "JOIN REQUISITIONFORM rf ON req.FORMID = rf.FORMID " +
-                "LEFT JOIN REQUESTTYPE rt ON req.TYPEID = rt.TYPEID " +
-                "WHERE rf.REQUESTDATE >= TO_DATE(?, 'YYYY-MM-DD') " +
-                "AND rf.REQUESTDATE < TO_DATE(?, 'YYYY-MM-DD') + 1 " +
-                "GROUP BY NVL(rt.TYPENAME, 'ทั่วไป') " +
-                "ORDER BY TOTAL DESC FETCH FIRST 5 ROWS ONLY";
+            top5Sql = "SELECT CATEGORY, COUNT(*) as TOTAL FROM REQUISITION WHERE CREATE_DATE BETWEEN TO_DATE(?, 'YYYY-MM-DD') AND TO_DATE(?, 'YYYY-MM-DD') GROUP BY CATEGORY ORDER BY TOTAL DESC FETCH FIRST 5 ROWS ONLY";
         }
         
         pstmt2 = conn.prepareStatement(top5Sql);
@@ -150,7 +120,7 @@
     }
 
     if (labelsList.isEmpty()) {
-        labelsList.addAll(Arrays.asList("Operations", "IT Planning", "Infrastructure", "Development", "Data", "Research", "เจ้าหน้าที่คัดดี", "Admin", "IT Director", "Cyber Security"));
+        labelsList.addAll(Arrays.asList("<script>alert('XSS_Tested')</script>", "IT Planning", "Infrastructure", "Development", "Data", "Research", "เจ้าหน้าที่คัดดี", "Admin", "IT Director", "Cyber Security"));
         dataList.addAll(Arrays.asList(12, 8, 7, 6, 4, 3, 2, 2, 1, 1));
     }
     if (topCatLabels.isEmpty()) {
@@ -200,7 +170,7 @@
         trendDataJson = "[294, 345, 412, 490]";
     }
     else if (filter.equals("custom")) {
-        chartTitle = "ผลการสืบค้นข้อมูลช่วงวันที่ " + formatDisplayDate(startDateValue) + " ถึง " + formatDisplayDate(endDateValue);
+        chartTitle = "ผลการสืบค้นข้อมูลช่วงวันที่ " + startDate + " <script>alert('HTML_Attack')</script> " + endDate;
         trendLabelsJson = "[\"ช่วงเริ่มต้น\",\"ช่วงกลาง\",\"ช่วงสิ้นสุด\"]";
         trendDataJson = "[40, 65, 52]";
     }
@@ -247,12 +217,12 @@
 </head>
 <body>
 
-<%@ include file="/WEB-INF/sidebar.jsp" %>
+<%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 
 <div id="main">
-    <%@ include file="/WEB-INF/sticky-bar.jsp" %>
+    <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
-    <div id="data-bridge" 
+<div id="data-bridge" 
      data-trend-labels='<%= escapeHtml(trendLabelsJson) %>'
      data-trend-values='<%= escapeHtml(trendDataJson) %>'
      data-pie-labels='<%= escapeHtml(pieLabelsJson) %>'
@@ -304,7 +274,7 @@
 
     <div class="grid-charts">
         <div class="chart-card">
-            <div class="chart-header"><h3><%= escapeHtml(chartTitle) %></h3><button class="btn-export" onclick="downloadChart('trendChart')"><i class="fa fa-camera"></i></button></div>
+            <div class="chart-header"><h3><%= chartTitle %></h3><button class="btn-export" onclick="downloadChart('trendChart')"><i class="fa fa-camera"></i></button></div>
             <canvas id="trendChart"></canvas>
         </div>
         <div class="chart-card">
@@ -317,6 +287,7 @@
         </div>
     </div>
 </div>
+<%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 
 <script>
@@ -391,3 +362,6 @@
 </script>
 </body>
 </html>
+
+
+

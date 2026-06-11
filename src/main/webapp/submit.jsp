@@ -77,12 +77,12 @@
 <!-- ===============================
      SIDEBAR
 ================================ -->
-<%@ include file="/WEB-INF/sidebar.jsp" %>
+<%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 
 <div id="main">
 
     <!-- HEADER -->
-    <%@ include file="/WEB-INF/sticky-bar.jsp" %>
+    <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
     <!-- TITLE -->
     <div class="blue-title">
@@ -648,5 +648,9 @@ function closeDeadlinePopup() {
 }
 </script>
 
+<%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </body>
 </html>
+
+
+

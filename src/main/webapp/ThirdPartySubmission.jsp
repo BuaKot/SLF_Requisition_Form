@@ -1,8 +1,6 @@
-<%@ page isELIgnored="false" %>
+﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="java.util.Locale" %>
-<%@ page import="java.util.TimeZone" %>
 <%@ page import="com.slf.model.ThirdPartyFormSubmission" %>
 <%@ page import="com.slf.model.ThirdPartyAccessRequest" %>
 <%@ page import="com.slf.util.AuthUtil" %>
@@ -44,11 +42,8 @@
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
         return;
     }
-    SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US);
-    SimpleDateFormat dateOnly = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
-    TimeZone bangkokTimeZone = TimeZone.getTimeZone("Asia/Bangkok");
-    dateTime.setTimeZone(bangkokTimeZone);
-    dateOnly.setTimeZone(bangkokTimeZone);
+    SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    SimpleDateFormat dateOnly = new SimpleDateFormat("dd/MM/yyyy");
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -88,9 +83,9 @@
     </style>
 </head>
 <body>
-<%@ include file="/WEB-INF/sidebar.jsp" %>
+<%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 <div id="main">
-    <%@ include file="/WEB-INF/sticky-bar.jsp" %>
+    <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
     <main class="page">
         <div class="page-head">
@@ -228,6 +223,7 @@
             <div class="table-note"><strong>หมายเหตุ*</strong> โปรดระบุเลขที่บัตรประชาชนหากขอใช้ระบบงานกองทุนเงินให้กู้ยืมเพื่อการศึกษาแบบดิจิทัล (DSL)</div>
         </section>
     </main>
+    <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 <script>
 function toggleNav() {
@@ -246,3 +242,5 @@ function toggleNav() {
 </script>
 </body>
 </html>
+
+

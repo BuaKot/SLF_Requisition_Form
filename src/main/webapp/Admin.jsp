@@ -1,4 +1,4 @@
-<%@ include file="/WEB-INF/checkAuth.jsp" %>
+﻿<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.slf.util.AuthUtil" %>
@@ -127,10 +127,10 @@
 </head>
 
 <body>
-    <%@ include file="/WEB-INF/sidebar.jsp" %>
+    <%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 
 <div id='main'>
-    <%@ include file="/WEB-INF/sticky-bar.jsp" %>
+    <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
     <div class="banner">
         <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
@@ -224,5 +224,9 @@
         }
         }
     </script>
+<%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </body>
 </html>
+
+
+

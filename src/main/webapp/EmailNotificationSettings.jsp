@@ -1,4 +1,4 @@
-<%@ page isELIgnored="false" %>
+﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.slf.model.MemberProfile" %>
 <%!
@@ -84,9 +84,9 @@
     </style>
 </head>
 <body>
-<%@ include file="/WEB-INF/sidebar.jsp" %>
+<%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 <div id="main">
-    <%@ include file="/WEB-INF/sticky-bar.jsp" %>
+    <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
     <main class="settings-page">
         <div class="page-head">
@@ -153,6 +153,7 @@
             </form>
         </section>
     </main>
+    <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 
 <script type="text/javascript">
@@ -185,3 +186,5 @@ if (statusToast) {
 </script>
 </body>
 </html>
+
+

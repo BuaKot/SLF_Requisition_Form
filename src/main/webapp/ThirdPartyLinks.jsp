@@ -1,4 +1,4 @@
-<%@ page isELIgnored="false" %>
+﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.*" %>
@@ -44,8 +44,7 @@
     String csrfToken = (String) request.getAttribute("csrfToken");
     String status = (String) request.getAttribute("status");
     String publicBaseUrl = (String) request.getAttribute("publicBaseUrl");
-    SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US);
-    dateTime.setTimeZone(TimeZone.getTimeZone("Asia/Bangkok"));
+    SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     int activeCount = 0, usedCount = 0, expiredCount = 0, revokedCount = 0;
     for (ThirdPartyFormLink link : links) {
@@ -66,9 +65,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-<%@ include file="/WEB-INF/sidebar.jsp" %>
+<%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 <div id="main">
-    <%@ include file="/WEB-INF/sticky-bar.jsp" %>
+    <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
     <main class="third-party-request-page admin-third-party-page">
         <section class="third-party-page-head third-party-toolbar-head">
@@ -205,6 +204,7 @@
             <% } %>
         </section>
     </main>
+    <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 <script>
 function toggleNav() {
@@ -254,3 +254,5 @@ function confirmAdminRevoke() {
 </script>
 </body>
 </html>
+
+

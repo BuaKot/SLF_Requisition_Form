@@ -403,12 +403,12 @@
 <!-- ===============================
      SIDEBAR
 ================================ -->
-<%@ include file="/WEB-INF/sidebar.jsp" %>
+<%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 
 <div id="main">
 
     <!-- STICKY BAR -->
-    <%@ include file="/WEB-INF/sticky-bar.jsp" %>
+    <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
     <!-- BLUE TITLE -->
     <div class="blue-title">
@@ -728,5 +728,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // zennnne แก้
 </script>
 
+<%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </body>
 </html>
+
+
+

@@ -16,9 +16,10 @@ public class ApprovalListConsistencyTest extends TestCase {
         }
     }
 
-    public void testHistoryUsesCurrentSharedSidebar() throws Exception {
+    public void testHistoryUsesCurrentSharedNavigationFragments() throws Exception {
         String history = read("src/main/webapp/history.jsp");
-        assertTrue(history.contains("<%@ include file=\"/WEB-INF/sidebar.jsp\" %>"));
+        assertTrue(history.contains("<%@ include file=\"/WEB-INF/jspf/sidebar.jspf\" %>"));
+        assertTrue(history.contains("<%@ include file=\"/WEB-INF/jspf/topbar.jspf\" %>"));
         assertFalse(history.contains("class=\"admin-tab\">"));
         assertTrue(history.contains("history-home-button"));
         assertTrue(history.contains("ประวัติรายการที่ฉันอนุมัติ"));

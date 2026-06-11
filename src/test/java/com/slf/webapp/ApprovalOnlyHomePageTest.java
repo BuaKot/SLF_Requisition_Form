@@ -9,7 +9,7 @@ public class ApprovalOnlyHomePageTest extends TestCase {
 
     public void testHomeAndSidebarBranchForApprovalOnlyRoles() throws Exception {
         String index = read("src/main/webapp/index.jsp");
-        String sidebar = read("src/main/webapp/WEB-INF/sidebar.jsp");
+        String sidebar = read("src/main/webapp/WEB-INF/jspf/sidebar.jspf");
 
         assertTrue(index.contains("approvalOnlyRole"));
         assertTrue(index.contains("approval-only-actions"));

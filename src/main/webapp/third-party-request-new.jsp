@@ -1,9 +1,7 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Collections" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.util.Locale" %>
-<%@ page import="java.util.TimeZone" %>
 <%@ page import="com.slf.model.ThirdPartyRequest" %>
 <%@ page import="com.slf.util.ThirdPartyAccessPolicy" %>
 <%!
@@ -51,8 +49,7 @@
         thirdPartyRequests = Collections.emptyList();
     }
     String csrfToken = (String) request.getAttribute("csrfToken");
-    SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US);
-    dateTime.setTimeZone(TimeZone.getTimeZone("Asia/Bangkok"));
+    SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     String createdRequestId = request.getParameter("createdRequestId");
     String status = request.getParameter("status");
 %>
@@ -66,9 +63,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-<%@ include file="/WEB-INF/sidebar.jsp" %>
+<%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 <div id="main">
-    <%@ include file="/WEB-INF/sticky-bar.jsp" %>
+    <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
     <main class="third-party-request-page">
         <section class="third-party-page-head third-party-toolbar-head">
@@ -171,6 +168,7 @@
             <% } %>
         </section>
     </main>
+    <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 <script>
 function confirmCancelThirdPartyLink() {
@@ -192,3 +190,5 @@ function toggleNav() {
 </script>
 </body>
 </html>
+
+

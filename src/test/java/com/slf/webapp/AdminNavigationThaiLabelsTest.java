@@ -7,17 +7,19 @@ import junit.framework.TestCase;
 
 public class AdminNavigationThaiLabelsTest extends TestCase {
 
-    public void testAdminPageContainsThaiManagementLinks() throws Exception {
+    public void testAdminPageUsesSharedNavigationFragments() throws Exception {
         String page = read("src/main/webapp/Admin.jsp");
-        assertTrue(page.contains("แดชบอร์ด"));
-        assertTrue(page.contains("จัดการสมาชิก"));
-        assertTrue(page.contains("บันทึกการส่งอีเมล"));
-        assertTrue(page.contains("จัดการลิงก์บุคคลภายนอก"));
+        assertTrue(page.contains("/WEB-INF/jspf/sidebar.jspf"));
+        assertTrue(page.contains("/WEB-INF/jspf/topbar.jspf"));
     }
 
     public void testSidebarUsesAnimatedThaiAdminMenu() throws Exception {
-        String sidebar = read("src/main/webapp/WEB-INF/sidebar.jsp");
+        String sidebar = read("src/main/webapp/WEB-INF/jspf/sidebar.jspf");
         assertTrue(sidebar.contains("เมนูผู้ดูแลระบบ"));
+        assertTrue(sidebar.contains("แดชบอร์ด"));
+        assertTrue(sidebar.contains("จัดการสมาชิก"));
+        assertTrue(sidebar.contains("บันทึกการส่งอีเมล"));
+        assertTrue(sidebar.contains("จัดการลิงก์บุคคลภายนอก"));
         assertTrue(sidebar.contains("sidebar-submenu"));
         assertTrue(sidebar.contains("classList.toggle(\"open\")"));
         assertFalse(sidebar.contains(">Dashboard</a>"));

@@ -16,9 +16,17 @@
     }
 
     private String requestStatusText(String status) {
-        if ("SUBMITTED".equals(status)) return "ส่งฟอร์มแล้ว";
         if ("LINK_CREATED".equals(status)) return "รอผู้ให้บริการกรอก";
-        if ("APPROVED".equals(status)) return "อนุมัติแล้ว";
+        if ("SUBMITTED".equals(status)) return "รอหัวหน้าส่วนพิจารณา";
+        if ("PENDING_SECTION_HEAD".equals(status)) return "รอหัวหน้าส่วนพิจารณา";
+        if ("PENDING_IT_DIRECTOR".equals(status)) return "รอ IT Director อนุมัติ";
+        if ("PENDING_OPERATOR".equals(status)) return "รอผู้ดำเนินการ";
+        if ("PENDING_EXTERNAL_ACCEPTANCE".equals(status)) return "รอผู้ขอภายนอกตรวจรับ";
+        if ("PENDING_REVOKER".equals(status)) return "รอผู้ยกเลิกสิทธิ์";
+        if ("PENDING_REVOKE_REVIEWER".equals(status)) return "รอผู้ตรวจทาน";
+        if ("PENDING_SECTION_HEAD_REPORT".equals(status)) return "รอหัวหน้าส่วนสรุปรายงาน";
+        if ("PENDING_FINAL_CERTIFICATION".equals(status)) return "รอ IT Director รับรอง";
+        if ("COMPLETED".equals(status)) return "เสร็จสิ้น";
         if ("REJECTED".equals(status)) return "ไม่อนุมัติ";
         if ("CANCELLED".equals(status)) return "ยกเลิกแล้ว";
         return status == null ? "-" : status;
@@ -33,7 +41,7 @@
     }
 
     private String badgeClass(String status) {
-        if ("SUBMITTED".equals(status) || "USED".equals(status) || "APPROVED".equals(status)) return "ok";
+        if ("USED".equals(status) || "COMPLETED".equals(status)) return "ok";
         if ("EXPIRED".equals(status) || "REJECTED".equals(status) || "REVOKED".equals(status) || "CANCELLED".equals(status)) return "danger";
         return "wait";
     }

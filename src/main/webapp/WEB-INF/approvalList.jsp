@@ -99,6 +99,12 @@
             String rawTag = row.get("DEADLINE_TAG") != null ? row.get("DEADLINE_TAG").toString() : "normal";
             String deadlineTagClass = Arrays.asList("normal","soon","urgent").contains(rawTag) ? rawTag : "normal";
         %>
+        <!-- Only change: ensure rawTag is non‑null and trimmed -->
+        <%
+            String rawTag = row.get("DEADLINE_TAG") != null ? row.get("DEADLINE_TAG").toString() : "normal";
+            rawTag = rawTag.trim();
+            String deadlineTagClass = (rawTag.equals("normal") || rawTag.equals("soon") || rawTag.equals("urgent")) ? rawTag : "normal";
+        %>
         <a class="requisition-card" href="${pageContext.request.contextPath}<%= approvalDetailPage %>?id=<%= approvalEscapeHtml(formId) %>">
             <div class="card-id-box">ใบขอเลขที่ <%= approvalEscapeHtml(formId) %></div>
             <div class="card-info"><div class="info-row"><div class="info-item"><b>ชื่อ:</b> <%= empName %></div><div class="info-item"><b>ฝ่าย:</b> <%= departmentName %></div><div class="info-item"><b>ส่วนงาน:</b> <%= sectionName %></div></div><div class="detail-line"><b>รายละเอียด:</b> <%= titleForm %></div></div>

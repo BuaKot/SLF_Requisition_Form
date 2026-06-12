@@ -16,6 +16,8 @@
     String approvalSubtitle = approvalEscapeHtml(request.getAttribute("approvalSubtitle"));
     String approvalDetailPage = request.getAttribute("approvalDetailPage") != null
         ? request.getAttribute("approvalDetailPage").toString() : "/";
+    String approvalHistoryBackPage = request.getAttribute("approvalHistoryBackPage") != null
+        ? request.getAttribute("approvalHistoryBackPage").toString() : "/";
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -80,7 +82,7 @@
             <div class="approval-title"><div class="approval-title-icon"><i class="fa-solid fa-file-signature"></i></div><div><h1><%= approvalTitle %></h1><p><%= approvalSubtitle %></p></div></div>
             <div class="header-actions">
                 <span class="count-badge" title="จำนวนรายการ"><%= approvalFormList.size() %></span>
-                <a class="page-button" href="${pageContext.request.contextPath}/history.jsp"><i class="fa-solid fa-clock-rotate-left"></i> ประวัติ</a>
+                <a class="page-button" href="${pageContext.request.contextPath}/history.jsp?back=<%= java.net.URLEncoder.encode(approvalHistoryBackPage, "UTF-8") %>"><i class="fa-solid fa-clock-rotate-left"></i> ประวัติ</a>
                 <a class="page-button" href="${pageContext.request.contextPath}/"><i class="fa-solid fa-house"></i> หน้าหลัก</a>
             </div>
         </div>

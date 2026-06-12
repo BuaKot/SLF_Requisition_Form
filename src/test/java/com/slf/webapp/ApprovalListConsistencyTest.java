@@ -12,6 +12,7 @@ public class ApprovalListConsistencyTest extends TestCase {
         for (String page : pages) {
             String source = read("src/main/webapp/" + page);
             assertTrue(page + " should use shared template", source.contains("/WEB-INF/approvalList.jsp"));
+            assertTrue(page + " should set history back target", source.contains("approvalHistoryBackPage"));
             assertFalse(page + " should not link to Admin.jsp", source.contains("Admin.jsp"));
         }
     }
@@ -22,6 +23,8 @@ public class ApprovalListConsistencyTest extends TestCase {
         assertTrue(history.contains("<%@ include file=\"/WEB-INF/jspf/topbar.jspf\" %>"));
         assertFalse(history.contains("class=\"admin-tab\">"));
         assertTrue(history.contains("history-home-button"));
+        assertTrue(history.contains("String historyBackPath"));
+        assertTrue(history.contains("allowedBackPaths.contains(backParam)"));
         assertTrue(history.contains("ประวัติรายการที่ฉันอนุมัติ"));
         assertTrue(history.contains("MY_AI.REVIEWER_EMPID = ?"));
         assertTrue(history.contains("&from=history"));

@@ -4,5 +4,6 @@
     request.setAttribute("approvalTitle", "รายการรออนุมัติของผู้อำนวยการฝ่าย");
     request.setAttribute("approvalSubtitle", "ตรวจสอบรายละเอียดและเลือกใบขอที่ต้องการอนุมัติ");
     request.setAttribute("approvalDetailPage", "/RequisitionDetail.jsp");
+    request.setAttribute("approvalHistoryBackPage", "/directorApprove");
 %>
 <jsp:include page="/WEB-INF/approvalList.jsp" />

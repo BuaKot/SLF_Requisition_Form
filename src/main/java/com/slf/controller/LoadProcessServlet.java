@@ -30,7 +30,7 @@ public class LoadProcessServlet extends HttpServlet {
 
         String sql =
             "WITH latest_step AS ( " +
-            "    SELECT FORMID, STATE_STEP, " +
+            "    SELECT FORMID, STATE_STEP, DEV_EMPID, " +
             "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
             "    FROM APPROVALINFO " +
             ") " +
@@ -42,7 +42,7 @@ public class LoadProcessServlet extends HttpServlet {
             "LEFT JOIN SECTION s ON e.SECID = s.SECID " +
             "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
             "WHERE ls.STATE_STEP = 3 " +
-            "AND d.DEPTHEAD_EMPID = ? " +
+            "AND ls.DEV_EMPID = ? " +
             "AND r.DEADLINE >= TRUNC(SYSDATE) " +
             "ORDER BY r.FORMID DESC";
 

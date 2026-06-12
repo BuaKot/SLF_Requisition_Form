@@ -157,8 +157,13 @@ public class SubmitApprovalServlet extends HttpServlet {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) return rs.getInt(1) == 1;
             }
+        } catch (SQLException e) {
+            if (isMissingColumn(e)) {
+                return true;
+            }
+            throw e;
         }
-        return false;
+        return true;
     }
 
     private int calcNewStepWithFlag(String action, int currentStep, boolean technicalRequired) {
@@ -277,6 +282,12 @@ public class SubmitApprovalServlet extends HttpServlet {
 
     static boolean matchesReviewer(String expectedEmpId, int reviewerEmpId) {
         return expectedEmpId != null && expectedEmpId.trim().equals(String.valueOf(reviewerEmpId));
+    }
+
+    static boolean isMissingColumn(SQLException e) {
+        String message = e.getMessage();
+        return e.getErrorCode() == 904
+            || (message != null && message.toUpperCase(java.util.Locale.ROOT).contains("INVALID IDENTIFIER"));
     }
 
     // ADDED: for test compatibility

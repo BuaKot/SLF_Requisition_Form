@@ -23,12 +23,14 @@
     boolean canCreateInternalForms = !approvalOnlyRole;
     boolean canCreateThirdPartyLinks = !approvalOnlyRole
         && ThirdPartyAccessPolicy.canCreateOwnLinks(ThirdPartyAccessPolicy.sessionEmpId(session));
+    boolean isDirector = "Director".equalsIgnoreCase(currentRole);
     boolean isTechnical = "Technical".equalsIgnoreCase(currentRole);
     boolean isItDirector = "ITDirector".equalsIgnoreCase(currentRole)
         || "IT Director".equalsIgnoreCase(currentRole);
     boolean isInfrastructure = "Infrastructure".equalsIgnoreCase(currentRole);
-    boolean hasRoleWorkMenu = isTechnical || isItDirector || isInfrastructure;
-    String requisitionWorkUrl = isTechnical ? "/technicalApprove"
+    boolean hasRoleWorkMenu = isDirector || isTechnical || isItDirector || isInfrastructure;
+    String requisitionWorkUrl = isDirector ? "/directorApprove"
+        : isTechnical ? "/technicalApprove"
         : isItDirector ? "/itDirectorApprove" : "/process";
     String thirdPartyCreateUrl = canCreateThirdPartyLinks
         ? "/thirdParty/request/new" : "/third-party-form-detail.jsp";
@@ -102,7 +104,7 @@
                     <div class="form-type-icon"><i class="fa-solid fa-file-signature"></i></div>
                     <div class="index-form-card-body">
                         <span class="form-status available">เปิดใช้งาน</span>
-                        <h3>Requisition Form</h3>
+                        <h3>ใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</h3>
                         <p>เข้าสู่รายการคำขอและดำเนินงานตามขั้นตอนของตำแหน่ง <%= h(currentRole) %></p>
                     </div>
                     <span class="form-type-action secondary">เข้าสู่รายการงาน</span>
@@ -127,7 +129,7 @@
                     <div class="form-type-icon"><i class="fa-solid fa-user-shield"></i></div>
                     <div class="index-form-card-body">
                         <span class="form-status">ยังไม่เปิดใช้งาน</span>
-                        <h3>Third-party Form</h3>
+                        <h3>แบบฟอร์มการขอลงทะเบียนผู้ใช้ระบบงานสารสนเทศ สำหรับผู้ให้บริการภายนอก</h3>
                         <p>ขั้นตอนสำหรับตำแหน่ง <%= h(currentRole) %> อยู่ระหว่างการพัฒนา</p>
                     </div>
                     <span class="form-type-action disabled">ยังไม่มีรายการงาน</span>

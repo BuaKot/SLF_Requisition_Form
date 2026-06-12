@@ -1,5 +1,6 @@
 package com.slf.controller;
 
+import java.sql.SQLException;
 import junit.framework.TestCase;
 
 public class SubmitApprovalServletTest extends TestCase {
@@ -35,5 +36,9 @@ public class SubmitApprovalServletTest extends TestCase {
     public void testRequesterMatchUsesRequesterEmpId() {
         assertTrue(SubmitApprovalServlet.matchesRequester(678, 678));
         assertFalse(SubmitApprovalServlet.matchesRequester(678, 54));
+    }
+
+    public void testOracleMissingColumnDetectedForLegacySchemaFallback() {
+        assertTrue(SubmitApprovalServlet.isMissingColumn(new SQLException("ORA-00904: invalid identifier", "42000", 904)));
     }
 }

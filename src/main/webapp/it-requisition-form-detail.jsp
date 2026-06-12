@@ -8,6 +8,11 @@
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
+    String approvalPage = AuthUtil.approvalPageForRole(currentRole);
+    if (approvalPage != null) {
+        response.sendRedirect(request.getContextPath() + approvalPage);
+        return;
+    }
     boolean approvalOnlyRole = AuthUtil.isApprovalOnlyRole(currentRole);
 %>
 <!DOCTYPE html>

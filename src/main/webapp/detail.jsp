@@ -148,11 +148,11 @@
 <%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 <div id="main">
 <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
-<div class="topbar-back-row"><a href="<%= backPath %>"><i class="fa fa-arrow-left"></i> <%= backLabel %></a></div>
 <div class="banner">
     <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</h1>
     <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
 </div>
+<div class="detail-action-bar"><a class="detail-back-button" href="<%= backPath %>"><i class="fa fa-arrow-left"></i> <%= backLabel %></a></div>
 
 <%
     try {

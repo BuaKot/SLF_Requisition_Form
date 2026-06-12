@@ -30,6 +30,14 @@
         formId = formId.trim();
     }
 
+    String fromPage = request.getParameter("from");
+    String backPath = request.getContextPath() + "/itDirectorApprove";
+    String backLabel = "กลับหน้า IT Director Approval";
+    if ("history".equals(fromPage)) {
+        backPath = request.getContextPath() + "/history.jsp";
+        backLabel = "กลับหน้าประวัติ";
+    }
+
     // ----- 2. Data holders -----
     String empName = "", sectionName = "", departmentName = "", phone = "";
     String reqDate = "", deadlineDate = "", titleForm = "";
@@ -196,15 +204,11 @@
 <%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 <div id="main">
 <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
-<div class="topbar-back-row"><a href="javascript:history.back()"><i class="fa fa-arrow-left"></i> กลับหน้าก่อนหน้า</a></div>
-<div class="contact-info">
-            <i class="fa-solid fa-circle-info"></i>
-            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-        </div>
 <div class="banner">
     <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
     <h1 style="margin-top: 5px;">ใบขอให้ดำเนินการ / Requisition Form (ใบที่: <%= (formId != null) ? formId : "-" %>)</h1>
 </div>
+<div class="detail-action-bar"><a class="detail-back-button" href="<%= backPath %>"><i class="fa fa-arrow-left"></i> <%= backLabel %></a></div>
 
 <div class="form-container">
     <% if (!hasData) { %>
@@ -374,6 +378,19 @@
 </div>
 
 <script>
+function toggleNav() {
+    var sidebar = document.getElementById("mySidebar");
+    var main = document.getElementById("main");
+    if (sidebar.style.width === "250px") {
+        sidebar.style.width = "0";
+        main.style.marginLeft = "0";
+        main.style.width = "100%";
+    } else {
+        sidebar.style.width = "250px";
+        main.style.marginLeft = "250px";
+        main.style.width = "calc(100% - 250px)";
+    }
+}
 window.addEventListener("pageshow", function (event) {
     if (event.persisted) {
         window.location.reload();

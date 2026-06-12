@@ -512,6 +512,60 @@ html, body {
     color: #3272BB;
 }
 
+.detail-action-bar {
+    width: min(1100px, calc(100% - 40px));
+    margin: 16px auto 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.detail-back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+    padding: 8px 14px;
+    border: 1px solid #b7d1e8;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #ffffff 0%, #f6faff 100%);
+    color: #003f73;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 800;
+    box-shadow: 0 4px 10px rgba(0, 51, 102, 0.05);
+    transition: 0.2s ease;
+}
+
+.detail-back-button:hover {
+    background: #f1f7fc;
+    border-color: #3272bb;
+    transform: translateY(-1px);
+}
+
+.detail-back-button i {
+    width: 18px;
+    height: 18px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #e8f3fb;
+    color: #0b4f86;
+    font-size: 12px;
+}
+
+@media (max-width: 640px) {
+    .detail-action-bar {
+        width: calc(100% - 24px);
+        margin: 12px auto 8px;
+    }
+
+    .detail-back-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 .app-footer {
     width: 100%;
     margin-top: auto;

@@ -17,11 +17,14 @@ public class AdminNavigationThaiLabelsTest extends TestCase {
         String sidebar = read("src/main/webapp/WEB-INF/jspf/sidebar.jspf");
         assertTrue(sidebar.contains("_sidebarIsIndex"));
         assertTrue(sidebar.contains("_sidebarIsItFlow"));
+        assertTrue(sidebar.contains("_sidebarIsRequisitionApprovalDetail"));
         assertTrue(sidebar.contains("_sidebarIsThirdPartyFlow"));
         assertTrue(sidebar.contains("/emailNotifications"));
         assertTrue(sidebar.contains("sidebar-submenu"));
         assertTrue(sidebar.contains("classList.toggle(\"open\")"));
         assertTrue(sidebar.contains("/third-party-form-detail.jsp"));
+        assertTrue(sidebar.contains("/technicalApprove"));
+        assertTrue(sidebar.contains("/process"));
         assertFalse(sidebar.contains("/newForm"));
         assertFalse(sidebar.contains(">Dashboard</a>"));
         assertFalse(sidebar.contains(">mailLog</a>"));

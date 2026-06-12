@@ -27,6 +27,14 @@
         formId = formId.trim();
     }
 
+    String fromPage = request.getParameter("from");
+    String backPath = request.getContextPath() + "/directorApprove";
+    String backLabel = "กลับหน้า Director Approval";
+    if ("history".equals(fromPage)) {
+        backPath = request.getContextPath() + "/history.jsp";
+        backLabel = "กลับหน้าประวัติ";
+    }
+
     // ----- 2. Data holders -----
     String empName = "", sectionName = "", departmentName = "", phone = "";
     String reqDate = "", deadlineDate = "", titleForm = "";
@@ -162,14 +170,15 @@
         body { font-family: 'Sarabun', sans-serif; margin: 0; background-color: #f4f7f9; }
         .banner { background: #C3EAFF; padding: clamp(20px, 6vw, 40px) 15px; text-align: center; color: #003366; }
         .banner h1 { font-size: clamp(1.1rem, 4vw, 1.5rem); margin: 0; line-height: 1.2; }
-        .form-container { max-width: 900px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .form-group { display: flex; flex-direction: column; }
+        .form-container { width: min(900px, calc(100% - 32px)); margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow-x: hidden; }
+        .form-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; min-width: 0; }
         .form-group label { font-weight: bold; margin-bottom: 8px; font-size: 0.9rem; color: #333; }
-        .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid #3272BB; border-radius: 5px; font-size: 14px; background-color: #ffffff; }
+        .form-group input, .form-group select, .form-group textarea { display: block; width: 100%; max-width: 100%; min-width: 0; padding: 10px; border: 1px solid #3272BB; border-radius: 5px; font-size: 14px; background-color: #ffffff; }
         .form-group input[readonly], .form-group textarea[readonly], .form-group select[disabled] { background-color: #f8fafc; border-color: #cbd5e1; color: #475569; }
         .full-width { grid-column: span 2; }
         .form-id-note { color: #777; font-size: 0.9rem; margin-bottom: 14px; }
+        form, .section-box-main, .item-block, .section-box, .server-permission-box { width: 100%; max-width: 100%; min-width: 0; }
         .item-block { border: 1px solid #3272BB; border-radius: 10px; padding: 15px; margin-bottom: 16px; background: #ffffff; }
         .permission-checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
         .permission-checkbox-row label { display: inline-flex; align-items: center; gap: 5px; font-weight: normal; }
@@ -191,15 +200,11 @@
 <%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 <div id="main">
 <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
-<div class="topbar-back-row"><a href="<%= backPath %>"><i class="fa fa-arrow-left"></i> <%= backLabel %></a></div>
-<div class="contact-info">
-            <i class="fa-solid fa-circle-info"></i>
-            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-        </div>
 <div class="banner">
     <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
     <h1 style="margin-top: 5px;">ใบขอให้ดำเนินการ / Requisition Form (ใบที่: <%= (formId != null) ? formId : "-" %>)</h1>
 </div>
+<div class="detail-action-bar"><a class="detail-back-button" href="<%= backPath %>"><i class="fa fa-arrow-left"></i> <%= backLabel %></a></div>
 
 <div class="form-container">
     <% if (!hasData) { %>
@@ -366,6 +371,19 @@
 </div>
 
 <script>
+function toggleNav() {
+    var sidebar = document.getElementById("mySidebar");
+    var main = document.getElementById("main");
+    if (sidebar.style.width === "250px") {
+        sidebar.style.width = "0";
+        main.style.marginLeft = "0";
+        main.style.width = "100%";
+    } else {
+        sidebar.style.width = "250px";
+        main.style.marginLeft = "250px";
+        main.style.width = "calc(100% - 250px)";
+    }
+}
 window.addEventListener("pageshow", function (event) {
     if (event.persisted) {
         window.location.reload();

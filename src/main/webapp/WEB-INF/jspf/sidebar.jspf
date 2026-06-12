@@ -19,11 +19,13 @@
         || "/EmailNotificationSettings.jsp".equalsIgnoreCase(_sidebarRequestPath);
     boolean _sidebarIsFormDetail = _sidebarPathLower.contains("it-requisition-form-detail")
         || _sidebarPathLower.contains("third-party-form-detail");
+    boolean _sidebarIsRequisitionApprovalDetail = _sidebarPathLower.contains("/requisitiondetail");
     boolean _sidebarIsItFlow = _sidebarPathLower.contains("it-requisition-form-detail")
         || _sidebarPathLower.contains("/itrequisition")
         || _sidebarPathLower.contains("/form.jsp")
         || _sidebarPathLower.contains("/submit")
-        || _sidebarPathLower.contains("/history.jsp");
+        || _sidebarPathLower.contains("/history.jsp")
+        || _sidebarIsRequisitionApprovalDetail;
     boolean _sidebarIsThirdPartyFlow = _sidebarPathLower.contains("third-party-form-detail")
         || _sidebarPathLower.contains("/thirdparty")
         || _sidebarPathLower.contains("/thirdparty");
@@ -53,6 +55,16 @@
             <i class="fa-solid fa-file-signature"></i><span><%= _sidebarApprovalLabel %></span>
         </a>
         <% } else { %>
+        <% if (_sidebarIsRequisitionApprovalDetail && AuthUtil.isAllowedForPage(_sidebarPosition, "technicalApprove")) { %>
+        <a href="${pageContext.request.contextPath}/technicalApprove" class="approval-menu-link">
+            <i class="fa-solid fa-file-signature"></i><span>ความเห็นและการอนุมัติเชิงเทคนิค</span>
+        </a>
+        <% } %>
+        <% if (_sidebarIsRequisitionApprovalDetail && AuthUtil.isAllowedForPage(_sidebarPosition, "process")) { %>
+        <a href="${pageContext.request.contextPath}/process" class="approval-menu-link">
+            <i class="fa-solid fa-screwdriver-wrench"></i><span>รายการรอดำเนินการ</span>
+        </a>
+        <% } %>
         <% if (_sidebarIsItFlow) { %>
         <a href="${pageContext.request.contextPath}/submit"><i class="fa-solid fa-paper-plane"></i><span>&#3615;&#3629;&#3619;&#3660;&#3617;&#3607;&#3637;&#3656;&#3626;&#3656;&#3591;&#3649;&#3621;&#3657;&#3623;</span></a>
         <% } %>

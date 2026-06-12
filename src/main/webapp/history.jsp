@@ -38,6 +38,11 @@
     if (showParam == null || showParam.trim().isEmpty()) showParam = "rejected,approved";
     String sortParam = request.getParameter("sort");
     if (!"desc".equals(sortParam)) sortParam = "asc";
+    String backParam = request.getParameter("back");
+    Set<String> allowedBackPaths = new HashSet<>(Arrays.asList(
+        "/directorApprove", "/technicalApprove", "/itDirectorApprove", "/process", "/it-requisition-form-detail.jsp"
+    ));
+    String historyBackPath = allowedBackPaths.contains(backParam) ? backParam : "/it-requisition-form-detail.jsp";
     List<String> statusConds = new ArrayList<>();
     for (String s : showParam.split(",")) {
         switch (s.trim().toLowerCase()) {
@@ -419,7 +424,7 @@
     <!-- zennnne แก้ -->
     <!-- FILTER BAR -->
     <div class="filter-bar">
-        <a class="history-home-button" href="${pageContext.request.contextPath}/it-requisition-form-detail.jsp">
+        <a class="history-home-button" href="${pageContext.request.contextPath}<%= historyBackPath %>">
             <i class="fa-solid fa-arrow-left"></i> รายละเอียดฟอร์ม
         </a>
         <span class="filter-separator" aria-hidden="true"></span>
@@ -604,13 +609,13 @@
     <!-- zennnne แก้ -->
     <div class="pagination">
         <% if (currentPage > 1) { %>
-            <a href="?page=<%= currentPage - 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>" style="text-decoration:none;">
+            <a href="?page=<%= currentPage - 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>&back=<%= java.net.URLEncoder.encode(historyBackPath, "UTF-8") %>" style="text-decoration:none;">
                 <button type="button" class="page-btn">« ก่อนหน้า</button>
             </a>
         <% } %>
         <span class="page-num">หน้า <%= currentPage %></span>
         <% if (formList.size() == pageSize) { %>
-            <a href="?page=<%= currentPage + 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>" style="text-decoration:none;">
+            <a href="?page=<%= currentPage + 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>&back=<%= java.net.URLEncoder.encode(historyBackPath, "UTF-8") %>" style="text-decoration:none;">
                 <button type="button" class="page-btn">ถัดไป »</button>
             </a>
         <% } %>

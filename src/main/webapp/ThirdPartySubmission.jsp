@@ -30,7 +30,6 @@
     }
 
     public String actionTitle(String actionType) {
-        if ("EXTERNAL_SUBMITTED".equals(actionType)) return "ผู้ขอใช้บริการ";
         if ("SECTION_HEAD_SUBMITTED".equals(actionType)) return "หัวหน้ากลุ่มงาน";
         if ("IT_DIRECTOR_APPROVED".equals(actionType)) return "ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ";
         if ("IT_DIRECTOR_REJECTED".equals(actionType)) return "ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ ไม่อนุมัติ";
@@ -264,15 +263,14 @@
                             <div class="approval-card-title"><%= h(actionTitle(actionType)) %></div>
                             <div class="approval-actor"><%= display(actorLabel(action)) %></div>
                             <div class="approval-time">
-                                อนุมัติเมื่อ
+                                <%= "EXTERNAL_ACCEPTED".equals(actionType) || "EXTERNAL_REJECTED".equals(actionType)
+                                    ? "ส่งเมื่อ" : "อนุมัติเมื่อ" %>
                                 <%= action.getActedAt() == null ? "-" : dateOnly.format(action.getActedAt()) %>
                                 เวลา
                                 <%= action.getActedAt() == null ? "-" : timeOnly.format(action.getActedAt()) %>
                             </div>
 
-                            <% if ("EXTERNAL_SUBMITTED".equals(actionType)) { %>
-                                <div class="approval-detail-label">ส่งแบบฟอร์ม</div>
-                            <% } else if ("SECTION_HEAD_SUBMITTED".equals(actionType)) { %>
+                            <% if ("SECTION_HEAD_SUBMITTED".equals(actionType)) { %>
                                 <div class="approval-detail-label">รับเรื่อง/ส่งต่อ</div>
                                 <div class="approval-card-detail"><%= display(action.getCommentText()) %></div>
                             <% } else if ("IT_DIRECTOR_APPROVED".equals(actionType) || "IT_DIRECTOR_REJECTED".equals(actionType)) { %>

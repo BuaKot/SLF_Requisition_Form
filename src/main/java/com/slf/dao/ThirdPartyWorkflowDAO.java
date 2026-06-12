@@ -1,6 +1,7 @@
 package com.slf.dao;
 
 import com.slf.model.Employee;
+import com.slf.model.ThirdPartyRequest;
 import com.slf.model.ThirdPartyWorkflowActionEntry;
 import com.slf.model.ThirdPartyWorkflowAssignment;
 import com.slf.util.BangkokTimeUtil;
@@ -10,7 +11,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ThirdPartyWorkflowDAO {
     private static final String TECHNICAL_POSITION = "Technical";
@@ -158,7 +161,7 @@ public class ThirdPartyWorkflowDAO {
             "FROM THIRD_PARTY_WORKFLOW_ACTION a " +
             "JOIN THIRD_PARTY_REQUEST r ON r.REQUEST_ID = a.REQUEST_ID " +
             "LEFT JOIN EMPLOYEE e ON e.EMPID = a.ACTOR_EMPID " +
-            "WHERE a.REQUEST_ID = ? AND a.ACTION_TYPE <> 'WORKFLOW_MIGRATED' " +
+            "WHERE a.REQUEST_ID = ? AND a.ACTION_TYPE NOT IN ('WORKFLOW_MIGRATED', 'EXTERNAL_SUBMITTED') " +
             "ORDER BY a.ACTED_AT ASC, a.ACTION_ID ASC";
         List<ThirdPartyWorkflowActionEntry> history = new ArrayList<ThirdPartyWorkflowActionEntry>();
         try (Connection conn = DBConnection.getConnection();
@@ -181,6 +184,54 @@ public class ThirdPartyWorkflowDAO {
             }
         }
         return history;
+    }
+
+    public Map<Long, List<ThirdPartyWorkflowActionEntry>> findActionHistoryForRequests(
+            List<ThirdPartyRequest> requests) throws SQLException {
+        Map<Long, List<ThirdPartyWorkflowActionEntry>> historyByRequest =
+            new LinkedHashMap<Long, List<ThirdPartyWorkflowActionEntry>>();
+        if (requests == null || requests.isEmpty()) {
+            return historyByRequest;
+        }
+
+        StringBuilder placeholders = new StringBuilder();
+        for (ThirdPartyRequest request : requests) {
+            if (placeholders.length() > 0) placeholders.append(", ");
+            placeholders.append("?");
+            historyByRequest.put(Long.valueOf(request.getRequestId()),
+                new ArrayList<ThirdPartyWorkflowActionEntry>());
+        }
+        String sql =
+            "SELECT a.REQUEST_ID, a.ACTION_TYPE, a.FROM_STATUS, a.TO_STATUS, a.ACTOR_TYPE, " +
+            "a.ACTOR_EMPID, a.COMMENT_TEXT, a.ACTED_AT " +
+            "FROM THIRD_PARTY_WORKFLOW_ACTION a " +
+            "WHERE a.REQUEST_ID IN (" + placeholders + ") AND a.ACTION_TYPE <> 'WORKFLOW_MIGRATED' " +
+            "ORDER BY a.REQUEST_ID, a.ACTED_AT ASC, a.ACTION_ID ASC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            int index = 1;
+            for (ThirdPartyRequest request : requests) {
+                ps.setLong(index++, request.getRequestId());
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ThirdPartyWorkflowActionEntry entry = new ThirdPartyWorkflowActionEntry();
+                    entry.setRequestId(rs.getLong("REQUEST_ID"));
+                    entry.setActionType(rs.getString("ACTION_TYPE"));
+                    entry.setFromStatus(rs.getString("FROM_STATUS"));
+                    entry.setToStatus(rs.getString("TO_STATUS"));
+                    entry.setActorType(rs.getString("ACTOR_TYPE"));
+                    int actorEmpId = rs.getInt("ACTOR_EMPID");
+                    entry.setActorEmpId(rs.wasNull() ? null : Integer.valueOf(actorEmpId));
+                    entry.setCommentText(rs.getString("COMMENT_TEXT"));
+                    entry.setActedAt(rs.getTimestamp("ACTED_AT"));
+                    List<ThirdPartyWorkflowActionEntry> history =
+                        historyByRequest.get(Long.valueOf(entry.getRequestId()));
+                    if (history != null) history.add(entry);
+                }
+            }
+        }
+        return historyByRequest;
     }
 
     public boolean submitItDirectorDecision(long requestId, int actorEmpId, String comment,

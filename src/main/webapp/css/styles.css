@@ -1552,6 +1552,71 @@ html, body {
     box-shadow: 0 14px 32px rgba(0, 51, 102, 0.08);
 }
 
+.owner-link-dashboard {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(360px, 0.8fr);
+    grid-template-areas:
+        "head head"
+        "alert alert"
+        "requests acceptance";
+    align-items: start;
+    gap: 20px;
+}
+
+.owner-link-dashboard .third-party-toolbar-head {
+    grid-area: head;
+    width: 100%;
+    max-width: none;
+    margin-bottom: 2px;
+}
+
+.owner-link-dashboard .owner-request-alert {
+    grid-area: alert;
+    width: 100%;
+    max-width: none;
+    margin-bottom: 0;
+}
+
+.owner-link-dashboard .owner-request-list-panel,
+.owner-link-dashboard .owner-acceptance-panel {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+}
+
+.owner-link-dashboard .owner-request-list-panel {
+    grid-area: requests;
+}
+
+.owner-link-dashboard .owner-acceptance-panel {
+    grid-area: acceptance;
+}
+
+.owner-acceptance-panel .third-party-list-head {
+    align-items: stretch;
+    flex-direction: column;
+}
+
+.owner-acceptance-panel .third-party-count {
+    align-self: flex-start;
+}
+
+.owner-acceptance-panel .third-party-link-card.compact-card,
+.owner-acceptance-panel .status-strip {
+    grid-template-columns: 1fr;
+}
+
+.owner-acceptance-panel .generated-link-box {
+    display: grid;
+    gap: 8px;
+}
+
+.owner-acceptance-panel .generated-link-box input,
+.owner-acceptance-panel .generated-link-box .btn {
+    width: 100%;
+    min-width: 0;
+}
+
 .form-section-title,
 .external-panel h2 {
     margin: 0 0 18px;
@@ -2187,6 +2252,17 @@ html, body {
     .form-field.full,
     .summary-grid .full {
         grid-column: auto;
+    }
+}
+
+@media (max-width: 1100px) {
+    .owner-link-dashboard {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "head"
+            "alert"
+            "requests"
+            "acceptance";
     }
 }
 

@@ -84,7 +84,7 @@
 <div id="main">
     <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
-    <main class="third-party-request-page">
+    <main class="third-party-request-page owner-link-dashboard">
         <section class="third-party-page-head third-party-toolbar-head">
             <div>
                 <p class="eyebrow">แบบฟอร์มสำหรับผู้ให้บริการภายนอก</p>
@@ -108,7 +108,7 @@
             </div>
         </section>
 
-        <section class="third-party-panel">
+        <section class="third-party-panel owner-acceptance-panel">
             <div class="third-party-list-head">
                 <div>
                     <div class="form-section-title">ลิงก์สำหรับตรวจรับและประเมิน</div>
@@ -152,14 +152,14 @@
         </section>
 
         <% if (createdRequestId != null && !createdRequestId.trim().isEmpty()) { %>
-            <div class="form-alert neutral">สร้างลิงก์ใหม่เรียบร้อยแล้ว รายการ #<%= h(createdRequestId) %> พร้อมให้เปิดดูหรือคัดลอกจากปุ่ม “ดูลิงก์”</div>
+            <div class="form-alert neutral owner-request-alert">สร้างลิงก์ใหม่เรียบร้อยแล้ว รายการ #<%= h(createdRequestId) %> พร้อมให้เปิดดูหรือคัดลอกจากปุ่ม “ดูลิงก์”</div>
         <% } else if ("cancelled".equals(status)) { %>
-            <div class="form-alert neutral">ยกเลิกและลบลิงก์ที่ยังไม่ถูกใช้งานเรียบร้อยแล้ว</div>
+            <div class="form-alert neutral owner-request-alert">ยกเลิกและลบลิงก์ที่ยังไม่ถูกใช้งานเรียบร้อยแล้ว</div>
         <% } else if ("not_cancelled".equals(status)) { %>
-            <div class="form-alert">ไม่สามารถยกเลิกได้ อาจถูกส่งฟอร์มแล้ว หมดอายุ หรือถูกยกเลิกไปก่อนหน้า</div>
+            <div class="form-alert owner-request-alert">ไม่สามารถยกเลิกได้ อาจถูกส่งฟอร์มแล้ว หมดอายุ หรือถูกยกเลิกไปก่อนหน้า</div>
         <% } %>
 
-        <section class="third-party-panel">
+        <section class="third-party-panel owner-request-list-panel">
             <div class="third-party-list-head">
                 <div>
                     <div class="form-section-title">รายการลิงก์ที่สร้าง</div>

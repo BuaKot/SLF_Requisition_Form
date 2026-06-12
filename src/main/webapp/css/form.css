@@ -1,3 +1,6 @@
+/* ==========================================================================
+   1) Font, Reset and Baseline Enterprise Canvas Layout Setup
+   ========================================================================== */
 @font-face {
     font-family: 'DBHelvethaica';
     src: url("fonts/DB\ HelvethaicaMon\ X\ Bd\ v3.2.ttf") format('truetype');
@@ -16,6 +19,8 @@ body {
     font-family: 'DBHelvethaica', 'Sarabun', Arial, sans-serif;
     background: var(--slf-color-bg, #f6f7f9);
     color: var(--slf-color-text, #1f2937);
+    font-family: 'DBHelvethaica', 'Sarabun', sans-serif;
+    background-color: #f4f8fc; /* Softer industrial canvas backtint */
 }
 
 textarea,
@@ -233,18 +238,47 @@ button {
     color: var(--slf-color-muted, #667085);
     font-size: 0.88rem;
     line-height: 1.45;
+    border-radius: 8px;
+}
+
+/* ==========================================================================
+   2) Enterprise Section Typographic Accents & Card Containers
+   ========================================================================== */
+.enterprise-section-heading {
+    margin: 0 0 16px;
+    color: #003366;
+    font-size: 22px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-container {
+    width: min(1240px, calc(100% - 28px));
+    max-width: none;
+    margin: 24px auto;
+    background: #ffffff;
+    padding: clamp(20px, 3vw, 36px);
+    border-radius: 8px;
+    border: 1px solid #dce9f5;
+    box-shadow: 0 8px 24px rgba(50, 114, 187, 0.04);
 }
 
 .form-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px 20px;
+    margin-bottom: 20px;
 }
 
 .full-width {
     grid-column: 1 / -1;
 }
 
+/* ==========================================================================
+   3) Structured Form Controls & Label Architecture Block
+   ========================================================================== */
 .form-group {
     display: flex;
     min-width: 0;
@@ -516,6 +550,95 @@ button {
     color: var(--slf-color-text-strong, #111827);
     font-size: 1rem;
     line-height: 1.3;
+.form-group label {
+    font-weight: 900;
+    font-size: 15px;
+    color: #003366;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #c7d7e6;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: 'DBHelvethaica', 'Sarabun', sans-serif;
+    background-color: #ffffff;
+    color: #102a43;
+    outline: none;
+    min-height: 42px;
+    transition: border-color 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #3272BB;
+    box-shadow: 0 0 0 3px rgba(50, 114, 187, 0.12);
+}
+
+.form-group input[readonly],
+.form-group textarea[readonly] {
+    background-color: #f8fafc;
+    color: #334e68;
+    cursor: not-allowed;
+    border-color: #cbd5e1;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.required-star {
+    color: #dc2626;
+    margin-left: 2px;
+}
+
+/* ==========================================================================
+   4) Complex Request Item Component Blocks (Multitask Cards Layout)
+   ========================================================================== */
+.item-block, .request-item {
+    position: relative;
+    width: 100%;
+    border: 1px solid #d7e5f4;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 51, 102, 0.02);
+}
+
+.item-block:hover, .request-item:hover {
+    border-color: #3272BB;
+    box-shadow: 0 6px 20px rgba(50, 114, 187, 0.06);
+}
+
+/* Server Access Sub-Permission Components Layout Blueprint Mapping */
+.server-permission-box {
+    border: 1px solid #b9cfe2;
+    border-radius: 8px;
+    padding: 18px;
+    margin-top: 14px;
+    background: #f7fbff;
+    flex-direction: column;
+    width: 100%;
+}
+
+.server-permission-title {
+    margin: 0 0 14px 0;
+    font-size: 16px;
+    font-weight: 900;
+    color: #003366;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .server-input-row {
@@ -559,7 +682,44 @@ button {
     width: 15px;
     height: 15px;
     accent-color: var(--slf-color-primary, #245b99);
+    grid-template-columns: 100px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.server-input-row label {
+    font-weight: 900;
+    color: #003366;
+    text-align: right;
+    font-size: 14px;
+}
+
+/* Interactive Checkboxes Control Grid Engine */
+.permission-checkbox-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-top: 12px;
+}
+
+.custom-checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #102a43;
     cursor: pointer;
+}
+
+.custom-checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin: 0;
+    flex-shrink: 0;
 }
 
 .additional-information {
@@ -691,6 +851,51 @@ button {
     .form-page-header,
     .it-request-form-page.form-container {
         width: min(100% - 28px, 720px);
+/* ==========================================================================
+   5) Global Action Footer Triggers Systems Buttons Layout Configurations
+   ========================================================================== */
+.btn-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.btn {
+    border: 0;
+    border-radius: 8px;
+    min-height: 44px;
+    padding: 10px 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.btn-add-request { background-color: #003366; color: #ffffff; }
+.btn-reject { background-color: #dc2626; color: #ffffff; }
+.btn-approve { background-color: #137a42; color: #ffffff; }
+
+.btn:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+/* ==========================================================================
+   6) Adaptive Media Constraints Layout Flow System Rules
+   ========================================================================== */
+@media (max-width: 820px) {
+    .form-container {
+        width: min(100%, calc(100% - 16px));
+        margin: 12px auto;
+        padding: 16px;
     }
 
     .form-page-header {
@@ -708,6 +913,7 @@ button {
     .form-grid,
     .request-item-card {
         grid-template-columns: 1fr;
+        gap: 14px;
     }
 
     .full-width,
@@ -716,11 +922,13 @@ button {
     .server-permission-box,
     .request-item-subsection {
         grid-column: 1;
+    .full-width {
+        grid-column: span 1;
     }
 
     .server-input-row {
         grid-template-columns: 1fr;
-        gap: 6px;
+        gap: 4px;
     }
 
     .server-input-row .byte-counter {
@@ -732,6 +940,12 @@ button {
     }
 
     .it-request-form-page .btn {
+    .server-input-row label {
+        text-align: left;
+    }
+
+    .btn-group {
+        flex-direction: column;
         width: 100%;
     }
 }
@@ -762,5 +976,9 @@ button {
 
     .form-action-bar {
         flex-direction: column-reverse;
+    }
+}
+    .btn, .action-row-btn {
+        width: 100% !important;
     }
 }

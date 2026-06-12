@@ -1189,6 +1189,7 @@ html, body {
 .form-status.available {
     background: #e7f7ee;
     color: #137a42;
+    width: 16.5%;
 }
 
 .form-status.soon {

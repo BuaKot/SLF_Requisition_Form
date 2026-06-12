@@ -24,18 +24,90 @@
 <%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 <div id="main" class="enterprise-index-shell">
     <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
+    
+    <div class="topbar-back-row">
+        <a href="${pageContext.request.contextPath}/">
+            <i class="fa-solid fa-arrow-left"></i> กลับหน้าหลักระบบงาน
+        </a>
+    </div>
+
     <main class="enterprise-index-main">
-        <section class="enterprise-menu-section form-action-panel">
-            <p class="enterprise-eyebrow">Form Detail</p>
-            <h2>ใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</h2>
-            <p>แบบฟอร์มสำหรับสร้างคำขอด้านระบบสารสนเทศ อุปกรณ์ สิทธิ์การใช้งาน และงานบริการ IT ผ่าน workflow เดิมของระบบ</p>
-            <div class="index-form-actions">
+        <section class="enterprise-hero" style="margin-bottom: 24px;">
+            <div class="enterprise-hero-copy">
+                <p class="enterprise-eyebrow"><i class="fa-solid fa-microchip"></i> IT SERVICE MANAGEMENT PORTAL</p>
+                <h1>ใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</h1>
+                <p class="enterprise-hero-lead">
+                    ระบบศูนย์กลางสำหรับยื่นแบบฟอร์มขอสร้างคำขอด้านระบบสารสนเทศ อุปกรณ์ฮาร์ดแวร์ สิทธิ์การใช้งานซอฟต์แวร์ และงานบริการด้านเทคนิค IT ผ่านกระบวนการ Workflow อนุมัติขององค์กร
+                </p>
+            </div>
+        </section>
+
+        <section class="enterprise-menu-section">
+            <div class="enterprise-section-head">
+                <div class="enterprise-card-content">
+                    <strong style="color: #003366; font-size: 24px;">
+                        <i class="fa-solid fa-layer-group" style="color: #3272BB; margin-right: 8px;"></i> รายการดำเนินการที่สามารถเลือกได้
+                    </strong>
+                    <small style="color: #52677d;">เลือกปฏิบัติการตามสิทธิ์การใช้งานของระบบปัจจุบันของคุณ</small>
+                </div>
+            </div>
+
+            <div class="enterprise-action-grid <%= approvalOnlyRole ? "approval-only-actions" : "" %>" style="margin-top: 18px;">
+                
                 <% if (!approvalOnlyRole) { %>
-                <a class="form-type-action" href="${pageContext.request.contextPath}/forms/select?code=IT_REQUISITION_REQUEST">สร้างฟอร์มใหม่</a>
-                <a class="form-type-action secondary" href="${pageContext.request.contextPath}/submit">ดูฟอร์มที่ส่งแล้ว</a>
+                <a class="enterprise-action-card primary" href="${pageContext.request.contextPath}/forms/select?code=IT_REQUISITION_REQUEST">
+                    <div class="enterprise-card-icon">
+                        <i class="fa-solid fa-file-circle-plus"></i>
+                    </div>
+                    <div class="enterprise-card-content">
+                        <strong>สร้างฟอร์มใหม่</strong>
+                        <small>ลงทะเบียนยื่นใบคำขอด้านเทคโนโลยีสารสนเทศชิ้นใหม่</small>
+                    </div>
+                    <div class="enterprise-card-arrow">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                </a>
+
+                <a class="enterprise-action-card" href="${pageContext.request.contextPath}/submit">
+                    <div class="enterprise-card-icon">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </div>
+                    <div class="enterprise-card-content">
+                        <strong>ดูฟอร์มที่ส่งแล้ว</strong>
+                        <small>ตรวจสอบรายละเอียดและสถานะของใบคำขอล่าสุดของคุณ</small>
+                    </div>
+                    <div class="enterprise-card-arrow">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                </a>
                 <% } %>
-                <a class="form-type-action secondary" href="${pageContext.request.contextPath}/history.jsp">ประวัติ/ติดตามสถานะ</a>
-                <a class="form-type-action secondary" href="${pageContext.request.contextPath}/">กลับหน้าเลือกฟอร์ม</a>
+
+                <a class="enterprise-action-card" href="${pageContext.request.contextPath}/history.jsp">
+                    <div class="enterprise-card-icon" style="color: #28a745; background-color: #eafaf1;">
+                        <i class="fa-solid fa-clock-rotate-left" style="color: #28a745;"></i>
+                    </div>
+                    <div class="enterprise-card-content">
+                        <strong>ประวัติ / ติดตามสถานะ</strong>
+                        <small>เรียกดูประวัติคำขอย้อนหลังทั้งหมดและติดตามตำแหน่ง Workflow</small>
+                    </div>
+                    <div class="enterprise-card-arrow">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                </a>
+
+                <a class="enterprise-action-card" href="${pageContext.request.contextPath}/">
+                    <div class="enterprise-card-icon" style="color: #e0a800; background-color: #fff9e6;">
+                        <i class="fa-solid fa-house-laptop" style="color: #d39e00;"></i>
+                    </div>
+                    <div class="enterprise-card-content">
+                        <strong>กลับหน้าเลือกฟอร์ม</strong>
+                        <small>ออกจากแบบฟอร์มนี้เพื่อไปยังหน้าสารบัญเลือกแบบฟอร์มหลัก</small>
+                    </div>
+                    <div class="enterprise-card-arrow">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                </a>
+
             </div>
         </section>
     </main>

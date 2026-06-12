@@ -20,7 +20,9 @@ public class IndexInstitutionalBannerTest extends TestCase {
         assertTrue(source.contains("index-banner-inner"));
         assertTrue(source.contains("ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา"));
         assertTrue(styles.contains(".enterprise-hero::before"));
-        assertTrue(styles.contains("linear-gradient(135deg, #073a73 0%, #0b559c 58%, #1766b8 100%)"));
+        assertTrue(styles.contains(".enterprise-hero"));
+        assertTrue(styles.contains("background: var(--slf-color-surface);"));
+        assertFalse(styles.contains("linear-gradient(135deg, #073a73 0%, #0b559c 58%, #1766b8 100%)"));
         assertFalse(source.contains("index-banner-logo"));
         assertFalse(source.contains("fa-building-columns"));
     }

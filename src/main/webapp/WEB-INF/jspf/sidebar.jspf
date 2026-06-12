@@ -39,8 +39,8 @@
     String _sidebarApprovalLabel = AuthUtil.approvalLabelForRole(_sidebarPosition);
 %>
 
-<div id="mySidebar" class="sidebar">
-    <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
+<div id="mySidebar" class="sidebar" role="navigation" aria-label="Primary navigation">
+    <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()" aria-label="Close navigation">&times;</a>
     <a href="${pageContext.request.contextPath}/"><i class="fa-solid fa-house"></i><span>&#3627;&#3609;&#3657;&#3634;&#3627;&#3621;&#3633;&#3585;</span></a>
     <a href="${pageContext.request.contextPath}/emailNotifications"><i class="fa-solid fa-circle-user"></i><span>&#3650;&#3611;&#3619;&#3652;&#3615;&#3621;&#3660;</span></a>
 
@@ -126,5 +126,28 @@
             toggle.classList.add("open");
             toggle.setAttribute("aria-expanded", "true");
         }
+    }());
+
+    (function syncSidebarMenuButtonState() {
+        var sidebar = document.getElementById("mySidebar");
+        var menuButton = document.getElementById("menuBtn");
+        if (!sidebar || !menuButton) return;
+
+        function updateMenuState() {
+            menuButton.setAttribute("aria-expanded", String(sidebar.style.width === "250px"));
+        }
+
+        menuButton.addEventListener("click", function () {
+            window.setTimeout(updateMenuState, 0);
+        });
+
+        var closeButton = sidebar.querySelector(".closebtn");
+        if (closeButton) {
+            closeButton.addEventListener("click", function () {
+                window.setTimeout(updateMenuState, 0);
+            });
+        }
+
+        updateMenuState();
     }());
 </script>

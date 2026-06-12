@@ -35,7 +35,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/submit.css">
-
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/it-requisition-form-detail.jsp">
     <!-- ICON -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flaticon@3/flaticon.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -43,47 +43,6 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-straight/css/uicons-bold-straight.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-straight/css/uicons-regular-straight.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css">
-    <style>
-        .submit-home-button {
-            min-height: 40px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 13px;
-            border: 1px solid #c5d4e2;
-            border-radius: 8px;
-            background: #f5f9fc;
-            color: #003f73;
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 800;
-            white-space: nowrap;
-        }
-        .submit-home-button:hover {
-            border-color: #3272bb;
-            background: #e8f3fb;
-        }
-        .submit-filter-separator {
-            width: 1px;
-            height: 30px;
-            background: #d8e2eb;
-            margin: 0 4px;
-        }
-        .submit-alert {
-            margin: 16px auto 0;
-            width: min(1360px, calc(100% - 40px));
-            padding: 12px 16px;
-            border: 1px solid #f0c36d;
-            border-radius: 8px;
-            background: #fff8e5;
-            color: #7a4b00;
-            font-size: 16px;
-            font-weight: 800;
-        }
-        @media (max-width: 540px) {
-            .submit-filter-separator { display: none; }
-        }
-    </style>
 </head>
 
 <body>
@@ -98,22 +57,17 @@
     <!-- HEADER -->
     <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
-    <!-- TITLE -->
-    <div class="blue-title">
-        <h1 style="margin-block-start:0.1em; margin-block-end:0.1em;color:#003366">
-            ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา
-        </h1>
+    <main class="work-queue-page submitted-queue">
 
-        <h2 style="margin-block-start:0.1em; margin-block-end:0.1em;color:#003366">
-            ใบขอให้ดำเนินการ / Requisition Form
-        </h2>
-    </div>
+    <!-- TITLE -->
+    <section class="queue-page-header">
+    </section>
     <% if (alreadyProcessed) { %>
     <div class="submit-alert"><i class="fa-solid fa-circle-info"></i> ใบขอนี้ถูกดำเนินการแล้ว</div>
     <% } %>
 
     <!-- zennnne แก้ — SUMMARY DASHBOARD + SEARCH -->
-    <div class="summary-wrap">
+    <section class="summary-wrap queue-summary" aria-label="สรุปสถานะใบขอ">
         <div class="summary-cards">
             <!-- zennnne แก้ — ใช้ EL จาก server-side count แทน JS นับ client-side -->
             <div class="summary-card sc-total" data-filter="all" title="แสดงทั้งหมด">
@@ -141,12 +95,12 @@
 
         <div class="search-wrap" id="searchWrap">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาฟอร์ม..." autocomplete="off">
-            <button type="button" class="search-clear" id="searchClear" title="ล้าง">
+            <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาฟอร์ม..." autocomplete="off" aria-label="ค้นหาฟอร์ม">
+            <button type="button" class="search-clear" id="searchClear" title="ล้าง" aria-label="ล้างคำค้นหา">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
-    </div>
+    </section>
     <!-- zennnne แก้ -->
 
     <!-- HEADER TABLE (legacy hidden — kept for backward compat) -->
@@ -161,12 +115,16 @@
 
     <!-- zennnne แก้ -->
     <!-- FILTER BAR -->
-    <div class="filter-bar">
-        <a class="submit-home-button" href="${pageContext.request.contextPath}/it-requisition-form-detail.jsp">
-            <i class="fa-solid fa-arrow-left"></i> รายละเอียดฟอร์ม
-        </a>
+    <section class="filter-bar queue-toolbar" aria-label="ตัวกรองและการเรียงลำดับ">
+        <div class="detail-action-bar submit-back-row">
+    <a class="submit-home-button detail-back-button submit-detail-back-button"
+       href="${pageContext.request.contextPath}/it-requisition-form-detail.jsp">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>กลับรายละเอียดฟอร์ม</span>
+    </a>
+</div>
         <span class="submit-filter-separator" aria-hidden="true"></span>
-        <div class="filter-checkboxes">
+        <div class="filter-checkboxes" aria-label="ตัวกรองสถานะ">
             <label class="filter-label pending-label">
                 <input type="checkbox" value="pending" checked> รอดำเนินการ
             </label>
@@ -182,23 +140,23 @@
         </div>
         <div class="sort-controls">
             <span class="sort-label">เรียงตาม Deadline</span>
-            <button id="sortAscBtn" class="sort-btn active" onclick="setSortOrder('deadline','asc')" title="น้อยไปมาก">
+            <button id="sortAscBtn" class="sort-btn active" onclick="setSortOrder('deadline','asc')" title="น้อยไปมาก" aria-label="เรียง Deadline น้อยไปมาก">
                 <i class="fa-solid fa-arrow-up"></i>
             </button>
-            <button id="sortDescBtn" class="sort-btn" onclick="setSortOrder('deadline','desc')" title="มากไปน้อย">
+            <button id="sortDescBtn" class="sort-btn" onclick="setSortOrder('deadline','desc')" title="มากไปน้อย" aria-label="เรียง Deadline มากไปน้อย">
                 <i class="fa-solid fa-arrow-down"></i>
             </button>
             <!-- zennnne แก้ -->
-            <span class="sort-label" style="margin-left:12px;">เรียงตาม วันกรอก</span>
-            <button id="sortIdAscBtn" class="sort-btn" onclick="setSortOrder('formid','asc')" title="เก่าสุดก่อน">
+            <span class="sort-label sort-label-secondary">เรียงตาม วันกรอก</span>
+            <button id="sortIdAscBtn" class="sort-btn" onclick="setSortOrder('formid','asc')" title="เก่าสุดก่อน" aria-label="เรียงวันกรอกเก่าสุดก่อน">
                 <i class="fa-solid fa-arrow-up"></i>
             </button>
-            <button id="sortIdDescBtn" class="sort-btn" onclick="setSortOrder('formid','desc')" title="ใหม่สุดก่อน">
+            <button id="sortIdDescBtn" class="sort-btn" onclick="setSortOrder('formid','desc')" title="ใหม่สุดก่อน" aria-label="เรียงวันกรอกใหม่สุดก่อน">
                 <i class="fa-solid fa-arrow-down"></i>
             </button>
             <!-- zennnne แก้ -->
         </div>
-    </div>
+    </section>
     <!-- zennnne แก้ -->
 
     <!-- REQUEST LIST -->
@@ -328,14 +286,13 @@
                 if (stateStep < 0) {
                     if (!isEdited) {
 %>
-                <a href="${pageContext.request.contextPath}/editForm?formId=<%= formId %>" style="text-decoration:none;">
+                <a href="${pageContext.request.contextPath}/editForm?formId=<%= formId %>" class="card-action-link">
                     <button type="button" class="confirm-btn edit-btn">แก้ไขฟอร์ม</button>
                 </a>
 <%
                     } else {
 %>
-                <button type="button" class="confirm-btn edit-btn" disabled
-                        style="background:#dc2626; border-color:#dc2626; color:white; cursor:not-allowed; opacity:1;">
+                <button type="button" class="confirm-btn edit-btn rejected-final" disabled>
                     ไม่ผ่านการอนุมัติ
                 </button>
 <%
@@ -356,7 +313,7 @@
                 <button class="confirm-btn"
                         data-formid="<%= formId %>"
                         data-expectedstep="<%= stateStep %>"
-                        <% if (!canConfirm) { %> disabled style="cursor:not-allowed;" <% } %>>
+                        <% if (!canConfirm) { %> disabled <% } %>>
                     <%= canConfirm ? "ยืนยันผลตรวจรับ" : "รอดำเนินการ" %>
                 </button>
 <%
@@ -387,7 +344,7 @@
 %>
         <!-- zennnne แก้ — empty search state -->
         <div class="empty-search" id="emptySearch">
-            <i class="fa-solid fa-magnifying-glass" style="font-size:32px; color:#ccc; display:block; margin-bottom:10px;"></i>
+            <i class="fa-solid fa-magnifying-glass"></i>
             ไม่พบฟอร์มที่ตรงกับคำค้นหา
         </div>
         <!-- zennnne แก้ -->
@@ -397,18 +354,19 @@
     <!-- Pagination -->
     <div class="pagination">
         <% if (currentPage > 1) { %>
-            <a href="?page=<%= currentPage - 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>" style="text-decoration:none;">
+            <a href="?page=<%= currentPage - 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>" class="pagination-link">
                 <button type="button" class="page-btn">« ก่อนหน้า</button>
             </a>
         <% } %>
         <span class="page-num">หน้า <%= currentPage %></span>
         <% if (formList.size() == pageSize) { %>
-            <a href="?page=<%= currentPage + 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>" style="text-decoration:none;">
+            <a href="?page=<%= currentPage + 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>" class="pagination-link">
                 <button type="button" class="page-btn">ถัดไป »</button>
             </a>
         <% } %>
     </div>
     <!-- zennnne แก้ -->
+    </main>
 </div>
 
 <!-- CONFIRM POPUP -->

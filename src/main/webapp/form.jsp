@@ -17,17 +17,6 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
-    <style>
-        .byte-counter { font-size: 0.75rem; color: #888; display: block; text-align: right; margin-top: 2px; width: 100%; order: 999; flex-basis: 100%; }
-        .byte-counter.over-limit { color: #cc0000; font-weight: bold; }
-        .input-over-limit { border-color: #cc0000 !important; outline: 1px solid #cc0000; }
-        .field-hint { display: block; font-size: 0.85rem; color: #555; margin-top: 2px; }
-        .request-section-hint { display: none; }
-        .date-input-wrapper { position: relative; }
-        .calendar-btn { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; }
-        .hidden-date-picker { position: absolute; opacity: 0; width: 0; height: 0; }
-        .form-error-message { margin: 0 0 18px; padding: 12px 14px; border: 1px solid #f0b4ae; border-radius: 8px; background: #fff1f0; color: #b42318; font-weight: 700; }
-    </style>
 </head>
 
 <body>
@@ -39,84 +28,115 @@
     <!-- Sticky Bar with user info -->
     <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
-    <div class="banner">
-        <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
-        <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
-    </div>
+    <header class="form-page-header page-header">
+        <div>
+            <h1 class="page-title">ใบขอให้ดำเนินการ / Requisition Form</h1>
+            <p class="page-subtitle">ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</p>
+        </div>
+    </header>
 
-    <div class="form-container">
+    <main class="it-request-form-page form-container">
         <c:if test="${not empty error}">
-            <div class="form-error-message"><c:out value="${error}" /></div>
+            <div class="form-error-message alert alert-error"><c:out value="${error}" /></div>
         </c:if>
         <form action="${pageContext.request.contextPath}/submitRequest" method="post">
             <input type="hidden" name="csrfToken" value="<%= SecurityUtil.escapeHtml(csrfToken) %>">
             <c:if test="${not empty editedFormId}">
                 <input type="hidden" name="editedFormId" value="${editedFormId}">
             </c:if>
-            <div class="form-grid">
-                <!-- Name (auto‑filled, readonly) -->
-                <div class="form-group">
-                    <label for="name">ชื่อ-นามสกุล</label>
-                    <input type="text" id="name" name="name" value="${fn:escapeXml(loggedInEmployee.empName)}" readonly required>
-                </div>
 
-                <!-- Department (auto‑filled, locked) -->
-                <div class="form-group">
-                    <label for="departmentDisplay">ฝ่าย</label>
-                    <input type="text" id="departmentDisplay" value="${fn:escapeXml(empDeptName)}" readonly required>
-                    <input type="hidden" id="department" name="department" value="${empDeptId}">
-                </div>
-
-                <!-- Section (auto‑filled, locked) -->
-                <div class="form-group">
-                    <label for="sectionDisplay">ส่วน</label>
-                    <input type="text" id="sectionDisplay" value="${fn:escapeXml(empSectionName)}" readonly>
-                    <input type="hidden" id="section" name="section" value="${empSectionId}">
-                </div>
-
-                <!-- Phone (auto‑filled) -->
-                <div class="form-group">
-                    <label for="phone">เบอร์ต่อ</label>
-                    <input type="text" id="phone" name="phone" value="${fn:escapeXml(loggedInEmployee.phone)}" readonly required>
-                </div>
-
-                <!-- Date (today, readonly) -->
-                <div class="form-group">
-                    <label for="date">วันที่ </label>
-                    <input type="text" id="date" name="dateDisplay" readonly required>
-                    <input type="hidden" id="dateIso" name="date">
-                </div>
-
-                <!-- Deadline (custom input) -->
-                <div class="form-group">
-                    <label for="deadlineText">Deadline <span class="required-star">*</span></label>
-                    <div class="date-input-wrapper">
-                        <input type="text" id="deadlineText" name="deadlineDisplay" placeholder="dd/mm/yyyy" inputmode="numeric" maxlength="10" autocomplete="off" required>
-                        <button type="button" class="calendar-btn" id="calendarBtn" aria-label="เลือก Deadline"><i class="fa-regular fa-calendar"></i></button>
-                        <input type="date" id="deadlinePicker" class="hidden-date-picker" tabindex="-1" aria-hidden="true">
-                        <input type="hidden" id="deadlineIso" name="deadline">
+            <section class="form-section applicant-information panel" aria-labelledby="applicantInfoTitle">
+                <div class="section-heading">
+                    <div>
+                        <h2 id="applicantInfoTitle">ข้อมูลผู้ขอ</h2>
+                        <p>ข้อมูลผู้ใช้ถูกดึงจากระบบและล็อกไว้เพื่อป้องกันการส่งคำขอผิดหน่วยงาน</p>
                     </div>
                 </div>
 
-                <!-- Request Topic -->
-                <div class="form-group full-width">
-                    <label for="requestTopic">ชื่อหัวข้อความต้องการ : <span class="required-star">*</span></label>
-                    <input type="text" id="requestTopic" name="requestTopic" placeholder="โปรดระบุชื่อหัวข้อความต้องการ" required data-maxbytes="255">
+                <div class="form-grid">
+                    <div class="form-group readonly-field">
+                        <label for="name" class="field-required">ชื่อ-นามสกุล</label>
+                        <input type="text" id="name" name="name" value="${fn:escapeXml(loggedInEmployee.empName)}" readonly required aria-describedby="nameHelp">
+                        <span class="field-hint" id="nameHelp">ข้อมูลจากบัญชีผู้ใช้งานปัจจุบัน</span>
+                    </div>
+
+                    <div class="form-group readonly-field">
+                        <label for="departmentDisplay" class="field-required">ฝ่าย</label>
+                        <input type="text" id="departmentDisplay" value="${fn:escapeXml(empDeptName)}" readonly required aria-describedby="departmentHelp">
+                        <span class="field-hint" id="departmentHelp">ใช้เป็นข้อมูลส่งต่อ workflow ภายใน</span>
+                        <input type="hidden" id="department" name="department" value="${empDeptId}">
+                    </div>
+
+                    <div class="form-group readonly-field">
+                        <label for="sectionDisplay">ส่วน</label>
+                        <input type="text" id="sectionDisplay" value="${fn:escapeXml(empSectionName)}" readonly aria-describedby="sectionHelp">
+                        <span class="field-hint" id="sectionHelp">แสดงส่วนงานตามบัญชีพนักงาน</span>
+                        <input type="hidden" id="section" name="section" value="${empSectionId}">
+                    </div>
+
+                    <div class="form-group readonly-field">
+                        <label for="phone" class="field-required">เบอร์ต่อ</label>
+                        <input type="text" id="phone" name="phone" value="${fn:escapeXml(loggedInEmployee.phone)}" readonly required aria-describedby="phoneHelp">
+                        <span class="field-hint" id="phoneHelp">ใช้สำหรับติดต่อกลับกรณีต้องสอบถามเพิ่มเติม</span>
+                    </div>
+
+                    <div class="form-group readonly-field">
+                        <label for="date" class="field-required">วันที่</label>
+                        <input type="text" id="date" name="dateDisplay" readonly required aria-describedby="dateHelp">
+                        <span class="field-hint" id="dateHelp">ระบบกำหนดวันที่ส่งคำขอให้อัตโนมัติ</span>
+                        <input type="hidden" id="dateIso" name="date">
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section request-information panel" aria-labelledby="requestInfoTitle">
+                <div class="section-heading">
+                    <div>
+                        <h2 id="requestInfoTitle">ข้อมูลคำขอ</h2>
+                        <p>ระบุหัวข้อและกำหนดวันที่ต้องการใช้งาน เพื่อช่วยให้ทีม IT จัดลำดับงานได้ถูกต้อง</p>
+                    </div>
                 </div>
 
-                <!-- Request items container -->
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="deadlineText" class="field-required">Deadline</label>
+                        <div class="date-input-wrapper">
+                            <input type="text" id="deadlineText" name="deadlineDisplay" placeholder="dd/mm/yyyy" inputmode="numeric" maxlength="10" autocomplete="off" required aria-describedby="deadlineHelp">
+                            <button type="button" class="calendar-btn" id="calendarBtn" aria-label="เลือก Deadline"><i class="fa-regular fa-calendar"></i></button>
+                            <input type="date" id="deadlinePicker" class="hidden-date-picker" tabindex="-1" aria-hidden="true">
+                            <input type="hidden" id="deadlineIso" name="deadline">
+                        </div>
+                        <span class="field-hint" id="deadlineHelp">รูปแบบวันที่ dd/mm/yyyy และต้องไม่ย้อนหลังจากวันที่ปัจจุบัน</span>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="requestTopic" class="field-required">ชื่อหัวข้อความต้องการ</label>
+                        <input type="text" id="requestTopic" name="requestTopic" placeholder="เช่น ขอสิทธิ์เข้าใช้งานระบบ / ขอปรับปรุงรายงาน" required data-maxbytes="255" aria-describedby="requestTopicHelp">
+                        <span class="field-hint" id="requestTopicHelp">สรุปคำขอให้สั้นและชัดเจน เพื่อค้นหาและติดตามภายหลังได้ง่าย</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section requested-items panel" aria-labelledby="requestedItemsTitle">
+                <div class="section-heading">
+                    <div>
+                        <h2 id="requestedItemsTitle">รายการคำขอ</h2>
+                        <p>เพิ่มรายการได้มากกว่าหนึ่งรายการ โดยควรอยู่ในกลุ่มผู้รับผิดชอบเดียวกัน</p>
+                    </div>
+                </div>
+
                 <div class="request-page full-width">
                     <div id="requestsContainer">
-                        <div class="request-item">
+                        <div class="request-item request-item-card">
                             <div class="request-item-header">
                                 <h2>คำขอที่ 1</h2>
-                                <div style="margin-left:auto">
-                                    <button type="button" class="request-delete-btn" disabled><i class="fa-regular fa-trash-can"></i></button>
+                                <div class="request-item-actions">
+                                    <button type="button" class="request-delete-btn" disabled aria-label="ลบคำขอนี้" title="ลบคำขอนี้"><i class="fa-regular fa-trash-can"></i></button>
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label>ประเภทคำขอ <span class="required-star">*</span></label>
+                            <div class="form-group request-type-field">
+                                <label class="field-required">ประเภทคำขอ</label>
                                 <span class="field-hint">หากเพิ่มมากกว่า 1 คำขอ กรุณาเลือกประเภทคำขอที่อยู่ในส่วนผู้รับผิดชอบเดียวกัน</span>
                                 <span class="field-hint request-section-hint"></span>
                                 <select name="requestType[]" class="select-placeholder request-type-select" required>
@@ -134,20 +154,24 @@
                             </div>
 
                             <div class="form-group program-name-box">
-                                <label>ชื่อโปรแกรม : <span class="required-star">*</span></label>
+                                <label class="field-required">ชื่อโปรแกรม</label>
                                 <input type="text" name="programName[]" required data-maxbytes="500">
                             </div>
 
-                            <div class="form-group full-width server-permission-box">
-                                <h3 class="server-permission-title">กรณีขอใช้สิทธิ์เก็บข้อมูลใน Server</h3>
+                            <div class="form-group full-width server-permission-box request-item-subsection technical-information">
+                                <div class="subsection-heading">
+                                    <p class="section-kicker">Server Permission / Technical Information</p>
+                                    <h3 class="server-permission-title">กรณีขอใช้สิทธิ์เก็บข้อมูลใน Server</h3>
+                                </div>
                                 <div class="server-input-row">
-                                    <label>Server : <span class="required-star">*</span></label>
+                                    <label class="field-required">Server</label>
                                     <input type="text" name="serverName[]" placeholder="โปรดระบุ Server" required data-maxbytes="500">
                                 </div>
                                 <div class="server-input-row">
-                                    <label>Folder : <span class="required-star">*</span></label>
+                                    <label class="field-required">Folder</label>
                                     <input type="text" name="serverFolder[]" placeholder="โปรดระบุ Folder" required data-maxbytes="500">
                                 </div>
+                                <p class="field-hint permission-hint">เลือกสิทธิ์ที่ต้องการสำหรับ Folder หลัก</p>
                                 <div class="permission-checkbox-row">
                                     <label><input type="checkbox" name="folderPermission[]" value="Full control"> Full control</label>
                                     <label><input type="checkbox" name="folderPermission[]" value="Modify"> Modify</label>
@@ -159,6 +183,7 @@
                                     <label>Sub Folder :</label>
                                     <input type="text" name="subFolder[]" placeholder="โปรดระบุ Sub Folder" data-maxbytes="500">
                                 </div>
+                                <p class="field-hint permission-hint">กรอก Sub Folder เฉพาะกรณีต้องการสิทธิ์แยกจาก Folder หลัก</p>
                                 <div class="permission-checkbox-row">
                                     <label><input type="checkbox" name="subFolderPermission[]" value="Full control"> Full control</label>
                                     <label><input type="checkbox" name="subFolderPermission[]" value="Modify"> Modify</label>
@@ -169,42 +194,49 @@
                             </div>
 
                             <div class="form-group full-width other-request-box">
-                                <label>โปรดระบุ <span class="required-star">*</span></label>
+                                <label class="field-required">โปรดระบุ</label>
                                 <input type="text" name="otherRequest[]" placeholder="โปรดระบุประเภทคำขอ" required data-maxbytes="500">
                             </div>
 
-                            <div class="form-group full-width">
-                                <label>วัตถุประสงค์ / ความต้องการ <span class="required-star">*</span></label>
-                                <textarea name="objective[]" placeholder="โปรดระบุความต้องการ" required data-maxbytes="1000"></textarea>
-                            </div>
+                            <div class="request-item-subsection additional-information">
+                                <div class="subsection-heading">
+                                    <p class="section-kicker">Additional Information</p>
+                                    <h3>รายละเอียดประกอบคำขอ</h3>
+                                </div>
 
-                            <div class="form-group full-width">
-                                <label>วิธีการเดิมในปัจจุบัน</label>
-                                <textarea name="currentMethod[]" placeholder="โปรดระบุวิธีการเดิมในปัจจุบัน" data-maxbytes="1000"></textarea>
+                                <div class="form-group full-width">
+                                    <label class="field-required">วัตถุประสงค์ / ความต้องการ</label>
+                                    <textarea name="objective[]" placeholder="อธิบายผลลัพธ์ที่ต้องการหรือปัญหาที่ต้องการให้ดำเนินการ" required data-maxbytes="1000"></textarea>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label>วิธีการเดิมในปัจจุบัน</label>
+                                    <textarea name="currentMethod[]" placeholder="ระบุขั้นตอนเดิมหรือวิธีที่ใช้อยู่ หากมี" data-maxbytes="1000"></textarea>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="add-request-wrap">
-                        <button type="button" class="btn btn-add-request" id="addRequestBtn">เพิ่มช่องคำขอ</button>
+                    <div class="add-request-wrap action-row">
+                        <button type="button" class="btn btn-add-request" id="addRequestBtn"><i class="fa-solid fa-plus" aria-hidden="true"></i> เพิ่มช่องคำขอ</button>
                     </div>
                 </div>
+            </section>
 
-                <div class="btn-group full-width">
-                    <button type="button" class="btn btn-reject" onclick="history.back()">ย้อนกลับ</button>
-                    <button type="submit" class="btn btn-approve" id="submitBtn">ยืนยันการส่ง</button>
-                </div>
+            <div class="form-action-bar action-row">
+                <button type="button" class="btn btn-reject" onclick="history.back()">ย้อนกลับ</button>
+                <button type="submit" class="btn btn-approve" id="submitBtn">ยืนยันการส่ง</button>
             </div>
         </form>
-    </div>
+    </main>
 </div>
 
 <!-- Custom modal for cross‑section validation -->
-<div class="request-alert-overlay" id="requestTypeAlert" aria-hidden="true" style="display:none; position:fixed; inset:0; z-index:2000; align-items:center; justify-content:center; padding:20px; background:rgba(0,0,0,0.28);">
-    <div class="request-alert-box" role="alertdialog" aria-modal="true" aria-labelledby="requestTypeAlertTitle" style="width:min(420px,100%); padding:22px 24px; border-radius:8px; background:#fff; box-shadow:0 14px 38px rgba(0,0,0,0.24); text-align:left;">
-        <h3 id="requestTypeAlertTitle" style="margin:0 0 10px; font-size:1.15rem; color:#111827;">กรุณาตรวจสอบประเภทคำขอ</h3>
-        <p id="requestTypeAlertMessage" style="margin:0 0 20px; color:#1f2937; line-height:1.5; white-space:pre-line;"></p>
-        <div style="display:flex; justify-content:flex-end;">
+<div class="request-alert-overlay" id="requestTypeAlert" aria-hidden="true">
+    <div class="request-alert-box" role="alertdialog" aria-modal="true" aria-labelledby="requestTypeAlertTitle">
+        <h3 id="requestTypeAlertTitle">กรุณาตรวจสอบประเภทคำขอ</h3>
+        <p id="requestTypeAlertMessage"></p>
+        <div class="request-alert-actions">
             <button type="button" class="request-alert-btn" id="requestTypeAlertClose">ตกลง</button>
         </div>
     </div>

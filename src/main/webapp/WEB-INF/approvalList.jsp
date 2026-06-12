@@ -29,6 +29,7 @@
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/submit.css">
     <style>
         * { box-sizing: border-box; }
         body { margin: 0; background: #f4f8fc; color: #17324d; font-family: 'DB Helvethaica X 55 Regular', 'DBHelvethaica', 'Sarabun', sans-serif; }
@@ -78,13 +79,13 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
-<div id="main" class="approval-main">
+<div id="main" class="approval-main work-queue-page approval-work-queue">
     <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
-    <header class="approval-header">
+    <header class="queue-page-header approval-header">
         <div class="approval-header-inner">
             <div class="approval-title"><div class="approval-title-icon"><i class="fa-solid fa-file-signature"></i></div><div><h1><%= approvalTitle %></h1><p><%= approvalSubtitle %></p></div></div>
-            <div class="header-actions">
-                <span class="count-badge" title="จำนวนรายการ"><%= approvalFormList.size() %></span>
+            <div class="header-actions queue-summary">
+                <span class="count-badge" title="จำนวนรายการ" aria-label="จำนวนรายการรอดำเนินการ"><%= approvalFormList.size() %></span>
                 <a class="page-button" href="${pageContext.request.contextPath}/history.jsp?back=<%= java.net.URLEncoder.encode(approvalHistoryBackPage, "UTF-8") %>"><i class="fa-solid fa-clock-rotate-left"></i> ประวัติ</a>
                 <a class="page-button" href="${pageContext.request.contextPath}/"><i class="fa-solid fa-house"></i> หน้าหลัก</a>
             </div>

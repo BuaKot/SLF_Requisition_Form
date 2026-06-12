@@ -1,4 +1,4 @@
-<%@ page isELIgnored="false" %>
+﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.slf.util.AuthUtil" %>
 <%
@@ -29,13 +29,6 @@
 <%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 <div id="main" class="enterprise-index-shell">
     <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
-    
-    <div class="topbar-back-row">
-        <a href="${pageContext.request.contextPath}/">
-            <i class="fa-solid fa-arrow-left"></i> กลับหน้าหลักระบบงาน
-        </a>
-    </div>
-
     <main class="enterprise-index-main">
         <section class="enterprise-hero" style="margin-bottom: 24px;">
             <div class="enterprise-hero-copy">
@@ -46,6 +39,13 @@
                 </p>
             </div>
         </section>
+
+        
+        <div class="detail-action-bar it-detail-back-row">
+            <a class="detail-back-button" href="${pageContext.request.contextPath}/">
+                <i class="fa-solid fa-arrow-left"></i> กลับหน้าหลักระบบงาน
+            </a>
+        </div>
 
         <section class="enterprise-menu-section">
             <div class="enterprise-section-head">

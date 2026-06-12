@@ -20,7 +20,6 @@ public class ThirdPartyFormLink {
     private Integer revokedBy;
     private String note;
     private Long submissionId;
-    private String submissionStatus;
     private Timestamp submittedAt;
 
     public long getLinkId() { return linkId; }
@@ -57,8 +56,6 @@ public class ThirdPartyFormLink {
     public void setNote(String note) { this.note = note; }
     public Long getSubmissionId() { return submissionId; }
     public void setSubmissionId(Long submissionId) { this.submissionId = submissionId; }
-    public String getSubmissionStatus() { return submissionStatus; }
-    public void setSubmissionStatus(String submissionStatus) { this.submissionStatus = submissionStatus; }
     public Timestamp getSubmittedAt() { return submittedAt; }
     public void setSubmittedAt(Timestamp submittedAt) { this.submittedAt = submittedAt; }
 }

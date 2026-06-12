@@ -214,7 +214,11 @@
                         </div>
                     </div>
                     <div class="submit-row">
-                        <button class="btn btn-primary primary-action" type="submit">
+                        <button class="workflow-submit-button" type="submit" data-workflow-confirm
+                                data-before-confirm="validateAssignments"
+                                data-confirm-title="ยืนยันการส่งคำขอ"
+                                data-confirm-message="ความเห็นและผู้รับมอบหมายจะถูกบันทึก และส่งคำขอนี้ให้ ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ พิจารณาต่อ"
+                                data-confirm-label="ยืนยันส่งต่อ">
                             <i class="fa-solid fa-paper-plane"></i> ส่งต่อให้ IT Director
                         </button>
                     </div>
@@ -224,6 +228,7 @@
     </main>
     <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
+<%@ include file="/WEB-INF/jspf/third-party-confirm-dialog.jspf" %>
 <script>
 window.addEventListener("pageshow", function(event) {
     if (event.persisted) {
@@ -249,7 +254,7 @@ function validateAssignments() {
         window.alert("ผู้ตรวจทานต้องไม่ใช่ผู้ดำเนินการหรือผู้ยกเลิกสิทธิ์");
         return false;
     }
-    return window.confirm("ยืนยันส่งความเห็นและการมอบหมายงานให้ IT Director หรือไม่?");
+    return true;
 }
 
 function toggleNav() {

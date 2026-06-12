@@ -13,7 +13,7 @@ public class ThirdPartyConsentPageTest extends TestCase {
 
         assertTrue(jsp.contains("name=\"consentVersion\""));
         assertTrue(jsp.contains("name=\"consentAccepted\""));
-        assertTrue(jsp.contains("value=\"accepted\" required"));
+        assertTrue(jsp.contains("value=\"accepted\" <%= \"accepted\".equals(request.getParameter(\"consentAccepted\")) ? \"checked\" : \"\" %> required"));
         assertTrue(jsp.contains("class=\"consent-note\""));
         assertTrue(jsp.contains("class=\"consent-extra\""));
         assertTrue(jsp.contains("<strong>"));

@@ -1,7 +1,10 @@
 package com.slf.controller;
 
+import com.slf.dao.ThirdPartyAcceptanceDAO;
 import com.slf.dao.ThirdPartyFormSubmissionDAO;
+import com.slf.dao.ThirdPartyWorkflowDAO;
 import com.slf.model.ThirdPartyFormSubmission;
+import com.slf.model.ThirdPartyWorkflowActionEntry;
 import com.slf.util.ThirdPartyAccessPolicy;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -15,7 +18,9 @@ import javax.servlet.http.HttpSession;
 
 @WebServlet("/thirdPartySubmission")
 public class ThirdPartySubmissionServlet extends HttpServlet {
+    private final ThirdPartyAcceptanceDAO acceptanceDAO = new ThirdPartyAcceptanceDAO();
     private final ThirdPartyFormSubmissionDAO submissionDAO = new ThirdPartyFormSubmissionDAO();
+    private final ThirdPartyWorkflowDAO workflowDAO = new ThirdPartyWorkflowDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -29,7 +34,7 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
         }
 
         try {
-            ThirdPartyFormSubmission submission = submissionDAO.findById(submissionId);
+            ThirdPartyFormSubmission submission = submissionDAO.findDetailById(submissionId);
             if (submission == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
@@ -43,6 +48,15 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
             }
             request.setAttribute("thirdPartySubmissionAuthorized", Boolean.TRUE);
             request.setAttribute("submission", submission);
+            java.util.List<ThirdPartyWorkflowActionEntry> approvalHistory =
+                submission.getRequestId() == null
+                    ? java.util.Collections.emptyList()
+                    : workflowDAO.findActionHistory(submission.getRequestId().longValue());
+            request.setAttribute("approvalHistory", approvalHistory);
+            request.setAttribute("acceptanceScore",
+                submission.getRequestId() != null && hasExternalAcceptance(approvalHistory)
+                    ? acceptanceDAO.findSatisfactionLevelByRequestId(submission.getRequestId().longValue())
+                    : null);
             boolean viewingOwnSubmission = ThirdPartyAccessPolicy.canCreateOwnLinks(empId)
                 && empId.equals(submission.getInternalOwnerEmpId());
             request.setAttribute("thirdPartySubmissionBackUrl",
@@ -65,5 +79,13 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
             throw new IllegalArgumentException("Invalid submission id.");
         }
         return id;
+    }
+
+    private static boolean hasExternalAcceptance(
+            java.util.List<ThirdPartyWorkflowActionEntry> approvalHistory) {
+        for (ThirdPartyWorkflowActionEntry action : approvalHistory) {
+            if ("EXTERNAL_ACCEPTED".equals(action.getActionType())) return true;
+        }
+        return false;
     }
 }

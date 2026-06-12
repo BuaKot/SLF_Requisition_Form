@@ -15,6 +15,9 @@ public class ThirdPartyAccessRequestPageTest extends TestCase {
         assertTrue(jsp.contains("name=\"accessSystem\""));
         assertTrue(jsp.contains("name=\"accessRole\""));
         assertTrue(jsp.contains("name=\"accessNationalId\""));
+        assertTrue(jsp.contains("id=\"fullNameEn\" name=\"fullNameEn\" type=\"text\" maxlength=\"255\""));
+        assertTrue(jsp.contains("value=\"<%= h(request.getParameter(\"fullNameEn\")) %>\" required"));
+        assertTrue(jsp.contains("name=\"accessFullNameEn\" maxlength=\"255\" required"));
         assertTrue(jsp.contains("DSL"));
         assertFalse(jsp.contains("accessRequestType"));
         assertFalse(jsp.toLowerCase().contains("signature"));

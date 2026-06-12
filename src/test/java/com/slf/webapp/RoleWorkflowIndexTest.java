@@ -22,6 +22,9 @@ public class RoleWorkflowIndexTest extends TestCase {
         assertTrue(index.contains("isTechnical"));
 
         assertTrue(inbox.contains("/thirdParty/sectionHead/review?id="));
+        assertTrue(inbox.contains("<a class=\"item\""));
+        assertFalse(inbox.contains("String[] buttons="));
+        assertFalse(inbox.contains("class=\"btn btn-primary primary-action\""));
         assertTrue(inbox.contains("/thirdParty/sectionHead/report?id="));
         assertTrue(inbox.contains("คำขอรอพิจารณา"));
         assertTrue(inbox.contains("คำขอรอเขียนรายงานสรุป"));

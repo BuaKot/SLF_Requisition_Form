@@ -15,6 +15,17 @@ public class ThirdPartySubmissionBackLinkTest extends TestCase {
 
         assertTrue(page.contains("thirdPartySubmissionBackUrl"));
         assertTrue(page.contains("href=\"<%= h(backUrl) %>\""));
+        assertTrue(page.contains("ประวัติการดำเนินงาน"));
+        assertTrue(page.contains("approvalHistory"));
+        assertTrue(page.contains("actionTitle(actionType)"));
+        assertTrue(page.contains("actorLabel(action)"));
+        assertTrue(page.contains("ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ ไม่อนุมัติ"));
+        assertTrue(page.contains(".approval-card.rejected"));
+        assertTrue(page.contains("รายงานเพื่อโปรดทราบ"));
+        assertTrue(page.contains("acceptanceScore"));
+        assertFalse(page.contains("acceptanceResult.getSatisfactionLevel()"));
+        assertTrue(page.contains("? \"ส่งเมื่อ\" : \"อนุมัติเมื่อ\""));
+        assertFalse(page.contains("\"EXTERNAL_SUBMITTED\".equals(actionType)"));
         assertFalse(page.contains("href=\"${pageContext.request.contextPath}/thirdPartyLinks\""));
     }
 }

@@ -13,6 +13,7 @@ public class ThirdPartyAcceptancePageTest extends TestCase {
         String acceptanceDao = read("src/main/java/com/slf/dao/ThirdPartyAcceptanceDAO.java");
         String publicPage = read("src/main/webapp/thirdpartyAcceptance.jsp");
         String ownerPage = read("src/main/webapp/third-party-request-new.jsp");
+        String styles = read("src/main/webapp/css/styles.css");
 
         assertTrue(migration.contains("CREATE TABLE THIRD_PARTY_ACCEPTANCE_TOKEN"));
         assertTrue(migration.contains("CREATE TABLE THIRD_PARTY_ACCEPTANCE_RESULT"));
@@ -30,6 +31,17 @@ public class ThirdPartyAcceptancePageTest extends TestCase {
 
         assertTrue(ownerPage.contains("ลิงก์สำหรับตรวจรับและประเมิน"));
         assertTrue(ownerPage.contains("copyAcceptanceLink"));
+        assertTrue(ownerPage.contains("owner-link-dashboard"));
+        assertTrue(ownerPage.contains("owner-acceptance-panel"));
+        assertTrue(ownerPage.contains("acceptance-link-card"));
+        assertTrue(ownerPage.contains("acceptance-generated-link"));
+        assertTrue(ownerPage.contains("owner-request-list-panel"));
+        assertTrue(styles.contains("\"requests acceptance\""));
+        assertTrue(styles.contains(".owner-link-dashboard .owner-request-list-panel"));
+        assertTrue(styles.contains(".owner-link-dashboard .owner-acceptance-panel"));
+        assertTrue(styles.contains(".owner-acceptance-panel .acceptance-link-card"));
+        assertTrue(styles.contains(".owner-acceptance-panel .generated-link-box input"));
+        assertTrue(styles.contains("text-overflow: ellipsis"));
     }
 
     private static String read(String path) throws Exception {

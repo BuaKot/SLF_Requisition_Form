@@ -39,6 +39,7 @@ public class ThirdPartyRequestServlet extends HttpServlet {
         try {
             int ownerEmpId = allowedEmpId.intValue();
             List<ThirdPartyRequest> requests = requestDAO.findRecentForOwner(ownerEmpId, 100);
+            acceptanceDAO.repairMissingTokensForOwner(ownerEmpId, 100);
             request.setAttribute("thirdPartyRequests", requests);
             request.setAttribute("acceptanceTokens", acceptanceDAO.findRecentForOwner(ownerEmpId, 100));
             request.setAttribute("acceptanceLinkPrefix", buildAcceptanceLinkPrefix(request));

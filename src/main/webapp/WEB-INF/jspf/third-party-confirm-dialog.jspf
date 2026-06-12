@@ -1,0 +1,85 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<div class="workflow-confirm-overlay" id="workflowConfirmOverlay" hidden>
+    <section class="workflow-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="workflowConfirmTitle">
+        <div class="workflow-confirm-icon" id="workflowConfirmIcon"><i class="fa-solid fa-paper-plane"></i></div>
+        <h2 id="workflowConfirmTitle">ยืนยันการส่งงาน</h2>
+        <p id="workflowConfirmMessage">โปรดตรวจสอบข้อมูลให้เรียบร้อยก่อนยืนยัน</p>
+        <div class="workflow-confirm-actions">
+            <button class="workflow-confirm-cancel" id="workflowConfirmCancel" type="button">ยกเลิก</button>
+            <button class="workflow-confirm-submit" id="workflowConfirmSubmit" type="button">
+                <i class="fa-solid fa-check"></i> <span>ยืนยัน</span>
+            </button>
+        </div>
+    </section>
+</div>
+<script>
+(function () {
+    var overlay = document.getElementById("workflowConfirmOverlay");
+    var title = document.getElementById("workflowConfirmTitle");
+    var message = document.getElementById("workflowConfirmMessage");
+    var icon = document.getElementById("workflowConfirmIcon");
+    var cancelButton = document.getElementById("workflowConfirmCancel");
+    var submitButton = document.getElementById("workflowConfirmSubmit");
+    var submitLabel = submitButton.querySelector("span");
+    var pendingForm = null;
+    var pendingTrigger = null;
+
+    function closeDialog() {
+        overlay.hidden = true;
+        message.hidden = false;
+        document.body.classList.remove("workflow-confirm-open");
+        pendingForm = null;
+        pendingTrigger = null;
+    }
+
+    document.addEventListener("click", function (event) {
+        var trigger = event.target.closest("[data-workflow-confirm]");
+        if (!trigger) return;
+        event.preventDefault();
+        var form = trigger.form;
+        if (!form || !form.reportValidity()) return;
+        var beforeConfirm = trigger.dataset.beforeConfirm;
+        if (beforeConfirm && typeof window[beforeConfirm] === "function" && !window[beforeConfirm]()) return;
+
+        pendingForm = form;
+        pendingTrigger = trigger;
+        title.textContent = trigger.dataset.confirmTitle || "ยืนยันการส่งงาน";
+        var confirmMessage = trigger.getAttribute("data-confirm-message");
+        if (confirmMessage === null) {
+            message.textContent = "โปรดตรวจสอบข้อมูลให้เรียบร้อยก่อนยืนยัน";
+            message.hidden = false;
+        } else if (confirmMessage === "") {
+            message.textContent = "";
+            message.hidden = true;
+        } else {
+            message.textContent = confirmMessage;
+            message.hidden = false;
+        }
+        submitLabel.textContent = trigger.dataset.confirmLabel || "ยืนยัน";
+        overlay.dataset.tone = trigger.dataset.confirmTone || "primary";
+        icon.innerHTML = trigger.dataset.confirmTone === "danger"
+            ? '<i class="fa-solid fa-triangle-exclamation"></i>'
+            : '<i class="fa-solid fa-paper-plane"></i>';
+        overlay.hidden = false;
+        document.body.classList.add("workflow-confirm-open");
+        cancelButton.focus();
+    });
+
+    cancelButton.addEventListener("click", closeDialog);
+    overlay.addEventListener("click", function (event) { if (event.target === overlay) closeDialog(); });
+    document.addEventListener("keydown", function (event) { if (event.key === "Escape" && !overlay.hidden) closeDialog(); });
+    submitButton.addEventListener("click", function () {
+        if (!pendingForm) return;
+        submitButton.disabled = true;
+        submitLabel.textContent = "กำลังบันทึก...";
+        if (pendingTrigger && pendingTrigger.name) {
+            var submitValue = document.createElement("input");
+            submitValue.type = "hidden";
+            submitValue.name = pendingTrigger.name;
+            submitValue.value = pendingTrigger.value;
+            pendingForm.appendChild(submitValue);
+        }
+        pendingForm.submit();
+    });
+})();
+</script>

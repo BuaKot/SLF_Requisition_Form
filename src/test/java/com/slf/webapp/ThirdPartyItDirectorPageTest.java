@@ -15,6 +15,9 @@ public class ThirdPartyItDirectorPageTest extends TestCase {
 
         assertTrue(index.contains("/thirdParty/itDirector"));
         assertTrue(inbox.contains("/thirdParty/itDirector/review?id="));
+        assertTrue(inbox.contains("<a class=\"item\""));
+        assertFalse(inbox.contains("String[] buttons="));
+        assertFalse(inbox.contains("class=\"btn btn-primary primary-action\""));
         assertTrue(review.contains("ความเห็นหัวหน้าส่วน"));
         assertTrue(review.contains("assignmentLabel"));
         assertTrue(review.contains("name=\"comment\""));

@@ -21,7 +21,6 @@ public class ThirdPartyFormSubmission {
     private String projectName;
     private Date accessStartDate;
     private Date accessEndDate;
-    private String status;
     private Timestamp createdAt;
     private Integer reviewedBy;
     private Timestamp reviewedAt;
@@ -68,8 +67,6 @@ public class ThirdPartyFormSubmission {
     public void setAccessStartDate(Date accessStartDate) { this.accessStartDate = accessStartDate; }
     public Date getAccessEndDate() { return accessEndDate; }
     public void setAccessEndDate(Date accessEndDate) { this.accessEndDate = accessEndDate; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
     public Integer getReviewedBy() { return reviewedBy; }

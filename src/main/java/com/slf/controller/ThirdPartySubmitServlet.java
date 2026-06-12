@@ -31,8 +31,9 @@ public class ThirdPartySubmitServlet extends HttpServlet {
         preventCaching(response);
         request.setCharacterEncoding("UTF-8");
         String rawToken = request.getParameter("token");
+        ThirdPartyFormLink link = null;
         try {
-            ThirdPartyFormLink link = linkDAO.findUsableByTokenHash(ThirdPartyLinkToken.sha256Hex(rawToken));
+            link = linkDAO.findUsableByTokenHash(ThirdPartyLinkToken.sha256Hex(rawToken));
             if (link == null) {
                 forwardResult(request, response, false, "ลิงก์นี้หมดอายุ ถูกใช้แล้ว ถูกยกเลิก หรือไม่ถูกต้อง");
                 return;
@@ -47,7 +48,11 @@ public class ThirdPartySubmitServlet extends HttpServlet {
             forwardResult(request, response, true, "ส่งแบบฟอร์มเรียบร้อยแล้ว เจ้าหน้าที่จะตรวจสอบข้อมูลก่อนนำเข้าสู่ workflow หลัก");
         } catch (SQLException e) {
             throw new ServletException("Unable to submit third-party form", e);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            if (link != null) {
+                forwardFormError(request, response, link, rawToken, e.getMessage());
+                return;
+            }
             forwardResult(request, response, false, e.getMessage());
         }
     }
@@ -74,6 +79,7 @@ public class ThirdPartySubmitServlet extends HttpServlet {
 
     private static void validateSubmission(ThirdPartyFormSubmission submission) {
         requireText(submission.getFullNameTh(), "ชื่อ-สกุล ภาษาไทย");
+        requireText(submission.getFullNameEn(), "ชื่อ-สกุล ภาษาอังกฤษ");
         requireText(submission.getOrganization(), "หน่วยงาน");
         requireText(submission.getPhone(), "เบอร์โทรศัพท์");
         requireText(submission.getEmail(), "Email");
@@ -135,6 +141,7 @@ public class ThirdPartySubmitServlet extends HttpServlet {
         for (ThirdPartyAccessRequest item : items) {
             String prefix = "รายชื่อคนที่ " + item.getDisplayOrder() + ": ";
             requireText(item.getFullNameTh(), prefix + "ชื่อ-สกุลภาษาไทย");
+            requireText(item.getFullNameEn(), prefix + "ชื่อ-สกุลภาษาอังกฤษ");
             requireText(item.getPositionName(), prefix + "ตำแหน่ง");
             requireText(item.getMobilePhone(), prefix + "เบอร์โทรศัพท์มือถือ");
             requireText(item.getDepartmentName(), prefix + "ฝ่าย/กลุ่มงาน");
@@ -232,6 +239,16 @@ public class ThirdPartySubmitServlet extends HttpServlet {
         request.setAttribute("submitMessage", message);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/thirdpartySubmitResult.jsp");
         dispatcher.forward(request, response);
+    }
+
+    private static void forwardFormError(HttpServletRequest request, HttpServletResponse response,
+                                         ThirdPartyFormLink link, String rawToken, String message)
+            throws ServletException, IOException {
+        request.setAttribute("thirdPartyLink", link);
+        request.setAttribute("token", rawToken);
+        request.setAttribute("consentVersion", ThirdPartyConsentContent.VERSION);
+        request.setAttribute("formError", message);
+        request.getRequestDispatcher("/thirdpartyForm.jsp").forward(request, response);
     }
 
     private static void preventCaching(HttpServletResponse response) {

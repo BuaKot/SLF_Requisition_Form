@@ -17,7 +17,7 @@
     }
 
     private String requestStatusText(String status) {
-        if ("LINK_CREATED".equals(status)) return "รอผู้ให้บริการกรอก";
+        if ("LINK_CREATED".equals(status)) return "รอผู้ขอภายนอกกรอกฟอร์ม";
         if ("SUBMITTED".equals(status)) return "รอหัวหน้าส่วนพิจารณา";
         if ("PENDING_SECTION_HEAD".equals(status)) return "รอหัวหน้าส่วนพิจารณา";
         if ("PENDING_IT_DIRECTOR".equals(status)) return "รอ IT Director อนุมัติ";
@@ -84,7 +84,7 @@
 <div id="main">
     <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
-    <main class="third-party-request-page">
+    <main class="third-party-request-page owner-link-dashboard">
         <section class="third-party-page-head third-party-toolbar-head">
             <div>
                 <p class="eyebrow">แบบฟอร์มสำหรับผู้ให้บริการภายนอก</p>
@@ -92,6 +92,9 @@
                 <p>สร้างลิงก์ใหม่ ดูสถานะ และยกเลิกลิงก์ที่ยังไม่ถูกส่งแบบฟอร์มได้จากหน้านี้</p>
             </div>
             <div class="page-head-actions">
+                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdParty/history">
+                    <i class="fa-solid fa-clock-rotate-left"></i> ประวัติ
+                </a>
                 <a class="btn btn-secondary" href="${pageContext.request.contextPath}/third-party-form-detail.jsp">
                     <i class="fa-solid fa-arrow-left"></i> กลับ
                 </a>
@@ -105,7 +108,7 @@
             </div>
         </section>
 
-        <section class="third-party-panel">
+        <section class="third-party-panel owner-acceptance-panel">
             <div class="third-party-list-head">
                 <div>
                     <div class="form-section-title">ลิงก์สำหรับตรวจรับและประเมิน</div>
@@ -124,7 +127,7 @@
                 <% for (ThirdPartyAcceptanceToken item : acceptanceTokens) {
                     String publicLink = item.getRawToken() == null ? null : acceptanceLinkPrefix + item.getRawToken();
                 %>
-                    <article class="third-party-link-card compact-card">
+                    <article class="third-party-link-card compact-card acceptance-link-card">
                         <div class="link-card-main">
                             <div class="link-card-title-row">
                                 <div><h2>คำขอ #<%= item.getRequestId() %></h2><p class="muted-text compact-note">สำหรับตรวจรับและประเมิน</p></div>
@@ -136,7 +139,7 @@
                                 <div><span>หมดอายุ</span><strong><%= item.getExpiresAt()==null?"-":dateTime.format(item.getExpiresAt()) %></strong></div>
                             </div>
                             <% if (publicLink != null && "ACTIVE".equals(item.getStatus())) { %>
-                                <div class="generated-link-box" style="margin-top:12px">
+                                <div class="generated-link-box acceptance-generated-link">
                                     <input id="acceptanceLink<%= item.getAcceptanceTokenId() %>" type="text" value="<%= h(publicLink) %>" readonly>
                                     <button class="btn btn-secondary" type="button" onclick="copyAcceptanceLink('acceptanceLink<%= item.getAcceptanceTokenId() %>')"><i class="fa-solid fa-copy"></i> คัดลอกลิงก์</button>
                                 </div>
@@ -149,14 +152,14 @@
         </section>
 
         <% if (createdRequestId != null && !createdRequestId.trim().isEmpty()) { %>
-            <div class="form-alert neutral">สร้างลิงก์ใหม่เรียบร้อยแล้ว รายการ #<%= h(createdRequestId) %> พร้อมให้เปิดดูหรือคัดลอกจากปุ่ม “ดูลิงก์”</div>
+            <div class="form-alert neutral owner-request-alert">สร้างลิงก์ใหม่เรียบร้อยแล้ว รายการ #<%= h(createdRequestId) %> พร้อมให้เปิดดูหรือคัดลอกจากปุ่ม “ดูลิงก์”</div>
         <% } else if ("cancelled".equals(status)) { %>
-            <div class="form-alert neutral">ยกเลิกและลบลิงก์ที่ยังไม่ถูกใช้งานเรียบร้อยแล้ว</div>
+            <div class="form-alert neutral owner-request-alert">ยกเลิกและลบลิงก์ที่ยังไม่ถูกใช้งานเรียบร้อยแล้ว</div>
         <% } else if ("not_cancelled".equals(status)) { %>
-            <div class="form-alert">ไม่สามารถยกเลิกได้ อาจถูกส่งฟอร์มแล้ว หมดอายุ หรือถูกยกเลิกไปก่อนหน้า</div>
+            <div class="form-alert owner-request-alert">ไม่สามารถยกเลิกได้ อาจถูกส่งฟอร์มแล้ว หมดอายุ หรือถูกยกเลิกไปก่อนหน้า</div>
         <% } %>
 
-        <section class="third-party-panel">
+        <section class="third-party-panel owner-request-list-panel">
             <div class="third-party-list-head">
                 <div>
                     <div class="form-section-title">รายการลิงก์ที่สร้าง</div>
@@ -179,7 +182,7 @@
                             && item.getSubmissionId() == null
                             && item.getLinkId() != null;
                     %>
-                        <article class="third-party-link-card compact-card">
+                        <article class="third-party-link-card compact-card owner-request-card">
                             <div class="link-card-main">
                                 <div class="link-card-title-row">
                                     <div>
@@ -188,39 +191,33 @@
                                             สร้างเมื่อ <%= item.getCreatedAt() == null ? "-" : dateTime.format(item.getCreatedAt()) %>
                                         </p>
                                     </div>
-                                    <div class="link-card-badges">
-                                        <span class="status-badge <%= badgeClass(item.getStatus()) %>"><%= h(requestStatusText(item.getStatus())) %></span>
-                                        <span class="status-badge <%= badgeClass(item.getLinkStatus()) %>"><%= h(linkStatusText(item.getLinkStatus())) %></span>
+                                    <div class="link-card-actions clean-actions owner-request-card-actions">
+                                        <div class="link-card-badges">
+                                            <span class="status-badge <%= badgeClass(item.getStatus()) %>"><%= h(requestStatusText(item.getStatus())) %></span>
+                                            <span class="status-badge <%= badgeClass(item.getLinkStatus()) %>"><%= h(linkStatusText(item.getLinkStatus())) %></span>
+                                        </div>
+                                        <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdParty/request/link?requestId=<%= item.getRequestId() %>&linkId=<%= item.getLinkId() == null ? "" : item.getLinkId() %>">
+                                            <i class="fa-solid fa-link"></i> ดูลิงก์
+                                        </a>
+                                        <% if (canCancel) { %>
+                                            <form method="post" action="${pageContext.request.contextPath}/thirdParty/request/new" onsubmit="return confirmCancelThirdPartyLink();">
+                                                <input type="hidden" name="csrfToken" value="<%= h(csrfToken) %>">
+                                                <input type="hidden" name="action" value="cancel">
+                                                <input type="hidden" name="requestId" value="<%= item.getRequestId() %>">
+                                                <input type="hidden" name="linkId" value="<%= item.getLinkId() %>">
+                                                <button class="btn btn-danger-soft" type="submit">
+                                                    <i class="fa-solid fa-trash-can"></i> ยกเลิกลิงก์
+                                                </button>
+                                            </form>
+                                        <% } %>
                                     </div>
                                 </div>
 
                                 <div class="status-strip">
                                     <div><span>หมดอายุ</span><strong><%= item.getLinkExpiresAt() == null ? "-" : dateTime.format(item.getLinkExpiresAt()) %></strong></div>
                                     <div><span>ส่งฟอร์มเมื่อ</span><strong><%= item.getSubmittedAt() == null ? "-" : dateTime.format(item.getSubmittedAt()) %></strong></div>
-                                    <div><span>ผู้ให้บริการ</span><strong><%= item.getExternalCompanyName() == null ? "-" : h(item.getExternalCompanyName()) %></strong></div>
+                                    <div><span>ผู้ขอใช้บริการ</span><strong><%= item.getExternalContactName() == null ? "-" : h(item.getExternalContactName()) %></strong></div>
                                 </div>
-                            </div>
-
-                            <div class="link-card-actions clean-actions">
-                                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdParty/request/link?requestId=<%= item.getRequestId() %>&linkId=<%= item.getLinkId() == null ? "" : item.getLinkId() %>">
-                                    <i class="fa-solid fa-link"></i> ดูลิงก์
-                                </a>
-                                <% if (item.getSubmissionId() != null) { %>
-                                    <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdPartySubmission?id=<%= item.getSubmissionId() %>">
-                                        <i class="fa-solid fa-file-lines"></i> รายละเอียด
-                                    </a>
-                                <% } %>
-                                <% if (canCancel) { %>
-                                    <form method="post" action="${pageContext.request.contextPath}/thirdParty/request/new" onsubmit="return confirmCancelThirdPartyLink();">
-                                        <input type="hidden" name="csrfToken" value="<%= h(csrfToken) %>">
-                                        <input type="hidden" name="action" value="cancel">
-                                        <input type="hidden" name="requestId" value="<%= item.getRequestId() %>">
-                                        <input type="hidden" name="linkId" value="<%= item.getLinkId() %>">
-                                        <button class="btn btn-danger-soft" type="submit">
-                                            <i class="fa-solid fa-trash-can"></i> ยกเลิกลิงก์
-                                        </button>
-                                    </form>
-                                <% } %>
                             </div>
                         </article>
                     <% } %>

@@ -9,7 +9,7 @@
     String backPath = "history".equals(fromPage) ? "history.jsp" : "submit";
     String backLabel = "history".equals(fromPage) ? "กลับหน้าประวัติ" : "กลับหน้าฟอร์มที่ส่งแล้ว";
     if (idParam == null || idParam.trim().isEmpty()) {
-        response.sendRedirect("submit"); // zennnne แก้
+        response.sendRedirect("submit");
         return;
     }
     int formId;
@@ -35,9 +35,7 @@
     String requestDate = "", deadline = "", requestTitle = "", status = "";
     boolean found = false;
 
-    // List of items (each map holds typeName, programOrOther, objective, currentMethod, typeId)
     java.util.List<java.util.Map<String,String>> items = new java.util.ArrayList<>();
-    // List of permission rows (each map holds isRoot, path, fullControl, modify, readExec, read, write)
     java.util.List<java.util.Map<String,Object>> permissions = new java.util.ArrayList<>();
     java.util.Map<String, java.util.Map<String,String>> approvalSections = new java.util.LinkedHashMap<>();
 
@@ -85,86 +83,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายละเอียดใบขอให้ดำเนินการ</title>
+    <title>รายละเอียดใบขอให้ดำเนินการ #<%= formId %></title>
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
-    <style>
-        .item-block {
-            position: relative;
-            width: 100%;
-            border: 1px solid #3272BB;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            background-color: white;
-        }
-        .permission-checkbox-row label {
-            margin-right: 15px;
-            font-weight: normal;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .permission-checkbox-row input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-        }
-        .sticky-bar .contact-info {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-        }
-        .approval-history {
-            margin-top: 26px;
-            border-top: 1px solid #d8e2ef;
-            padding-top: 18px;
-        }
-        .approval-history h3 {
-            margin: 0 0 14px;
-            color: #003366;
-        }
-        .approval-section {
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            padding: 14px 16px;
-            margin-bottom: 12px;
-            background: #ffffff;
-        }
-        .approval-section.is-standby {
-            color: #777;
-            background: #f8fafc;
-        }
-        .approval-row {
-            margin: 5px 0;
-            line-height: 1.45;
-        }
-        .approval-row strong {
-            color: #3272BB;
-        }
-        .approval-action {
-            font-weight: bold;
-        }
-        .approval-action.is-approved {
-            color: #1e8000;
-        }
-        .approval-action.is-rejected {
-            color: #CC0000;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
 </head>
 <body>
 <%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
-<div id="main">
+<div id="main" class="enterprise-index-shell">
 <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
-<div class="banner">
-    <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</h1>
-    <h2>ใบขอให้ดำเนินการ / Requisition Form</h2>
+
+<div class="topbar-back-row">
+    <a href="<%= backPath %>" class="detail-back-button">
+        <i class="fa fa-arrow-left"></i> <%= backLabel %>
+    </a>
 </div>
-<div class="detail-action-bar"><a class="detail-back-button" href="<%= backPath %>"><i class="fa fa-arrow-left"></i> <%= backLabel %></a></div>
+
+<section class="enterprise-hero">
+    <div class="enterprise-hero-copy">
+        <p class="enterprise-eyebrow"><i class="fa-solid fa-file-invoice"></i> REQUISITION REVIEWS</p>
+        <h1>ใบขอให้ดำเนินการ / Requisition Form</h1>
+        <p class="enterprise-hero-lead">ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</p>
+    </div>
+</section>
 
 <%
+    boolean hasAnyApprovalLogged = false; // Tracks if any logs are displayed at all
     try {
         conn = DBConnection.getConnection();
 
@@ -234,9 +179,7 @@
             }
         }
 
-        // ---------- Permissions (for server access) ----------
-        // Warning: assumes only ONE server-access request per form,
-        // because PERMISSIONDETAILS lacks REQUESTID!
+        // ---------- Permissions ----------
         if (found) {
             String permSQL = "SELECT ISROOT, PATH, HASFULLCONTROL, HASMODIFY, " +
                              "HASREADEXECUTE, HASREAD, HASWRITE " +
@@ -257,6 +200,7 @@
             }
         }
 
+        // ---------- Approvals ----------
         if (found) {
             String approvalSQL =
                 "SELECT AI.STATE_STEP, AI.IT_COMMENT, " +
@@ -283,12 +227,13 @@
                     approval.put("approvedDay", nvlDisplay(rsApproval.getString("APPROVED_DAY")));
                     approval.put("approvedTime", nvlDisplay(rsApproval.getString("APPROVED_TIME")));
                     approval.put("comment", nvlDisplay(rsApproval.getString("IT_COMMENT")));
+                    hasAnyApprovalLogged = true; // Flag that there's active data to show
                 }
             }
         }
 
     } catch (Exception e) {
-        out.println("<div style='color:red;text-align:center;'>เกิดข้อผิดพลาดในการโหลดข้อมูล</div>");
+        out.println("<div class='submit-alert-banner' style='margin:20px;'><i class='fa-solid fa-circle-exclamation'></i> เกิดข้อผิดพลาดในการโหลดข้อมูลความต้องการ</div>");
     } finally {
         try { if (rsApproval != null) rsApproval.close(); } catch (Exception ignored) {}
         try { if (psApproval != null) psApproval.close(); } catch (Exception ignored) {}
@@ -302,64 +247,85 @@
     }
 %>
 
-<!-- Main Detail -->
 <div class="form-container">
-    <form>
-        <div style="font-size:0.9rem; color:#777;">#<%= formId %></div>
-        <div class="form-grid">
-            <!-- personal info -->
-            <div class="form-group"><label>ชื่อ-นามสกุล</label><input type="text" value="<%= h(fullName) %>" readonly></div>
-            <div class="form-group"><label>ส่วน</label><input type="text" value="<%= h(sectionName) %>" readonly></div>
-            <div class="form-group"><label>ฝ่าย</label><input type="text" value="<%= h(departmentName) %>" readonly></div>
-            <div class="form-group"><label>เบอร์ต่อ</label><input type="text" value="<%= h(phone) %>" readonly></div>
-            <div class="form-group"><label>วันที่</label><input type="text" value="<%= h(requestDate) %>" readonly></div>
-            <div class="form-group"><label>Deadline</label><input type="text" value="<%= h(deadline) %>" readonly></div>
-            <div class="form-group full-width" style="margin-bottom:20px;"><label>ชื่อหัวข้อความต้องการ :</label><input type="text" value="<%= h(requestTitle) %>" readonly></div>
+    <form onsubmit="return false;">
+        <div class="card-title-wrap" style="margin-bottom: 20px;">
+            <span class="card-formid" style="font-size: 1.25rem;"><i class="fa-solid fa-receipt"></i> ดัชนีเลขที่แบบคำขอ #<%= formId %></span>
         </div>
 
-        <h3 style="margin-top:30px;">รายละเอียดคำขอ (จำนวน <%= items.size() %> รายการ)</h3>
-        <%
-            if (items.isEmpty()) {
-        %>
-            <p>ไม่มีรายการคำขอ</p>
-        <%
-            } else {
-                for (int i = 0; i < items.size(); i++) {
-                    java.util.Map<String,String> it = items.get(i);
-                    String typeName = it.get("typeName");
-                    boolean isProgram = "ขอติดตั้งโปรแกรม".equals(typeName) || "ขอให้พัฒนาโปรแกรม".equals(typeName);
-                    boolean isOther = "อื่นๆ".equals(typeName) || "อื่น ๆ".equals(typeName);
-                    boolean isServer = "ขอใช้สิทธิ์เก็บข้อมูล".equals(typeName);
+        <div class="form-grid">
+            <div class="form-group">
+                <label><i class="fa-solid fa-user-tie"></i> ชื่อ-นามสกุล</label>
+                <input type="text" value="<%= h(fullName) %>" readonly>
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-network-wired"></i> ส่วนงาน</label>
+                <input type="text" value="<%= h(sectionName) %>" readonly>
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-building"></i> ฝ่ายสังกัด</label>
+                <input type="text" value="<%= h(departmentName) %>" readonly>
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-phone-volume"></i> เบอร์โทรศัพท์ภายใน</label>
+                <input type="text" value="<%= h(phone) %>" readonly>
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-calendar-day"></i> วันที่ยื่นเอกสาร</label>
+                <input type="text" value="<%= h(requestDate) %>" readonly>
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-calendar-xmark" style="color: #925400;"></i> วันสิ้นสุดกรอบกำหนดเวลา (Deadline)</label>
+                <input type="text" value="<%= h(deadline) %>" readonly style="border-color: #ffeeba; background-color: #fffdf7; font-weight: bold; color: #925400;">
+            </div>
+            <div class="form-group full-width">
+                <label><i class="fa-solid fa-heading"></i> ชื่อหัวข้อความต้องการสารสนเทศ</label>
+                <input type="text" value="<%= h(requestTitle) %>" readonly style="font-weight: 900; color: #003366;">
+            </div>
+        </div>
+
+        <h3 class="enterprise-section-heading" style="margin-top:40px;"><i class="fa-solid fa-list-check"></i> รายละเอียดหมวดหมู่คำขอที่ยื่นไว้ (จำนวน <%= items.size() %> รายการ)</h3>
+        
+        <% if (items.isEmpty()) { %>
+            <div class="empty-state-card" style="padding: 30px;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <p>ไม่พบรายการความต้องการแนบประกอบเอกสารชิ้นนี้</p>
+            </div>
+        <% } else {
+            for (int i = 0; i < items.size(); i++) {
+                java.util.Map<String,String> it = items.get(i);
+                String typeName = it.get("typeName");
+                boolean isProgram = "ขอติดตั้งโปรแกรม".equals(typeName) || "ขอให้พัฒนาโปรแกรม".equals(typeName);
+                boolean isOther = "อื่นๆ".equals(typeName) || "อื่น ๆ".equals(typeName);
+                boolean isServer = "ขอใช้สิทธิ์เก็บข้อมูล".equals(typeName);
         %>
             <div class="item-block">
-                <div class="form-group">
-                    <label>ประเภทคำขอ</label>
-                    <input type="text" value="<%= h(typeName) %>" readonly>
+                <div class="form-grid" style="margin-bottom:0;">
+                    <div class="form-group full-width">
+                        <label><i class="fa-solid fa-tag"></i> ประเภทคำขอหลักรายการที่ <%= (i+1) %></label>
+                        <input type="text" value="<%= h(typeName) %>" readonly style="background: #f0f6fc; color:#003366; font-weight:900;">
+                    </div>
+
+                    <% if (isProgram) { %>
+                        <div class="form-group full-width animate-fade-in">
+                            <label><i class="fa-solid fa-laptop-code"></i> ชื่อโปรแกรมซอฟต์แวร์ระบบ</label>
+                            <input type="text" value="<%= h(it.get("programOrOther")) %>" readonly>
+                        </div>
+                    <% } else if (isOther) { %>
+                        <div class="form-group full-width animate-fade-in">
+                            <label><i class="fa-solid fa-asterisk"></i> รายละเอียดประกอบเพิ่มเติมเพิ่มเติม (โปรดระบุ)</label>
+                            <input type="text" value="<%= h(it.get("programOrOther")) %>" readonly>
+                        </div>
+                    <% } %>
                 </div>
 
-                <%-- Program name or Other detail --%>
-                <% if (isProgram) { %>
-                    <div class="form-group">
-                        <label>ชื่อโปรแกรม</label>
-                        <input type="text" value="<%= h(it.get("programOrOther")) %>" readonly>
-                    </div>
-                <% } else if (isOther) { %>
-                    <div class="form-group">
-                        <label>โปรดระบุ (อื่น ๆ)</label>
-                        <input type="text" value="<%= h(it.get("programOrOther")) %>" readonly>
-                    </div>
-                <% } %>
-
-                <%-- Server permissions --%>
                 <% if (isServer) { %>
                     <% if (!permissions.isEmpty()) { %>
-                    <div class="form-group full-width server-permission-box" style="display:flex;">
-                            <h3 class="server-permission-title">รายละเอียดการขอใช้สิทธิ์เก็บข้อมูล</h3>
+                        <div class="server-permission-box full-width animate-fade-in" style="display:flex;">
+                            <h3 class="server-permission-title"><i class="fa-solid fa-folder-tree"></i> บันทึกรายละเอียดการขอใช้สิทธิ์เก็บข้อมูล</h3>
+                            
                             <% for (java.util.Map<String,Object> perm : permissions) {
-                                int isRoot = (Integer) perm.get("isRoot");
                                 String path = (String) perm.get("path");
-                                
-                                // Inline extraction – no methods needed
                                 String serverName = "";
                                 String shareName = "";
                                 if (path != null && path.startsWith("\\\\")) {
@@ -369,7 +335,7 @@
                                         serverName = noPrefix.substring(0, slashIdx);
                                         shareName = noPrefix.substring(slashIdx + 1);
                                     } else {
-                                        serverName = noPrefix; // only server
+                                        serverName = noPrefix;
                                     }
                                 }
                                 
@@ -379,38 +345,39 @@
                                 boolean read = ((Integer)perm.get("read")) == 1;
                                 boolean write = ((Integer)perm.get("write")) == 1;
                             %>
-                            <div style="margin-bottom:20px;">
+                            <div class="server-permission-card" style="border: 1px dashed #c8dced; border-radius:8px; padding:16px; margin-bottom:16px; background:#fafdfb;">
                                 <div class="server-input-row">
-                                    <label>Server :</label>
-                                    <input type="text" value="<%= h(serverName) %>" readonly placeholder="Server">
+                                    <label><i class="fa-solid fa-server" style="font-size:13px; color:#3272BB;"></i> Server:</label>
+                                    <input type="text" value="<%= h(serverName) %>" readonly>
                                 </div>
                                 <div class="server-input-row">
-                                    <label>Folder :</label>
+                                    <label><i class="fa-solid fa-folder-open" style="font-size:13px; color:#3272BB;"></i> Folder:</label>
                                     <input type="text" value="<%= h(shareName) %>" readonly>
                                 </div>
-                                <div class="permission-checkbox-row">
-                                    <label><input type="checkbox" <%= full ? "checked" : "" %> disabled> Full control</label>
-                                    <label><input type="checkbox" <%= modify ? "checked" : "" %> disabled> Modify</label>
-                                    <label><input type="checkbox" <%= readExec ? "checked" : "" %> disabled> Read & Execute</label>
-                                    <label><input type="checkbox" <%= read ? "checked" : "" %> disabled> Read</label>
-                                    <label><input type="checkbox" <%= write ? "checked" : "" %> disabled> Write</label>
+                                <div class="permission-checkbox-row" style="margin-left:0; margin-top:12px; background: #ffffff; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
+                                    <label class="custom-checkbox-label"><input type="checkbox" <%= full ? "checked" : "" %> disabled> <span class="status-badge <%= full ? "ok" : "" %>" style="padding:2px 8px;">Full control</span></label>
+                                    <label class="custom-checkbox-label"><input type="checkbox" <%= modify ? "checked" : "" %> disabled> <span class="status-badge <%= modify ? "ok" : "" %>" style="padding:2px 8px;">Modify</span></label>
+                                    <label class="custom-checkbox-label"><input type="checkbox" <%= readExec ? "checked" : "" %> disabled> <span class="status-badge <%= readExec ? "ok" : "" %>" style="padding:2px 8px;">Read & Execute</span></label>
+                                    <label class="custom-checkbox-label"><input type="checkbox" <%= read ? "checked" : "" %> disabled> <span class="status-badge <%= read ? "ok" : "" %>" style="padding:2px 8px;">Read</span></label>
+                                    <label class="custom-checkbox-label"><input type="checkbox" <%= write ? "checked" : "" %> disabled> <span class="status-badge <%= write ? "ok" : "" %>" style="padding:2px 8px;">Write</span></label>
                                 </div>
                             </div>
                             <% } %>
                         </div>
                     <% } else { %>
-                        <p>ไม่พบข้อมูลสิทธิ์ (ตาราง PERMISSIONDETAILS ว่างเปล่า)</p>
+                        <div class="submit-alert-banner" style="margin-top:12px;"><i class="fa-solid fa-triangle-exclamation"></i> ไม่พบข้อมูลสิทธิ์เข้าถึงร่วมคลังระบุไฟล์ระบบงาน (PERMISSIONDETAILS ว่างเปล่า)</div>
                     <% } %>
                 <% } %>
 
-                <!-- Objective and current method (unchanged) -->
-                <div class="form-group full-width">
-                    <label>วัตถุประสงค์ / ความต้องการ</label>
-                    <textarea rows="4" readonly><%= h(it.get("objective")) %></textarea>
-                </div>
-                <div class="form-group full-width">
-                    <label>วิธีการดำเนินการปัจจุบัน</label>
-                    <textarea rows="4" readonly><%= h(it.get("currentMethod")) %></textarea>
+                <div class="form-grid" style="margin-top:14px;">
+                    <div class="form-group full-width">
+                        <label><i class="fa-solid fa-circle-question"></i> วัตถุประสงค์ / ความต้องการเชิงธุรกิจ</label>
+                        <textarea rows="3" readonly style="background-color:#fafbfc; line-height:1.5;"><%= h(it.get("objective")) %></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fa-solid fa-route"></i> วิธีการดำเนินการทดแทนในระบบปัจจุบัน</label>
+                        <textarea rows="3" readonly style="background-color:#fafbfc; line-height:1.5;"><%= h(it.get("currentMethod")) %></textarea>
+                    </div>
                 </div>
             </div>
         <%
@@ -418,39 +385,57 @@
             }
         %>
 
-        <div class="approval-history">
-            <h3>ความเห็นและผลการดำเนินการ</h3>
-            <%
-                for (java.util.Map<String,String> approval : approvalSections.values()) {
-                    boolean hasApproval = "true".equals(approval.get("hasApproval"));
-                    if (!hasApproval) {
-                        // Standby approval labels are fixed workflow labels until a reviewer row exists.
-            %>
-                <div class="approval-section is-standby">
-                    <div class="approval-row"><strong><%= approval.get("label") %></strong></div>
-                </div>
-            <%
-                    } else {
-            %>
-                <div class="approval-section">
-                    <div class="approval-row"><strong>ตำแหน่ง:</strong> <%= approval.get("position") %></div>
-                    <div class="approval-row"><strong>ชื่อ-สกุล:</strong> <%= approval.get("empName") %></div>
-                    <div class="approval-row">
-                        <span class="approval-action <%= approvalActionClass(approval.get("action")) %>"><%= approval.get("action") %></span>
-                        เมื่อ <%= approval.get("approvedDay") %> เวลา <%= approval.get("approvedTime") %>
+        <div class="approval-history" style="margin-top:40px;">
+            <h3 class="enterprise-section-heading" style="margin-bottom:20px;"><i class="fa-solid fa-timeline"></i> ความเห็นและผลการดำเนินการอนุมัติ (Workflow Logs)</h3>
+            <div class="submissions-worklist" style="display: flex; flex-direction: column; gap: 16px;">
+                <%
+                    if (!hasAnyApprovalLogged) {
+                %>
+                    <div class="empty-state-card" style="padding: 24px; border: 1px dashed #cbd5e1; background: #f8fafc;">
+                        <i class="fa-regular fa-folder-open" style="font-size: 28px; color: #94a3b8;"></i>
+                        <p style="color: #64748b; margin: 6px 0 0; font-weight: 800; font-size: 15px;">ยังไม่มีประวัติบันทึกการอนุมัติผ่านรายการคำขอนี้ในระบบงาน</p>
                     </div>
-                    <div class="approval-row"><strong>ความคิดเห็น:</strong> <%= approval.get("comment") %></div>
-                </div>
-            <%
+                <%
+                    } else {
+                        for (java.util.Map<String,String> approval : approvalSections.values()) {
+                            boolean hasApproval = "true".equals(approval.get("hasApproval"));
+                            // Hidden completely if it hasn't occurred yet
+                            if (hasApproval) { 
+                                String actionText = approval.get("action");
+                                String badgeClass = "status-badge " + ("ไม่อนุมัติ".equals(actionText) ? "danger" : "ok");
+                %>
+                    <div class="requisition-row-card" style="display: flex; flex-direction: column; align-items: stretch; border: 1px solid #d7e5f4; border-left: 4px solid #3272BB; background: #ffffff; padding: 18px 20px; gap: 12px; box-shadow: 0 4px 12px rgba(0,51,102,0.02);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+                            <div class="meta-identity-block" style="gap: 2px;">
+                                <span class="req-id-badge" style="font-size: 13px; color: #52677d; font-weight: 800;"><i class="fa-solid fa-user-shield"></i> <%= approval.get("position") %></span>
+                                <strong style="color: #003366; font-size: 18px; font-weight: 900;"><%= approval.get("empName") %></strong>
+                            </div>
+                            <div class="status-tags-group" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="<%= badgeClass %>" style="font-size: 13px; font-weight: 900; padding: 4px 12px;"><%= actionText %></span>
+                                <span class="status-badge info" style="background: #f4f8fc; border: 1px solid #cbdbea; color: #003366; font-size: 13px; font-weight: 800; padding: 4px 12px;">
+                                    <i class="fa-regular fa-clock"></i> <%= approval.get("approvedDay") %> | <%= approval.get("approvedTime") %> น.
+                                </span>
+                            </div>
+                        </div>
+                        <div style="background: #f4f8fc; padding: 12px 14px; border-radius: 6px; border: 1px solid #e1edf8;">
+                            <span style="font-size: 13px; font-weight: 800; color: #52677d; display: block; margin-bottom: 4px;"><i class="fa-regular fa-comment-dots"></i> ความคิดเห็นประกอบคำสั่งการตรวจสอบ:</span>
+                            <div style="color: #102a43; font-weight: 800; font-size: 15px; white-space: pre-wrap; line-height: 1.4;"><%= approval.get("comment") %></div>
+                        </div>
+                    </div>
+                <%
+                            }
+                        }
                     }
-                }
-            %>
+                %>
+            </div>
         </div>
 
-        <div class="btn-group">
-            <button type="button" style="background-color:red;" class="btn btn-back" onclick="history.back()">ย้อนกลับ</button>
-            <a href="${pageContext.request.contextPath}/pdf.jsp?id=<%= formId %>" target="_blank" class="btn" style="background-color:red;">
-                <i class="fa-solid fa-file-pdf"></i> ส่งออก PDF
+        <div class="btn-group" style="margin-top:40px; padding-top:20px; border-top:1px solid #d7e5f4;">
+            <button type="button" class="action-row-btn secondary-action-btn" style="min-height:44px; padding: 10px 28px; font-size:16px;" onclick="window.history.back();">
+                <i class="fa-solid fa-arrow-left-long"></i> ย้อนกลับหน้าเดิม
+            </button>
+            <a href="${pageContext.request.contextPath}/pdf.jsp?id=<%= formId %>" target="_blank" class="action-row-btn primary-action-btn" style="min-height:44px; padding: 10px 28px; font-size:16px; background:#dc2626; border-color:#dc2626;">
+                <i class="fa-solid fa-file-pdf"></i> ส่งออกเอกสารสรุปผล PDF
             </a>
         </div>
     </form>
@@ -460,7 +445,3 @@
 </div>
 </body>
 </html>
-
-
-
-

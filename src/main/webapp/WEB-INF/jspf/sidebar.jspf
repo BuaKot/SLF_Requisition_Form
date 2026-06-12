@@ -34,6 +34,8 @@
     boolean _sidebarShowDashboard = _sidebarPosition != null && _sidebarPosition.trim().equalsIgnoreCase("Admin");
     boolean _sidebarShowOwnThirdPartyLinks = ThirdPartyAccessPolicy.canCreateOwnLinks(
         ThirdPartyAccessPolicy.sessionEmpId(session));
+    boolean _sidebarShowThirdPartyHistory = ThirdPartyAccessPolicy.canViewHistory(
+        _sidebarPosition, ThirdPartyAccessPolicy.sessionEmpId(session));
     boolean _sidebarApprovalOnlyRole = AuthUtil.isApprovalOnlyRole(_sidebarPosition);
     String _sidebarApprovalPage = AuthUtil.approvalPageForRole(_sidebarPosition);
     String _sidebarApprovalLabel = AuthUtil.approvalLabelForRole(_sidebarPosition);
@@ -71,6 +73,9 @@
 
         <% if (_sidebarShowOwnThirdPartyLinks && _sidebarIsThirdPartyFlow) { %>
         <a href="${pageContext.request.contextPath}/thirdParty/request/new"><i class="fa-solid fa-link"></i><span>&#3621;&#3636;&#3591;&#3585;&#3660;&#3610;&#3640;&#3588;&#3588;&#3621;&#3616;&#3634;&#3618;&#3609;&#3629;&#3585;</span></a>
+        <% if (_sidebarShowThirdPartyHistory) { %>
+        <a href="${pageContext.request.contextPath}/thirdParty/history"><i class="fa-solid fa-clock-rotate-left"></i><span>ประวัติ Third Party</span></a>
+        <% } %>
         <% } else if (_sidebarShowOwnThirdPartyLinks && !_sidebarIsItFlow) { %>
         <a href="${pageContext.request.contextPath}/third-party-form-detail.jsp"><i class="fa-solid fa-user-shield"></i><span>Third Party Form</span></a>
         <% } %>
@@ -91,6 +96,7 @@
             <a href="${pageContext.request.contextPath}/memberManage"><i class="fa-solid fa-users-gear"></i><span>&#3592;&#3633;&#3604;&#3585;&#3634;&#3619;&#3626;&#3617;&#3634;&#3594;&#3636;&#3585;</span></a>
             <a href="${pageContext.request.contextPath}/mailLog"><i class="fa-solid fa-envelope-open-text"></i><span>&#3610;&#3633;&#3609;&#3607;&#3638;&#3585;&#3585;&#3634;&#3619;&#3626;&#3656;&#3591;&#3629;&#3637;&#3648;&#3617;&#3621;</span></a>
             <a href="${pageContext.request.contextPath}/thirdPartyLinks"><i class="fa-solid fa-link"></i><span>&#3592;&#3633;&#3604;&#3585;&#3634;&#3619;&#3621;&#3636;&#3591;&#3585;&#3660;&#3610;&#3640;&#3588;&#3588;&#3621;&#3616;&#3634;&#3618;&#3609;&#3629;&#3585;</span></a>
+            <a href="${pageContext.request.contextPath}/thirdParty/history"><i class="fa-solid fa-clock-rotate-left"></i><span>ประวัติ Third Party</span></a>
             <% } %>
         </div>
         <% } %>
@@ -120,7 +126,8 @@
             || currentPath.indexOf("/dashboard.jsp") >= 0
             || currentPath.indexOf("/membermanage") >= 0
             || currentPath.indexOf("/maillog") >= 0
-            || currentPath.indexOf("/thirdpartylinks") >= 0;
+            || currentPath.indexOf("/thirdpartylinks") >= 0
+            || currentPath.indexOf("/thirdparty/history") >= 0;
         if (isAdminPage) {
             menu.classList.add("open");
             toggle.classList.add("open");

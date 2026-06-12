@@ -125,14 +125,15 @@
                 <input type="hidden" name="requestId" value="<%= thirdPartyRequest.getRequestId() %>">
                 <textarea name="comment" maxlength="4000" required placeholder="กรอกความเห็นประกอบการพิจารณา..."><%= h(comment) %></textarea>
                 <div class="decision-actions">
-                    <button class="btn btn-reject" type="submit" name="decision" value="reject" onclick="return confirm('ยืนยันไม่อนุมัติคำขอนี้หรือไม่?')">ไม่อนุมัติ</button>
-                    <button class="btn btn-primary primary-action" type="submit" name="decision" value="approve" onclick="return confirm('ยืนยันอนุมัติคำขอนี้หรือไม่?')">อนุมัติ</button>
+                    <button class="workflow-submit-button danger" type="submit" name="decision" value="reject" data-workflow-confirm data-confirm-tone="danger" data-confirm-title="ยืนยันไม่อนุมัติคำขอ" data-confirm-message="คำขอนี้จะสิ้นสุด workflow และไม่สามารถส่งต่อให้ผู้ดำเนินการได้" data-confirm-label="ยืนยันไม่อนุมัติ"><i class="fa-solid fa-xmark"></i> ไม่อนุมัติ</button>
+                    <button class="workflow-submit-button" type="submit" name="decision" value="approve" data-workflow-confirm data-confirm-title="ยืนยันอนุมัติคำขอ" data-confirm-message="คำขอนี้จะถูกส่งต่อให้ผู้ดำเนินการตามที่หัวหน้าส่วนมอบหมาย" data-confirm-label="ยืนยันอนุมัติ"><i class="fa-solid fa-check"></i> อนุมัติ</button>
                 </div>
             </form>
         </section>
     </main>
     <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
+<%@ include file="/WEB-INF/jspf/third-party-confirm-dialog.jspf" %>
 <script>
 window.addEventListener("pageshow",function(e){if(e.persisted)window.location.replace("${pageContext.request.contextPath}/thirdParty/itDirector");});
 function toggleNav(){var s=document.getElementById("mySidebar"),m=document.getElementById("main"),o=s.style.width==="250px";s.style.width=o?"0":"250px";m.style.marginLeft=o?"0":"250px";m.style.width=o?"100%":"calc(100% - 250px)";}

@@ -34,4 +34,8 @@ public final class ThirdPartyAccessPolicy {
         return AuthUtil.isAllowedForPage(position, "thirdPartySubmission")
             || (canCreateOwnLinks(empId) && empId.equals(ownerEmpId));
     }
+
+    public static boolean canViewHistory(String position, Integer empId) {
+        return AuthUtil.isAllowedForPage(position, "thirdPartyHistory") || canCreateOwnLinks(empId);
+    }
 }

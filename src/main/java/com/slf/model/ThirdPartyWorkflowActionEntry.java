@@ -3,6 +3,7 @@ package com.slf.model;
 import java.sql.Timestamp;
 
 public class ThirdPartyWorkflowActionEntry {
+    private long requestId;
     private String actionType;
     private String fromStatus;
     private String toStatus;
@@ -12,6 +13,8 @@ public class ThirdPartyWorkflowActionEntry {
     private String commentText;
     private Timestamp actedAt;
 
+    public long getRequestId() { return requestId; }
+    public void setRequestId(long requestId) { this.requestId = requestId; }
     public String getActionType() { return actionType; }
     public void setActionType(String actionType) { this.actionType = actionType; }
     public String getFromStatus() { return fromStatus; }

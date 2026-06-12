@@ -6,6 +6,8 @@ import com.slf.dao.RequisitionDAO;
 import com.slf.dao.DBConnection;
 import com.slf.dao.OracleRequisitionDAO;
 import com.slf.notification.ApprovalNotificationService;
+import com.slf.util.AuthUtil;
+import com.slf.util.SecurityUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -41,13 +44,22 @@ public class SubmitRequestServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
+        if (!SecurityUtil.isValidCsrfToken(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token");
+            return;
+        }
+        String position = (String) session.getAttribute("position");
+        if (AuthUtil.isApprovalOnlyRole(position)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "This role cannot submit requisition forms");
+            return;
+        }
 
         // 1. Read the header fields (except section, which will be resolved from request types)
         RequisitionForm form = new RequisitionForm();
         form.setEmpID(empID);
-        form.setDate(request.getParameter("date"));
-        form.setDeadline(request.getParameter("deadline"));
-        form.setRequestTopic(request.getParameter("requestTopic"));
+        form.setDate(trimToEmpty(request.getParameter("date")));
+        form.setDeadline(trimToEmpty(request.getParameter("deadline")));
+        form.setRequestTopic(trimToEmpty(request.getParameter("requestTopic")));
 
         Integer editedFormId;
         try {
@@ -56,10 +68,26 @@ public class SubmitRequestServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/submit.jsp");
             return;
         }
+        if (editedFormId != null) {
+            try {
+                if (!canEditRejectedForm(editedFormId, empID)) {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "You cannot edit this requisition form");
+                    return;
+                }
+            } catch (Exception e) {
+                throw new ServletException("Database error checking requisition ownership", e);
+            }
+        }
 
         // 2. Read the item arrays
         String[] types = request.getParameterValues("requestType[]");
         if (types == null) types = new String[0];
+
+        String headerValidationError = validateHeader(form, types);
+        if (headerValidationError != null) {
+            forwardFormError(request, response, headerValidationError);
+            return;
+        }
 
         // Resolve destination IT section from selected request types
         int assignedSecId;
@@ -93,13 +121,13 @@ public class SubmitRequestServlet extends HttpServlet {
             RequestItem item = new RequestItem();
             item.setRequestTypeId(Integer.parseInt(types[i]));
             // For optional arrays, use helper method to get index safely
-            item.setProgramName(getParamValue(request, "programName[]", i));
-            item.setServerName(getParamValue(request, "serverName[]", i));
-            item.setServerFolder(getParamValue(request, "serverFolder[]", i));
-            item.setSubFolder(getParamValue(request, "subFolder[]", i));
-            item.setOtherRequest(getParamValue(request, "otherRequest[]", i));
-            item.setObjective(getParamValue(request, "objective[]", i));
-            item.setCurrentMethod(getParamValue(request, "currentMethod[]", i));
+            item.setProgramName(trimToEmpty(getParamValue(request, "programName[]", i)));
+            item.setServerName(trimToEmpty(getParamValue(request, "serverName[]", i)));
+            item.setServerFolder(trimToEmpty(getParamValue(request, "serverFolder[]", i)));
+            item.setSubFolder(trimToEmpty(getParamValue(request, "subFolder[]", i)));
+            item.setOtherRequest(trimToEmpty(getParamValue(request, "otherRequest[]", i)));
+            item.setObjective(trimToEmpty(getParamValue(request, "objective[]", i)));
+            item.setCurrentMethod(trimToEmpty(getParamValue(request, "currentMethod[]", i)));
 
             // Handle checkboxes with improved indexed naming (folderPermission_0[], etc.)
             String[] folderPerms = getPermissionValues(request, "folderPermission", i);
@@ -113,6 +141,12 @@ public class SubmitRequestServlet extends HttpServlet {
 
             items.add(item);
         }
+
+        String itemValidationError = validateItems(items);
+        if (itemValidationError != null) {
+            forwardFormError(request, response, itemValidationError);
+            return;
+        }
         form.setItems(items);
 
         // 3. Save using DAO
@@ -125,9 +159,8 @@ public class SubmitRequestServlet extends HttpServlet {
             // 4. Redirect to success page so refresh does not resubmit the POST.
             response.sendRedirect(request.getContextPath() + "/submit-success.jsp?formId=" + form.getFormId());
         } catch (Exception e) {
-            e.printStackTrace();
-            // In case of error, send back to form with error message
-            request.setAttribute("error", "เกิดข้อผิดพลาดในการบันทึกข้อมูล: " + e.getMessage());
+            getServletContext().log("Failed to submit requisition form", e);
+            request.setAttribute("error", "ไม่สามารถบันทึกใบขอได้ กรุณาตรวจสอบข้อมูลและลองอีกครั้ง");
             request.getRequestDispatcher("/form.jsp").forward(request, response);
         }
     }
@@ -139,6 +172,81 @@ public class SubmitRequestServlet extends HttpServlet {
             return values[index]; // may be empty string but not null
         }
         return "";
+    }
+
+    private void forwardFormError(HttpServletRequest request, HttpServletResponse response, String message)
+            throws ServletException, IOException {
+        request.setAttribute("error", message);
+        request.getRequestDispatcher("/form.jsp").forward(request, response);
+    }
+
+    private String validateHeader(RequisitionForm form, String[] types) {
+        if (isBlank(form.getRequestTopic())) {
+            return "กรุณาระบุชื่อหัวข้อความต้องการ";
+        }
+        if (isBlank(form.getDeadline())) {
+            return "กรุณาระบุ Deadline";
+        }
+        try {
+            Date.valueOf(form.getDeadline());
+        } catch (IllegalArgumentException e) {
+            return "รูปแบบ Deadline ไม่ถูกต้อง";
+        }
+        if (types == null || types.length == 0) {
+            return "กรุณาเพิ่มรายการคำขออย่างน้อย 1 รายการ";
+        }
+        return null;
+    }
+
+    private String validateItems(List<RequestItem> items) {
+        if (items == null || items.isEmpty()) {
+            return "กรุณาเพิ่มรายการคำขออย่างน้อย 1 รายการ";
+        }
+        for (int i = 0; i < items.size(); i++) {
+            RequestItem item = items.get(i);
+            int itemNumber = i + 1;
+            if (item.getRequestTypeId() <= 0) {
+                return "ประเภทคำขอรายการที่ " + itemNumber + " ไม่ถูกต้อง";
+            }
+            if (isBlank(item.getObjective())) {
+                return "กรุณาระบุวัตถุประสงค์ / ความต้องการ รายการที่ " + itemNumber;
+            }
+            if (!hasItemDetail(item)) {
+                return "กรุณาระบุรายละเอียดคำขอ รายการที่ " + itemNumber;
+            }
+            if (hasServerAccessDetail(item) && isBlank(item.getServerFolder())) {
+                return "กรุณาระบุ Folder สำหรับรายการขอใช้สิทธิ์ Server รายการที่ " + itemNumber;
+            }
+            if (hasServerAccessDetail(item) && isEmpty(item.getFolderPermissions())) {
+                return "กรุณาเลือกสิทธิ์ Folder สำหรับรายการที่ " + itemNumber;
+            }
+            if (!isBlank(item.getSubFolder()) && isEmpty(item.getSubFolderPermissions())) {
+                return "กรุณาเลือกสิทธิ์ Sub Folder สำหรับรายการที่ " + itemNumber;
+            }
+        }
+        return null;
+    }
+
+    private boolean hasItemDetail(RequestItem item) {
+        return !isBlank(item.getProgramName())
+            || !isBlank(item.getOtherRequest())
+            || hasServerAccessDetail(item);
+    }
+
+    private boolean hasServerAccessDetail(RequestItem item) {
+        return !isBlank(item.getServerName()) || !isBlank(item.getServerFolder());
+    }
+
+    private boolean isEmpty(List<?> values) {
+        return values == null || values.isEmpty();
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    private String trimToEmpty(String value) {
+        return value == null ? "" : value.trim();
     }
 
     /**
@@ -239,6 +347,30 @@ public class SubmitRequestServlet extends HttpServlet {
             int updatedRows = ps.executeUpdate();
             if (updatedRows == 0) {
                 throw new Exception("Cannot mark original form as edited");
+            }
+        }
+    }
+
+    private boolean canEditRejectedForm(int editedFormId, int empId) throws Exception {
+        String sql =
+            "SELECT 1 FROM REQUISITIONFORM rf " +
+            "WHERE rf.FORMID = ? " +
+            "AND rf.EMPID = ? " +
+            "AND NVL(rf.IS_EDITED, 0) = 0 " +
+            "AND EXISTS ( " +
+            "    SELECT 1 FROM APPROVALINFO ai " +
+            "    WHERE ai.FORMID = rf.FORMID " +
+            "    AND ai.APPROVALID = ( " +
+            "        SELECT MAX(ai2.APPROVALID) FROM APPROVALINFO ai2 WHERE ai2.FORMID = rf.FORMID " +
+            "    ) " +
+            "    AND ai.STATE_STEP < 0 " +
+            ")";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, editedFormId);
+            ps.setInt(2, empId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
             }
         }
     }

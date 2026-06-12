@@ -43,7 +43,6 @@ public class LoadDirectorServlet extends HttpServlet {
             "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
             "WHERE ls.STATE_STEP = 0 " +
             "AND d.DEPTHEAD_EMPID = ? " +
-            "AND r.DEADLINE >= TRUNC(SYSDATE) " +
             "ORDER BY r.FORMID DESC";
 
         List<Map<String, Object>> formList = new ArrayList<>();
@@ -68,7 +67,7 @@ public class LoadDirectorServlet extends HttpServlet {
                     int daysLeft = 999;
                     if (deadlineSql != null)
                         daysLeft = (int)(deadlineSql.toLocalDate().toEpochDay() - LocalDate.now().toEpochDay());
-                    row.put("DEADLINE_TAG", daysLeft <= 1 ? "urgent" : daysLeft <= 3 ? "soon" : "normal"); // zennnne แก้
+                    row.put("DEADLINE_TAG", daysLeft < 0 ? "overdue" : daysLeft <= 1 ? "urgent" : daysLeft <= 3 ? "soon" : "normal");
 
                     formList.add(row);
                 }

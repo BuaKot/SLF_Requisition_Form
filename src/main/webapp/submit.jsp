@@ -1,6 +1,7 @@
 ﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %>
+<%@ page import="com.slf.util.SecurityUtil" %>
 
 <%
     // zennnne แก้
@@ -18,6 +19,8 @@
     String showParam = request.getAttribute("showParam")  != null ? (String) request.getAttribute("showParam")   : "pending";
     String sortParam = request.getAttribute("sortParam")  != null ? (String) request.getAttribute("sortParam")   : "asc";
     boolean hasData  = !formList.isEmpty();
+    boolean alreadyProcessed = "already_processed".equals(request.getParameter("error"));
+    String csrfToken = SecurityUtil.ensureCsrfToken(request);
     // zennnne แก้
 %>
 
@@ -66,6 +69,17 @@
             background: #d8e2eb;
             margin: 0 4px;
         }
+        .submit-alert {
+            margin: 16px auto 0;
+            width: min(1360px, calc(100% - 40px));
+            padding: 12px 16px;
+            border: 1px solid #f0c36d;
+            border-radius: 8px;
+            background: #fff8e5;
+            color: #7a4b00;
+            font-size: 16px;
+            font-weight: 800;
+        }
         @media (max-width: 540px) {
             .submit-filter-separator { display: none; }
         }
@@ -94,6 +108,9 @@
             ใบขอให้ดำเนินการ / Requisition Form
         </h2>
     </div>
+    <% if (alreadyProcessed) { %>
+    <div class="submit-alert"><i class="fa-solid fa-circle-info"></i> ใบขอนี้ถูกดำเนินการแล้ว</div>
+    <% } %>
 
     <!-- zennnne แก้ — SUMMARY DASHBOARD + SEARCH -->
     <div class="summary-wrap">
@@ -195,6 +212,7 @@
     for (Map<String, Object> row : formList) {
         int formId    = (Integer) row.get("FORMID");
         String title  = (String)  row.get("TITLEFORM");
+        String titleEsc = SecurityUtil.escapeHtml(title);
         int stateStep = (Integer) row.get("STATE_STEP");
         boolean isEdited = (Integer) row.get("IS_EDITED") == 1;
 
@@ -261,14 +279,14 @@
              data-status="<%= rowStatus %>"
              data-deadline="<%= rowDeadline %>"
              data-formid="<%= formId %>"
-             data-title="<%= title %>">
+             data-title="<%= titleEsc %>">
 
             <!-- LEFT COLUMN: ID + ชื่อ + meta (deadline tag + status badge) -->
             <div class="card-left">
                 <div class="card-title-wrap">
                     <span class="card-formid">#<%= formId %></span>
-                    <a href="detail.jsp?id=<%= formId %>&from=submit" class="card-title" title="<%= title %>">
-                        <%= title %>
+                    <a href="detail.jsp?id=<%= formId %>&from=submit" class="card-title" title="<%= titleEsc %>">
+                        <%= titleEsc %>
                     </a>
                 </div>
                 <div class="card-meta">
@@ -423,6 +441,7 @@
 let currentButton = null;
 let currentOverdueButton = null;
 const contextPath = "<%= request.getContextPath() %>";
+const csrfToken = "<%= SecurityUtil.escapeHtml(csrfToken) %>";
 
 // zennnne แก้
 let sortOrder = (new URLSearchParams(window.location.search).get('sort') || 'asc');
@@ -565,7 +584,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 action: "approve",
                 expectedStep: currentButton.dataset.expectedstep,
                 redirectPage: "submit",
-                comment: detail
+                comment: detail,
+                csrfToken: csrfToken
             };
             // zennnne แก้
             Object.keys(fields).forEach(function (name) {
@@ -603,7 +623,8 @@ document.addEventListener("DOMContentLoaded", function () {
             form.action = contextPath + "/ExtendDeadlineServlet";
             const fields = {
                 formId: currentOverdueButton.dataset.formid,
-                newDeadline: newDeadline
+                newDeadline: newDeadline,
+                csrfToken: csrfToken
             };
             Object.keys(fields).forEach(function (name) {
                 const input = document.createElement("input");

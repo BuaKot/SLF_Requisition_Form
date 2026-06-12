@@ -2,6 +2,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="com.slf.util.SecurityUtil" %>
+<%
+    String csrfToken = SecurityUtil.ensureCsrfToken(request);
+%>
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -22,6 +26,7 @@
         .date-input-wrapper { position: relative; }
         .calendar-btn { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; }
         .hidden-date-picker { position: absolute; opacity: 0; width: 0; height: 0; }
+        .form-error-message { margin: 0 0 18px; padding: 12px 14px; border: 1px solid #f0b4ae; border-radius: 8px; background: #fff1f0; color: #b42318; font-weight: 700; }
     </style>
 </head>
 
@@ -40,7 +45,11 @@
     </div>
 
     <div class="form-container">
+        <c:if test="${not empty error}">
+            <div class="form-error-message"><c:out value="${error}" /></div>
+        </c:if>
         <form action="${pageContext.request.contextPath}/submitRequest" method="post">
+            <input type="hidden" name="csrfToken" value="<%= SecurityUtil.escapeHtml(csrfToken) %>">
             <c:if test="${not empty editedFormId}">
                 <input type="hidden" name="editedFormId" value="${editedFormId}">
             </c:if>
@@ -48,27 +57,27 @@
                 <!-- Name (auto‑filled, readonly) -->
                 <div class="form-group">
                     <label for="name">ชื่อ-นามสกุล</label>
-                    <input type="text" id="name" name="name" value="${loggedInEmployee.empName}" readonly required>
+                    <input type="text" id="name" name="name" value="${fn:escapeXml(loggedInEmployee.empName)}" readonly required>
                 </div>
 
                 <!-- Department (auto‑filled, locked) -->
                 <div class="form-group">
                     <label for="departmentDisplay">ฝ่าย</label>
-                    <input type="text" id="departmentDisplay" value="${empDeptName}" readonly required>
+                    <input type="text" id="departmentDisplay" value="${fn:escapeXml(empDeptName)}" readonly required>
                     <input type="hidden" id="department" name="department" value="${empDeptId}">
                 </div>
 
                 <!-- Section (auto‑filled, locked) -->
                 <div class="form-group">
                     <label for="sectionDisplay">ส่วน</label>
-                    <input type="text" id="sectionDisplay" value="${empSectionName}" readonly>
+                    <input type="text" id="sectionDisplay" value="${fn:escapeXml(empSectionName)}" readonly>
                     <input type="hidden" id="section" name="section" value="${empSectionId}">
                 </div>
 
                 <!-- Phone (auto‑filled) -->
                 <div class="form-group">
                     <label for="phone">เบอร์ต่อ</label>
-                    <input type="text" id="phone" name="phone" value="${loggedInEmployee.phone}" readonly required>
+                    <input type="text" id="phone" name="phone" value="${fn:escapeXml(loggedInEmployee.phone)}" readonly required>
                 </div>
 
                 <!-- Date (today, readonly) -->
@@ -183,7 +192,7 @@
 
                 <div class="btn-group full-width">
                     <button type="button" class="btn btn-reject" onclick="history.back()">ย้อนกลับ</button>
-                    <a href = "${pageContext.request.contextPath}/submitRequest"><button type="submit" class="btn btn-approve" id="submitBtn">ยืนยันการส่ง</button></a>
+                    <button type="submit" class="btn btn-approve" id="submitBtn">ยืนยันการส่ง</button>
                 </div>
             </div>
         </form>

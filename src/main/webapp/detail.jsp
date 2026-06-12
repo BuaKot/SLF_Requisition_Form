@@ -1,7 +1,7 @@
 ﻿<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection" %>
+<%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection, com.slf.util.SecurityUtil" %>
 
 <%
     String idParam = request.getParameter("id");
@@ -12,7 +12,13 @@
         response.sendRedirect("submit"); // zennnne แก้
         return;
     }
-    int formId = Integer.parseInt(idParam);
+    int formId;
+    try {
+        formId = Integer.parseInt(idParam.trim());
+    } catch (NumberFormatException e) {
+        response.sendRedirect("submit");
+        return;
+    }
     Object viewerEmpObj = session.getAttribute("loggedInEmpId");
     if (viewerEmpObj == null) viewerEmpObj = session.getAttribute("empid");
     if (viewerEmpObj == null) {
@@ -58,7 +64,11 @@
     }
 
     private String nvlDisplay(String value) {
-        return (value == null || value.trim().isEmpty()) ? "-" : value.trim();
+        return (value == null || value.trim().isEmpty()) ? "-" : SecurityUtil.escapeHtml(value.trim());
+    }
+
+    private String h(Object value) {
+        return SecurityUtil.escapeHtml(value);
     }
 
     private String approvalActionText(int stateStep) {
@@ -278,8 +288,7 @@
         }
 
     } catch (Exception e) {
-        out.println("<div style='color:red;text-align:center;'>เกิดข้อผิดพลาด: " + e.getMessage() + "</div>");
-        e.printStackTrace();
+        out.println("<div style='color:red;text-align:center;'>เกิดข้อผิดพลาดในการโหลดข้อมูล</div>");
     } finally {
         try { if (rsApproval != null) rsApproval.close(); } catch (Exception ignored) {}
         try { if (psApproval != null) psApproval.close(); } catch (Exception ignored) {}
@@ -299,13 +308,13 @@
         <div style="font-size:0.9rem; color:#777;">#<%= formId %></div>
         <div class="form-grid">
             <!-- personal info -->
-            <div class="form-group"><label>ชื่อ-นามสกุล</label><input type="text" value="<%= fullName %>" readonly></div>
-            <div class="form-group"><label>ส่วน</label><input type="text" value="<%= sectionName %>" readonly></div>
-            <div class="form-group"><label>ฝ่าย</label><input type="text" value="<%= departmentName %>" readonly></div>
-            <div class="form-group"><label>เบอร์ต่อ</label><input type="text" value="<%= phone %>" readonly></div>
-            <div class="form-group"><label>วันที่</label><input type="text" value="<%= requestDate %>" readonly></div>
-            <div class="form-group"><label>Deadline</label><input type="text" value="<%= deadline %>" readonly></div>
-            <div class="form-group full-width" style="margin-bottom:20px;"><label>ชื่อหัวข้อความต้องการ :</label><input type="text" value="<%= requestTitle %>" readonly></div>
+            <div class="form-group"><label>ชื่อ-นามสกุล</label><input type="text" value="<%= h(fullName) %>" readonly></div>
+            <div class="form-group"><label>ส่วน</label><input type="text" value="<%= h(sectionName) %>" readonly></div>
+            <div class="form-group"><label>ฝ่าย</label><input type="text" value="<%= h(departmentName) %>" readonly></div>
+            <div class="form-group"><label>เบอร์ต่อ</label><input type="text" value="<%= h(phone) %>" readonly></div>
+            <div class="form-group"><label>วันที่</label><input type="text" value="<%= h(requestDate) %>" readonly></div>
+            <div class="form-group"><label>Deadline</label><input type="text" value="<%= h(deadline) %>" readonly></div>
+            <div class="form-group full-width" style="margin-bottom:20px;"><label>ชื่อหัวข้อความต้องการ :</label><input type="text" value="<%= h(requestTitle) %>" readonly></div>
         </div>
 
         <h3 style="margin-top:30px;">รายละเอียดคำขอ (จำนวน <%= items.size() %> รายการ)</h3>
@@ -325,19 +334,19 @@
             <div class="item-block">
                 <div class="form-group">
                     <label>ประเภทคำขอ</label>
-                    <input type="text" value="<%= typeName %>" readonly>
+                    <input type="text" value="<%= h(typeName) %>" readonly>
                 </div>
 
                 <%-- Program name or Other detail --%>
                 <% if (isProgram) { %>
                     <div class="form-group">
                         <label>ชื่อโปรแกรม</label>
-                        <input type="text" value="<%= it.get("programOrOther") %>" readonly>
+                        <input type="text" value="<%= h(it.get("programOrOther")) %>" readonly>
                     </div>
                 <% } else if (isOther) { %>
                     <div class="form-group">
                         <label>โปรดระบุ (อื่น ๆ)</label>
-                        <input type="text" value="<%= it.get("programOrOther") %>" readonly>
+                        <input type="text" value="<%= h(it.get("programOrOther")) %>" readonly>
                     </div>
                 <% } %>
 
@@ -373,11 +382,11 @@
                             <div style="margin-bottom:20px;">
                                 <div class="server-input-row">
                                     <label>Server :</label>
-                                    <input type="text" value="<%= serverName %>" readonly placeholder="Server">
+                                    <input type="text" value="<%= h(serverName) %>" readonly placeholder="Server">
                                 </div>
                                 <div class="server-input-row">
                                     <label>Folder :</label>
-                                    <input type="text" value="<%= shareName %>" readonly>
+                                    <input type="text" value="<%= h(shareName) %>" readonly>
                                 </div>
                                 <div class="permission-checkbox-row">
                                     <label><input type="checkbox" <%= full ? "checked" : "" %> disabled> Full control</label>
@@ -397,11 +406,11 @@
                 <!-- Objective and current method (unchanged) -->
                 <div class="form-group full-width">
                     <label>วัตถุประสงค์ / ความต้องการ</label>
-                    <textarea rows="4" readonly><%= it.get("objective") %></textarea>
+                    <textarea rows="4" readonly><%= h(it.get("objective")) %></textarea>
                 </div>
                 <div class="form-group full-width">
                     <label>วิธีการดำเนินการปัจจุบัน</label>
-                    <textarea rows="4" readonly><%= it.get("currentMethod") %></textarea>
+                    <textarea rows="4" readonly><%= h(it.get("currentMethod")) %></textarea>
                 </div>
             </div>
         <%

@@ -1,6 +1,8 @@
 package com.slf.controller;
 
 import com.slf.dao.DBConnection;
+import com.slf.util.AuthUtil;
+import com.slf.util.SecurityUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,6 +27,14 @@ public class ExtendDeadlineServlet extends HttpServlet {
         if (empObj == null) empObj = session.getAttribute("empid");
         if (empObj == null) {
             response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        if (!SecurityUtil.isValidCsrfToken(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token");
+            return;
+        }
+        if (AuthUtil.isApprovalOnlyRole((String) session.getAttribute("position"))) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "This role cannot extend requisition deadlines");
             return;
         }
         int empId = Integer.parseInt(empObj.toString());
@@ -61,7 +71,11 @@ public class ExtendDeadlineServlet extends HttpServlet {
             ps.setDate(1, newDeadline);
             ps.setInt(2, formId);
             ps.setInt(3, empId);
-            ps.executeUpdate();
+            int updated = ps.executeUpdate();
+            if (updated == 0) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "You cannot update this requisition form");
+                return;
+            }
 
         } catch (SQLException e) {
             throw new ServletException("Database error extending deadline", e);

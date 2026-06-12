@@ -87,32 +87,6 @@
                 </a>
                 <% } %>
 
-                <a class="enterprise-action-card" href="${pageContext.request.contextPath}/history.jsp">
-                    <div class="enterprise-card-icon" style="color: #28a745; background-color: #eafaf1;">
-                        <i class="fa-solid fa-clock-rotate-left" style="color: #28a745;"></i>
-                    </div>
-                    <div class="enterprise-card-content">
-                        <strong>ประวัติ / ติดตามสถานะ</strong>
-                        <small>เรียกดูประวัติคำขอย้อนหลังทั้งหมดและติดตามตำแหน่ง Workflow</small>
-                    </div>
-                    <div class="enterprise-card-arrow">
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </div>
-                </a>
-
-                <a class="enterprise-action-card" href="${pageContext.request.contextPath}/">
-                    <div class="enterprise-card-icon" style="color: #e0a800; background-color: #fff9e6;">
-                        <i class="fa-solid fa-house-laptop" style="color: #d39e00;"></i>
-                    </div>
-                    <div class="enterprise-card-content">
-                        <strong>กลับหน้าเลือกฟอร์ม</strong>
-                        <small>ออกจากแบบฟอร์มนี้เพื่อไปยังหน้าสารบัญเลือกแบบฟอร์มหลัก</small>
-                    </div>
-                    <div class="enterprise-card-arrow">
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </div>
-                </a>
-
             </div>
         </section>
     </main>

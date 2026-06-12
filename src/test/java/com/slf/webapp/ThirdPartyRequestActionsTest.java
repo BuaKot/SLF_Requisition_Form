@@ -15,11 +15,18 @@ public class ThirdPartyRequestActionsTest extends TestCase {
         assertTrue(page.contains("รอผู้ขอภายนอกกรอกฟอร์ม"));
         assertFalse(page.contains("รอผู้ให้บริการกรอก"));
         assertTrue(page.contains("ยกเลิกลิงก์"));
+        assertTrue(page.contains("owner-request-card"));
+        assertTrue(page.contains("link-card-actions clean-actions owner-request-card-actions"));
+        assertTrue(page.contains("ผู้ขอใช้บริการ"));
+        assertTrue(page.contains("item.getExternalContactName()"));
+        assertFalse(page.contains("<span>ผู้ให้บริการ</span>"));
         assertTrue(page.contains("ถูกลบออกจากประวัติและฐานข้อมูล"));
         assertFalse(page.contains("thirdPartySubmission?id="));
         assertTrue(styles.contains(".third-party-request-page .btn"));
         assertTrue(styles.contains(".third-party-request-page .btn-primary"));
         assertTrue(styles.contains(".third-party-request-page .btn-secondary"));
+        assertTrue(styles.contains(".owner-request-card"));
+        assertTrue(styles.contains(".owner-request-card-actions"));
     }
 
     private static String read(String path) throws Exception {

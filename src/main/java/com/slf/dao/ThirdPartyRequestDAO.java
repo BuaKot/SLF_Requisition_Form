@@ -151,35 +151,69 @@ public class ThirdPartyRequestDAO {
     }
 
     public List<ThirdPartyRequest> findHistory(Integer ownerEmpId, int limit) throws SQLException {
+        return findHistory(ownerEmpId, null, null, 0, limit);
+    }
+
+    public List<ThirdPartyRequest> findHistory(Integer ownerEmpId, String category, String search,
+                                               int offset, int limit) throws SQLException {
+        boolean hasOwner = ownerEmpId != null;
+        String normalizedCategory = normalizeHistoryCategory(category);
+        String normalizedSearch = search == null ? "" : search.trim().toLowerCase();
+        boolean hasSearch = !normalizedSearch.isEmpty();
         String sql =
-            "SELECT r.REQUEST_ID, r.FORM_CODE, r.INTERNAL_OWNER_EMPID, r.EXTERNAL_COMPANY_NAME, " +
-            "r.EXTERNAL_CONTACT_NAME, r.EXTERNAL_EMAIL, r.EXTERNAL_PHONE, r.PURPOSE, r.TARGET_SYSTEM, " +
-            "r.ACCESS_START_DATE, r.ACCESS_END_DATE, r.STATUS, r.CREATED_AT, r.SUBMITTED_AT, r.UPDATED_AT, " +
-            "l.LINK_ID, l.RAW_TOKEN, CASE WHEN l.STATUS = 'ACTIVE' AND l.EXPIRES_AT < ? THEN 'EXPIRED' ELSE l.STATUS END AS LINK_STATUS, " +
-            "l.CREATED_AT AS LINK_CREATED_AT, l.EXPIRES_AT AS LINK_EXPIRES_AT, l.USED_AT AS LINK_USED_AT, " +
-            "s.SUBMISSION_ID " +
+            "SELECT r.REQUEST_ID, r.INTERNAL_OWNER_EMPID, r.EXTERNAL_COMPANY_NAME, " +
+            "r.EXTERNAL_CONTACT_NAME, r.TARGET_SYSTEM, r.STATUS, r.SUBMITTED_AT, " +
+            "(SELECT MAX(s.SUBMISSION_ID) FROM THIRD_PARTY_FORM_LINK l " +
+            " JOIN THIRD_PARTY_FORM_SUBMISSION s ON s.LINK_ID = l.LINK_ID " +
+            " WHERE l.REQUEST_ID = r.REQUEST_ID) AS SUBMISSION_ID " +
             "FROM THIRD_PARTY_REQUEST r " +
-            "LEFT JOIN THIRD_PARTY_FORM_LINK l ON l.REQUEST_ID = r.REQUEST_ID " +
-            "LEFT JOIN THIRD_PARTY_FORM_SUBMISSION s ON s.LINK_ID = l.LINK_ID " +
-            "WHERE r.STATUS <> 'CANCELLED' AND (? IS NULL OR r.INTERNAL_OWNER_EMPID = ?) " +
-            "ORDER BY r.UPDATED_AT DESC, r.REQUEST_ID DESC FETCH FIRST ? ROWS ONLY";
+            "WHERE r.STATUS <> 'CANCELLED' " +
+            (hasOwner ? "AND r.INTERNAL_OWNER_EMPID = ? " : "") +
+            historyCategorySql(normalizedCategory) +
+            (hasSearch
+                ? "AND (TO_CHAR(r.REQUEST_ID) LIKE ? " +
+                  "OR LOWER(NVL(r.EXTERNAL_CONTACT_NAME, '')) LIKE ? " +
+                  "OR LOWER(NVL(r.EXTERNAL_COMPANY_NAME, '')) LIKE ? " +
+                  "OR LOWER(NVL(r.TARGET_SYSTEM, '')) LIKE ?) "
+                : "") +
+            "ORDER BY r.UPDATED_AT DESC, r.REQUEST_ID DESC " +
+            "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
         List<ThirdPartyRequest> requests = new ArrayList<ThirdPartyRequest>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setTimestamp(1, BangkokTimeUtil.nowTimestamp());
-            if (ownerEmpId == null) {
-                ps.setNull(2, java.sql.Types.NUMERIC);
-                ps.setNull(3, java.sql.Types.NUMERIC);
-            } else {
-                ps.setInt(2, ownerEmpId.intValue());
-                ps.setInt(3, ownerEmpId.intValue());
+            int index = 1;
+            if (hasOwner) {
+                ps.setInt(index++, ownerEmpId.intValue());
             }
-            ps.setInt(4, Math.max(1, limit));
+            if (hasSearch) {
+                String pattern = "%" + normalizedSearch + "%";
+                for (int i = 0; i < 4; i++) {
+                    ps.setString(index++, pattern);
+                }
+            }
+            ps.setInt(index++, Math.max(0, offset));
+            ps.setInt(index, Math.max(1, limit));
             try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) requests.add(mapRequest(rs));
+                while (rs.next()) requests.add(mapHistoryRequest(rs));
             }
         }
         return requests;
+    }
+
+    private static String normalizeHistoryCategory(String category) {
+        if ("completed".equals(category) || "rejected".equals(category) || "waiting".equals(category)) {
+            return category;
+        }
+        return "all";
+    }
+
+    private static String historyCategorySql(String category) {
+        if ("completed".equals(category)) return "AND r.STATUS = 'COMPLETED' ";
+        if ("rejected".equals(category)) return "AND r.STATUS = 'REJECTED' ";
+        if ("waiting".equals(category)) {
+            return "AND r.STATUS NOT IN ('COMPLETED', 'REJECTED', 'CANCELLED') ";
+        }
+        return "";
     }
 
     public List<ThirdPartyRequest> findByStatus(String status, int limit) throws SQLException {
@@ -286,6 +320,20 @@ public class ThirdPartyRequestDAO {
         request.setLinkCreatedAt(rs.getTimestamp("LINK_CREATED_AT"));
         request.setLinkExpiresAt(rs.getTimestamp("LINK_EXPIRES_AT"));
         request.setLinkUsedAt(rs.getTimestamp("LINK_USED_AT"));
+        long submissionId = rs.getLong("SUBMISSION_ID");
+        request.setSubmissionId(rs.wasNull() ? null : Long.valueOf(submissionId));
+        return request;
+    }
+
+    private static ThirdPartyRequest mapHistoryRequest(ResultSet rs) throws SQLException {
+        ThirdPartyRequest request = new ThirdPartyRequest();
+        request.setRequestId(rs.getLong("REQUEST_ID"));
+        request.setInternalOwnerEmpId(rs.getInt("INTERNAL_OWNER_EMPID"));
+        request.setExternalCompanyName(rs.getString("EXTERNAL_COMPANY_NAME"));
+        request.setExternalContactName(rs.getString("EXTERNAL_CONTACT_NAME"));
+        request.setTargetSystem(rs.getString("TARGET_SYSTEM"));
+        request.setStatus(rs.getString("STATUS"));
+        request.setSubmittedAt(rs.getTimestamp("SUBMITTED_AT"));
         long submissionId = rs.getLong("SUBMISSION_ID");
         request.setSubmissionId(rs.wasNull() ? null : Long.valueOf(submissionId));
         return request;

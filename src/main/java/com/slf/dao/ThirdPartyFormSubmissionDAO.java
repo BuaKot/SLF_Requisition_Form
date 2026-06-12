@@ -43,6 +43,29 @@ public class ThirdPartyFormSubmissionDAO {
         }
     }
 
+    public ThirdPartyFormSubmission findDetailById(long submissionId) throws SQLException {
+        String sql =
+            "SELECT s.SUBMISSION_ID, s.DOCUMENT_RECEIVE_NO, s.REASON_OBJECTIVE, s.PROJECT_NAME, " +
+            "s.ACCESS_START_DATE, s.ACCESS_END_DATE, s.CONSENT_ACCEPTED, s.CONSENT_VERSION, s.CONSENT_ACCEPTED_AT, " +
+            "s.CONSENT_IP_ADDRESS, s.CONSENT_USER_AGENT, l.REQUEST_ID, r.INTERNAL_OWNER_EMPID " +
+            "FROM THIRD_PARTY_FORM_SUBMISSION s " +
+            "JOIN THIRD_PARTY_FORM_LINK l ON l.LINK_ID = s.LINK_ID " +
+            "LEFT JOIN THIRD_PARTY_REQUEST r ON r.REQUEST_ID = l.REQUEST_ID " +
+            "WHERE s.SUBMISSION_ID = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, submissionId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                ThirdPartyFormSubmission submission = mapDetailSubmission(rs);
+                submission.setAccessRequests(findDetailAccessRequests(conn, submissionId));
+                return submission;
+            }
+        }
+    }
+
     public void submitOnce(ThirdPartyFormSubmission submission) throws SQLException {
         Timestamp eventTimestamp = BangkokTimeUtil.nowTimestamp();
         String insertSql =
@@ -206,6 +229,26 @@ public class ThirdPartyFormSubmissionDAO {
         return submission;
     }
 
+    private static ThirdPartyFormSubmission mapDetailSubmission(ResultSet rs) throws SQLException {
+        ThirdPartyFormSubmission submission = new ThirdPartyFormSubmission();
+        submission.setSubmissionId(rs.getLong("SUBMISSION_ID"));
+        long requestId = rs.getLong("REQUEST_ID");
+        submission.setRequestId(rs.wasNull() ? null : Long.valueOf(requestId));
+        int internalOwnerEmpId = rs.getInt("INTERNAL_OWNER_EMPID");
+        submission.setInternalOwnerEmpId(rs.wasNull() ? null : Integer.valueOf(internalOwnerEmpId));
+        submission.setDocumentReceiveNo(rs.getString("DOCUMENT_RECEIVE_NO"));
+        submission.setReasonObjective(rs.getString("REASON_OBJECTIVE"));
+        submission.setProjectName(rs.getString("PROJECT_NAME"));
+        submission.setAccessStartDate(getBangkokDate(rs, "ACCESS_START_DATE"));
+        submission.setAccessEndDate(getBangkokDate(rs, "ACCESS_END_DATE"));
+        submission.setConsentAccepted(rs.getInt("CONSENT_ACCEPTED") == 1);
+        submission.setConsentVersion(rs.getString("CONSENT_VERSION"));
+        submission.setConsentAcceptedAt(getBangkokTimestamp(rs, "CONSENT_ACCEPTED_AT"));
+        submission.setConsentIpAddress(rs.getString("CONSENT_IP_ADDRESS"));
+        submission.setConsentUserAgent(rs.getString("CONSENT_USER_AGENT"));
+        return submission;
+    }
+
     private static List<ThirdPartyAccessRequest> findAccessRequests(Connection conn, long submissionId)
             throws SQLException {
         String sql =
@@ -219,6 +262,37 @@ public class ThirdPartyFormSubmissionDAO {
                 while (rs.next()) {
                     ThirdPartyAccessRequest item = new ThirdPartyAccessRequest();
                     item.setAccessRequestId(rs.getLong("ACCESS_REQUEST_ID"));
+                    item.setDisplayOrder(rs.getInt("DISPLAY_ORDER"));
+                    item.setEmployeeCode(rs.getString("EMPLOYEE_CODE"));
+                    item.setUsername(rs.getString("USERNAME"));
+                    item.setNationalId(rs.getString("NATIONAL_ID"));
+                    item.setFullNameTh(rs.getString("FULL_NAME_TH"));
+                    item.setFullNameEn(rs.getString("FULL_NAME_EN"));
+                    item.setPositionName(rs.getString("POSITION_NAME"));
+                    item.setMobilePhone(rs.getString("MOBILE_PHONE"));
+                    item.setDepartmentName(rs.getString("DEPARTMENT_NAME"));
+                    item.setEmail(rs.getString("EMAIL"));
+                    item.setSystemName(rs.getString("SYSTEM_NAME"));
+                    item.setRequestedRole(rs.getString("REQUESTED_ROLE"));
+                    items.add(item);
+                }
+            }
+        }
+        return items;
+    }
+
+    private static List<ThirdPartyAccessRequest> findDetailAccessRequests(Connection conn, long submissionId)
+            throws SQLException {
+        String sql =
+            "SELECT DISPLAY_ORDER, EMPLOYEE_CODE, USERNAME, NATIONAL_ID, FULL_NAME_TH, FULL_NAME_EN, " +
+            "POSITION_NAME, MOBILE_PHONE, DEPARTMENT_NAME, EMAIL, SYSTEM_NAME, REQUESTED_ROLE " +
+            "FROM THIRD_PARTY_ACCESS_REQUEST WHERE SUBMISSION_ID = ? ORDER BY DISPLAY_ORDER";
+        List<ThirdPartyAccessRequest> items = new ArrayList<ThirdPartyAccessRequest>();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, submissionId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ThirdPartyAccessRequest item = new ThirdPartyAccessRequest();
                     item.setDisplayOrder(rs.getInt("DISPLAY_ORDER"));
                     item.setEmployeeCode(rs.getString("EMPLOYEE_CODE"));
                     item.setUsername(rs.getString("USERNAME"));

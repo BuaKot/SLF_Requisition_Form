@@ -33,6 +33,17 @@ public class ThirdPartyAcceptanceDAO {
         }
     }
 
+    public Integer findSatisfactionLevelByRequestId(long requestId) throws SQLException {
+        String sql = "SELECT SATISFACTION_LEVEL FROM THIRD_PARTY_ACCEPTANCE_RESULT WHERE REQUEST_ID = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, requestId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? Integer.valueOf(rs.getInt("SATISFACTION_LEVEL")) : null;
+            }
+        }
+    }
+
     public List<ThirdPartyAcceptanceToken> findRecentForOwner(int ownerEmpId, int limit) throws SQLException {
         String sql =
             "SELECT t.ACCEPTANCE_TOKEN_ID, t.REQUEST_ID, t.RAW_TOKEN, " +

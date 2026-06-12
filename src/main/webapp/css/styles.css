@@ -1590,6 +1590,7 @@ html, body {
 
 .owner-link-dashboard .owner-acceptance-panel {
     grid-area: acceptance;
+    min-width: 0;
 }
 
 .owner-acceptance-panel .third-party-list-head {
@@ -1606,15 +1607,39 @@ html, body {
     grid-template-columns: 1fr;
 }
 
+.owner-acceptance-panel .third-party-link-list,
+.owner-acceptance-panel .acceptance-link-card,
+.owner-acceptance-panel .link-card-main,
+.owner-acceptance-panel .link-card-title-row > div {
+    min-width: 0;
+}
+
+.owner-acceptance-panel .link-card-title-row {
+    align-items: flex-start;
+}
+
+.owner-acceptance-panel .status-badge {
+    flex: 0 0 auto;
+}
+
 .owner-acceptance-panel .generated-link-box {
     display: grid;
     gap: 8px;
+}
+
+.owner-acceptance-panel .acceptance-generated-link {
+    margin-top: 12px;
 }
 
 .owner-acceptance-panel .generated-link-box input,
 .owner-acceptance-panel .generated-link-box .btn {
     width: 100%;
     min-width: 0;
+}
+
+.owner-acceptance-panel .generated-link-box input {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .form-section-title,
@@ -1911,6 +1936,16 @@ html, body {
 .third-party-link-card.compact-card {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
+}
+
+.owner-request-card {
+    display: block;
+}
+
+.owner-request-card-actions {
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 0;
 }
 
 .compact-note {
@@ -2229,6 +2264,42 @@ html, body {
 
     .clean-actions {
         justify-content: flex-start;
+    }
+
+    .owner-request-card-actions {
+        width: 100%;
+    }
+
+    .owner-acceptance-panel {
+        padding: 18px;
+    }
+
+    .owner-acceptance-panel .third-party-list-head {
+        margin-bottom: 14px;
+    }
+
+    .owner-acceptance-panel .form-section-title {
+        margin-bottom: 8px;
+        font-size: 20px;
+    }
+
+    .owner-acceptance-panel .link-card-title-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .owner-acceptance-panel .status-badge,
+    .owner-acceptance-panel .third-party-count {
+        align-self: flex-start;
+    }
+
+    .owner-acceptance-panel .acceptance-link-card {
+        padding: 14px;
+    }
+
+    .owner-acceptance-panel .empty-link-state {
+        min-height: 170px;
+        padding: 12px 0;
     }
 
     .admin-link-summary {

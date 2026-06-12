@@ -19,7 +19,9 @@ import javax.servlet.http.HttpSession;
 
 @WebServlet("/thirdParty/history")
 public class ThirdPartyHistoryServlet extends HttpServlet {
-    private static final int LIST_LIMIT = 500;
+    private static final int PAGE_SIZE = 25;
+    private static final int MAX_PAGE = 100000;
+    private static final int MAX_SEARCH_LENGTH = 100;
     private final ThirdPartyRequestDAO requestDAO = new ThirdPartyRequestDAO();
     private final ThirdPartyWorkflowDAO workflowDAO = new ThirdPartyWorkflowDAO();
 
@@ -35,17 +37,53 @@ public class ThirdPartyHistoryServlet extends HttpServlet {
         }
 
         boolean adminView = AuthUtil.isAllowedForPage(position, "thirdPartyHistory");
+        int page = parsePage(request.getParameter("page"));
+        String filter = normalizeFilter(request.getParameter("filter"));
+        String search = normalizeSearch(request.getParameter("q"));
         try {
             List<ThirdPartyRequest> requests =
-                requestDAO.findHistory(adminView ? null : empId, LIST_LIMIT);
+                requestDAO.findHistory(adminView ? null : empId, filter, search,
+                    (page - 1) * PAGE_SIZE, PAGE_SIZE + 1);
+            boolean hasNextPage = requests.size() > PAGE_SIZE;
+            if (hasNextPage) {
+                requests.remove(requests.size() - 1);
+            }
             Map<Long, List<ThirdPartyWorkflowActionEntry>> actionHistory =
                 workflowDAO.findActionHistoryForRequests(requests);
             request.setAttribute("thirdPartyRequests", requests);
             request.setAttribute("thirdPartyHistoryActions", actionHistory);
             request.setAttribute("thirdPartyHistoryAdminView", Boolean.valueOf(adminView));
+            request.setAttribute("thirdPartyHistoryFilter", filter);
+            request.setAttribute("thirdPartyHistorySearch", search);
+            request.setAttribute("thirdPartyHistoryPage", Integer.valueOf(page));
+            request.setAttribute("thirdPartyHistoryHasNextPage", Boolean.valueOf(hasNextPage));
             request.getRequestDispatcher("/third-party-history.jsp").forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to load third-party history", e);
         }
+    }
+
+    static int parsePage(String value) {
+        if (value == null || value.trim().isEmpty()) return 1;
+        try {
+            return Math.min(MAX_PAGE, Math.max(1, Integer.parseInt(value.trim())));
+        } catch (NumberFormatException e) {
+            return 1;
+        }
+    }
+
+    static String normalizeFilter(String value) {
+        if ("waiting".equals(value) || "completed".equals(value) || "rejected".equals(value)) {
+            return value;
+        }
+        return "all";
+    }
+
+    static String normalizeSearch(String value) {
+        if (value == null) return "";
+        String normalized = value.trim();
+        return normalized.length() <= MAX_SEARCH_LENGTH
+            ? normalized
+            : normalized.substring(0, MAX_SEARCH_LENGTH);
     }
 }

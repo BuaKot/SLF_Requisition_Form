@@ -34,7 +34,7 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
         }
 
         try {
-            ThirdPartyFormSubmission submission = submissionDAO.findById(submissionId);
+            ThirdPartyFormSubmission submission = submissionDAO.findDetailById(submissionId);
             if (submission == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
@@ -48,14 +48,15 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
             }
             request.setAttribute("thirdPartySubmissionAuthorized", Boolean.TRUE);
             request.setAttribute("submission", submission);
-            request.setAttribute("approvalHistory",
+            java.util.List<ThirdPartyWorkflowActionEntry> approvalHistory =
                 submission.getRequestId() == null
                     ? java.util.Collections.emptyList()
-                    : workflowDAO.findActionHistory(submission.getRequestId().longValue()));
-            request.setAttribute("acceptanceResult",
-                submission.getRequestId() == null
-                    ? null
-                    : acceptanceDAO.findByRequestId(submission.getRequestId().longValue()));
+                    : workflowDAO.findActionHistory(submission.getRequestId().longValue());
+            request.setAttribute("approvalHistory", approvalHistory);
+            request.setAttribute("acceptanceScore",
+                submission.getRequestId() != null && hasExternalAcceptance(approvalHistory)
+                    ? acceptanceDAO.findSatisfactionLevelByRequestId(submission.getRequestId().longValue())
+                    : null);
             boolean viewingOwnSubmission = ThirdPartyAccessPolicy.canCreateOwnLinks(empId)
                 && empId.equals(submission.getInternalOwnerEmpId());
             request.setAttribute("thirdPartySubmissionBackUrl",
@@ -78,5 +79,13 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
             throw new IllegalArgumentException("Invalid submission id.");
         }
         return id;
+    }
+
+    private static boolean hasExternalAcceptance(
+            java.util.List<ThirdPartyWorkflowActionEntry> approvalHistory) {
+        for (ThirdPartyWorkflowActionEntry action : approvalHistory) {
+            if ("EXTERNAL_ACCEPTED".equals(action.getActionType())) return true;
+        }
+        return false;
     }
 }

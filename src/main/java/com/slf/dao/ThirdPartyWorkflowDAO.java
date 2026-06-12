@@ -155,7 +155,7 @@ public class ThirdPartyWorkflowDAO {
 
     public List<ThirdPartyWorkflowActionEntry> findActionHistory(long requestId) throws SQLException {
         String sql =
-            "SELECT a.ACTION_TYPE, a.FROM_STATUS, a.TO_STATUS, a.ACTOR_TYPE, a.ACTOR_EMPID, " +
+            "SELECT a.ACTION_TYPE, a.ACTOR_TYPE, a.ACTOR_EMPID, " +
             "CASE WHEN a.ACTOR_TYPE = 'EXTERNAL' THEN r.EXTERNAL_CONTACT_NAME ELSE e.EMPNAME END AS ACTOR_EMPNAME, " +
             "a.COMMENT_TEXT, a.ACTED_AT " +
             "FROM THIRD_PARTY_WORKFLOW_ACTION a " +
@@ -171,8 +171,6 @@ public class ThirdPartyWorkflowDAO {
                 while (rs.next()) {
                     ThirdPartyWorkflowActionEntry entry = new ThirdPartyWorkflowActionEntry();
                     entry.setActionType(rs.getString("ACTION_TYPE"));
-                    entry.setFromStatus(rs.getString("FROM_STATUS"));
-                    entry.setToStatus(rs.getString("TO_STATUS"));
                     entry.setActorType(rs.getString("ACTOR_TYPE"));
                     int actorEmpId = rs.getInt("ACTOR_EMPID");
                     entry.setActorEmpId(rs.wasNull() ? null : Integer.valueOf(actorEmpId));
@@ -202,8 +200,7 @@ public class ThirdPartyWorkflowDAO {
                 new ArrayList<ThirdPartyWorkflowActionEntry>());
         }
         String sql =
-            "SELECT a.REQUEST_ID, a.ACTION_TYPE, a.FROM_STATUS, a.TO_STATUS, a.ACTOR_TYPE, " +
-            "a.ACTOR_EMPID, a.COMMENT_TEXT, a.ACTED_AT " +
+            "SELECT a.REQUEST_ID, a.ACTION_TYPE, a.ACTED_AT " +
             "FROM THIRD_PARTY_WORKFLOW_ACTION a " +
             "WHERE a.REQUEST_ID IN (" + placeholders + ") AND a.ACTION_TYPE <> 'WORKFLOW_MIGRATED' " +
             "ORDER BY a.REQUEST_ID, a.ACTED_AT ASC, a.ACTION_ID ASC";
@@ -218,12 +215,6 @@ public class ThirdPartyWorkflowDAO {
                     ThirdPartyWorkflowActionEntry entry = new ThirdPartyWorkflowActionEntry();
                     entry.setRequestId(rs.getLong("REQUEST_ID"));
                     entry.setActionType(rs.getString("ACTION_TYPE"));
-                    entry.setFromStatus(rs.getString("FROM_STATUS"));
-                    entry.setToStatus(rs.getString("TO_STATUS"));
-                    entry.setActorType(rs.getString("ACTOR_TYPE"));
-                    int actorEmpId = rs.getInt("ACTOR_EMPID");
-                    entry.setActorEmpId(rs.wasNull() ? null : Integer.valueOf(actorEmpId));
-                    entry.setCommentText(rs.getString("COMMENT_TEXT"));
                     entry.setActedAt(rs.getTimestamp("ACTED_AT"));
                     List<ThirdPartyWorkflowActionEntry> history =
                         historyByRequest.get(Long.valueOf(entry.getRequestId()));

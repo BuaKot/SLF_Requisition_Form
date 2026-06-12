@@ -3,11 +3,9 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Collections" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.slf.model.ThirdPartyAcceptanceResult" %>
 <%@ page import="com.slf.model.ThirdPartyFormSubmission" %>
 <%@ page import="com.slf.model.ThirdPartyAccessRequest" %>
 <%@ page import="com.slf.model.ThirdPartyWorkflowActionEntry" %>
-<%@ page import="com.slf.util.AuthUtil" %>
 <%!
     public String h(Object input) {
         if (input == null) return "";
@@ -79,8 +77,7 @@
     List<ThirdPartyWorkflowActionEntry> approvalHistory =
         (List<ThirdPartyWorkflowActionEntry>) request.getAttribute("approvalHistory");
     if (approvalHistory == null) approvalHistory = Collections.emptyList();
-    ThirdPartyAcceptanceResult acceptanceResult =
-        (ThirdPartyAcceptanceResult) request.getAttribute("acceptanceResult");
+    Integer acceptanceScore = (Integer) request.getAttribute("acceptanceScore");
     SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     SimpleDateFormat dateOnly = new SimpleDateFormat("dd/MM/yyyy");
     SimpleDateFormat timeOnly = new SimpleDateFormat("HH:mm:ss");
@@ -150,58 +147,6 @@
         </div>
 
         <section class="panel">
-            <h2 class="section-title">สถานะและลิงก์</h2>
-            <div class="grid">
-                <div class="field">
-                    <div class="label">Link ID / สถานะลิงก์</div>
-                    <div class="value">#<%= submission.getLinkId() %> / <%= display(submission.getLinkStatus()) %></div>
-                </div>
-                <div class="field">
-                    <div class="label">เวลาส่งข้อมูล</div>
-                    <div class="value"><%= submission.getCreatedAt() == null ? "-" : dateTime.format(submission.getCreatedAt()) %></div>
-                </div>
-                <div class="field">
-                    <div class="label">วันหมดอายุลิงก์</div>
-                    <div class="value"><%= submission.getLinkExpiresAt() == null ? "-" : dateTime.format(submission.getLinkExpiresAt()) %></div>
-                </div>
-                <div class="field">
-                    <div class="label">หมายเหตุลิงก์</div>
-                    <div class="value"><%= display(submission.getLinkNote()) %></div>
-                </div>
-            </div>
-        </section>
-
-        <section class="panel">
-            <h2 class="section-title">ข้อมูลผู้กรอก</h2>
-            <div class="grid">
-                <div class="field">
-                    <div class="label">เลขที่รับเอกสาร</div>
-                    <div class="value"><%= display(submission.getDocumentReceiveNo()) %></div>
-                </div>
-                <div class="field">
-                    <div class="label">ชื่อ-สกุล ภาษาไทย</div>
-                    <div class="value"><%= display(submission.getFullNameTh()) %></div>
-                </div>
-                <div class="field">
-                    <div class="label">ชื่อ-สกุล ภาษาอังกฤษ</div>
-                    <div class="value"><%= display(submission.getFullNameEn()) %></div>
-                </div>
-                <div class="field">
-                    <div class="label">หน่วยงาน</div>
-                    <div class="value"><%= display(submission.getOrganization()) %></div>
-                </div>
-                <div class="field">
-                    <div class="label">เบอร์โทรศัพท์</div>
-                    <div class="value"><%= display(submission.getPhone()) %></div>
-                </div>
-                <div class="field">
-                    <div class="label">Email</div>
-                    <div class="value"><%= display(submission.getEmail()) %></div>
-                </div>
-            </div>
-        </section>
-
-        <section class="panel">
             <h2 class="section-title">รายละเอียดการขอใช้งาน</h2>
             <div class="grid">
                 <div class="field full">
@@ -224,29 +169,26 @@
         </section>
 
         <section class="panel">
-            <h2 class="section-title">หลักฐานการยินยอมรับเงื่อนไข</h2>
-            <div class="grid">
-                <div class="field">
-                    <div class="label">สถานะการยินยอม</div>
-                    <div class="value"><%= submission.isConsentAccepted() ? "ยินยอมแล้ว" : "ไม่พบการยินยอม" %></div>
+            <h2 class="section-title">รายชื่อผู้ขอรับสิทธิ์การเข้าถึง</h2>
+            <% for (ThirdPartyAccessRequest item : submission.getAccessRequests()) { %>
+                <div class="access-item">
+                    <div class="access-item-title">รายชื่อคนที่ <%= item.getDisplayOrder() %></div>
+                    <div class="grid">
+                        <div class="field"><div class="label">รหัสพนักงาน</div><div class="value"><%= display(item.getEmployeeCode()) %></div></div>
+                        <div class="field"><div class="label">ชื่อผู้ใช้งาน</div><div class="value"><%= display(item.getUsername()) %></div></div>
+                        <div class="field"><div class="label">เลขที่บัตรประชาชน</div><div class="value"><%= maskNationalId(item.getNationalId()) %></div></div>
+                        <div class="field"><div class="label">ชื่อ-สกุล (TH)</div><div class="value"><%= display(item.getFullNameTh()) %></div></div>
+                        <div class="field"><div class="label">ชื่อ-สกุล (EN)</div><div class="value"><%= display(item.getFullNameEn()) %></div></div>
+                        <div class="field"><div class="label">ตำแหน่ง</div><div class="value"><%= display(item.getPositionName()) %></div></div>
+                        <div class="field"><div class="label">เบอร์โทรศัพท์มือถือ</div><div class="value"><%= display(item.getMobilePhone()) %></div></div>
+                        <div class="field"><div class="label">ฝ่าย/กลุ่มงาน</div><div class="value"><%= display(item.getDepartmentName()) %></div></div>
+                        <div class="field"><div class="label">Email</div><div class="value"><%= display(item.getEmail()) %></div></div>
+                        <div class="field"><div class="label">ระบบงาน</div><div class="value"><%= display(item.getSystemName()) %></div></div>
+                        <div class="field full"><div class="label">สิทธิ์การใช้งาน (Role)</div><div class="value"><%= display(item.getRequestedRole()) %></div></div>
+                    </div>
                 </div>
-                <div class="field">
-                    <div class="label">ฉบับหนังสือยินยอม</div>
-                    <div class="value"><%= display(submission.getConsentVersion()) %></div>
-                </div>
-                <div class="field">
-                    <div class="label">เวลาที่ยินยอม</div>
-                    <div class="value"><%= submission.getConsentAcceptedAt() == null ? "-" : dateTime.format(submission.getConsentAcceptedAt()) %></div>
-                </div>
-                <div class="field">
-                    <div class="label">IP Address</div>
-                    <div class="value"><%= display(submission.getConsentIpAddress()) %></div>
-                </div>
-                <div class="field full">
-                    <div class="label">User-Agent</div>
-                    <div class="value"><%= display(submission.getConsentUserAgent()) %></div>
-                </div>
-            </div>
+            <% } %>
+            <div class="table-note"><strong>หมายเหตุ*</strong> โปรดระบุเลขที่บัตรประชาชนหากขอใช้ระบบงานกองทุนเงินให้กู้ยืมเพื่อการศึกษาแบบดิจิทัล (DSL)</div>
         </section>
 
         <section class="panel">
@@ -277,8 +219,8 @@
                                 <div class="approval-detail-label">คำสั่ง/ความเห็น</div>
                                 <div class="approval-card-detail"><%= display(action.getCommentText()) %></div>
                             <% } else if ("EXTERNAL_ACCEPTED".equals(actionType) || "EXTERNAL_REJECTED".equals(actionType)) { %>
-                                <% if (acceptanceResult != null) { %>
-                                    <div class="approval-score">คะแนน <%= acceptanceResult.getSatisfactionLevel() %></div>
+                                <% if (acceptanceScore != null) { %>
+                                    <div class="approval-score">คะแนน <%= acceptanceScore %></div>
                                 <% } %>
                                 <div class="approval-card-detail"><%= display(action.getCommentText()) %></div>
                             <% } else if ("SECTION_HEAD_REPORTED".equals(actionType)) { %>
@@ -294,27 +236,31 @@
         </section>
 
         <section class="panel">
-            <h2 class="section-title">รายชื่อผู้ขอรับสิทธิ์การเข้าถึง</h2>
-            <% for (ThirdPartyAccessRequest item : submission.getAccessRequests()) { %>
-                <div class="access-item">
-                    <div class="access-item-title">รายชื่อคนที่ <%= item.getDisplayOrder() %></div>
-                    <div class="grid">
-                        <div class="field"><div class="label">รหัสพนักงาน</div><div class="value"><%= display(item.getEmployeeCode()) %></div></div>
-                        <div class="field"><div class="label">ชื่อผู้ใช้งาน</div><div class="value"><%= display(item.getUsername()) %></div></div>
-                        <div class="field"><div class="label">เลขที่บัตรประชาชน</div><div class="value"><%= maskNationalId(item.getNationalId()) %></div></div>
-                        <div class="field"><div class="label">ชื่อ-สกุล (TH)</div><div class="value"><%= display(item.getFullNameTh()) %></div></div>
-                        <div class="field"><div class="label">ชื่อ-สกุล (EN)</div><div class="value"><%= display(item.getFullNameEn()) %></div></div>
-                        <div class="field"><div class="label">ตำแหน่ง</div><div class="value"><%= display(item.getPositionName()) %></div></div>
-                        <div class="field"><div class="label">เบอร์โทรศัพท์มือถือ</div><div class="value"><%= display(item.getMobilePhone()) %></div></div>
-                        <div class="field"><div class="label">ฝ่าย/กลุ่มงาน</div><div class="value"><%= display(item.getDepartmentName()) %></div></div>
-                        <div class="field"><div class="label">Email</div><div class="value"><%= display(item.getEmail()) %></div></div>
-                        <div class="field"><div class="label">ระบบงาน</div><div class="value"><%= display(item.getSystemName()) %></div></div>
-                        <div class="field full"><div class="label">สิทธิ์การใช้งาน (Role)</div><div class="value"><%= display(item.getRequestedRole()) %></div></div>
-                    </div>
+            <h2 class="section-title">หลักฐานการยินยอมรับเงื่อนไข</h2>
+            <div class="grid">
+                <div class="field">
+                    <div class="label">สถานะการยินยอม</div>
+                    <div class="value"><%= submission.isConsentAccepted() ? "ยินยอมแล้ว" : "ไม่พบการยินยอม" %></div>
                 </div>
-            <% } %>
-            <div class="table-note"><strong>หมายเหตุ*</strong> โปรดระบุเลขที่บัตรประชาชนหากขอใช้ระบบงานกองทุนเงินให้กู้ยืมเพื่อการศึกษาแบบดิจิทัล (DSL)</div>
+                <div class="field">
+                    <div class="label">ฉบับหนังสือยินยอม</div>
+                    <div class="value"><%= display(submission.getConsentVersion()) %></div>
+                </div>
+                <div class="field">
+                    <div class="label">เวลาที่ยินยอม</div>
+                    <div class="value"><%= submission.getConsentAcceptedAt() == null ? "-" : dateTime.format(submission.getConsentAcceptedAt()) %></div>
+                </div>
+                <div class="field">
+                    <div class="label">IP Address</div>
+                    <div class="value"><%= display(submission.getConsentIpAddress()) %></div>
+                </div>
+                <div class="field full">
+                    <div class="label">User-Agent</div>
+                    <div class="value"><%= display(submission.getConsentUserAgent()) %></div>
+                </div>
+            </div>
         </section>
+
     </main>
     <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>

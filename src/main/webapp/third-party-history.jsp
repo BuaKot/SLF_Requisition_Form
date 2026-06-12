@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.text.SimpleDateFormat,java.sql.Timestamp,java.util.Collections,java.util.List,java.util.Map" %>
+<%@ page import="java.net.URLEncoder,java.text.SimpleDateFormat,java.sql.Timestamp,java.util.Collections,java.util.List,java.util.Map" %>
 <%@ page import="com.slf.model.ThirdPartyRequest" %>
 <%@ page import="com.slf.model.ThirdPartyWorkflowActionEntry" %>
 <%@ page import="com.slf.util.ThirdPartyAccessPolicy" %>
@@ -62,6 +62,14 @@
     private boolean warningTimelineAction(ThirdPartyWorkflowActionEntry action) {
         return action != null && "EXTERNAL_ACCEPTANCE_EXPIRED".equals(action.getActionType());
     }
+    private String historyUrl(String contextPath, String filter, String search, int page) {
+        try {
+            return contextPath + "/thirdParty/history?filter=" + URLEncoder.encode(filter, "UTF-8")
+                + "&q=" + URLEncoder.encode(search, "UTF-8") + "&page=" + page;
+        } catch (Exception e) {
+            return contextPath + "/thirdParty/history";
+        }
+    }
 %>
 <%
     String position = (String) session.getAttribute("position");
@@ -75,6 +83,14 @@
         (Map<Long, List<ThirdPartyWorkflowActionEntry>>) request.getAttribute("thirdPartyHistoryActions");
     if (actionHistory == null) actionHistory = Collections.emptyMap();
     boolean adminView = Boolean.TRUE.equals(request.getAttribute("thirdPartyHistoryAdminView"));
+    String historyFilter = (String) request.getAttribute("thirdPartyHistoryFilter");
+    if (historyFilter == null) historyFilter = "all";
+    String historySearch = (String) request.getAttribute("thirdPartyHistorySearch");
+    if (historySearch == null) historySearch = "";
+    int historyPage = request.getAttribute("thirdPartyHistoryPage") == null
+        ? 1 : ((Integer) request.getAttribute("thirdPartyHistoryPage")).intValue();
+    boolean historyHasNextPage =
+        Boolean.TRUE.equals(request.getAttribute("thirdPartyHistoryHasNextPage"));
     SimpleDateFormat stepTime = new SimpleDateFormat("dd/MM HH:mm");
     String[] timelineLabels = {
         "ส่งฟอร์ม", "หัวหน้ากลุ่มงาน", "ผอ.IT", "ดำเนินการ", "ตรวจรับ",
@@ -102,31 +118,35 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         .history-filter-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
-        .history-filter{border:2px solid #d8e2eb;border-radius:999px;background:#fff;padding:8px 14px;cursor:pointer;font:inherit;color:#52606d}
+        .history-filter{border:2px solid #d8e2eb;border-radius:999px;background:#fff;padding:8px 14px;cursor:pointer;font:inherit;color:#52606d;text-decoration:none}
         .history-filter.selected{border-color:#3272bb;background:#eaf4ff;color:#003f73;font-weight:700}
         .history-search{flex:1;min-width:220px;border:2px solid #d8e2eb;border-radius:999px;padding:9px 15px;font:inherit}
         .history-result-count{margin-left:auto;color:#52606d}
-        .third-party-history-card[hidden]{display:none}
+        .history-search-form{display:flex;gap:8px;flex:1;min-width:280px}
+        .history-search-form .history-search{min-width:0}
+        .history-pagination{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:20px}
+        .history-pagination-label{font-weight:800;color:#52606d}
         .third-party-history-card{display:block}
         .history-owner{font-size:13px;color:#65758b;margin-top:5px}
         .history-card-top-actions{align-items:center;justify-content:flex-end;margin-top:0}
-        .history-workflow{margin-top:18px;padding:16px 0 6px;border-top:1px solid #dce8f3;overflow:hidden}
-        .history-workflow-track{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));width:100%;padding:0 4px}
-        .history-workflow-step{position:relative;min-width:0;text-align:center;color:#8796a5}
-        .history-workflow-step:not(:first-child)::before{content:"";position:absolute;top:19px;right:50%;width:100%;height:4px;background:#d8e2eb}
-        .history-workflow-node{position:relative;z-index:1;width:42px;height:42px;margin:0 auto 7px;border:4px solid #edf2f6;border-radius:50%;display:grid;place-items:center;background:#aebbc7;color:#fff;font-size:16px}
-        .history-workflow-label{display:block;padding:0 3px;font-size:13px;font-weight:900;line-height:1.2;overflow-wrap:anywhere}
-        .history-workflow-time{display:block;margin-top:3px;padding:0 2px;font-size:11px;line-height:1.2;overflow-wrap:anywhere}
-        .history-workflow-step.completed{color:#228b12}.history-workflow-step.completed::before{background:#24b316}.history-workflow-step.completed .history-workflow-node{background:#24b316;border-color:#d9f4d5}
-        .history-workflow-step.current{color:#075ca8}.history-workflow-step.current::before{background:#3272bb}.history-workflow-step.current .history-workflow-node{background:#3272bb;border-color:#dbeafe}
-        .history-workflow-step.rejected{color:#d32626}.history-workflow-step.rejected::before{background:#ef4444}.history-workflow-step.rejected .history-workflow-node{background:#ef3b3b;border-color:#ffdada}
-        .history-workflow-step.warning{color:#a45d00}.history-workflow-step.warning::before{background:#f2a900}.history-workflow-step.warning .history-workflow-node{background:#f2a900;border-color:#fff0c2}
+        /* Timeline state UI: matched with IT requisition state style in the reference image */
+        .history-workflow{margin-top:18px;padding:16px 0 6px;border-top:1px solid #dce8f3;overflow-x:auto;overflow-y:hidden}
+        .history-workflow-track{display:grid;grid-template-columns:repeat(9,minmax(92px,1fr));width:100%;min-width:830px;padding:0 4px}
+        .history-workflow-step{position:relative;min-width:0;text-align:center;color:#4a5568}
+        .history-workflow-step:not(:first-child)::before{content:"";position:absolute;top:14px;right:50%;width:100%;height:4px;background:#e2e8f0;z-index:1}
+        .history-workflow-node{position:relative;z-index:2;width:30px;height:30px;margin:0 auto 7px;border:0;border-radius:999px;display:grid;place-items:center;background:#edf2f7;color:#718096;font-size:12px;box-shadow:0 0 0 2px #fff}
+        .history-workflow-label{display:block;padding:0 3px;font-size:13px;font-weight:900;line-height:1.2;overflow-wrap:anywhere;color:#4a5568}
+        .history-workflow-time{display:block;margin-top:3px;padding:0 2px;font-size:11px;line-height:1.2;overflow-wrap:anywhere;color:#8796a5;font-weight:800}
+        .history-workflow-step.completed::before{background:#28a745}.history-workflow-step.completed .history-workflow-node{background:#28a745;color:#fff}.history-workflow-step.completed .history-workflow-label{color:#4a5568}
+        .history-workflow-step.current::before{background:#28a745}.history-workflow-step.current .history-workflow-node{background:#e8f2fb;color:#3272BB;box-shadow:0 0 0 2px #3272BB}.history-workflow-step.current .history-workflow-label{color:#003366}
+        .history-workflow-step.rejected::before{background:#dc2626}.history-workflow-step.rejected .history-workflow-node{background:#dc2626;color:#fff}.history-workflow-step.rejected .history-workflow-label{color:#4a5568}
+        .history-workflow-step.warning::before{background:#f2a900}.history-workflow-step.warning .history-workflow-node{background:#f2a900;color:#fff}.history-workflow-step.warning .history-workflow-label{color:#925400}
         @media(max-width:820px){
             .history-card-top-actions{justify-content:flex-start;width:100%}
-            .history-workflow{margin-left:-14px;margin-right:-14px}
-            .history-workflow-track{padding:0}
+            .history-workflow{margin-left:-14px;margin-right:-14px;padding-left:8px;padding-right:8px}
+            .history-workflow-track{min-width:760px;padding:0}
             .history-workflow-step:not(:first-child)::before{top:14px;height:3px}
-            .history-workflow-node{width:32px;height:32px;margin-bottom:5px;border-width:3px;font-size:12px}
+            .history-workflow-node{width:28px;height:28px;margin-bottom:5px;font-size:11px}
             .history-workflow-label{padding:0 1px;font-size:10px}
             .history-workflow-time{padding:0 1px;font-size:9px}
         }
@@ -150,12 +170,21 @@
 
         <section class="third-party-panel">
             <div class="history-filter-bar">
-                <button class="history-filter selected" type="button" data-filter="all">ทั้งหมด</button>
-                <button class="history-filter" type="button" data-filter="waiting">กำลังดำเนินการ</button>
-                <button class="history-filter" type="button" data-filter="completed">เสร็จสิ้น</button>
-                <button class="history-filter" type="button" data-filter="rejected">ไม่อนุมัติ</button>
-                <input id="historySearch" class="history-search" type="search" placeholder="ค้นหา Request ID / ผู้ขอ / บริษัท / ระบบ">
-                <span id="historyCount" class="history-result-count"><%= items.size() %> รายการ</span>
+                <a class="history-filter <%= "all".equals(historyFilter) ? "selected" : "" %>"
+                   href="<%= historyUrl(request.getContextPath(), "all", historySearch, 1) %>">ทั้งหมด</a>
+                <a class="history-filter <%= "waiting".equals(historyFilter) ? "selected" : "" %>"
+                   href="<%= historyUrl(request.getContextPath(), "waiting", historySearch, 1) %>">กำลังดำเนินการ</a>
+                <a class="history-filter <%= "completed".equals(historyFilter) ? "selected" : "" %>"
+                   href="<%= historyUrl(request.getContextPath(), "completed", historySearch, 1) %>">เสร็จสิ้น</a>
+                <a class="history-filter <%= "rejected".equals(historyFilter) ? "selected" : "" %>"
+                   href="<%= historyUrl(request.getContextPath(), "rejected", historySearch, 1) %>">ไม่อนุมัติ</a>
+                <form class="history-search-form" method="get" action="${pageContext.request.contextPath}/thirdParty/history">
+                    <input type="hidden" name="filter" value="<%= h(historyFilter) %>">
+                    <input class="history-search" name="q" type="search" value="<%= h(historySearch) %>"
+                           placeholder="ค้นหา Request ID / ผู้ขอ / บริษัท / ระบบ">
+                    <button class="btn btn-secondary" type="submit"><i class="fa-solid fa-magnifying-glass"></i> ค้นหา</button>
+                </form>
+                <span class="history-result-count"><%= items.size() %> รายการในหน้านี้</span>
             </div>
 
             <% if (items.isEmpty()) { %>
@@ -163,9 +192,7 @@
             <% } else { %>
             <div class="third-party-link-list compact-list" id="historyList">
                 <% for (ThirdPartyRequest item : items) { %>
-                <article class="third-party-link-card compact-card third-party-history-card"
-                         data-category="<%= category(item.getStatus()) %>"
-                         data-search="<%= h((item.getRequestId() + " " + display(item.getExternalContactName()) + " " + display(item.getExternalCompanyName()) + " " + display(item.getTargetSystem())).toLowerCase()) %>">
+                <article class="third-party-link-card compact-card third-party-history-card">
                     <div class="link-card-main">
                         <div class="link-card-title-row">
                             <div>
@@ -190,17 +217,28 @@
                             List<ThirdPartyWorkflowActionEntry> itemActions =
                                 actionHistory.get(Long.valueOf(item.getRequestId()));
                             int activeStep = currentStepIndex(item.getStatus());
+                            int rejectionIndex = -1;
+                            for (int ri = 0; ri < timelineActionTypes.length; ri++) {
+                                ThirdPartyWorkflowActionEntry rejectAction =
+                                    findTimelineAction(itemActions, timelineActionTypes[ri]);
+                                if (rejectedTimelineAction(rejectAction)) {
+                                    rejectionIndex = ri;
+                                    break;
+                                }
+                            }
+                            if (rejectionIndex < 0 && "REJECTED".equals(item.getStatus())) {
+                                rejectionIndex = activeStep;
+                            }
                         %>
                         <div class="history-workflow" aria-label="ขั้นตอนคำขอ">
                             <div class="history-workflow-track">
                             <% for (int stepIndex = 0; stepIndex < timelineLabels.length; stepIndex++) {
                                 ThirdPartyWorkflowActionEntry stepAction =
                                     findTimelineAction(itemActions, timelineActionTypes[stepIndex]);
-                                boolean rejectedStep = rejectedTimelineAction(stepAction)
-                                    || ("REJECTED".equals(item.getStatus()) && stepIndex == activeStep);
-                                boolean warningStep = warningTimelineAction(stepAction);
+                                boolean rejectedStep = rejectionIndex >= 0 && stepIndex >= rejectionIndex;
+                                boolean warningStep = !rejectedStep && warningTimelineAction(stepAction);
                                 boolean completedStep = !rejectedStep && !warningStep
-                                    && (stepAction != null || stepIndex < activeStep);
+                                    && (stepAction != null || stepIndex < activeStep || "COMPLETED".equals(item.getStatus()));
                                 boolean currentStep = !rejectedStep && !warningStep
                                     && stepIndex == activeStep && !"COMPLETED".equals(item.getStatus());
                                 String stepClass = rejectedStep ? "rejected" : warningStep ? "warning"
@@ -208,7 +246,7 @@
                                 Timestamp actedAt = stepAction == null ? null : stepAction.getActedAt();
                                 if (stepIndex == 0 && actedAt == null) actedAt = item.getSubmittedAt();
                                 String iconClass = rejectedStep ? "fa-xmark" : warningStep ? "fa-triangle-exclamation"
-                                    : completedStep ? "fa-check" : currentStep ? "fa-hourglass-half" : "fa-circle";
+                                    : completedStep ? "fa-check" : currentStep ? "fa-minus" : "fa-minus";
                             %>
                                 <div class="history-workflow-step <%= stepClass %>">
                                     <span class="history-workflow-node"><i class="fa-solid <%= iconClass %>"></i></span>
@@ -222,7 +260,21 @@
                 </article>
                 <% } %>
             </div>
-            <div id="historyEmpty" class="empty-link-state" hidden><i class="fa-solid fa-filter-circle-xmark"></i><h2>ไม่พบรายการที่ตรงกับตัวกรอง</h2></div>
+            <% if (historyPage > 1 || historyHasNextPage) { %>
+            <nav class="history-pagination" aria-label="หน้าประวัติคำขอ">
+                <% if (historyPage > 1) { %>
+                <a class="btn btn-secondary" href="<%= historyUrl(request.getContextPath(), historyFilter, historySearch, historyPage - 1) %>">
+                    <i class="fa-solid fa-arrow-left"></i> ก่อนหน้า
+                </a>
+                <% } %>
+                <span class="history-pagination-label">หน้า <%= historyPage %></span>
+                <% if (historyHasNextPage) { %>
+                <a class="btn btn-secondary" href="<%= historyUrl(request.getContextPath(), historyFilter, historySearch, historyPage + 1) %>">
+                    ถัดไป <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <% } %>
+            </nav>
+            <% } %>
             <% } %>
         </section>
     </main>
@@ -230,22 +282,6 @@
 </div>
 <script>
 function toggleNav(){var s=document.getElementById("mySidebar"),m=document.getElementById("main"),o=s.style.width==="250px";s.style.width=o?"0":"250px";m.style.marginLeft=o?"0":"250px";m.style.width=o?"100%":"calc(100% - 250px)";}
-(function(){
-    var filter="all", search=document.getElementById("historySearch");
-    function apply(){
-        var q=(search&&search.value||"").trim().toLowerCase(), visible=0;
-        document.querySelectorAll(".third-party-history-card").forEach(function(card){
-            var show=(filter==="all"||card.dataset.category===filter)&&(!q||card.dataset.search.indexOf(q)>=0);
-            card.hidden=!show;if(show)visible++;
-        });
-        var count=document.getElementById("historyCount");if(count)count.textContent=visible+" รายการ";
-        var empty=document.getElementById("historyEmpty");if(empty)empty.hidden=visible!==0;
-    }
-    document.querySelectorAll(".history-filter").forEach(function(button){button.addEventListener("click",function(){
-        filter=button.dataset.filter;document.querySelectorAll(".history-filter").forEach(function(b){b.classList.toggle("selected",b===button);});apply();
-    });});
-    if(search)search.addEventListener("input",apply);
-}());
 </script>
 </body>
 </html>

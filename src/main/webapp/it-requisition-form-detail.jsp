@@ -30,8 +30,8 @@
 <div id="main" class="enterprise-index-shell">
     <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
     <main class="enterprise-index-main">
-        <section class="enterprise-hero" style="margin-bottom: 24px;">
-            <div class="enterprise-hero-copy">
+        <section class="enterprise-hero index-banner it-requisition-banner">
+            <div class="enterprise-hero-copy index-banner-inner">
                 <p class="enterprise-eyebrow"><i class="fa-solid fa-microchip"></i> IT SERVICE MANAGEMENT PORTAL</p>
                 <h1>ใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</h1>
                 <p class="enterprise-hero-lead">

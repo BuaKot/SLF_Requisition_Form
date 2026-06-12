@@ -68,6 +68,7 @@
     <title>ประวัติใบขอให้ดำเนินการ</title>
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/submit.css">
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -172,7 +173,20 @@
             transition: all 0.18s ease;
         }
 
-        .filter-label input[type="checkbox"] { display: none; }
+        .filter-label input[type="checkbox"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+        }
+
+        .filter-label:focus-within {
+            outline: 3px solid rgba(36, 91, 153, 0.22);
+            outline-offset: 2px;
+        }
 
         /* rejected (dark red) */
         .rejected-label:hover               { border-color: #b71c1c; color: #b71c1c; }
@@ -415,20 +429,24 @@
     <!-- STICKY BAR -->
     <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
-    <!-- BLUE TITLE -->
-    <div class="blue-title">
-        <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</h1>
-        <h2>ประวัติรายการที่ฉันอนุมัติ / Approval History</h2>
-    </div>
+    <main class="work-queue-page history-work-queue">
+
+    <!-- PAGE HEADER -->
+    <section class="queue-page-header">
+        <div>
+            <h1>ประวัติรายการที่ฉันอนุมัติ / Approval History</h1>
+            <p>ดูรายการที่จบกระบวนการแล้ว พร้อมค้นหาและจัดเรียงเพื่อย้อนตรวจสอบได้รวดเร็ว</p>
+        </div>
+    </section>
 
     <!-- zennnne แก้ -->
     <!-- FILTER BAR -->
-    <div class="filter-bar">
+    <section class="filter-bar queue-toolbar" aria-label="ตัวกรองและการเรียงลำดับ">
         <a class="history-home-button" href="${pageContext.request.contextPath}<%= historyBackPath %>">
             <i class="fa-solid fa-arrow-left"></i> รายละเอียดฟอร์ม
         </a>
         <span class="filter-separator" aria-hidden="true"></span>
-        <div class="filter-checkboxes">
+        <div class="filter-checkboxes" aria-label="ตัวกรองสถานะ">
             <label class="filter-label rejected-label">
                 <input type="checkbox" value="rejected" checked> ไม่ผ่านการอนุมัติ
             </label>
@@ -439,8 +457,8 @@
         <!-- zennnne แก้ — search box -->
         <div class="search-wrap" id="searchWrap">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาชื่อฟอร์ม / ชื่อผู้ขอ..." autocomplete="off">
-            <button type="button" class="search-clear" id="searchClear" title="ล้าง">
+            <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาชื่อฟอร์ม / ชื่อผู้ขอ..." autocomplete="off" aria-label="ค้นหาประวัติฟอร์ม">
+            <button type="button" class="search-clear" id="searchClear" title="ล้าง" aria-label="ล้างคำค้นหา">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
@@ -448,27 +466,27 @@
 
         <div class="sort-controls">
             <span class="sort-label">เรียงตาม Deadline</span>
-            <button id="sortAscBtn"  class="sort-btn active" onclick="setSortOrder('deadline','asc')"  title="น้อยไปมาก">
+            <button id="sortAscBtn"  class="sort-btn active" onclick="setSortOrder('deadline','asc')"  title="น้อยไปมาก" aria-label="เรียง Deadline น้อยไปมาก">
                 <i class="fa-solid fa-arrow-up"></i>
             </button>
-            <button id="sortDescBtn" class="sort-btn"        onclick="setSortOrder('deadline','desc')" title="มากไปน้อย">
+            <button id="sortDescBtn" class="sort-btn"        onclick="setSortOrder('deadline','desc')" title="มากไปน้อย" aria-label="เรียง Deadline มากไปน้อย">
                 <i class="fa-solid fa-arrow-down"></i>
             </button>
             <!-- zennnne แก้ -->
-            <span class="sort-label" style="margin-left:12px;">เรียงตาม วันกรอก</span>
-            <button id="sortIdAscBtn"  class="sort-btn" onclick="setSortOrder('formid','asc')"  title="เก่าสุดก่อน">
+            <span class="sort-label sort-label-secondary">เรียงตาม วันกรอก</span>
+            <button id="sortIdAscBtn"  class="sort-btn" onclick="setSortOrder('formid','asc')"  title="เก่าสุดก่อน" aria-label="เรียงวันกรอกเก่าสุดก่อน">
                 <i class="fa-solid fa-arrow-up"></i>
             </button>
-            <button id="sortIdDescBtn" class="sort-btn" onclick="setSortOrder('formid','desc')" title="ใหม่สุดก่อน">
+            <button id="sortIdDescBtn" class="sort-btn" onclick="setSortOrder('formid','desc')" title="ใหม่สุดก่อน" aria-label="เรียงวันกรอกใหม่สุดก่อน">
                 <i class="fa-solid fa-arrow-down"></i>
             </button>
             <!-- zennnne แก้ -->
         </div>
-    </div>
+    </section>
     <!-- zennnne แก้ -->
 
     <!-- HISTORY LIST -->
-    <div class="history-list">
+    <section class="history-list">
 
 <%
     Connection conn = null;
@@ -558,7 +576,7 @@
             </div>
 
             <!-- zennnne แก้ -->
-            <div style="display:flex; flex-direction:column; align-items:center; gap:6px; flex-shrink:0;">
+            <div class="history-card-status">
                 <span class="status-badge <%= rowStatus.equals("approved") ? "badge-approved" : "badge-rejected" %>">
                     <%= rowStatus.equals("approved") ? "อนุมัติแล้ว" : "ไม่ผ่านการอนุมัติ" %>
                 </span>
@@ -584,7 +602,7 @@
 
     } catch (Exception e) {
 %>
-        <div style="color:red; text-align:center; padding:20px;">
+        <div class="queue-error-state">
             <h3>เกิดข้อผิดพลาด</h3>
             <p><%= e.getMessage() %></p>
         </div>
@@ -603,25 +621,26 @@
             ไม่พบฟอร์มที่ตรงกับคำค้นหา
         </div>
         <!-- zennnne แก้ -->
-    </div><!-- /history-list -->
+    </section><!-- /history-list -->
 
     <!-- PAGINATION -->
     <!-- zennnne แก้ -->
     <div class="pagination">
         <% if (currentPage > 1) { %>
-            <a href="?page=<%= currentPage - 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>&back=<%= java.net.URLEncoder.encode(historyBackPath, "UTF-8") %>" style="text-decoration:none;">
+            <a href="?page=<%= currentPage - 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>&back=<%= java.net.URLEncoder.encode(historyBackPath, "UTF-8") %>" class="pagination-link">
                 <button type="button" class="page-btn">« ก่อนหน้า</button>
             </a>
         <% } %>
         <span class="page-num">หน้า <%= currentPage %></span>
         <% if (formList.size() == pageSize) { %>
-            <a href="?page=<%= currentPage + 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>&back=<%= java.net.URLEncoder.encode(historyBackPath, "UTF-8") %>" style="text-decoration:none;">
+            <a href="?page=<%= currentPage + 1 %>&show=<%= java.net.URLEncoder.encode(showParam, "UTF-8") %>&sort=<%= sortParam %>&back=<%= java.net.URLEncoder.encode(historyBackPath, "UTF-8") %>" class="pagination-link">
                 <button type="button" class="page-btn">ถัดไป »</button>
             </a>
         <% } %>
     </div>
     <!-- zennnne แก้ -->
 
+    </main>
 </div><!-- /main -->
 
 <script>

@@ -1,8 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<header class="sticky-bar index-topbar topbar-enterprise">
+<header class="sticky-bar index-topbar topbar-enterprise" role="banner">
     <div class="index-topbar-left">
-        <button id="menuBtn" class="index-menu-button" type="button" onclick="toggleNav()" aria-label="เปิดเมนู">
+        <button id="menuBtn" class="index-menu-button" type="button" onclick="toggleNav()" aria-label="เปิดเมนู" aria-controls="mySidebar" aria-expanded="false">
             <i class="fa-solid fa-bars"></i>
         </button>
         <div class="index-brand-lockup topbar-brand-lockup">

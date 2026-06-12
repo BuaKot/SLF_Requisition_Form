@@ -40,6 +40,8 @@ public class AuthUtilTest extends TestCase {
         assertFalse(AuthUtil.isAllowedForPage("Technical", "thirdPartyLinks"));
         assertTrue(AuthUtil.isAllowedForPage("Admin", "thirdPartySubmission"));
         assertFalse(AuthUtil.isAllowedForPage("Director", "thirdPartySubmission"));
+        assertTrue(AuthUtil.isAllowedForPage("Admin", "thirdPartyHistory"));
+        assertFalse(AuthUtil.isAllowedForPage("Technical", "thirdPartyHistory"));
     }
 
     public void testAdminPageAllowsOnlyAdmin() {

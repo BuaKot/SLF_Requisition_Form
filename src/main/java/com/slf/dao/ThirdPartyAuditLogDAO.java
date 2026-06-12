@@ -32,7 +32,7 @@ public class ThirdPartyAuditLogDAO {
             }
             ps.setString(5, truncate(actorType, 30));
             ps.setString(6, truncate(message, 1000));
-            ps.setTimestamp(7, BangkokTimeUtil.nowTimestamp(), BangkokTimeUtil.newCalendar());
+            ps.setTimestamp(7, BangkokTimeUtil.nowTimestamp());
             ps.executeUpdate();
         } catch (Exception e) {
             System.err.println("Third-party audit log skipped: " + e.getMessage());

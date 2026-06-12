@@ -11,6 +11,15 @@
             .replace("\"", "&quot;")
             .replace("'", "&#x27;");
     }
+    public String js(Object input) {
+        if (input == null) return "";
+        return String.valueOf(input).replace("\\", "\\\\").replace("\"", "\\\"")
+            .replace("\r", "\\r").replace("\n", "\\n").replace("<", "\\u003c");
+    }
+    public String paramAt(javax.servlet.http.HttpServletRequest request, String name, int index) {
+        String[] values = request.getParameterValues(name);
+        return values != null && index >= 0 && index < values.length ? values[index] : "";
+    }
 %>
 <%
     response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
@@ -20,7 +29,10 @@
     String consentVersion = (String) request.getAttribute("consentVersion");
     String token = (String) request.getAttribute("token");
     String invalidLinkMessage = (String) request.getAttribute("invalidLinkMessage");
+    String formError = (String) request.getAttribute("formError");
     boolean valid = link != null && consentVersion != null && invalidLinkMessage == null;
+    String[] accessEmployeeCodes = request.getParameterValues("accessEmployeeCode");
+    int submittedAccessCount = accessEmployeeCodes == null ? 0 : accessEmployeeCodes.length;
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -66,6 +78,13 @@
         .btn-add { background: #e8f2fb; color: #003366; }
         .btn-remove { background: #fdecec; color: #b42318; min-height: 34px; padding: 0 12px; }
         .table-note { color: #52677b; font-size: 13px; line-height: 1.6; margin: 4px 0 16px; }
+        .error-popup-overlay { position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 18px; background: rgba(15,35,55,.58); }
+        .error-popup-overlay[hidden] { display: none; }
+        .error-popup { width: min(520px,100%); background:#fff; border-radius:14px; padding:28px; text-align:center; box-shadow:0 24px 64px rgba(0,30,60,.28); }
+        .error-popup-icon { width:62px; height:62px; margin:0 auto 16px; display:grid; place-items:center; border-radius:50%; background:#fdecec; color:#b42318; font-size:30px; font-weight:900; }
+        .error-popup h2 { margin:0 0 10px; color:#b42318; }
+        .error-popup p { margin:0 0 22px; color:#52677d; line-height:1.65; }
+        .error-popup button { border:0; border-radius:8px; min-height:44px; padding:0 26px; background:#003f7d; color:#fff; font:inherit; font-weight:800; cursor:pointer; }
         @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } .header { align-items: flex-start; } }
     </style>
 </head>
@@ -91,39 +110,39 @@
                 <div class="grid">
                     <div>
                         <label for="fullNameTh">ชื่อ-สกุล ภาษาไทย</label>
-                        <input id="fullNameTh" name="fullNameTh" type="text" maxlength="255" required>
+                        <input id="fullNameTh" name="fullNameTh" type="text" maxlength="255" value="<%= h(request.getParameter("fullNameTh")) %>" required>
                     </div>
                     <div>
                         <label for="fullNameEn">ชื่อ-สกุล ภาษาอังกฤษ</label>
-                        <input id="fullNameEn" name="fullNameEn" type="text" maxlength="255">
+                        <input id="fullNameEn" name="fullNameEn" type="text" maxlength="255" value="<%= h(request.getParameter("fullNameEn")) %>" required>
                     </div>
                     <div>
                         <label for="organization">หน่วยงาน</label>
-                        <input id="organization" name="organization" type="text" maxlength="255" required>
+                        <input id="organization" name="organization" type="text" maxlength="255" value="<%= h(request.getParameter("organization")) %>" required>
                     </div>
                     <div>
                         <label for="phone">เบอร์โทรศัพท์</label>
-                        <input id="phone" name="phone" type="tel" maxlength="50" required>
+                        <input id="phone" name="phone" type="tel" maxlength="50" value="<%= h(request.getParameter("phone")) %>" required>
                     </div>
                     <div class="full">
                         <label for="email">Email</label>
-                        <input id="email" name="email" type="email" maxlength="320" required>
+                        <input id="email" name="email" type="email" maxlength="320" value="<%= h(request.getParameter("email")) %>" required>
                     </div>
                     <div class="full">
                         <label for="reasonObjective">เหตุผลและวัตถุประสงค์การขอ</label>
-                        <textarea id="reasonObjective" name="reasonObjective" required></textarea>
+                        <textarea id="reasonObjective" name="reasonObjective" required><%= h(request.getParameter("reasonObjective")) %></textarea>
                     </div>
                     <div class="full">
                         <label for="projectName">เพื่อใช้ในโครงการ</label>
-                        <input id="projectName" name="projectName" type="text" maxlength="500">
+                        <input id="projectName" name="projectName" type="text" maxlength="500" value="<%= h(request.getParameter("projectName")) %>">
                     </div>
                     <div>
                         <label for="accessStartDate">วันที่เริ่มต้นใช้ระบบงาน</label>
-                        <input id="accessStartDate" name="accessStartDate" type="date" required>
+                        <input id="accessStartDate" name="accessStartDate" type="date" value="<%= h(request.getParameter("accessStartDate")) %>" required>
                     </div>
                     <div>
                         <label for="accessEndDate">ถึงวันที่</label>
-                        <input id="accessEndDate" name="accessEndDate" type="date" required>
+                        <input id="accessEndDate" name="accessEndDate" type="date" value="<%= h(request.getParameter("accessEndDate")) %>" required>
                     </div>
                 </div>
                 <div class="hint">ลิงก์นี้ใช้ส่งข้อมูลได้เพียง 1 ครั้ง และจะหมดอายุภายใน 24 ชั่วโมงหลังสร้าง</div>
@@ -144,7 +163,7 @@
                     </div>
                 </div>
                 <div class="consent-check">
-                    <input id="consentAccepted" name="consentAccepted" type="checkbox" value="accepted" required>
+                    <input id="consentAccepted" name="consentAccepted" type="checkbox" value="accepted" <%= "accepted".equals(request.getParameter("consentAccepted")) ? "checked" : "" %> required>
                     <label for="consentAccepted">ข้าพเจ้าได้อ่าน เข้าใจ และยินยอมรับเงื่อนไขตามหนังสือยินยอมฉบับ</label>
                 </div>
                 <div class="actions">
@@ -154,6 +173,16 @@
         </section>
     <% } %>
 </main>
+<% if (formError != null) { %>
+<div class="error-popup-overlay" id="formErrorPopup">
+    <section class="error-popup" role="alertdialog" aria-modal="true" aria-labelledby="formErrorTitle">
+        <div class="error-popup-icon">!</div>
+        <h2 id="formErrorTitle">กรุณาตรวจสอบข้อมูล</h2>
+        <p><%= h(formError) %></p>
+        <button id="closeFormError" type="button">กลับไปแก้ไขข้อมูล</button>
+    </section>
+</div>
+<% } %>
 <template id="accessRequestTemplate">
     <div class="access-card">
         <div class="access-card-head">
@@ -165,7 +194,7 @@
             <div><label>ชื่อผู้ใช้งาน</label><input name="accessUsername" maxlength="150"></div>
             <div><label>เลขที่บัตรประชาชน</label><input name="accessNationalId" inputmode="numeric" maxlength="17" placeholder="ระบุเมื่อขอใช้ระบบ DSL"></div>
             <div><label>ชื่อ-สกุล (TH)</label><input name="accessFullNameTh" maxlength="255" required></div>
-            <div><label>ชื่อ-สกุล (EN)</label><input name="accessFullNameEn" maxlength="255"></div>
+            <div><label>ชื่อ-สกุล (EN)</label><input name="accessFullNameEn" maxlength="255" required></div>
             <div><label>ตำแหน่ง</label><input name="accessPosition" maxlength="255" required></div>
             <div><label>เบอร์โทรศัพท์มือถือ</label><input name="accessMobile" type="tel" maxlength="50" required></div>
             <div><label>ฝ่าย/กลุ่มงาน</label><input name="accessDepartment" maxlength="255" required></div>
@@ -191,9 +220,15 @@
         addButton.disabled = cards.length >= 20;
     }
 
-    function addRow() {
+    function addRow(values) {
         if (list.children.length >= 20) return;
         var card = template.content.firstElementChild.cloneNode(true);
+        if (values) {
+            Object.keys(values).forEach(function (name) {
+                var input = card.querySelector('[name="' + name + '"]');
+                if (input) input.value = values[name];
+            });
+        }
         card.querySelector(".btn-remove").addEventListener("click", function () {
             card.remove();
             refresh();
@@ -202,9 +237,33 @@
         refresh();
     }
 
-    addButton.addEventListener("click", addRow);
-    addRow();
+    addButton.addEventListener("click", function () { addRow(); });
+    var submittedRows = [
+        <% for (int i = 0; i < submittedAccessCount; i++) { %>
+        {
+            accessEmployeeCode:"<%= js(paramAt(request, "accessEmployeeCode", i)) %>",
+            accessUsername:"<%= js(paramAt(request, "accessUsername", i)) %>",
+            accessNationalId:"<%= js(paramAt(request, "accessNationalId", i)) %>",
+            accessFullNameTh:"<%= js(paramAt(request, "accessFullNameTh", i)) %>",
+            accessFullNameEn:"<%= js(paramAt(request, "accessFullNameEn", i)) %>",
+            accessPosition:"<%= js(paramAt(request, "accessPosition", i)) %>",
+            accessMobile:"<%= js(paramAt(request, "accessMobile", i)) %>",
+            accessDepartment:"<%= js(paramAt(request, "accessDepartment", i)) %>",
+            accessEmail:"<%= js(paramAt(request, "accessEmail", i)) %>",
+            accessSystem:"<%= js(paramAt(request, "accessSystem", i)) %>",
+            accessRole:"<%= js(paramAt(request, "accessRole", i)) %>"
+        }<%= i + 1 < submittedAccessCount ? "," : "" %>
+        <% } %>
+    ];
+    if (submittedRows.length) submittedRows.forEach(addRow); else addRow();
 }());
+
+var closeFormError = document.getElementById("closeFormError");
+if (closeFormError) {
+    closeFormError.addEventListener("click", function () {
+        document.getElementById("formErrorPopup").hidden = true;
+    });
+}
 
 window.addEventListener("pageshow", function (event) {
     if (event.persisted) {

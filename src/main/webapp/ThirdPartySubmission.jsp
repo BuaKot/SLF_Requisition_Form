@@ -1,8 +1,12 @@
-﻿<%@ page isELIgnored="false" %>
+<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Collections" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.slf.model.ThirdPartyAcceptanceResult" %>
 <%@ page import="com.slf.model.ThirdPartyFormSubmission" %>
 <%@ page import="com.slf.model.ThirdPartyAccessRequest" %>
+<%@ page import="com.slf.model.ThirdPartyWorkflowActionEntry" %>
 <%@ page import="com.slf.util.AuthUtil" %>
 <%!
     public String h(Object input) {
@@ -25,6 +29,37 @@
         return h(input.substring(0, 1) + "-xxxx-xxxxx-" + input.substring(11, 13));
     }
 
+    public String actionTitle(String actionType) {
+        if ("EXTERNAL_SUBMITTED".equals(actionType)) return "ผู้ขอใช้บริการ";
+        if ("SECTION_HEAD_SUBMITTED".equals(actionType)) return "หัวหน้ากลุ่มงาน";
+        if ("IT_DIRECTOR_APPROVED".equals(actionType)) return "ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ";
+        if ("IT_DIRECTOR_REJECTED".equals(actionType)) return "ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ ไม่อนุมัติ";
+        if ("OPERATOR_COMPLETED".equals(actionType)) return "ผู้ดำเนินการ";
+        if ("EXTERNAL_ACCEPTED".equals(actionType)) return "ผลตรวจรับ";
+        if ("EXTERNAL_REJECTED".equals(actionType)) return "ผลตรวจรับ ไม่อนุมัติ";
+        if ("EXTERNAL_ACCEPTANCE_EXPIRED".equals(actionType)) return "ผลตรวจรับหมดอายุ";
+        if ("REVOKER_COMPLETED".equals(actionType)) return "ผู้ดูแลระบบยกเลิกสิทธิ์";
+        if ("REVOKE_REVIEWER_APPROVED".equals(actionType)) return "ผู้ตรวจทานการยกเลิกสิทธิ์";
+        if ("REVOKE_REVIEWER_REJECTED".equals(actionType)) return "ผู้ตรวจทานการยกเลิกสิทธิ์ ไม่อนุมัติ";
+        if ("SECTION_HEAD_REPORTED".equals(actionType)) return "หัวหน้ากลุ่มงาน";
+        if ("FINAL_CERTIFIED".equals(actionType)) return "ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ";
+        return actionType == null ? "-" : actionType;
+    }
+
+    public boolean isRejectedAction(String actionType) {
+        return actionType != null && (actionType.endsWith("_REJECTED")
+            || "EXTERNAL_ACCEPTANCE_EXPIRED".equals(actionType));
+    }
+
+    public String actorLabel(ThirdPartyWorkflowActionEntry action) {
+        if (action == null) return "-";
+        if ("SYSTEM".equals(action.getActorType())) return "ระบบ";
+        if (action.getActorEmpName() != null && !action.getActorEmpName().trim().isEmpty()) return action.getActorEmpName();
+        if ("EXTERNAL".equals(action.getActorType())) return "ผู้ขอใช้บริการ";
+        if (action.getActorEmpId() != null) return "Employee #" + action.getActorEmpId();
+        return "-";
+    }
+
 %>
 <%
     String currentRole = (String) session.getAttribute("position");
@@ -42,8 +77,14 @@
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
         return;
     }
+    List<ThirdPartyWorkflowActionEntry> approvalHistory =
+        (List<ThirdPartyWorkflowActionEntry>) request.getAttribute("approvalHistory");
+    if (approvalHistory == null) approvalHistory = Collections.emptyList();
+    ThirdPartyAcceptanceResult acceptanceResult =
+        (ThirdPartyAcceptanceResult) request.getAttribute("acceptanceResult");
     SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     SimpleDateFormat dateOnly = new SimpleDateFormat("dd/MM/yyyy");
+    SimpleDateFormat timeOnly = new SimpleDateFormat("HH:mm:ss");
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -68,16 +109,27 @@
         .full { grid-column: 1 / -1; }
         .label { color: #64748b; font-size: 13px; font-weight: 800; margin-bottom: 4px; }
         .value { color: #102a43; font-size: 16px; line-height: 1.55; overflow-wrap: anywhere; white-space: pre-wrap; }
-        .status { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 10px; font-weight: 900; font-size: 12px; background: #e8f2fb; color: #00509e; }
         .btn { border: 0; border-radius: 7px; min-height: 40px; padding: 0 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-weight: 800; cursor: pointer; text-decoration: none; white-space: nowrap; }
         .btn-secondary { background: #e8f2fb; color: #003366; }
         .access-item { border: 1px solid #d9e6f2; border-radius: 7px; padding: 16px; margin-top: 14px; }
         .access-item-title { color: #003366; font-weight: 900; margin-bottom: 14px; }
+        .approval-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+        .approval-card { border: 1px solid #d9e6f2; border-radius: 10px; padding: 16px; background: #f8fbff; }
+        .approval-card.rejected { border-color: #f4a4a4; background: #fff1f1; }
+        .approval-card-title { color: #003366; font-size: 18px; font-weight: 900; margin-bottom: 10px; }
+        .approval-card.rejected .approval-card-title { color: #b42318; }
+        .approval-actor { color: #102a43; font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+        .approval-time { color: #52606d; font-size: 14px; margin-bottom: 12px; }
+        .approval-detail-label { color: #00509e; font-weight: 900; margin-bottom: 4px; }
+        .approval-card.rejected .approval-detail-label { color: #b42318; }
+        .approval-card-detail { color: #102a43; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .approval-score { color: #087f23; font-size: 17px; font-weight: 900; margin-bottom: 5px; }
+        .empty-approval-state { border: 1px dashed #bfd0df; border-radius: 10px; padding: 24px; text-align: center; color: #52606d; background: #fbfdff; }
         .table-note { color: #64748b; font-size: 13px; margin-top: 14px; }
         @media (max-width: 800px) {
             .page { padding: 18px 14px 34px; }
             .page-head { flex-direction: column; }
-            .grid { grid-template-columns: 1fr; }
+            .grid, .approval-list { grid-template-columns: 1fr; }
             .full { grid-column: auto; }
         }
     </style>
@@ -102,10 +154,6 @@
             <h2 class="section-title">สถานะและลิงก์</h2>
             <div class="grid">
                 <div class="field">
-                    <div class="label">สถานะ Submission</div>
-                    <div class="value"><span class="status"><%= display(submission.getStatus()) %></span></div>
-                </div>
-                <div class="field">
                     <div class="label">Link ID / สถานะลิงก์</div>
                     <div class="value">#<%= submission.getLinkId() %> / <%= display(submission.getLinkStatus()) %></div>
                 </div>
@@ -117,7 +165,7 @@
                     <div class="label">วันหมดอายุลิงก์</div>
                     <div class="value"><%= submission.getLinkExpiresAt() == null ? "-" : dateTime.format(submission.getLinkExpiresAt()) %></div>
                 </div>
-                <div class="field full">
+                <div class="field">
                     <div class="label">หมายเหตุลิงก์</div>
                     <div class="value"><%= display(submission.getLinkNote()) %></div>
                 </div>
@@ -147,7 +195,7 @@
                     <div class="label">เบอร์โทรศัพท์</div>
                     <div class="value"><%= display(submission.getPhone()) %></div>
                 </div>
-                <div class="field full">
+                <div class="field">
                     <div class="label">Email</div>
                     <div class="value"><%= display(submission.getEmail()) %></div>
                 </div>
@@ -175,6 +223,7 @@
                 </div>
             </div>
         </section>
+
         <section class="panel">
             <h2 class="section-title">หลักฐานการยินยอมรับเงื่อนไข</h2>
             <div class="grid">
@@ -200,6 +249,52 @@
                 </div>
             </div>
         </section>
+
+        <section class="panel">
+            <h2 class="section-title">ประวัติการดำเนินงาน</h2>
+            <% if (approvalHistory.isEmpty()) { %>
+                <div class="empty-approval-state">ยังไม่มีประวัติการดำเนินงานสำหรับคำขอนี้</div>
+            <% } else { %>
+                <div class="approval-list">
+                    <% for (ThirdPartyWorkflowActionEntry action : approvalHistory) {
+                        String actionType = action.getActionType();
+                        boolean rejectedAction = isRejectedAction(actionType);
+                    %>
+                        <article class="approval-card <%= rejectedAction ? "rejected" : "" %>">
+                            <div class="approval-card-title"><%= h(actionTitle(actionType)) %></div>
+                            <div class="approval-actor"><%= display(actorLabel(action)) %></div>
+                            <div class="approval-time">
+                                อนุมัติเมื่อ
+                                <%= action.getActedAt() == null ? "-" : dateOnly.format(action.getActedAt()) %>
+                                เวลา
+                                <%= action.getActedAt() == null ? "-" : timeOnly.format(action.getActedAt()) %>
+                            </div>
+
+                            <% if ("EXTERNAL_SUBMITTED".equals(actionType)) { %>
+                                <div class="approval-detail-label">ส่งแบบฟอร์ม</div>
+                            <% } else if ("SECTION_HEAD_SUBMITTED".equals(actionType)) { %>
+                                <div class="approval-detail-label">รับเรื่อง/ส่งต่อ</div>
+                                <div class="approval-card-detail"><%= display(action.getCommentText()) %></div>
+                            <% } else if ("IT_DIRECTOR_APPROVED".equals(actionType) || "IT_DIRECTOR_REJECTED".equals(actionType)) { %>
+                                <div class="approval-detail-label">คำสั่ง/ความเห็น</div>
+                                <div class="approval-card-detail"><%= display(action.getCommentText()) %></div>
+                            <% } else if ("EXTERNAL_ACCEPTED".equals(actionType) || "EXTERNAL_REJECTED".equals(actionType)) { %>
+                                <% if (acceptanceResult != null) { %>
+                                    <div class="approval-score">คะแนน <%= acceptanceResult.getSatisfactionLevel() %></div>
+                                <% } %>
+                                <div class="approval-card-detail"><%= display(action.getCommentText()) %></div>
+                            <% } else if ("SECTION_HEAD_REPORTED".equals(actionType)) { %>
+                                <div class="approval-detail-label">รายงานเพื่อโปรดทราบ</div>
+                                <div class="approval-card-detail"><%= display(action.getCommentText()) %></div>
+                            <% } else if (!"FINAL_CERTIFIED".equals(actionType)) { %>
+                                <div class="approval-card-detail"><%= display(action.getCommentText()) %></div>
+                            <% } %>
+                        </article>
+                    <% } %>
+                </div>
+            <% } %>
+        </section>
+
         <section class="panel">
             <h2 class="section-title">รายชื่อผู้ขอรับสิทธิ์การเข้าถึง</h2>
             <% for (ThirdPartyAccessRequest item : submission.getAccessRequests()) { %>
@@ -242,5 +337,3 @@ function toggleNav() {
 </script>
 </body>
 </html>
-
-

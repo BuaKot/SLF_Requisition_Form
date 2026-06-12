@@ -1,7 +1,10 @@
 package com.slf.controller;
 
+import com.slf.dao.ThirdPartyAcceptanceDAO;
 import com.slf.dao.ThirdPartyFormSubmissionDAO;
+import com.slf.dao.ThirdPartyWorkflowDAO;
 import com.slf.model.ThirdPartyFormSubmission;
+import com.slf.model.ThirdPartyWorkflowActionEntry;
 import com.slf.util.ThirdPartyAccessPolicy;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -15,7 +18,9 @@ import javax.servlet.http.HttpSession;
 
 @WebServlet("/thirdPartySubmission")
 public class ThirdPartySubmissionServlet extends HttpServlet {
+    private final ThirdPartyAcceptanceDAO acceptanceDAO = new ThirdPartyAcceptanceDAO();
     private final ThirdPartyFormSubmissionDAO submissionDAO = new ThirdPartyFormSubmissionDAO();
+    private final ThirdPartyWorkflowDAO workflowDAO = new ThirdPartyWorkflowDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -43,6 +48,14 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
             }
             request.setAttribute("thirdPartySubmissionAuthorized", Boolean.TRUE);
             request.setAttribute("submission", submission);
+            request.setAttribute("approvalHistory",
+                submission.getRequestId() == null
+                    ? java.util.Collections.emptyList()
+                    : workflowDAO.findActionHistory(submission.getRequestId().longValue()));
+            request.setAttribute("acceptanceResult",
+                submission.getRequestId() == null
+                    ? null
+                    : acceptanceDAO.findByRequestId(submission.getRequestId().longValue()));
             boolean viewingOwnSubmission = ThirdPartyAccessPolicy.canCreateOwnLinks(empId)
                 && empId.equals(submission.getInternalOwnerEmpId());
             request.setAttribute("thirdPartySubmissionBackUrl",

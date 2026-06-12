@@ -1502,6 +1502,28 @@ html, body {
     box-shadow: 0 6px 16px rgba(0, 51, 102, 0.16);
 }
 
+.workflow-submit-button{min-height:50px;padding:0 22px;border:0;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#0057a8,#003f7d);color:#fff;font:inherit;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(0,63,125,.24);transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+.workflow-submit-button:hover{transform:translateY(-1px);background:linear-gradient(135deg,#0067c5,#004b94);box-shadow:0 11px 24px rgba(0,63,125,.3)}
+.workflow-submit-button.danger{background:linear-gradient(135deg,#c9362b,#a61b12);box-shadow:0 8px 20px rgba(166,27,18,.22)}
+.workflow-submit-button.danger:hover{background:linear-gradient(135deg,#d74438,#b42318)}
+.workflow-submit-button i{font-size:17px}
+.workflow-confirm-open{overflow:hidden}
+.workflow-confirm-overlay{position:fixed;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(15,35,55,.58);backdrop-filter:blur(2px)}
+.workflow-confirm-overlay[hidden]{display:none}
+.workflow-confirm-dialog{width:min(460px,100%);padding:30px;border:1px solid #d4e2ef;border-radius:16px;background:#fff;text-align:center;box-shadow:0 24px 64px rgba(0,30,60,.28);animation:workflow-confirm-in .18s ease-out}
+.workflow-confirm-icon{width:62px;height:62px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;background:#e7f2fc;color:#004b91;font-size:25px}
+.workflow-confirm-dialog h2{margin:0 0 10px;color:#003366;font-size:24px}
+.workflow-confirm-dialog p{margin:0 auto 24px;color:#52677d;line-height:1.65}
+.workflow-confirm-actions{display:flex;justify-content:center;gap:12px}
+.workflow-confirm-actions button{min-width:126px;min-height:44px;border:0;border-radius:9px;padding:0 18px;font:inherit;font-weight:900;cursor:pointer}
+.workflow-confirm-cancel{background:#edf3f8;color:#24435e}
+.workflow-confirm-submit{background:#004b91;color:#fff}
+.workflow-confirm-overlay[data-tone="danger"] .workflow-confirm-icon{background:#fdecec;color:#b42318}
+.workflow-confirm-overlay[data-tone="danger"] .workflow-confirm-submit{background:#b42318}
+.workflow-confirm-submit:disabled{cursor:wait;opacity:.7}
+@keyframes workflow-confirm-in{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:600px){.workflow-confirm-dialog{padding:24px 18px}.workflow-confirm-actions{flex-direction:column-reverse}.workflow-confirm-actions button{width:100%}}
+
 .third-party-page-head h1,
 .external-form-header h1 {
     margin: 0;

@@ -12,8 +12,11 @@ public class ThirdPartyRequestActionsTest extends TestCase {
         String styles = read("src/main/webapp/css/styles.css");
 
         assertTrue(page.contains("fa-trash-can"));
+        assertTrue(page.contains("รอผู้ขอภายนอกกรอกฟอร์ม"));
+        assertFalse(page.contains("รอผู้ให้บริการกรอก"));
         assertTrue(page.contains("ยกเลิกลิงก์"));
         assertTrue(page.contains("ถูกลบออกจากประวัติและฐานข้อมูล"));
+        assertFalse(page.contains("thirdPartySubmission?id="));
         assertTrue(styles.contains(".third-party-request-page .btn"));
         assertTrue(styles.contains(".third-party-request-page .btn-primary"));
         assertTrue(styles.contains(".third-party-request-page .btn-secondary"));

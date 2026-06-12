@@ -20,7 +20,7 @@ public class ThirdPartyFormSubmissionDAO {
             "SELECT s.SUBMISSION_ID, s.LINK_ID, s.DOCUMENT_RECEIVE_NO, s.FILLED_AT, " +
             "s.FULL_NAME_TH, s.FULL_NAME_EN, s.ORGANIZATION, s.PHONE, s.EMAIL, " +
             "s.REASON_OBJECTIVE, s.PROJECT_NAME, s.ACCESS_START_DATE, s.ACCESS_END_DATE, " +
-            "s.STATUS, s.CREATED_AT, s.REVIEWED_BY, s.REVIEWED_AT, s.IMPORTED_FORMID, s.INTERNAL_NOTE, " +
+            "s.CREATED_AT, s.REVIEWED_BY, s.REVIEWED_AT, s.IMPORTED_FORMID, s.INTERNAL_NOTE, " +
             "s.CONSENT_ACCEPTED, s.CONSENT_VERSION, s.CONSENT_ACCEPTED_AT, s.CONSENT_IP_ADDRESS, s.CONSENT_USER_AGENT, " +
             "CASE WHEN l.STATUS = 'ACTIVE' AND l.EXPIRES_AT < ? THEN 'EXPIRED' ELSE l.STATUS END AS LINK_STATUS, " +
             "l.REQUEST_ID, r.INTERNAL_OWNER_EMPID, l.CREATED_AT AS LINK_CREATED_AT, l.EXPIRES_AT AS LINK_EXPIRES_AT, l.NOTE AS LINK_NOTE " +
@@ -48,9 +48,9 @@ public class ThirdPartyFormSubmissionDAO {
         String insertSql =
             "INSERT INTO THIRD_PARTY_FORM_SUBMISSION " +
             "(LINK_ID, DOCUMENT_RECEIVE_NO, FILLED_AT, FULL_NAME_TH, FULL_NAME_EN, ORGANIZATION, PHONE, EMAIL, " +
-            "REASON_OBJECTIVE, PROJECT_NAME, ACCESS_START_DATE, ACCESS_END_DATE, STATUS, CREATED_AT, " +
+            "REASON_OBJECTIVE, PROJECT_NAME, ACCESS_START_DATE, ACCESS_END_DATE, CREATED_AT, " +
             "CONSENT_ACCEPTED, CONSENT_VERSION, CONSENT_ACCEPTED_AT, CONSENT_IP_ADDRESS, CONSENT_USER_AGENT) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING_REVIEW', ?, 1, ?, ?, ?, ?)";
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?)";
         String documentNoSql =
             "UPDATE THIRD_PARTY_FORM_SUBMISSION SET DOCUMENT_RECEIVE_NO = ? WHERE SUBMISSION_ID = ?";
         String updateSql =
@@ -187,7 +187,6 @@ public class ThirdPartyFormSubmissionDAO {
         submission.setProjectName(rs.getString("PROJECT_NAME"));
         submission.setAccessStartDate(getBangkokDate(rs, "ACCESS_START_DATE"));
         submission.setAccessEndDate(getBangkokDate(rs, "ACCESS_END_DATE"));
-        submission.setStatus(rs.getString("STATUS"));
         submission.setCreatedAt(getBangkokTimestamp(rs, "CREATED_AT"));
         int reviewedBy = rs.getInt("REVIEWED_BY");
         submission.setReviewedBy(rs.wasNull() ? null : Integer.valueOf(reviewedBy));
@@ -249,20 +248,20 @@ public class ThirdPartyFormSubmissionDAO {
 
     private static void setBangkokTimestamp(PreparedStatement ps, int parameterIndex, Timestamp value)
             throws SQLException {
-        ps.setTimestamp(parameterIndex, value, BangkokTimeUtil.newCalendar());
+        ps.setTimestamp(parameterIndex, value);
     }
 
     private static void setBangkokDate(PreparedStatement ps, int parameterIndex, Date value)
             throws SQLException {
-        ps.setDate(parameterIndex, value, BangkokTimeUtil.newCalendar());
+        ps.setDate(parameterIndex, value);
     }
 
     private static Timestamp getBangkokTimestamp(ResultSet rs, String columnLabel) throws SQLException {
-        return rs.getTimestamp(columnLabel, BangkokTimeUtil.newCalendar());
+        return rs.getTimestamp(columnLabel);
     }
 
     private static Date getBangkokDate(ResultSet rs, String columnLabel) throws SQLException {
-        return rs.getDate(columnLabel, BangkokTimeUtil.newCalendar());
+        return rs.getDate(columnLabel);
     }
 
     private static long generatedSubmissionId(Statement statement) throws SQLException {

@@ -70,10 +70,11 @@
         <form method="post" action="${pageContext.request.contextPath}/thirdParty/operator/review">
             <input type="hidden" name="csrfToken" value="<%= h(csrfToken) %>"><input type="hidden" name="requestId" value="<%= thirdPartyRequest.getRequestId() %>">
             <textarea name="operationDetail" maxlength="4000" required placeholder="ระบุรายละเอียดการดำเนินการให้สิทธิ์..."><%= h(operationDetail) %></textarea>
-            <div class="submit-row"><button class="btn btn-primary primary-action" type="submit" onclick="return confirm('ยืนยันว่าดำเนินการเสร็จแล้วและส่งให้ผู้ขอตรวจรับหรือไม่?')"><i class="fa-solid fa-check"></i> บันทึกและส่งตรวจรับ</button></div>
+            <div class="submit-row"><button class="workflow-submit-button" type="submit" data-workflow-confirm data-confirm-title="ส่งผลตรวจรับและประเมินเสร็จสิ้น" data-confirm-message="รายละเอียดจะถูกบันทึกและส่งงานไปยังขั้นตอนถัดไป" data-confirm-label="ยืนยันส่งต่อ"><i class="fa-solid fa-paper-plane"></i> บันทึกและส่งตรวจรับ</button></div>
         </form>
     </section>
 </main>
 <%@ include file="/WEB-INF/jspf/footer.jspf" %></div>
+<%@ include file="/WEB-INF/jspf/third-party-confirm-dialog.jspf" %>
 <script>window.addEventListener("pageshow",function(e){if(e.persisted)window.location.replace("${pageContext.request.contextPath}/thirdParty/operator");});function toggleNav(){var s=document.getElementById("mySidebar"),m=document.getElementById("main"),o=s.style.width==="250px";s.style.width=o?"0":"250px";m.style.marginLeft=o?"0":"250px";m.style.width=o?"100%":"calc(100% - 250px)";}</script>
 </body></html>

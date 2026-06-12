@@ -16,4 +16,10 @@ public class ThirdPartyAccessPolicyTest extends TestCase {
         assertFalse(ThirdPartyAccessPolicy.canViewSubmission("User", Integer.valueOf(678), Integer.valueOf(1001)));
         assertFalse(ThirdPartyAccessPolicy.canViewSubmission("User", Integer.valueOf(1001), Integer.valueOf(678)));
     }
+
+    public void testHistoryVisibleOnlyToAdminOrConfiguredCoordinator() {
+        assertTrue(ThirdPartyAccessPolicy.canViewHistory("Admin", Integer.valueOf(1001)));
+        assertTrue(ThirdPartyAccessPolicy.canViewHistory("User", Integer.valueOf(678)));
+        assertFalse(ThirdPartyAccessPolicy.canViewHistory("Technical", Integer.valueOf(1001)));
+    }
 }

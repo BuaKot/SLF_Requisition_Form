@@ -76,9 +76,14 @@
                 <h1>จัดการลิงก์สำหรับผู้ให้บริการภายนอก</h1>
                 <p>สร้างและติดตามลิงก์ทั้งหมด ตรวจสอบ Submission และจัดการลิงก์ที่ยังไม่ถูกใช้งาน</p>
             </div>
-            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/Admin.jsp">
-                <i class="fa-solid fa-arrow-left"></i> กลับหน้า Admin
-            </a>
+            <div class="page-head-actions">
+                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdParty/history">
+                    <i class="fa-solid fa-clock-rotate-left"></i> ประวัติคำขอ
+                </a>
+                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/Admin.jsp">
+                    <i class="fa-solid fa-arrow-left"></i> กลับหน้า Admin
+                </a>
+            </div>
         </section>
 
         <section class="admin-link-summary" aria-label="สรุปสถานะลิงก์">

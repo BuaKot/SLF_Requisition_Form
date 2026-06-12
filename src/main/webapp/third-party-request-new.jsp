@@ -17,7 +17,7 @@
     }
 
     private String requestStatusText(String status) {
-        if ("LINK_CREATED".equals(status)) return "รอผู้ให้บริการกรอก";
+        if ("LINK_CREATED".equals(status)) return "รอผู้ขอภายนอกกรอกฟอร์ม";
         if ("SUBMITTED".equals(status)) return "รอหัวหน้าส่วนพิจารณา";
         if ("PENDING_SECTION_HEAD".equals(status)) return "รอหัวหน้าส่วนพิจารณา";
         if ("PENDING_IT_DIRECTOR".equals(status)) return "รอ IT Director อนุมัติ";
@@ -92,6 +92,9 @@
                 <p>สร้างลิงก์ใหม่ ดูสถานะ และยกเลิกลิงก์ที่ยังไม่ถูกส่งแบบฟอร์มได้จากหน้านี้</p>
             </div>
             <div class="page-head-actions">
+                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdParty/history">
+                    <i class="fa-solid fa-clock-rotate-left"></i> ประวัติ
+                </a>
                 <a class="btn btn-secondary" href="${pageContext.request.contextPath}/third-party-form-detail.jsp">
                     <i class="fa-solid fa-arrow-left"></i> กลับ
                 </a>
@@ -205,11 +208,6 @@
                                 <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdParty/request/link?requestId=<%= item.getRequestId() %>&linkId=<%= item.getLinkId() == null ? "" : item.getLinkId() %>">
                                     <i class="fa-solid fa-link"></i> ดูลิงก์
                                 </a>
-                                <% if (item.getSubmissionId() != null) { %>
-                                    <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdPartySubmission?id=<%= item.getSubmissionId() %>">
-                                        <i class="fa-solid fa-file-lines"></i> รายละเอียด
-                                    </a>
-                                <% } %>
                                 <% if (canCancel) { %>
                                     <form method="post" action="${pageContext.request.contextPath}/thirdParty/request/new" onsubmit="return confirmCancelThirdPartyLink();">
                                         <input type="hidden" name="csrfToken" value="<%= h(csrfToken) %>">

@@ -30,8 +30,8 @@ public class ThirdPartyFormLinkDAO {
             ps.setString(1, tokenHash);
             ps.setString(2, rawToken);
             ps.setInt(3, createdBy);
-            ps.setTimestamp(4, createdAt, BangkokTimeUtil.newCalendar());
-            ps.setTimestamp(5, expiresAt, BangkokTimeUtil.newCalendar());
+            ps.setTimestamp(4, createdAt);
+            ps.setTimestamp(5, expiresAt);
             ps.setString(6, trimToNull(note));
             ps.setString(7, trimToNull(formCode));
             if (requestId == null) ps.setNull(8, java.sql.Types.NUMERIC); else ps.setLong(8, requestId.longValue());
@@ -53,14 +53,14 @@ public class ThirdPartyFormLinkDAO {
             "l.MAX_SUBMIT_COUNT, l.SUBMIT_COUNT, l.CREATED_BY, l.FORM_CODE, l.REQUEST_ID, l.CREATED_BY_EMPID, " +
             "l.CREATED_AT, l.EXPIRES_AT, " +
             "l.USED_AT, l.REVOKED_AT, l.REVOKED_BY, l.NOTE, " +
-            "s.SUBMISSION_ID, s.STATUS AS SUBMISSION_STATUS, s.CREATED_AT AS SUBMITTED_AT " +
+            "s.SUBMISSION_ID, s.CREATED_AT AS SUBMITTED_AT " +
             "FROM THIRD_PARTY_FORM_LINK l " +
             "LEFT JOIN THIRD_PARTY_FORM_SUBMISSION s ON s.LINK_ID = l.LINK_ID " +
             "ORDER BY l.CREATED_AT DESC FETCH FIRST ? ROWS ONLY";
         List<ThirdPartyFormLink> links = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setTimestamp(1, BangkokTimeUtil.nowTimestamp(), BangkokTimeUtil.newCalendar());
+            ps.setTimestamp(1, BangkokTimeUtil.nowTimestamp());
             ps.setInt(2, Math.max(1, limit));
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -78,7 +78,7 @@ public class ThirdPartyFormLinkDAO {
             "WHERE LINK_ID = ? AND STATUS = 'ACTIVE' AND SUBMIT_COUNT = 0";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setTimestamp(1, BangkokTimeUtil.nowTimestamp(), BangkokTimeUtil.newCalendar());
+            ps.setTimestamp(1, BangkokTimeUtil.nowTimestamp());
             ps.setInt(2, revokedBy);
             ps.setLong(3, linkId);
             return ps.executeUpdate() == 1;
@@ -92,13 +92,13 @@ public class ThirdPartyFormLinkDAO {
             "l.MAX_SUBMIT_COUNT, l.SUBMIT_COUNT, l.CREATED_BY, l.FORM_CODE, l.REQUEST_ID, l.CREATED_BY_EMPID, " +
             "l.CREATED_AT, l.EXPIRES_AT, " +
             "l.USED_AT, l.REVOKED_AT, l.REVOKED_BY, l.NOTE, " +
-            "s.SUBMISSION_ID, s.STATUS AS SUBMISSION_STATUS, s.CREATED_AT AS SUBMITTED_AT " +
+            "s.SUBMISSION_ID, s.CREATED_AT AS SUBMITTED_AT " +
             "FROM THIRD_PARTY_FORM_LINK l " +
             "LEFT JOIN THIRD_PARTY_FORM_SUBMISSION s ON s.LINK_ID = l.LINK_ID " +
             "WHERE l.TOKEN_HASH = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setTimestamp(1, BangkokTimeUtil.nowTimestamp(), BangkokTimeUtil.newCalendar());
+            ps.setTimestamp(1, BangkokTimeUtil.nowTimestamp());
             ps.setString(2, tokenHash);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) {
@@ -140,17 +140,16 @@ public class ThirdPartyFormLinkDAO {
         link.setRequestId(rs.wasNull() ? null : Long.valueOf(requestId));
         int createdByEmpId = rs.getInt("CREATED_BY_EMPID");
         link.setCreatedByEmpId(rs.wasNull() ? null : Integer.valueOf(createdByEmpId));
-        link.setCreatedAt(rs.getTimestamp("CREATED_AT", BangkokTimeUtil.newCalendar()));
-        link.setExpiresAt(rs.getTimestamp("EXPIRES_AT", BangkokTimeUtil.newCalendar()));
-        link.setUsedAt(rs.getTimestamp("USED_AT", BangkokTimeUtil.newCalendar()));
-        link.setRevokedAt(rs.getTimestamp("REVOKED_AT", BangkokTimeUtil.newCalendar()));
+        link.setCreatedAt(rs.getTimestamp("CREATED_AT"));
+        link.setExpiresAt(rs.getTimestamp("EXPIRES_AT"));
+        link.setUsedAt(rs.getTimestamp("USED_AT"));
+        link.setRevokedAt(rs.getTimestamp("REVOKED_AT"));
         int revokedBy = rs.getInt("REVOKED_BY");
         link.setRevokedBy(rs.wasNull() ? null : Integer.valueOf(revokedBy));
         link.setNote(rs.getString("NOTE"));
         long submissionId = rs.getLong("SUBMISSION_ID");
         link.setSubmissionId(rs.wasNull() ? null : Long.valueOf(submissionId));
-        link.setSubmissionStatus(rs.getString("SUBMISSION_STATUS"));
-        link.setSubmittedAt(rs.getTimestamp("SUBMITTED_AT", BangkokTimeUtil.newCalendar()));
+        link.setSubmittedAt(rs.getTimestamp("SUBMITTED_AT"));
         return link;
     }
 

@@ -18,9 +18,11 @@ public class ThirdPartyFinalStagePageTest extends TestCase {
         assertTrue(review.contains("name=\"summaryReport\""));
         assertTrue(review.contains("ผลตรวจรับและประเมิน"));
         assertTrue(review.contains("รายละเอียดการตรวจทาน"));
-        assertTrue(review.contains("รายงานสรุปหัวหน้าส่วน"));
+        assertTrue(review.contains("รายละเอียดการยกเลิกสิทธิ์"));
         assertTrue(review.contains("ผู้ได้รับมอบหมาย"));
-        assertTrue(review.contains("อนุมัติและเซ็นรับรองแบบฟอร์ม"));
+        assertTrue(review.contains("ส่งผลตรวจรับและประเมินเสร็จสิ้น"));
+        assertTrue(review.contains("data-confirm-message=\"<%= showReportField?"));
+        assertTrue(review.contains("รายงานจะถูกบันทึกและส่งให้ ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ รับรอง"));
         assertFalse(review.contains("value=\"reject\""));
 
         assertTrue(workflowDao.contains("SECTION_HEAD_REPORTED"));

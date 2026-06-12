@@ -63,6 +63,7 @@ public class AuthUtil {
         PAGE_ROLES.put("mailLog",            new HashSet<>(Arrays.asList("Admin")));
         PAGE_ROLES.put("thirdPartyLinks",    new HashSet<>(Arrays.asList("Admin")));
         PAGE_ROLES.put("thirdPartySubmission", new HashSet<>(Arrays.asList("Admin")));
+        PAGE_ROLES.put("thirdPartyHistory", new HashSet<>(Arrays.asList("Admin")));
         PAGE_ROLES.put("requisitionDetail",  ADMIN_ROLES);
         // Add more keys as you create pages
     }

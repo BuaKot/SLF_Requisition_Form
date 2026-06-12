@@ -1,6 +1,7 @@
 package com.slf.dao;
 
 import com.slf.model.Employee;
+import com.slf.model.ThirdPartyWorkflowActionEntry;
 import com.slf.model.ThirdPartyWorkflowAssignment;
 import com.slf.util.BangkokTimeUtil;
 import java.sql.Connection;
@@ -126,7 +127,7 @@ public class ThirdPartyWorkflowDAO {
                     assignment.setAssignedEmpName(rs.getString("ASSIGNED_EMPNAME"));
                     assignment.setAssignedByEmpId(rs.getInt("ASSIGNED_BY_EMPID"));
                     assignment.setAssignedByEmpName(rs.getString("ASSIGNED_BY_EMPNAME"));
-                    assignment.setAssignedAt(rs.getTimestamp("ASSIGNED_AT", BangkokTimeUtil.newCalendar()));
+                    assignment.setAssignedAt(rs.getTimestamp("ASSIGNED_AT"));
                     assignments.add(assignment);
                 }
             }
@@ -147,6 +148,39 @@ public class ThirdPartyWorkflowDAO {
                 return rs.next() ? rs.getString("COMMENT_TEXT") : null;
             }
         }
+    }
+
+    public List<ThirdPartyWorkflowActionEntry> findActionHistory(long requestId) throws SQLException {
+        String sql =
+            "SELECT a.ACTION_TYPE, a.FROM_STATUS, a.TO_STATUS, a.ACTOR_TYPE, a.ACTOR_EMPID, " +
+            "CASE WHEN a.ACTOR_TYPE = 'EXTERNAL' THEN r.EXTERNAL_CONTACT_NAME ELSE e.EMPNAME END AS ACTOR_EMPNAME, " +
+            "a.COMMENT_TEXT, a.ACTED_AT " +
+            "FROM THIRD_PARTY_WORKFLOW_ACTION a " +
+            "JOIN THIRD_PARTY_REQUEST r ON r.REQUEST_ID = a.REQUEST_ID " +
+            "LEFT JOIN EMPLOYEE e ON e.EMPID = a.ACTOR_EMPID " +
+            "WHERE a.REQUEST_ID = ? AND a.ACTION_TYPE <> 'WORKFLOW_MIGRATED' " +
+            "ORDER BY a.ACTED_AT ASC, a.ACTION_ID ASC";
+        List<ThirdPartyWorkflowActionEntry> history = new ArrayList<ThirdPartyWorkflowActionEntry>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, requestId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ThirdPartyWorkflowActionEntry entry = new ThirdPartyWorkflowActionEntry();
+                    entry.setActionType(rs.getString("ACTION_TYPE"));
+                    entry.setFromStatus(rs.getString("FROM_STATUS"));
+                    entry.setToStatus(rs.getString("TO_STATUS"));
+                    entry.setActorType(rs.getString("ACTOR_TYPE"));
+                    int actorEmpId = rs.getInt("ACTOR_EMPID");
+                    entry.setActorEmpId(rs.wasNull() ? null : Integer.valueOf(actorEmpId));
+                    entry.setActorEmpName(rs.getString("ACTOR_EMPNAME"));
+                    entry.setCommentText(rs.getString("COMMENT_TEXT"));
+                    entry.setActedAt(rs.getTimestamp("ACTED_AT"));
+                    history.add(entry);
+                }
+            }
+        }
+        return history;
     }
 
     public boolean submitItDirectorDecision(long requestId, int actorEmpId, String comment,
@@ -468,6 +502,6 @@ public class ThirdPartyWorkflowDAO {
     }
 
     private static void setTimestamp(PreparedStatement ps, int index, Timestamp value) throws SQLException {
-        ps.setTimestamp(index, value, BangkokTimeUtil.newCalendar());
+        ps.setTimestamp(index, value);
     }
 }

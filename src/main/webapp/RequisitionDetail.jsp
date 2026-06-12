@@ -1,7 +1,7 @@
 ﻿<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat, java.util.*" %>
+<%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat, java.util.*, com.slf.util.SecurityUtil" %>
 
 <%
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -17,6 +17,7 @@
     }
     // zennnne แก้
     String loggedInEmpId = empObj.toString().trim();
+    String csrfToken = SecurityUtil.ensureCsrfToken(request);
 
     // ----- 1. Grab the form ID -----
     String formId = request.getParameter("id");
@@ -125,7 +126,7 @@
                 while (rs.next()) {
                     Map<String, Object> perm = new HashMap<>();
                     perm.put("isRoot", rs.getInt("ISROOT"));
-                    perm.put("path", rs.getString("PATH"));
+                    perm.put("path", nvl(rs.getString("PATH")));
                     perm.put("full", rs.getInt("HASFULLCONTROL"));
                     perm.put("modify", rs.getInt("HASMODIFY"));
                     perm.put("readExec", rs.getInt("HASREADEXECUTE"));
@@ -144,7 +145,10 @@
 <%!
     // Small helper to avoid null strings
     private String nvl(String s) {
-        return (s == null || s.trim().isEmpty()) ? "-" : s.trim();
+        return (s == null || s.trim().isEmpty()) ? "-" : SecurityUtil.escapeHtml(s.trim());
+    }
+    private String h(Object value) {
+        return SecurityUtil.escapeHtml(value);
     }
     private void closeQuietly(AutoCloseable... resources) {
         for (AutoCloseable r : resources) {
@@ -161,7 +165,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
-    <title>รายละเอียดใบขอให้ดำเนินการ (ID: <%= (formId != null) ? formId : "-" %>)</title>
+    <title>รายละเอียดใบขอให้ดำเนินการ (ID: <%= h((formId != null) ? formId : "-") %>)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
@@ -202,14 +206,14 @@
 <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 <div class="banner">
     <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
-    <h1 style="margin-top: 5px;">ใบขอให้ดำเนินการ / Requisition Form (ใบที่: <%= (formId != null) ? formId : "-" %>)</h1>
+    <h1 style="margin-top: 5px;">ใบขอให้ดำเนินการ / Requisition Form (ใบที่: <%= h((formId != null) ? formId : "-") %>)</h1>
 </div>
 <div class="detail-action-bar"><a class="detail-back-button" href="<%= backPath %>"><i class="fa fa-arrow-left"></i> <%= backLabel %></a></div>
 
 <div class="form-container">
     <% if (!hasData) { %>
         <div style="text-align: center; color: #CC0000; padding: 30px; font-weight: bold;">
-            ❌ ไม่พบข้อมูลใบขอให้ดำเนินการเลขที่ "<%= formId %>" ในระบบฐานข้อมูล
+            ❌ ไม่พบข้อมูลใบขอให้ดำเนินการเลขที่ "<%= h(formId) %>" ในระบบฐานข้อมูล
         </div>
     <% } else if (!canApproveDirectorStep) { %>
         <div style="text-align: center; color: #CC0000; padding: 30px; font-weight: bold;">
@@ -219,12 +223,13 @@
 
         <!-- ⚡ The form now posts to SubmitApprovalServlet -->
         <form action="${pageContext.request.contextPath}/SubmitApprovalServlet" method="post">
-            <input type="hidden" name="formId" value="<%= formId %>">
+            <input type="hidden" name="formId" value="<%= h(formId) %>">
             <input type="hidden" name="expectedStep" value="0">
             <input type="hidden" name="redirectPage" value="directorApprove"><!-- zennnne แก้ -->
+            <input type="hidden" name="csrfToken" value="<%= h(csrfToken) %>">
 
             <!-- Header fields (readonly) -->
-            <div class="form-id-note">#<%= (formId != null) ? formId : "-" %></div>
+            <div class="form-id-note">#<%= h((formId != null) ? formId : "-") %></div>
             <div class="form-grid">
                 <div class="form-group">
                     <label>ชื่อ-นามสกุล</label>

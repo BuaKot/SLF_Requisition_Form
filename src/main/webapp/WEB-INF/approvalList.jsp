@@ -18,6 +18,7 @@
         ? request.getAttribute("approvalDetailPage").toString() : "/";
     String approvalHistoryBackPage = request.getAttribute("approvalHistoryBackPage") != null
         ? request.getAttribute("approvalHistoryBackPage").toString() : "/";
+    boolean approvalAlreadyProcessed = "already_processed".equals(request.getParameter("error"));
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -59,10 +60,12 @@
         .deadline-tag.normal { color: #176900; background: #f0f9ec; border-color: #77bc63; }
         .deadline-tag.soon { color: #8a6400; background: #fff8e5; border-color: #e2b943; }
         .deadline-tag.urgent { color: #b42318; background: #fff1f0; border-color: #e58c85; }
+        .deadline-tag.overdue { color: #b42318; background: #fff1f0; border-color: #e58c85; }
         .empty-state { padding: 62px 24px; border: 1px dashed #aac6de; border-radius: 8px; background: #fff; color: #526f88; text-align: center; }
         .empty-state i { display: block; margin-bottom: 14px; color: #3272bb; font-size: 42px; }
         .empty-state h2 { margin: 0 0 6px; color: #003f73; font-size: 23px; }
         .empty-state p { margin: 0; font-size: 16px; }
+        .approval-alert { width: min(1360px, calc(100% - 40px)); margin: 16px auto 0; padding: 12px 16px; border: 1px solid #f0c36d; border-radius: 8px; background: #fff8e5; color: #7a4b00; font-size: 16px; font-weight: 800; }
         @media (max-width: 900px) {
             .approval-header-inner, .requisition-card { align-items: flex-start; flex-direction: column; }
             .header-actions { width: 100%; }
@@ -86,6 +89,9 @@
                 <a class="page-button" href="${pageContext.request.contextPath}/"><i class="fa-solid fa-house"></i> หน้าหลัก</a>
             </div>
         </div>
+        <% if (approvalAlreadyProcessed) { %>
+        <div class="approval-alert"><i class="fa-solid fa-circle-info"></i> ใบขอนี้ถูกดำเนินการแล้ว</div>
+        <% } %>
     </header>
     <main class="approval-list">
         <% if (approvalFormList.isEmpty()) { %>
@@ -99,12 +105,13 @@
             String deadline = approvalEscapeHtml(row.get("DEADLINE_DISPLAY"));
             String titleForm = approvalEscapeHtml(row.get("TITLEFORM"));
             String rawTag = row.get("DEADLINE_TAG") != null ? row.get("DEADLINE_TAG").toString() : "normal";
-            String deadlineTagClass = Arrays.asList("normal","soon","urgent").contains(rawTag) ? rawTag : "normal";
+            String deadlineTagClass = Arrays.asList("normal","soon","urgent","overdue").contains(rawTag) ? rawTag : "normal";
+            boolean isOverdue = "overdue".equals(deadlineTagClass);
         %>
         <a class="requisition-card" href="${pageContext.request.contextPath}<%= approvalDetailPage %>?id=<%= approvalEscapeHtml(formId) %>">
             <div class="card-id-box">ใบขอเลขที่ <%= approvalEscapeHtml(formId) %></div>
             <div class="card-info"><div class="info-row"><div class="info-item"><b>ชื่อ:</b> <%= empName %></div><div class="info-item"><b>ฝ่าย:</b> <%= departmentName %></div><div class="info-item"><b>ส่วนงาน:</b> <%= sectionName %></div></div><div class="detail-line"><b>รายละเอียด:</b> <%= titleForm %></div></div>
-            <div class="status-section"><div class="pending-group"><span class="status-label"><i class="fa-solid fa-clock"></i> รอดำเนินการ</span><span class="deadline-tag <%= deadlineTagClass %>"><i class="fa-regular fa-calendar-days"></i> <%= deadline %></span></div><i class="fa-solid fa-chevron-right"></i></div>
+            <div class="status-section"><div class="pending-group"><span class="status-label"><i class="fa-solid fa-clock"></i> <%= isOverdue ? "เลยกำหนด" : "รอดำเนินการ" %></span><span class="deadline-tag <%= deadlineTagClass %>"><i class="fa-regular fa-calendar-days"></i> <%= deadline %></span></div><i class="fa-solid fa-chevron-right"></i></div>
         </a>
         <% } %>
     </main>

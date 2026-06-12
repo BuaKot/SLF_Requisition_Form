@@ -11,18 +11,6 @@ import java.sql.Types;
 import java.util.List;
 
 public class OracleRequisitionDAO implements RequisitionDAO {
-    private int getServerAccessTypeId(Connection conn) throws SQLException {
-        String sql = "SELECT TYPEID FROM REQUESTTYPE WHERE TYPENAME = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, "ขอใช้สิทธิ์เก็บข้อมูล"); // the exact Thai name
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("TYPEID");
-                }
-            }
-        }
-        return -1; // not found
-    }
     private void setPermissionValues(PreparedStatement ps, List<String> permissions) throws SQLException {
         boolean fullControl = permissions != null && permissions.contains("Full control");
         boolean modify = permissions != null && permissions.contains("Modify");
@@ -35,6 +23,33 @@ public class OracleRequisitionDAO implements RequisitionDAO {
         ps.setInt(6, readExecute ? 1 : 0);
         ps.setInt(7, read ? 1 : 0);
         ps.setInt(8, write ? 1 : 0);
+    }
+
+    private boolean hasServerAccessDetail(RequestItem item) {
+        return item != null
+            && item.getServerName() != null
+            && !item.getServerName().trim().isEmpty();
+    }
+
+    private int resolveInitialDirectorEmpId(Connection conn, int requesterEmpId) throws SQLException {
+        String sql =
+            "SELECT d.DEPTHEAD_EMPID " +
+            "FROM EMPLOYEE e " +
+            "JOIN SECTION s ON e.SECID = s.SECID " +
+            "JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+            "WHERE e.EMPID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, requesterEmpId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String directorEmpId = rs.getString("DEPTHEAD_EMPID");
+                    if (directorEmpId != null && !directorEmpId.trim().isEmpty()) {
+                        return Integer.parseInt(directorEmpId.trim());
+                    }
+                }
+            }
+        }
+        throw new SQLException("Cannot resolve initial director for requester EMPID=" + requesterEmpId);
     }
 
     @Override
@@ -109,8 +124,7 @@ public class OracleRequisitionDAO implements RequisitionDAO {
                 System.out.println("Items inserted: " + form.getItems().size());
             }
             // ---- Insert server permissions for items that are server access requests ----
-            int serverAccessTypeId = getServerAccessTypeId(conn);
-            if (serverAccessTypeId != -1 && form.getItems() != null) {
+            if (form.getItems() != null) {
                 String permSQL =
                     "INSERT INTO PERMISSIONDETAILS " +
                     "(FORMID, ISROOT, PATH, HASFULLCONTROL, HASMODIFY, HASREADEXECUTE, HASREAD, HASWRITE) " +
@@ -118,8 +132,7 @@ public class OracleRequisitionDAO implements RequisitionDAO {
 
                 try (PreparedStatement permStmt = conn.prepareStatement(permSQL)) {
                     for (RequestItem item : form.getItems()) {
-                        if (item.getRequestTypeId() != serverAccessTypeId) continue;
-                        if (item.getServerName() == null || item.getServerName().trim().isEmpty()) continue;
+                        if (!hasServerAccessDetail(item)) continue;
 
                         // Build base path: server name + folder
                         String serverName = item.getServerName().trim();
@@ -153,8 +166,7 @@ public class OracleRequisitionDAO implements RequisitionDAO {
 
             try (PreparedStatement approvalStmt = conn.prepareStatement(approvalSQL)) {
                 approvalStmt.setInt(1, formId);
-                // Set reviewer to the employee who submitted the form (the requestor)
-                approvalStmt.setInt(2, form.getEmpID());
+                approvalStmt.setInt(2, resolveInitialDirectorEmpId(conn, form.getEmpID()));
                 approvalStmt.executeUpdate();
                 System.out.println("APPROVALINFO row inserted for FORMID=" + formId + ", STATE_STEP=0");
             }

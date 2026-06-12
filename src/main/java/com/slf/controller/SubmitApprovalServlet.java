@@ -2,6 +2,8 @@ package com.slf.controller;
 
 import com.slf.dao.DBConnection;
 import com.slf.notification.ApprovalNotificationService;
+import com.slf.util.AuthUtil;
+import com.slf.util.SecurityUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,6 +30,10 @@ public class SubmitApprovalServlet extends HttpServlet {
         Integer reviewerEmpId = getReviewerEmpId(session);
         if (reviewerEmpId == null) {
             response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        if (!SecurityUtil.isValidCsrfToken(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token");
             return;
         }
 
@@ -60,72 +66,101 @@ public class SubmitApprovalServlet extends HttpServlet {
         }
 
         redirectPage = sanitizeRedirectPage(redirectPage);
+        if (!isRoleAllowedForApprovalAction((String) session.getAttribute("position"), redirectPage)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "This role cannot perform this approval action");
+            return;
+        }
+
+        int newStep;
+        Integer devEmpId;
+        String notificationComment;
 
         try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false);
 
-            int currentStep = getCurrentStep(conn, formId);
-            if (currentStep == Integer.MIN_VALUE) {
-                response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=not_found");
-                return;
-            }
-
-            if (isStaleApprovalRequest(currentStep, expectedStep)) {
-                response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=stale_state");
-                return;
-            }
-
-            if (currentStep < 0) {
-                response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=already_rejected");
-                return;
-            }
-            if (currentStep >= 5) {
-                response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=already_completed");
-                return;
-            }
-
-            String authError = assertAuthorized(conn, formId, currentStep, reviewerEmpId);
-            if (authError != null) {
-                if (authError.equals("not_found")) {
-                    response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=not_found");
-                } else {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, authError);
-                }
-                return;
-            }
-
-            boolean technicalRequired = isTechnicalApprovalRequired(conn, formId);
-            int newStep = calcNewStepWithFlag(action, currentStep, technicalRequired);
-            if (newStep == Integer.MIN_VALUE) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action or step logic");
-                return;
-            }
-
-            boolean requireDevAssignment = requiresAssignedDeveloper(currentStep, action, technicalRequired);
-            Integer devEmpId;
             try {
-                devEmpId = requireDevAssignment ? parseAssignedDeveloperId(devEmpIdStr, true) : null;
-            } catch (IllegalArgumentException e) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-                return;
+                if (!lockFormForApproval(conn, formId)) {
+                    conn.rollback();
+                    response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=not_found");
+                    return;
+                }
+
+                int currentStep = getCurrentStep(conn, formId);
+                if (currentStep == Integer.MIN_VALUE) {
+                    conn.rollback();
+                    response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=not_found");
+                    return;
+                }
+
+                if (isStaleApprovalRequest(currentStep, expectedStep)) {
+                    conn.rollback();
+                    response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=already_processed");
+                    return;
+                }
+
+                if (currentStep < 0) {
+                    conn.rollback();
+                    response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=already_processed");
+                    return;
+                }
+                if (currentStep >= 5) {
+                    conn.rollback();
+                    response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=already_processed");
+                    return;
+                }
+
+                String authError = assertAuthorized(conn, formId, currentStep, reviewerEmpId);
+                if (authError != null) {
+                    conn.rollback();
+                    if (authError.equals("not_found")) {
+                        response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?error=not_found");
+                    } else {
+                        response.sendError(HttpServletResponse.SC_FORBIDDEN, authError);
+                    }
+                    return;
+                }
+
+                boolean technicalRequired = isTechnicalApprovalRequired(conn, formId);
+                newStep = calcNewStepWithFlag(action, currentStep, technicalRequired);
+                if (newStep == Integer.MIN_VALUE) {
+                    conn.rollback();
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action or step logic");
+                    return;
+                }
+
+                boolean requireDevAssignment = requiresAssignedDeveloper(currentStep, action, technicalRequired);
+                try {
+                    devEmpId = requireDevAssignment ? parseAssignedDeveloperId(devEmpIdStr, true) : null;
+                } catch (IllegalArgumentException e) {
+                    conn.rollback();
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+                    return;
+                }
+
+                if (devEmpId == null) {
+                    devEmpId = getLatestAssignedDeveloperId(conn, formId);
+                }
+
+                if (devEmpId != null && !isDeveloperInAssignedSection(conn, formId, devEmpId)) {
+                    conn.rollback();
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Selected developer is not in the assigned section");
+                    return;
+                }
+
+                notificationComment = comment;
+                insertApprovalRow(conn, formId, reviewerEmpId, devEmpId, comment, newStep);
+                conn.commit();
+            } catch (SQLException | RuntimeException e) {
+                conn.rollback();
+                throw e;
             }
-
-            if (devEmpId == null) {
-                devEmpId = getLatestAssignedDeveloperId(conn, formId);
-            }
-
-            if (devEmpId != null && !isDeveloperInAssignedSection(conn, formId, devEmpId)) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Selected developer is not in the assigned section");
-                return;
-            }
-
-            insertApprovalRow(conn, formId, reviewerEmpId, devEmpId, comment, newStep);
-            approvalNotificationService.notifyApprovalTransition(formId, reviewerEmpId, newStep, devEmpId, comment);
-
-            response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?success=" + action);
 
         } catch (SQLException e) {
             throw new ServletException("Database error processing approval", e);
         }
+
+        approvalNotificationService.notifyApprovalTransition(formId, reviewerEmpId, newStep, devEmpId, notificationComment);
+        response.sendRedirect(request.getContextPath() + "/" + redirectPage + "?success=" + action);
     }
 
     // ------------------------------------------------------------------
@@ -150,12 +185,25 @@ public class SubmitApprovalServlet extends HttpServlet {
         return Integer.MIN_VALUE;
     }
 
-    private boolean isTechnicalApprovalRequired(Connection conn, int formId) throws SQLException {
-        String sql = "SELECT NVL(TECHNICAL_APPROVAL_REQUIRED, 0) FROM REQUISITIONFORM WHERE FORMID = ?";
+    private boolean lockFormForApproval(Connection conn, int formId) throws SQLException {
+        String sql = "SELECT FORMID FROM REQUISITIONFORM WHERE FORMID = ? FOR UPDATE";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, formId);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt(1) == 1;
+                return rs.next();
+            }
+        }
+    }
+
+    private boolean isTechnicalApprovalRequired(Connection conn, int formId) throws SQLException {
+        // The current IT requisition workflow always requires the Technical step.
+        // Some legacy schemas have TECHNICAL_APPROVAL_REQUIRED defaulting to 0,
+        // which caused Director approval to skip directly to IT Director.
+        String sql = "SELECT TECHNICAL_APPROVAL_REQUIRED FROM REQUISITIONFORM WHERE FORMID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, formId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return true;
             }
         } catch (SQLException e) {
             if (isMissingColumn(e)) {
@@ -268,6 +316,13 @@ public class SubmitApprovalServlet extends HttpServlet {
             "directorApprove", "itDirectorApprove", "technicalApprove", "process", "submit"
         ));
         return ALLOWED.contains(redirectPage) ? redirectPage : "directorApprove";
+    }
+
+    static boolean isRoleAllowedForApprovalAction(String position, String redirectPage) {
+        if ("submit".equals(redirectPage)) {
+            return position != null && !position.trim().isEmpty();
+        }
+        return AuthUtil.isAllowedForPage(position, redirectPage);
     }
 
     static Integer parseAssignedDeveloperId(String value, boolean required) {

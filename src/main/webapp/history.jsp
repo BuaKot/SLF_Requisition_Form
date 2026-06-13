@@ -1,7 +1,7 @@
 ﻿<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat" %>
+<%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat, com.slf.util.NavigationUtil" %>
 
 <%
     /* ===============================
@@ -42,7 +42,9 @@
     Set<String> allowedBackPaths = new HashSet<>(Arrays.asList(
         "/directorApprove", "/technicalApprove", "/itDirectorApprove", "/process", "/it-requisition-form-detail.jsp"
     ));
-    String historyBackPath = allowedBackPaths.contains(backParam) ? backParam : "/it-requisition-form-detail.jsp";
+    boolean legacyAllowedBackPath = allowedBackPaths.contains(backParam);
+    String historyBackPath = NavigationUtil.historyBackPath(backParam);
+    NavigationUtil.BackLink historyBackLink = NavigationUtil.historyBack(request.getContextPath(), backParam);
     List<String> statusConds = new ArrayList<>();
     for (String s : showParam.split(",")) {
         switch (s.trim().toLowerCase()) {
@@ -442,8 +444,8 @@
     <!-- zennnne แก้ -->
     <!-- FILTER BAR -->
     <section class="filter-bar queue-toolbar" aria-label="ตัวกรองและการเรียงลำดับ">
-        <a class="history-home-button" href="${pageContext.request.contextPath}<%= historyBackPath %>">
-            <i class="fa-solid fa-arrow-left"></i> รายละเอียดฟอร์ม
+        <a class="history-home-button detail-back-button" href="<%= historyBackLink.getHref() %>">
+            <i class="fa-solid fa-arrow-left"></i> <%= historyBackLink.getLabel() %>
         </a>
         <span class="filter-separator" aria-hidden="true"></span>
         <div class="filter-checkboxes" aria-label="ตัวกรองสถานะ">

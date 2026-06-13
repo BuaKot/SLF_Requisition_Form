@@ -45,7 +45,7 @@
                 <a href="${pageContext.request.contextPath}/forms/select?code=IT_REQUISITION_REQUEST" class="form-type-action">
                     <i class="fa-solid fa-plus"></i> สร้างคำขอใหม่
                 </a>
-                <a href="${pageContext.request.contextPath}/it-requisition-form-detail.jsp" class="form-type-action secondary">
+                <a href="${pageContext.request.contextPath}/it-requisition-form-detail.jsp" class="form-type-action secondary detail-back-button">
                     <i class="fa-solid fa-arrow-left"></i> กลับหน้ารายละเอียดฟอร์ม
                 </a>
             </div>

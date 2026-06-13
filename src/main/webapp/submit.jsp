@@ -1,7 +1,7 @@
 ﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %>
-<%@ page import="com.slf.util.SecurityUtil" %>
+<%@ page import="com.slf.util.SecurityUtil, com.slf.util.NavigationUtil" %>
 
 <%
     // zennnne แก้
@@ -21,6 +21,7 @@
     boolean hasData  = !formList.isEmpty();
     boolean alreadyProcessed = "already_processed".equals(request.getParameter("error"));
     String csrfToken = SecurityUtil.ensureCsrfToken(request);
+    NavigationUtil.BackLink submittedBackLink = NavigationUtil.itRequisitionDetailBack(request.getContextPath());
     // zennnne แก้
 %>
 
@@ -117,12 +118,12 @@
     <!-- FILTER BAR -->
     <section class="filter-bar queue-toolbar" aria-label="ตัวกรองและการเรียงลำดับ">
         <div class="detail-action-bar submit-back-row">
-    <a class="submit-home-button detail-back-button submit-detail-back-button"
-       href="${pageContext.request.contextPath}/it-requisition-form-detail.jsp">
-        <i class="fa-solid fa-arrow-left"></i>
-        <span>กลับรายละเอียดฟอร์ม</span>
-    </a>
-</div>
+            <a class="submit-home-button detail-back-button submit-detail-back-button"
+               href="<%= SecurityUtil.escapeHtml(submittedBackLink.getHref()) %>">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span><%= SecurityUtil.escapeHtml(submittedBackLink.getLabel()) %></span>
+            </a>
+        </div>
         <span class="submit-filter-separator" aria-hidden="true"></span>
         <div class="filter-checkboxes" aria-label="ตัวกรองสถานะ">
             <label class="filter-label pending-label">

@@ -1,6 +1,7 @@
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.slf.util.AuthUtil" %>
+<%@ page import="com.slf.util.NavigationUtil" %>
 <%@ page import="com.slf.util.ThirdPartyAccessPolicy" %>
 <%
     String currentRole = (String) session.getAttribute("position");
@@ -12,6 +13,7 @@
     boolean approvalOnlyRole = AuthUtil.isApprovalOnlyRole(currentRole);
     boolean canCreateThirdPartyLinks = !approvalOnlyRole
         && ThirdPartyAccessPolicy.canCreateOwnLinks(ThirdPartyAccessPolicy.sessionEmpId(session));
+    NavigationUtil.BackLink listBackLink = NavigationUtil.listPageBack(request.getContextPath());
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -38,7 +40,7 @@
                 <% } else { %>
                 <span class="form-type-action disabled" aria-disabled="true">ไม่มีสิทธิ์เข้าถึงฟอร์มนี้</span>
                 <% } %>
-                <a class="form-type-action secondary" href="${pageContext.request.contextPath}/">กลับหน้าเลือกฟอร์ม</a>
+                <a class="form-type-action secondary detail-back-button" href="<%= listBackLink.getHref() %>"><i class="fa-solid fa-arrow-left"></i> <%= listBackLink.getLabel() %></a>
             </div>
         </section>
     </main>

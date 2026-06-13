@@ -4,6 +4,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.slf.model.ThirdPartyRequest" %>
 <%@ page import="com.slf.model.ThirdPartyAcceptanceToken" %>
+<%@ page import="com.slf.util.NavigationUtil" %>
 <%@ page import="com.slf.util.ThirdPartyAccessPolicy" %>
 <%!
     private String h(Object input) {
@@ -69,6 +70,7 @@
     SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     String createdRequestId = request.getParameter("createdRequestId");
     String status = request.getParameter("status");
+    NavigationUtil.BackLink thirdPartyFormBack = NavigationUtil.thirdPartyFormDetailBack(request.getContextPath());
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -95,8 +97,8 @@
                 <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdParty/history">
                     <i class="fa-solid fa-clock-rotate-left"></i> ประวัติ
                 </a>
-                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/third-party-form-detail.jsp">
-                    <i class="fa-solid fa-arrow-left"></i> กลับ
+                <a class="btn btn-secondary detail-back-button" href="<%= h(thirdPartyFormBack.getHref()) %>">
+                    <i class="fa-solid fa-arrow-left"></i> <%= h(thirdPartyFormBack.getLabel()) %>
                 </a>
                 <form method="post" action="${pageContext.request.contextPath}/thirdParty/request/new">
                     <input type="hidden" name="csrfToken" value="<%= h(csrfToken) %>">

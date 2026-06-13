@@ -4,6 +4,7 @@
 <%@ page import="com.slf.model.MemberProfile" %>
 <%@ page import="com.slf.model.Section" %>
 <%@ page import="com.slf.util.AuthUtil" %>
+<%@ page import="com.slf.util.NavigationUtil" %>
 <%!
     public String h(Object input) {
         if (input == null) return "";
@@ -41,6 +42,7 @@
     String selectedStatus = (String) request.getAttribute("selectedStatus");
     String message = (String) request.getAttribute("message");
     String error = (String) request.getAttribute("error");
+    NavigationUtil.BackLink adminBackLink = NavigationUtil.adminListPageBack(request.getContextPath());
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -110,8 +112,8 @@
                 <h1><i class="fa-solid fa-users-gear"></i> จัดการข้อมูลสมาชิก</h1>
                 <p>เพิ่ม แก้ไข ปิดใช้งาน และกรองสมาชิกตามส่วนงาน ตำแหน่ง หรือสถานะ</p>
             </div>
-            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/Admin.jsp">
-                <i class="fa-solid fa-arrow-left"></i> กลับหน้า Admin
+            <a class="btn btn-secondary detail-back-button" href="<%= h(adminBackLink.getHref()) %>">
+                <i class="fa-solid fa-arrow-left"></i> <%= h(adminBackLink.getLabel()) %>
             </a>
         </div>
 

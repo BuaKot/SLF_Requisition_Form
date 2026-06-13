@@ -940,9 +940,12 @@ button {
     }
 
     .it-request-form-page .btn {
-    .server-input-row label {
-        text-align: left;
-    }
+    width: 100%;
+}
+
+.server-input-row label {
+    text-align: left;
+}
 
     .btn-group {
         flex-direction: column;
@@ -981,4 +984,9 @@ button {
     .btn, .action-row-btn {
         width: 100% !important;
     }
+}
+
+}
+    }
+
 }

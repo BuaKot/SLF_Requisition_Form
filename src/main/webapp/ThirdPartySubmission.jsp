@@ -6,6 +6,7 @@
 <%@ page import="com.slf.model.ThirdPartyFormSubmission" %>
 <%@ page import="com.slf.model.ThirdPartyAccessRequest" %>
 <%@ page import="com.slf.model.ThirdPartyWorkflowActionEntry" %>
+<%@ page import="com.slf.util.NavigationUtil" %>
 <%!
     public String h(Object input) {
         if (input == null) return "";
@@ -74,6 +75,8 @@
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
         return;
     }
+    NavigationUtil.BackLink thirdPartyBackLink = NavigationUtil.thirdPartyDetailBack(backUrl);
+    backUrl = thirdPartyBackLink.getHref();
     List<ThirdPartyWorkflowActionEntry> approvalHistory =
         (List<ThirdPartyWorkflowActionEntry>) request.getAttribute("approvalHistory");
     if (approvalHistory == null) approvalHistory = Collections.emptyList();
@@ -141,8 +144,8 @@
                 <h1><i class="fa-solid fa-file-lines"></i> Submission #<%= submission.getSubmissionId() %></h1>
                 <p>เลขที่รับเอกสาร <strong><%= display(submission.getDocumentReceiveNo()) %></strong></p>
             </div>
-            <a class="btn btn-secondary" href="<%= h(backUrl) %>">
-                <i class="fa-solid fa-arrow-left"></i> กลับหน้า Third-party Links
+            <a class="btn btn-secondary detail-back-button" href="<%= h(backUrl) %>">
+                <i class="fa-solid fa-arrow-left"></i> <%= h(thirdPartyBackLink.getLabel()) %>
             </a>
         </div>
 

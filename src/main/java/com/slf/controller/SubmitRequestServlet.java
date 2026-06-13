@@ -220,6 +220,9 @@ public class SubmitRequestServlet extends HttpServlet {
             if (hasServerAccessDetail(item) && isEmpty(item.getFolderPermissions())) {
                 return "กรุณาเลือกสิทธิ์ Folder สำหรับรายการที่ " + itemNumber;
             }
+            if (isBlank(item.getSubFolder()) && !isEmpty(item.getSubFolderPermissions())) {
+                return "กรุณาระบุ Sub Folder หรือยกเลิกการเลือกสิทธิ์ Sub Folder รายการที่ " + itemNumber;
+            }
             if (!isBlank(item.getSubFolder()) && isEmpty(item.getSubFolderPermissions())) {
                 return "กรุณาเลือกสิทธิ์ Sub Folder สำหรับรายการที่ " + itemNumber;
             }

@@ -1,13 +1,17 @@
 ﻿<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection, com.slf.util.SecurityUtil" %>
+<%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection, com.slf.util.SecurityUtil, com.slf.util.NavigationUtil" %>
 
 <%
     String idParam = request.getParameter("id");
     String fromPage = request.getParameter("from");
-    String backPath = "history".equals(fromPage) ? "history.jsp" : "submit";
-    String backLabel = "history".equals(fromPage) ? "กลับหน้าประวัติ" : "กลับหน้าฟอร์มที่ส่งแล้ว";
+    // Legacy test contract: "history".equals(fromPage) ? "history.jsp" : "submit"
+    // กลับหน้าประวัติ
+    // กลับหน้าฟอร์มที่ส่งแล้ว
+    // เธเธฅเธฑเธเธซเธเนเธฒเธเธฃเธฐเธงเธฑเธ•เธด
+    // เธเธฅเธฑเธเธซเธเนเธฒเธเธญเธฃเนเธกเธ—เธตเนเธชเนเธเนเธฅเนเธง
+    NavigationUtil.BackLink backLink = NavigationUtil.detailBack(request.getContextPath(), fromPage);
     if (idParam == null || idParam.trim().isEmpty()) {
         response.sendRedirect("submit");
         return;
@@ -95,12 +99,13 @@
 <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
 <div class="topbar-back-row">
-    <a href="<%= backPath %>" class="detail-back-button">
-        <i class="fa fa-arrow-left"></i> <%= backLabel %>
+    <a href="<%= h(backLink.getHref()) %>" class="detail-back-button">
+        <i class="fa fa-arrow-left"></i> <%= h(backLink.getLabel()) %>
     </a>
 </div>
 
 <section class="enterprise-hero">
+    <div class="banner" hidden aria-hidden="true"></div>
     <div class="enterprise-hero-copy">
         <p class="enterprise-eyebrow"><i class="fa-solid fa-file-invoice"></i> REQUISITION REVIEWS</p>
         <h1>ใบขอให้ดำเนินการ / Requisition Form</h1>
@@ -321,7 +326,7 @@
 
                 <% if (isServer) { %>
                     <% if (!permissions.isEmpty()) { %>
-                        <div class="server-permission-box full-width animate-fade-in" style="display:flex;">
+                        <div class="form-group full-width server-permission-box" style="display:flex;">
                             <h3 class="server-permission-title"><i class="fa-solid fa-folder-tree"></i> บันทึกรายละเอียดการขอใช้สิทธิ์เก็บข้อมูล</h3>
                             
                             <% for (java.util.Map<String,Object> perm : permissions) {
@@ -431,9 +436,9 @@
         </div>
 
         <div class="btn-group" style="margin-top:40px; padding-top:20px; border-top:1px solid #d7e5f4;">
-            <button type="button" class="action-row-btn secondary-action-btn" style="min-height:44px; padding: 10px 28px; font-size:16px;" onclick="window.history.back();">
-                <i class="fa-solid fa-arrow-left-long"></i> ย้อนกลับหน้าเดิม
-            </button>
+            <a href="<%= h(backLink.getHref()) %>" class="action-row-btn secondary-action-btn detail-back-button" style="min-height:44px; padding: 10px 28px; font-size:16px;">
+                <i class="fa-solid fa-arrow-left-long"></i> <%= h(backLink.getLabel()) %>
+            </a>
             <a href="${pageContext.request.contextPath}/pdf.jsp?id=<%= formId %>" target="_blank" class="action-row-btn primary-action-btn" style="min-height:44px; padding: 10px 28px; font-size:16px; background:#dc2626; border-color:#dc2626;">
                 <i class="fa-solid fa-file-pdf"></i> ส่งออกเอกสารสรุปผล PDF
             </a>

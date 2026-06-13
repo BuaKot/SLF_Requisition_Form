@@ -24,9 +24,5 @@
             <i class="fa-solid fa-id-badge"></i>
             <p>สถานะ: ${sessionScope.position}</p>
         </div>
-        <div class="contact-info index-info-pill topbar-help-pill">
-            <i class="fa-solid fa-circle-info"></i>
-            <p>สอบถามข้อมูลเพิ่มเติม ติดต่อ 411</p>
-        </div>
     </div>
 </header>

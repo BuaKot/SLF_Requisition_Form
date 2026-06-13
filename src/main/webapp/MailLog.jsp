@@ -4,6 +4,7 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="com.slf.model.EmailNotificationLogEntry" %>
 <%@ page import="com.slf.util.AuthUtil" %>
+<%@ page import="com.slf.util.NavigationUtil" %>
 <%!
     public String h(Object input) {
         if (input == null) return "";
@@ -43,6 +44,7 @@
         ? 0 : ((Integer) request.getAttribute("totalRows")).intValue();
     int totalPages = Math.max(1, (int) Math.ceil(totalRows / (double) pageSize));
     SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    NavigationUtil.BackLink adminBackLink = NavigationUtil.adminListPageBack(request.getContextPath());
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -107,8 +109,8 @@
                 <h1><i class="fa-solid fa-envelope-open-text"></i> mailLog</h1>
                 <p>ตรวจสอบคิว สถานะการส่ง ปลายทาง และข้อผิดพลาดของอีเมลแจ้งเตือน</p>
             </div>
-            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/Admin.jsp">
-                <i class="fa-solid fa-arrow-left"></i> กลับหน้า Admin
+            <a class="btn btn-secondary detail-back-button" href="<%= h(adminBackLink.getHref()) %>">
+                <i class="fa-solid fa-arrow-left"></i> <%= h(adminBackLink.getLabel()) %>
             </a>
         </div>
 

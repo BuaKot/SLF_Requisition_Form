@@ -2638,6 +2638,51 @@ textarea:focus-visible,
     margin: 0;
 }
 
+.owner-link-dashboard {
+    display: grid;
+    grid-template-areas:
+        "intro intro"
+        "requests acceptance";
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+    gap: 18px;
+}
+
+.owner-link-dashboard .form-page-header {
+    grid-area: intro;
+}
+
+.owner-link-dashboard .owner-request-list-panel {
+    grid-area: requests;
+}
+
+.owner-link-dashboard .owner-acceptance-panel {
+    grid-area: acceptance;
+}
+
+.owner-request-card {
+    border-color: var(--slf-color-border);
+}
+
+.owner-request-card-actions {
+    justify-content: flex-end;
+}
+
+.owner-acceptance-panel .acceptance-link-card {
+    border-color: var(--slf-color-border);
+    background: var(--slf-color-surface);
+}
+
+.owner-acceptance-panel .generated-link-box input {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.acceptance-generated-link {
+    min-width: 0;
+}
+
 .third-party-request-page .btn-danger-soft {
     background: #fdecec;
     color: #b42318;
@@ -2840,6 +2885,7 @@ textarea:focus-visible,
     }
 
     .third-party-form-grid,
+    .owner-link-dashboard,
     .generated-link-layout,
     .third-party-link-card,
     .third-party-link-card.compact-card,
@@ -2851,6 +2897,13 @@ textarea:focus-visible,
 
     .clean-actions {
         justify-content: flex-start;
+    }
+
+    .owner-link-dashboard {
+        grid-template-areas:
+            "intro"
+            "acceptance"
+            "requests";
     }
 
     .admin-link-summary {

@@ -3,6 +3,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
+<%@ page import="com.slf.dao.DBConnection" %>
+<%@ page import="com.slf.util.NavigationUtil" %>
 
 <%!
     public String escapeHtml(String input) {
@@ -35,6 +37,7 @@
     }
     
     String employeeName = (session.getAttribute("empName") != null) ? escapeHtml((String)session.getAttribute("empName")) : "ผู้ใช้งานระบบ";
+    NavigationUtil.BackLink adminBackLink = NavigationUtil.adminListPageBack(request.getContextPath());
     
     String filter = request.getParameter("timeFilter");
     if (filter == null || filter.trim().equals("")) { filter = "30days"; }
@@ -53,9 +56,6 @@
     }
     
     int totalEmployees = 0; 
-    String dbURL = "jdbc:oracle:thin:@//172.25.18.186:1521/XE"; 
-    String dbUser = "C##DEVUSER";
-    String dbPassword = "mypassword";
     
     Connection conn = null;
     PreparedStatement pstmt = null;
@@ -72,8 +72,7 @@
     List<Integer> topCatValues = new ArrayList<Integer>();
 
     try {
-        Class.forName("oracle.jdbc.OracleDriver");
-        conn = DriverManager.getConnection(dbURL, dbUser, dbPassword);
+        conn = DBConnection.getConnection();
         
         String countSql = "SELECT COUNT(*) as TOTAL_EMP FROM EMPLOYEE";
         stmt = conn.createStatement();
@@ -234,7 +233,7 @@
 <div class="container">
     <div class="header">
         <h1><i class="fa-solid fa-chart-pie" style="color:#3272BB;"></i> IT Requisition Dashboard (BA Overview)</h1>
-        <a href="Admin.jsp" style="text-decoration:none; background:#3272BB; color:white; padding:10px 20px; border-radius:10px; font-weight:bold;"><i class="fa fa-arrow-left"></i> กลับหน้าหลัก</a>
+        <a href="<%= escapeHtml(adminBackLink.getHref()) %>" class="detail-back-button"><i class="fa fa-arrow-left"></i> <%= escapeHtml(adminBackLink.getLabel()) %></a>
     </div>
 
     <div class="filter-container">

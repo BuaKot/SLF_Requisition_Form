@@ -1,7 +1,7 @@
 ﻿<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat, java.util.*, com.slf.util.SecurityUtil" %>
+<%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat, java.util.*, com.slf.util.SecurityUtil, com.slf.util.NavigationUtil" %>
 
 <%
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -29,12 +29,9 @@
     }
 
     String fromPage = request.getParameter("from");
-    String backPath = request.getContextPath() + "/directorApprove";
-    String backLabel = "กลับหน้า Director Approval";
-    if ("history".equals(fromPage)) {
-        backPath = request.getContextPath() + "/history.jsp";
-        backLabel = "กลับหน้าประวัติ";
-    }
+    NavigationUtil.BackLink backLink = NavigationUtil.approvalDetailBack(
+        request.getContextPath(), fromPage, "/directorApprove", "กลับหน้า Director Approval"
+    );
 
     // ----- 2. Data holders -----
     String empName = "", sectionName = "", departmentName = "", phone = "";
@@ -208,7 +205,7 @@
     <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
     <h1 style="margin-top: 5px;">ใบขอให้ดำเนินการ / Requisition Form (ใบที่: <%= h((formId != null) ? formId : "-") %>)</h1>
 </div>
-<div class="detail-action-bar"><a class="detail-back-button" href="<%= backPath %>"><i class="fa fa-arrow-left"></i> <%= backLabel %></a></div>
+<div class="detail-action-bar"><a class="detail-back-button" href="<%= h(backLink.getHref()) %>"><i class="fa fa-arrow-left"></i> <%= h(backLink.getLabel()) %></a></div>
 
 <div class="form-container">
     <% if (!hasData) { %>

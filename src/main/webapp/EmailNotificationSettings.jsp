@@ -1,6 +1,7 @@
 ﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.slf.model.MemberProfile" %>
+<%@ page import="com.slf.util.NavigationUtil" %>
 <%!
     public String h(Object input) {
         if (input == null) return "";
@@ -20,6 +21,7 @@
     }
     String message = (String) request.getAttribute("message");
     String error = (String) request.getAttribute("error");
+    NavigationUtil.BackLink listBackLink = NavigationUtil.listPageBack(request.getContextPath());
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -94,8 +96,8 @@
                 <h1><i class="fa-solid fa-envelope-circle-check"></i> ตั้งค่าแจ้งเตือน Email</h1>
                 <p>จัดการอีเมลสำหรับรับแจ้งเตือนสถานะใบคำขอและขั้นตอนอนุมัติ</p>
             </div>
-            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/">
-                <i class="fa-solid fa-arrow-left"></i> กลับหน้าหลัก
+            <a class="btn btn-secondary detail-back-button" href="<%= h(listBackLink.getHref()) %>">
+                <i class="fa-solid fa-arrow-left"></i> <%= h(listBackLink.getLabel()) %>
             </a>
         </div>
 

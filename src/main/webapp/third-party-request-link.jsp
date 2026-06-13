@@ -1,6 +1,7 @@
 ﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="com.slf.model.ThirdPartyRequest" %>
+<%@ page import="com.slf.util.NavigationUtil" %>
 <%@ page import="com.slf.util.ThirdPartyAccessPolicy" %>
 <%!
     private String h(Object input) {
@@ -29,6 +30,7 @@
     ThirdPartyRequest thirdPartyRequest = (ThirdPartyRequest) request.getAttribute("thirdPartyRequest");
     String publicLink = (String) request.getAttribute("publicLink");
     SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    NavigationUtil.BackLink thirdPartyLinksBack = NavigationUtil.thirdPartyLinksBack(request.getContextPath());
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -51,8 +53,8 @@
                 <h1>คำขอ #<%= thirdPartyRequest.getRequestId() %></h1>
                 <p>หน้านี้ใช้แสดงลิงก์เดี่ยวเท่านั้น การติดตามสถานะรวมให้กลับไปที่หน้าจัดการลิงก์</p>
             </div>
-            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdParty/request/new">
-                <i class="fa-solid fa-list"></i> กลับหน้าจัดการลิงก์
+            <a class="btn btn-secondary detail-back-button" href="<%= h(thirdPartyLinksBack.getHref()) %>">
+                <i class="fa-solid fa-arrow-left"></i> <%= h(thirdPartyLinksBack.getLabel()) %>
             </a>
         </section>
 

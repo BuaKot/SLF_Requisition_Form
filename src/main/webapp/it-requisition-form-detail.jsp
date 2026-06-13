@@ -1,6 +1,6 @@
 ﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="com.slf.util.AuthUtil" %>
+<%@ page import="com.slf.util.AuthUtil, com.slf.util.NavigationUtil" %>
 <%
     String currentRole = (String) session.getAttribute("position");
     String employeeName = (String) session.getAttribute("loggedInEmpName");
@@ -14,6 +14,7 @@
         return;
     }
     boolean approvalOnlyRole = AuthUtil.isApprovalOnlyRole(currentRole);
+    NavigationUtil.BackLink listBackLink = NavigationUtil.listPageBack(request.getContextPath());
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -42,8 +43,8 @@
 
         
         <div class="detail-action-bar it-detail-back-row">
-            <a class="detail-back-button" href="${pageContext.request.contextPath}/">
-                <i class="fa-solid fa-arrow-left"></i> กลับหน้าหลักระบบงาน
+            <a class="detail-back-button" href="<%= listBackLink.getHref() %>">
+                <i class="fa-solid fa-arrow-left"></i> <%= listBackLink.getLabel() %>
             </a>
         </div>
 

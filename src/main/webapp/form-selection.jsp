@@ -1,10 +1,12 @@
 ﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="com.slf.util.NavigationUtil" %>
 <%
     Boolean canCreateThirdPartyLinks = (Boolean) request.getAttribute("canCreateThirdPartyLinks");
     if (canCreateThirdPartyLinks == null) {
         response.sendRedirect(request.getContextPath() + "/");
         return;
     }
+    NavigationUtil.BackLink listBackLink = NavigationUtil.listPageBack(request.getContextPath());
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -27,8 +29,8 @@
                 <h1>เลือกประเภทแบบฟอร์ม</h1>
                 <p>เลือกแบบฟอร์มที่ต้องการสร้าง</p>
             </div>
-            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/">
-                <i class="fa-solid fa-arrow-left"></i> กลับหน้าหลัก
+            <a class="btn btn-secondary detail-back-button" href="<%= listBackLink.getHref() %>">
+                <i class="fa-solid fa-arrow-left"></i> <%= listBackLink.getLabel() %>
             </a>
         </section>
 

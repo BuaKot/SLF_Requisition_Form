@@ -2,9 +2,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="com.slf.util.SecurityUtil" %>
+<%@ page import="com.slf.util.SecurityUtil, com.slf.util.NavigationUtil" %>
 <%
     String csrfToken = SecurityUtil.ensureCsrfToken(request);
+    NavigationUtil.BackLink formBackLink = NavigationUtil.itRequisitionDetailBack(request.getContextPath());
 %>
 <!DOCTYPE html>
 <html lang="th">
@@ -224,22 +225,13 @@
             </section>
 
             <div class="form-action-bar action-row">
-                <button type="button" class="btn btn-reject" onclick="history.back()">ย้อนกลับ</button>
+                <a class="btn btn-reject detail-back-button" href="<%= SecurityUtil.escapeHtml(formBackLink.getHref()) %>">
+                    <i class="fa-solid fa-arrow-left"></i> <%= SecurityUtil.escapeHtml(formBackLink.getLabel()) %>
+                </a>
                 <button type="submit" class="btn btn-approve" id="submitBtn">ยืนยันการส่ง</button>
             </div>
         </form>
     </main>
-</div>
-
-<!-- Custom modal for cross‑section validation -->
-<div class="request-alert-overlay" id="requestTypeAlert" aria-hidden="true">
-    <div class="request-alert-box" role="alertdialog" aria-modal="true" aria-labelledby="requestTypeAlertTitle">
-        <h3 id="requestTypeAlertTitle">กรุณาตรวจสอบประเภทคำขอ</h3>
-        <p id="requestTypeAlertMessage"></p>
-        <div class="request-alert-actions">
-            <button type="button" class="request-alert-btn" id="requestTypeAlertClose">ตกลง</button>
-        </div>
-    </div>
 </div>
 
 <script>
@@ -287,9 +279,11 @@ function attachCounters(root) {
             if (used > max) {
                 counter.classList.add("over-limit");
                 el.classList.add("input-over-limit");
+                el.setCustomValidity("ข้อมูลเกิน " + max + " bytes");
             } else {
                 counter.classList.remove("over-limit");
                 el.classList.remove("input-over-limit");
+                el.setCustomValidity("");
             }
         }
         el.addEventListener("input", update);
@@ -324,6 +318,23 @@ function formatDeadlineInput(input) {
 // ---------- Select helpers ----------
 function updateSelectColor(select) {
     select.style.color = select.value === "" ? "#777" : "black";
+}
+
+function normalizeRequestTypeName(value) {
+    return (value || "").replace(/\s*\([^)]*\)\s*$/g, "").trim();
+}
+
+function isProgramRequestType(typeName) {
+    var normalizedName = normalizeRequestTypeName(typeName);
+    return normalizedName === "ขอติดตั้งโปรแกรม" || normalizedName === "ขอให้พัฒนาโปรแกรม";
+}
+
+function isServerPermissionRequestType(typeName) {
+    return normalizeRequestTypeName(typeName) === "ขอใช้สิทธิ์เก็บข้อมูล";
+}
+
+function isOtherRequestType(typeName) {
+    return normalizeRequestTypeName(typeName) === "อื่นๆ";
 }
 
 function initPlaceholderSelects() {
@@ -393,7 +404,7 @@ function handleRequestTypeChange(select) {
     }
 
     if (programNameBox && programNameInput) {
-        if (selectedText === "ขอติดตั้งโปรแกรม" || selectedText === "ขอให้พัฒนาโปรแกรม") {
+        if (isProgramRequestType(selectedText)) {
             programNameBox.style.display = "flex";
             programNameInput.required = true;
         } else {
@@ -403,7 +414,7 @@ function handleRequestTypeChange(select) {
         }
     }
     if (otherRequestBox && otherRequestInput) {
-        if (selectedText === "อื่นๆ") {
+        if (isOtherRequestType(selectedText)) {
             otherRequestBox.style.display = "flex";
             otherRequestInput.required = true;
         } else {
@@ -413,7 +424,7 @@ function handleRequestTypeChange(select) {
         }
     }
     if (serverPermissionBox && serverNameInput && serverFolderInput && subFolderInput) {
-        if (selectedText === "ขอใช้สิทธิ์เก็บข้อมูล") {
+        if (isServerPermissionRequestType(selectedText)) {
             serverPermissionBox.style.display = "flex";
             serverNameInput.required = true;
             serverFolderInput.required = true;
@@ -432,36 +443,12 @@ function handleRequestTypeChange(select) {
     }
 }
 
-// ---------- Same‑section validation ----------
+// ---------- Same-section validation ----------
 function getSelectedRequestSection(select) {
     if (!select || !select.value) return null;
     var option = select.options[select.selectedIndex];
     if (!option) return null;
     return { id: option.dataset.secId || "", name: option.dataset.secName || "" };
-}
-
-function showRequestTypeAlert(message, title) {
-    var overlay = document.getElementById("requestTypeAlert");
-    var titleEl = document.getElementById("requestTypeAlertTitle");
-    var messageEl = document.getElementById("requestTypeAlertMessage");
-    if (!overlay || !messageEl) {
-        alert(message);
-        return;
-    }
-    if (titleEl) titleEl.textContent = title || "กรุณาตรวจสอบประเภทคำขอ";
-    messageEl.textContent = message;
-    overlay.classList.add("is-open");
-    overlay.style.display = "flex";
-    overlay.setAttribute("aria-hidden", "false");
-    document.getElementById("requestTypeAlertClose").focus();
-}
-
-function closeRequestTypeAlert() {
-    var overlay = document.getElementById("requestTypeAlert");
-    if (!overlay) return;
-    overlay.classList.remove("is-open");
-    overlay.style.display = "none";
-    overlay.setAttribute("aria-hidden", "true");
 }
 
 function hasCheckedPermission(item, selector) {
@@ -474,8 +461,10 @@ function validateSameRequestSection(showAlert, changedSelect) {
     var baseSection = null;
     var invalidTypeName = "";
     var invalidSectionName = "";
+    var invalidSelect = null;
     var selects = document.querySelectorAll('select[name="requestType[]"]');
     selects.forEach(function (select, index) {
+        select.setCustomValidity("");
         var section = getSelectedRequestSection(select);
         if (!section || !section.id) return;
         if (!baseSection) {
@@ -486,16 +475,21 @@ function validateSameRequestSection(showAlert, changedSelect) {
             var selectedOption = select.options[select.selectedIndex];
             invalidTypeName = selectedOption ? (selectedOption.dataset.typeName || selectedOption.text) : "";
             invalidSectionName = section.name || section.id;
+            invalidSelect = select;
         }
     });
     if (invalidTypeName) {
+        var message = invalidTypeName + " เป็นของกลุ่ม " + invalidSectionName + " กรุณาเลือกประเภทคำขอที่อยู่ในกลุ่มเดียวกัน";
+        var targetSelect = changedSelect || invalidSelect;
+        if (targetSelect) {
+            targetSelect.setCustomValidity(message);
+            targetSelect.reportValidity();
+        }
         if (changedSelect) {
             changedSelect.selectedIndex = 0;
             updateSelectColor(changedSelect);
             handleRequestTypeChange(changedSelect);
-        }
-        if (showAlert) {
-            showRequestTypeAlert(invalidTypeName + " เป็นของกลุ่ม " + invalidSectionName);
+            changedSelect.setCustomValidity("");
         }
         return false;
     }
@@ -615,7 +609,10 @@ if (calendarBtn) {
 
 const deadlineDisplayInput = document.getElementById("deadlineText");
 if (deadlineDisplayInput) {
-    deadlineDisplayInput.addEventListener("input", function () { formatDeadlineInput(this); });
+    deadlineDisplayInput.addEventListener("input", function () {
+        this.setCustomValidity("");
+        formatDeadlineInput(this);
+    });
 }
 
 const deadlinePickerInput = document.getElementById("deadlinePicker");
@@ -626,64 +623,58 @@ if (deadlinePickerInput) {
         var parts = this.value.split("-");
         if (parts.length === 3) {
             deadlineInput.value = parts[2] + "/" + parts[1] + "/" + parts[0];
+            deadlineInput.setCustomValidity("");
         }
     });
 }
 
-// ---------- Modal dismiss ----------
-document.getElementById("requestTypeAlertClose").addEventListener("click", closeRequestTypeAlert);
-document.getElementById("requestTypeAlert").addEventListener("click", function (e) {
-    if (e.target === this) closeRequestTypeAlert();
-});
-document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") closeRequestTypeAlert();
-});
-
 // ---------- Form submission validation ----------
 const requisitionForm = document.querySelector("form");
 if (requisitionForm) {
-    requisitionForm.setAttribute("novalidate", "novalidate");
     requisitionForm.addEventListener("submit", function (event) {
-        const missingFields = [];
-
-        const nameInput = document.getElementById("name");
-        const departmentInput = document.getElementById("department");  // hidden, but we can still check value
-        const phoneInput = document.getElementById("phone");
         const deadlineText = document.getElementById("deadlineText");
-        const requestTopicInput = document.getElementById("requestTopic");
+        if (deadlineText) deadlineText.setCustomValidity("");
 
-        if (!nameInput || nameInput.value.trim() === "") missingFields.push("ชื่อ-นามสกุล");
-        if (!departmentInput || departmentInput.value.trim() === "") missingFields.push("ฝ่าย");
-        if (!phoneInput || phoneInput.value.trim() === "") missingFields.push("เบอร์ต่อ");
-        if (!deadlineText || deadlineText.value.trim() === "") missingFields.push("Deadline");
-        if (!requestTopicInput || requestTopicInput.value.trim() === "") missingFields.push("ชื่อหัวข้อความต้องการ");
+        document.querySelectorAll(".request-item").forEach(function (item) {
+            var serverFolderInput = item.querySelector('input[name="serverFolder[]"]');
+            if (serverFolderInput) serverFolderInput.setCustomValidity("");
+            var subFolderInput = item.querySelector('input[name="subFolder[]"]');
+            if (subFolderInput) subFolderInput.setCustomValidity("");
+            item.querySelectorAll('select[name="requestType[]"]').forEach(function (select) {
+                select.setCustomValidity("");
+            });
+        });
 
+        if (!requisitionForm.checkValidity()) {
+            return;
+        }
+
+        var firstInvalidControl = null;
         document.querySelectorAll(".request-item").forEach(function (item, index) {
-            const requestNumber = index + 1;
-            const requestTypeInput = item.querySelector('select[name="requestType[]"]');
-            const objectiveInput = item.querySelector('textarea[name="objective[]"]');
-            const programNameInput = item.querySelector('input[name="programName[]"]');
-            const otherRequestInput = item.querySelector('input[name="otherRequest[]"]');
             const serverPermissionBox = item.querySelector(".server-permission-box");
-            const serverNameInput = item.querySelector('input[name="serverName[]"]');
             const serverFolderInput = item.querySelector('input[name="serverFolder[]"]');
             const subFolderInput = item.querySelector('input[name="subFolder[]"]');
-            if (!requestTypeInput || requestTypeInput.value.trim() === "") missingFields.push("ประเภทคำขอ ช่องคำขอที่ " + requestNumber);
-            if (!objectiveInput || objectiveInput.value.trim() === "") missingFields.push("วัตถุประสงค์ / ความต้องการ ช่องคำขอที่ " + requestNumber);
-            if (programNameInput && programNameInput.required && programNameInput.value.trim() === "") missingFields.push("ชื่อโปรแกรม ช่องคำขอที่ " + requestNumber);
-            if (otherRequestInput && otherRequestInput.required && otherRequestInput.value.trim() === "") missingFields.push("โปรดระบุ ช่องคำขอที่ " + requestNumber);
             if (serverPermissionBox && serverPermissionBox.style.display !== "none") {
-                if (!serverNameInput || serverNameInput.value.trim() === "") missingFields.push("Server ช่องคำขอที่ " + requestNumber);
-                if (!serverFolderInput || serverFolderInput.value.trim() === "") missingFields.push("Folder ช่องคำขอที่ " + requestNumber);
-                if (!hasCheckedPermission(item, 'input[name^="folderPermission"]')) missingFields.push("สิทธิ์ Folder ช่องคำขอที่ " + requestNumber);
-                if (subFolderInput && subFolderInput.value.trim() !== "" && !hasCheckedPermission(item, 'input[name^="subFolderPermission"]')) missingFields.push("สิทธิ์ Sub Folder ช่องคำขอที่ " + requestNumber);
-                if (subFolderInput && subFolderInput.value.trim() === "" && hasCheckedPermission(item, 'input[name^="subFolderPermission"]')) missingFields.push("Sub Folder ช่องคำขอที่ " + requestNumber);
+                if (serverFolderInput && !hasCheckedPermission(item, 'input[name^="folderPermission"]')) {
+                    serverFolderInput.setCustomValidity("กรุณาเลือกสิทธิ์ Folder อย่างน้อย 1 รายการ");
+                    firstInvalidControl = firstInvalidControl || serverFolderInput;
+                }
+                var hasSubFolderName = subFolderInput && subFolderInput.value.trim() !== "";
+                var hasSubFolderPermission = hasCheckedPermission(item, 'input[name^="subFolderPermission"]');
+                if (subFolderInput && hasSubFolderName && !hasSubFolderPermission) {
+                    subFolderInput.setCustomValidity("กรุณาเลือกสิทธิ์ Sub Folder อย่างน้อย 1 รายการ หรือเว้น Sub Folder ว่างไว้");
+                    firstInvalidControl = firstInvalidControl || subFolderInput;
+                }
+                if (subFolderInput && !hasSubFolderName && hasSubFolderPermission) {
+                    subFolderInput.setCustomValidity("กรุณาระบุชื่อ Sub Folder หรือยกเลิกการเลือกสิทธิ์ Sub Folder");
+                    firstInvalidControl = firstInvalidControl || subFolderInput;
+                }
             }
         });
 
-        if (missingFields.length > 0) {
+        if (firstInvalidControl) {
             event.preventDefault();
-            showRequestTypeAlert("กรุณากรอกข้อมูลในช่อง :\n- " + missingFields.join("\n- "), "กรุณากรอกข้อมูลให้ครบถ้วน");
+            firstInvalidControl.reportValidity();
             return;
         }
 
@@ -691,15 +682,18 @@ if (requisitionForm) {
         var parsedDeadline = parseDisplayDate(deadlineText.value);
         if (!parsedDeadline) {
             event.preventDefault();
-            showRequestTypeAlert("กรุณากรอก Deadline เป็นรูปแบบ dd/mm/yyyy");
+            deadlineText.setCustomValidity("กรุณากรอก Deadline เป็นรูปแบบ dd/mm/yyyy");
+            deadlineText.reportValidity();
             return;
         }
         var minIso = deadlineText.dataset.minIso;
         if (minIso && parsedDeadline.iso < minIso) {
             event.preventDefault();
-            showRequestTypeAlert("Deadline ต้องไม่ย้อนหลังจากวันที่ปัจจุบัน");
+            deadlineText.setCustomValidity("Deadline ต้องไม่ย้อนหลังจากวันที่ปัจจุบัน");
+            deadlineText.reportValidity();
             return;
         }
+        deadlineText.setCustomValidity("");
         document.getElementById("deadlineIso").value = parsedDeadline.iso;
 
         // Cross‑section check
@@ -709,18 +703,17 @@ if (requisitionForm) {
         }
 
         // Byte limit check
-        var overLimitFields = [];
+        var firstOverLimitField = null;
         document.querySelectorAll("[data-maxbytes]").forEach(function (el) {
             var max = parseInt(el.dataset.maxbytes);
             if (getByteLength(el.value) > max) {
-                var group = el.closest(".form-group");
-                var label = group && group.querySelector("label");
-                overLimitFields.push(label ? label.textContent.replace(/[*]/g, "").trim() : el.name);
+                el.setCustomValidity("ข้อมูลเกิน " + max + " bytes");
+                firstOverLimitField = firstOverLimitField || el;
             }
         });
-        if (overLimitFields.length > 0) {
+        if (firstOverLimitField) {
             event.preventDefault();
-            showRequestTypeAlert("ข้อมูลเกินขนาดที่กำหนด :\n- " + overLimitFields.join("\n- "), "กรุณาตรวจสอบข้อมูล");
+            firstOverLimitField.reportValidity();
             return;
         }
 

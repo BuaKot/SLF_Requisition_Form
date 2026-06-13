@@ -2,6 +2,7 @@
 <%@ page import="java.net.URLEncoder,java.text.SimpleDateFormat,java.sql.Timestamp,java.util.Collections,java.util.List,java.util.Map" %>
 <%@ page import="com.slf.model.ThirdPartyRequest" %>
 <%@ page import="com.slf.model.ThirdPartyWorkflowActionEntry" %>
+<%@ page import="com.slf.util.NavigationUtil" %>
 <%@ page import="com.slf.util.ThirdPartyAccessPolicy" %>
 <%!
     private String h(Object value) {
@@ -92,6 +93,7 @@
     boolean historyHasNextPage =
         Boolean.TRUE.equals(request.getAttribute("thirdPartyHistoryHasNextPage"));
     SimpleDateFormat stepTime = new SimpleDateFormat("dd/MM HH:mm");
+    NavigationUtil.BackLink thirdPartyHistoryBack = NavigationUtil.thirdPartyHistoryBack(request.getContextPath(), adminView);
     String[] timelineLabels = {
         "ส่งฟอร์ม", "หัวหน้ากลุ่มงาน", "ผอ.IT", "ดำเนินการ", "ตรวจรับ",
         "ยกเลิกสิทธิ์", "ตรวจทาน", "สรุปรายงาน", "รับรอง"
@@ -176,8 +178,8 @@
                 <h1>ประวัติคำขอผู้ให้บริการภายนอก</h1>
                 <p><%= adminView ? "แสดงคำขอทั้งหมดสำหรับผู้ดูแลระบบ" : "แสดงคำขอทั้งหมดที่ดูแลโดย Employee #678" %></p>
             </div>
-            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/<%= adminView ? "Admin.jsp" : "thirdParty/request/new" %>">
-                <i class="fa-solid fa-arrow-left"></i> กลับ
+            <a class="btn btn-secondary detail-back-button" href="<%= h(thirdPartyHistoryBack.getHref()) %>">
+                <i class="fa-solid fa-arrow-left"></i> <%= h(thirdPartyHistoryBack.getLabel()) %>
             </a>
         </section>
 

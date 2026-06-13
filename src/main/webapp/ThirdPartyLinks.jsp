@@ -4,6 +4,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import="com.slf.model.ThirdPartyFormLink" %>
 <%@ page import="com.slf.util.AuthUtil" %>
+<%@ page import="com.slf.util.NavigationUtil" %>
 <%!
     public String h(Object input) {
         if (input == null) return "";
@@ -45,6 +46,7 @@
     String status = (String) request.getAttribute("status");
     String publicBaseUrl = (String) request.getAttribute("publicBaseUrl");
     SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    NavigationUtil.BackLink adminBackLink = NavigationUtil.adminListPageBack(request.getContextPath());
 
     int activeCount = 0, usedCount = 0, expiredCount = 0, revokedCount = 0;
     for (ThirdPartyFormLink link : links) {
@@ -80,8 +82,8 @@
                 <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdParty/history">
                     <i class="fa-solid fa-clock-rotate-left"></i> ประวัติคำขอ
                 </a>
-                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/Admin.jsp">
-                    <i class="fa-solid fa-arrow-left"></i> กลับหน้า Admin
+                <a class="btn btn-secondary detail-back-button" href="<%= h(adminBackLink.getHref()) %>">
+                    <i class="fa-solid fa-arrow-left"></i> <%= h(adminBackLink.getLabel()) %>
                 </a>
             </div>
         </section>

@@ -10,6 +10,7 @@ public class ThirdPartyWorkflowActionEntry {
     private String actorType;
     private Integer actorEmpId;
     private String actorEmpName;
+    private String actorPosition;
     private String commentText;
     private Timestamp actedAt;
 
@@ -27,6 +28,8 @@ public class ThirdPartyWorkflowActionEntry {
     public void setActorEmpId(Integer actorEmpId) { this.actorEmpId = actorEmpId; }
     public String getActorEmpName() { return actorEmpName; }
     public void setActorEmpName(String actorEmpName) { this.actorEmpName = actorEmpName; }
+    public String getActorPosition() { return actorPosition; }
+    public void setActorPosition(String actorPosition) { this.actorPosition = actorPosition; }
     public String getCommentText() { return commentText; }
     public void setCommentText(String commentText) { this.commentText = commentText; }
     public Timestamp getActedAt() { return actedAt; }

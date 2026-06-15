@@ -15,20 +15,28 @@ public class ThirdPartyHistoryPageTest extends TestCase {
         assertTrue(page.contains("name=\"q\""));
         assertTrue(page.contains("history-pagination"));
         assertTrue(page.contains("thirdPartySubmission?id="));
-        assertTrue(page.contains("link-card-actions clean-actions history-card-top-actions"));
-        assertTrue(page.contains(".third-party-history-card{display:block}"));
-        assertFalse(page.contains("dateTime.format(item.getUpdatedAt())"));
-        assertFalse(page.contains("dateTime.format(item.getSubmittedAt())"));
-        assertTrue(page.contains("history-workflow-track"));
+        assertTrue(page.contains("history-filter-panel"));
+        assertTrue(page.contains("third-party-panel history-table-panel"));
+        assertTrue(page.contains("class=\"history-table\""));
+        assertTrue(page.contains("<th>สถานะ</th>"));
+        assertTrue(page.contains("<th>ผู้ขอใช้บริการ</th>"));
+        assertTrue(page.contains("<th>ขั้นตอน</th>"));
+        assertTrue(page.contains("<th>ผู้เกี่ยวข้อง</th>"));
+        assertTrue(page.contains("history-step-pill"));
+        assertTrue(page.contains("history-mini-timeline"));
+        assertTrue(page.contains("history-people-tooltip"));
+        assertTrue(page.contains("Math.min(2, people.size())"));
+        assertTrue(page.contains("item.getAccessStartDate()"));
+        assertTrue(page.contains("item.getAccessEndDate()"));
         assertTrue(page.contains("grid-template-columns:repeat(9,minmax(0,1fr))"));
-        assertFalse(page.contains("overflow-x:auto"));
-        assertFalse(page.contains("min-width:1080px"));
+        assertTrue(page.contains("overflow-x:auto"));
         assertTrue(page.contains("timelineActionTypes"));
         assertTrue(page.contains("SECTION_HEAD_SUBMITTED"));
         assertTrue(page.contains("FINAL_CERTIFIED"));
         assertTrue(page.contains("fa-hourglass-half"));
-        assertTrue(page.contains("รอผู้ขอภายนอกกรอกฟอร์ม"));
-        assertFalse(page.contains("รอผู้ให้บริการกรอก"));
+        assertTrue(page.contains("กำลังใช้งาน"));
+        assertTrue(page.contains("กำลังระงับสิทธิ์"));
+        assertTrue(page.contains("กำลังรับรอง"));
     }
 
     public void testHistoryServletScopesAdminAndOwnerViews() throws Exception {
@@ -43,7 +51,9 @@ public class ThirdPartyHistoryPageTest extends TestCase {
         assertTrue(servlet.contains("/third-party-history.jsp"));
         assertTrue(workflowDao.contains("a.REQUEST_ID IN ("));
         assertTrue(workflowDao.contains("a.ACTION_TYPE <> 'WORKFLOW_MIGRATED'"));
-        assertTrue(workflowDao.contains("SELECT a.REQUEST_ID, a.ACTION_TYPE, a.ACTED_AT"));
+        assertTrue(workflowDao.contains("SELECT a.REQUEST_ID, a.ACTION_TYPE, a.ACTOR_TYPE, a.ACTOR_EMPID"));
+        assertTrue(workflowDao.contains("ACTOR_EMPNAME"));
+        assertTrue(workflowDao.contains("ACTOR_POSITION"));
         assertFalse(workflowDao.contains(
             "SELECT a.REQUEST_ID, a.ACTION_TYPE, a.FROM_STATUS, a.TO_STATUS"));
     }
@@ -53,6 +63,7 @@ public class ThirdPartyHistoryPageTest extends TestCase {
         assertTrue(requestDao.contains("OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"));
         assertTrue(requestDao.contains("mapHistoryRequest(rs)"));
         assertTrue(requestDao.contains("TO_CHAR(r.REQUEST_ID) LIKE ?"));
+        assertTrue(requestDao.contains("r.ACCESS_START_DATE, r.ACCESS_END_DATE"));
         String historyMethod = requestDao.substring(
             requestDao.indexOf("public List<ThirdPartyRequest> findHistory(Integer ownerEmpId, String category"),
             requestDao.indexOf("public List<ThirdPartyRequest> findByStatus"));

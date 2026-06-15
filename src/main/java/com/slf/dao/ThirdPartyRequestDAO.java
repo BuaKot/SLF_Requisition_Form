@@ -352,6 +352,9 @@ public class ThirdPartyRequestDAO {
     }
 
     private static Date getBangkokDate(ResultSet rs, String columnLabel) throws SQLException {
-        return rs.getDate(columnLabel);
+        Date value = rs.getDate(columnLabel);
+        return value != null && value.toLocalDate().getYear() >= 2500
+            ? Date.valueOf(value.toLocalDate().minusYears(543))
+            : value;
     }
 }

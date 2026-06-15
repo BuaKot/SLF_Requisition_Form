@@ -28,6 +28,13 @@ public class ThirdPartySubmitServletTest extends TestCase {
         assertFalse(ThirdPartySubmitServlet.isValidThaiNationalId("1101700203451"));
     }
 
+    public void testNormalizesBuddhistEraInputDate() {
+        assertEquals("2026-06-12",
+            ThirdPartySubmitServlet.parseDate("2569-06-12", "date").toString());
+        assertEquals("2026-06-12",
+            ThirdPartySubmitServlet.parseDate("2026-06-12", "date").toString());
+    }
+
     private static ThirdPartyAccessRequest validItem() {
         ThirdPartyAccessRequest item = new ThirdPartyAccessRequest();
         item.setDisplayOrder(1);

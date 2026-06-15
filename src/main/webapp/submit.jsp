@@ -62,8 +62,6 @@
     <!-- TITLE -->
     <section class="queue-page-header" aria-labelledby="queuePageTitle">
         <div class="queue-header-copy">
-            <h1 id="queuePageTitle">ฟอร์มที่ส่งแล้ว</h1>
-            <p>ตรวจสอบสถานะใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ ติดตามขั้นตอนอนุมัติ และดำเนินการยืนยันผลตรวจรับ</p>
         </div>
     </section>
     <% if (alreadyProcessed) { %>

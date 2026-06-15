@@ -3309,3 +3309,890 @@ textarea:focus-visible,
     font-size: var(--slf-font-size-md);
     color: var(--slf-color-text);
 }
+
+/* =========================================================
+   Premium Enterprise Index/Form Selection Page
+   Scoped polish for index.jsp
+   ========================================================= */
+
+.enterprise-index-shell {
+    --index-navy: #073a67;
+    --index-blue: #1f5f9f;
+    --index-blue-soft: #eef6ff;
+    --index-gold: #b68a35;
+    --index-gold-soft: #fff8ea;
+    --index-green: #2f7650;
+    --index-green-soft: #f0f8f3;
+    --index-ink: #142033;
+    --index-muted: #5d6d80;
+    --index-border: #d7e4f1;
+    --index-surface: #ffffff;
+    --index-page: #f4f8fc;
+    --index-radius-md: 14px;
+    --index-radius-lg: 18px;
+    --index-shadow-sm: 0 7px 20px rgba(11, 52, 88, 0.075);
+    --index-shadow-md: 0 16px 38px rgba(11, 52, 88, 0.14);
+    --index-ease: 180ms ease;
+    background: linear-gradient(180deg, #fbfdff 0%, #f4f8fc 48%, #f1f6fb 100%);
+}
+
+.enterprise-index-main {
+    padding-bottom: 28px;
+}
+
+.enterprise-index-main .enterprise-hero.index-banner {
+    min-height: auto;
+    padding: clamp(22px, 2.5vw, 34px) max(clamp(24px, 5vw, 72px), calc((100vw - 1500px) / 2 + 24px));
+    background:
+        linear-gradient(135deg, rgba(7, 58, 103, 0.98) 0%, rgba(15, 86, 149, 0.96) 58%, rgba(5, 50, 91, 0.98) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.12), 0 10px 30px rgba(11, 52, 88, 0.10);
+}
+
+.enterprise-index-main .enterprise-hero.index-banner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.09) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(120deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0) 42%);
+    background-size: 54px 54px, 54px 54px, auto;
+    opacity: 0.22;
+    pointer-events: none;
+}
+
+.enterprise-index-main .enterprise-hero.index-banner::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--index-gold), rgba(255, 255, 255, 0.36), transparent 74%);
+    opacity: 0.72;
+    pointer-events: none;
+}
+
+.enterprise-index-main .enterprise-hero-copy {
+    max-width: 1060px;
+}
+
+.enterprise-index-main .enterprise-hero.index-banner .enterprise-eyebrow {
+    margin-bottom: 4px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 13px;
+    line-height: 1.2;
+}
+
+.enterprise-index-main .enterprise-hero.index-banner h1 {
+    font-size: clamp(30px, 2.9vw, 42px);
+    line-height: 1.08;
+    font-weight: 900;
+    color: #ffffff;
+}
+
+.enterprise-index-main .enterprise-hero.index-banner .enterprise-hero-lead {
+    max-width: 900px;
+    margin-top: 7px;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: clamp(15px, 1.35vw, 18px);
+    line-height: 1.42;
+}
+
+.enterprise-index-main .enterprise-menu-section {
+    width: min(1500px, calc(100% - 48px));
+    margin-top: 14px;
+    padding: clamp(18px, 2vw, 26px);
+    border-color: var(--index-border);
+    border-radius: var(--index-radius-lg);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, rgba(249, 252, 255, 0.99) 100%);
+    box-shadow: var(--index-shadow-sm);
+}
+
+.enterprise-index-main .enterprise-section-head {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e4edf6;
+}
+
+.enterprise-index-main .enterprise-section-head h2 {
+    position: relative;
+    color: var(--index-navy);
+    font-size: clamp(23px, 1.9vw, 30px);
+    font-weight: 900;
+}
+
+.enterprise-index-main .enterprise-section-head h2::after {
+    content: "";
+    display: block;
+    width: 72px;
+    height: 3px;
+    margin-top: 10px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--index-blue), var(--index-gold));
+}
+
+.enterprise-index-main .index-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.enterprise-index-main .index-form-card {
+    position: relative;
+    min-height: 300px;
+    gap: 16px;
+    padding: 24px;
+    border-color: var(--index-border);
+    border-radius: var(--index-radius-lg);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, rgba(248, 252, 255, 0.98) 100%);
+    box-shadow: var(--index-shadow-sm);
+    overflow: hidden;
+    transition:
+        transform var(--index-ease),
+        box-shadow var(--index-ease),
+        border-color var(--index-ease),
+        background var(--index-ease);
+}
+
+.enterprise-index-main .index-form-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 5px;
+    background: linear-gradient(180deg, var(--index-blue), var(--index-gold));
+    opacity: 0.78;
+}
+
+.enterprise-index-main .index-form-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 38%),
+        linear-gradient(180deg, rgba(31, 95, 159, 0.035), rgba(255, 255, 255, 0) 58%);
+}
+
+.enterprise-index-main .index-form-card-link:hover,
+.enterprise-index-main .index-form-card-link:focus-visible {
+    transform: translateY(-2px);
+    border-color: rgba(31, 95, 159, 0.45);
+    background:
+        linear-gradient(180deg, #ffffff 0%, #f3f9ff 100%);
+    box-shadow: var(--index-shadow-md);
+}
+
+.enterprise-index-main .index-form-card-link:focus-visible {
+    outline: 3px solid rgba(31, 95, 159, 0.22);
+    outline-offset: 3px;
+}
+
+.enterprise-index-main .form-type-icon {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background:
+        linear-gradient(180deg, #f8fbff 0%, #e9f4ff 100%);
+    color: var(--index-blue);
+    border: 1px solid #d9e8f6;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 5px 14px rgba(11, 52, 88, 0.07);
+    font-size: 23px;
+    position: relative;
+    z-index: 1;
+}
+
+.enterprise-index-main .index-form-card-body {
+    position: relative;
+    z-index: 1;
+    gap: 11px;
+}
+
+.enterprise-index-main .form-status {
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    border: 1px solid #d9e5f1;
+    background: #f6f9fc;
+    color: var(--index-muted);
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.enterprise-index-main .form-status.available {
+    border-color: #c8e1d1;
+    background: var(--index-green-soft);
+    color: var(--index-green);
+}
+
+.enterprise-index-main .index-form-card h3 {
+    color: var(--index-ink);
+    font-size: clamp(24px, 2vw, 31px);
+    line-height: 1.16;
+    font-weight: 900;
+}
+
+.enterprise-index-main .index-form-card p {
+    max-width: 620px;
+    color: var(--index-muted);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.enterprise-index-main .form-card-meta {
+    display: grid;
+    gap: 7px;
+    margin: 2px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.enterprise-index-main .form-card-meta li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: #405166;
+    font-size: 14px;
+    line-height: 1.35;
+    font-weight: 800;
+}
+
+.enterprise-index-main .form-card-meta i {
+    width: 19px;
+    height: 19px;
+    display: inline-grid;
+    place-items: center;
+    margin-top: 1px;
+    border-radius: 7px;
+    background: var(--index-gold-soft);
+    color: #9a6b18;
+    font-size: 10px;
+    flex: 0 0 auto;
+}
+
+.enterprise-index-main .form-type-action {
+    position: relative;
+    z-index: 1;
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: auto;
+    padding: 9px 15px;
+    border-radius: 12px;
+    border: 1px solid #c9dced;
+    background: linear-gradient(180deg, var(--index-blue) 0%, var(--index-navy) 100%);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 900;
+    text-align: center;
+    box-shadow: 0 6px 16px rgba(7, 58, 103, 0.16);
+    transition:
+        transform var(--index-ease),
+        box-shadow var(--index-ease),
+        background var(--index-ease),
+        border-color var(--index-ease);
+}
+
+.enterprise-index-main .form-type-action::after {
+    content: "\f061";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 12px;
+}
+
+.enterprise-index-main .index-form-card-link:hover .form-type-action {
+    transform: translateY(-1px);
+    border-color: rgba(182, 138, 53, 0.44);
+    box-shadow: 0 9px 20px rgba(7, 58, 103, 0.20);
+}
+
+.enterprise-index-main .form-type-action.disabled {
+    background: #edf2f7;
+    color: #718096;
+    border-color: #dbe5ef;
+    box-shadow: none;
+}
+
+.enterprise-index-main .form-type-action.disabled::after {
+    content: "";
+}
+
+@media (max-width: 980px) {
+    .enterprise-index-main .enterprise-hero.index-banner {
+        padding: 22px 22px;
+    }
+
+    .enterprise-index-main .enterprise-menu-section {
+        width: calc(100% - 32px);
+        margin-top: 12px;
+    }
+
+    .enterprise-index-main .index-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .enterprise-index-main .index-form-card {
+        min-height: 260px;
+    }
+}
+
+@media (max-width: 640px) {
+    .enterprise-index-main {
+        padding-bottom: 18px;
+    }
+
+    .enterprise-index-main .enterprise-hero.index-banner {
+        padding: 18px 16px;
+    }
+
+    .enterprise-index-main .enterprise-hero.index-banner h1 {
+        font-size: 28px;
+    }
+
+    .enterprise-index-main .enterprise-hero.index-banner .enterprise-hero-lead {
+        font-size: 14px;
+    }
+
+    .enterprise-index-main .enterprise-menu-section {
+        width: calc(100% - 24px);
+        padding: 14px;
+    }
+
+    .enterprise-index-main .enterprise-section-head {
+        margin-bottom: 12px;
+    }
+
+    .enterprise-index-main .index-form-card {
+        min-height: 0;
+        padding: 18px;
+    }
+
+    .enterprise-index-main .form-type-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        font-size: 20px;
+    }
+
+    .enterprise-index-main .index-form-card h3 {
+        font-size: 22px;
+    }
+
+    .enterprise-index-main .form-type-action {
+        width: 100%;
+        min-height: 44px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .enterprise-index-main .index-form-card,
+    .enterprise-index-main .form-type-action {
+        transition: none;
+    }
+}
+
+/* =========================================================
+   Mature Enterprise Landing Refinement
+   Keeps wave identity, reduces marketing feel
+   ========================================================= */
+
+.enterprise-index-main .enterprise-hero.index-banner {
+    padding-top: clamp(18px, 2.1vw, 29px);
+    padding-bottom: clamp(18px, 2.1vw, 29px);
+    background:
+        linear-gradient(135deg, #073a67 0%, #0a4779 52%, #07365f 100%);
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.10), 0 6px 22px rgba(11, 52, 88, 0.10);
+}
+
+.enterprise-index-main .enterprise-hero.index-banner::before {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 300'%3E%3Cpath d='M0 178C180 124 320 248 600 180C820 128 980 215 1200 150' stroke='rgba(255,255,255,0.11)' stroke-width='2' fill='none'/%3E%3Cpath d='M0 228C250 174 420 288 700 220C930 168 1080 252 1200 210' stroke='rgba(255,255,255,0.07)' stroke-width='2' fill='none'/%3E%3C/svg%3E") center/cover no-repeat,
+        linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-size: cover, 64px 64px, 64px 64px;
+    opacity: 0.42;
+}
+
+.enterprise-index-main .enterprise-hero.index-banner::after {
+    height: 2px;
+    background: linear-gradient(90deg, rgba(182, 138, 53, 0.86), rgba(255, 255, 255, 0.26), transparent 68%);
+    opacity: 0.58;
+}
+
+.enterprise-index-main .enterprise-hero.index-banner .enterprise-eyebrow {
+    margin-bottom: 3px;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 12px;
+}
+
+.enterprise-index-main .enterprise-hero.index-banner h1 {
+    font-size: clamp(28px, 2.45vw, 36px);
+    line-height: 1.1;
+    letter-spacing: 0;
+}
+
+.enterprise-index-main .enterprise-hero.index-banner .enterprise-hero-lead {
+    max-width: 760px;
+    margin-top: 5px;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: clamp(14px, 1.15vw, 16px);
+    line-height: 1.36;
+}
+
+.enterprise-index-main .enterprise-menu-section {
+    margin-top: 12px;
+}
+
+.enterprise-index-main .enterprise-section-head {
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+}
+
+.enterprise-index-main .enterprise-section-head h2 {
+    font-size: clamp(22px, 1.7vw, 27px);
+}
+
+.enterprise-index-main .enterprise-section-head h2::after {
+    width: 58px;
+    height: 2px;
+    margin-top: 8px;
+}
+
+.enterprise-index-main .index-form-card {
+    min-height: 230px;
+    padding: 22px;
+    gap: 14px;
+}
+
+.enterprise-index-main .form-type-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 15px;
+    font-size: 21px;
+}
+
+.enterprise-index-main .index-form-card-body {
+    gap: 9px;
+}
+
+.enterprise-index-main .form-status {
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+.enterprise-index-main .index-form-card h3 {
+    font-size: clamp(23px, 1.75vw, 28px);
+    line-height: 1.15;
+}
+
+.enterprise-index-main .index-form-card p {
+    max-width: 560px;
+    font-size: 15px;
+    line-height: 1.42;
+}
+
+.enterprise-index-main .form-card-meta {
+    display: none;
+}
+
+.enterprise-index-main .form-type-action {
+    min-height: 40px;
+    width: fit-content;
+    min-width: 154px;
+    padding: 8px 14px;
+    font-size: 14px;
+}
+
+.enterprise-index-main .index-form-card-link:hover,
+.enterprise-index-main .index-form-card-link:focus-visible {
+    transform: translateY(-1.5px);
+}
+
+@media (max-width: 980px) {
+    .enterprise-index-main .index-form-card {
+        min-height: 210px;
+    }
+}
+
+@media (max-width: 640px) {
+    .enterprise-index-main .enterprise-hero.index-banner {
+        padding-top: 16px;
+        padding-bottom: 16px;
+    }
+
+    .enterprise-index-main .enterprise-hero.index-banner h1 {
+        font-size: 26px;
+    }
+
+    .enterprise-index-main .index-form-card {
+        padding: 17px;
+    }
+}
+
+/* =========================================================
+   IT Requisition Detail Page Alignment
+   Matches latest index.jsp enterprise landing style
+   ========================================================= */
+
+.it-requisition-detail-page .it-requisition-banner {
+    padding-top: clamp(18px, 2.1vw, 29px);
+    padding-bottom: clamp(18px, 2.1vw, 29px);
+    background:
+        linear-gradient(135deg, #073a67 0%, #0a4779 52%, #07365f 100%);
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.10), 0 6px 22px rgba(11, 52, 88, 0.10);
+}
+
+.it-requisition-detail-page .it-requisition-banner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 300'%3E%3Cpath d='M0 178C180 124 320 248 600 180C820 128 980 215 1200 150' stroke='rgba(255,255,255,0.11)' stroke-width='2' fill='none'/%3E%3Cpath d='M0 228C250 174 420 288 700 220C930 168 1080 252 1200 210' stroke='rgba(255,255,255,0.07)' stroke-width='2' fill='none'/%3E%3C/svg%3E") center/cover no-repeat,
+        linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-size: cover, 64px 64px, 64px 64px;
+    opacity: 0.42;
+    pointer-events: none;
+}
+
+.it-requisition-detail-page .it-requisition-banner::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(30, 94, 168, 0.86), rgba(255, 255, 255, 0.24), transparent 68%);
+    opacity: 0.62;
+    pointer-events: none;
+}
+
+.it-requisition-detail-page .it-requisition-banner .enterprise-eyebrow {
+    margin-bottom: 3px;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 12px;
+}
+
+.it-requisition-detail-page .it-requisition-banner h1 {
+    color: #ffffff;
+    font-size: clamp(28px, 2.45vw, 36px);
+    line-height: 1.1;
+    font-weight: 900;
+}
+
+.it-requisition-detail-page .it-requisition-banner .enterprise-hero-lead {
+    max-width: 760px;
+    margin-top: 5px;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: clamp(14px, 1.15vw, 16px);
+    line-height: 1.36;
+}
+
+.it-requisition-detail-page .it-detail-back-row {
+    width: min(1500px, calc(100% - 48px));
+    margin-top: 12px;
+    margin-bottom: 0;
+}
+
+.it-requisition-detail-page .detail-back-button {
+    min-height: 38px;
+    border-color: #d7e4f1;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    color: #073a67;
+    box-shadow: 0 5px 16px rgba(11, 52, 88, 0.065);
+}
+
+.it-requisition-detail-page .detail-back-button:hover {
+    border-color: rgba(30, 94, 168, 0.42);
+    background: #eef6ff;
+    box-shadow: 0 8px 20px rgba(11, 52, 88, 0.10);
+}
+
+.it-requisition-detail-page .it-action-section {
+    width: min(1500px, calc(100% - 48px));
+    margin-top: 12px;
+    border-color: #d7e4f1;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, rgba(249, 252, 255, 0.99) 100%);
+    box-shadow: 0 7px 20px rgba(11, 52, 88, 0.075);
+}
+
+.it-requisition-detail-page .it-action-section .enterprise-section-head {
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e4edf6;
+}
+
+.it-requisition-detail-page .it-action-section .enterprise-section-head h2 {
+    color: #073a67;
+    font-size: clamp(22px, 1.7vw, 27px);
+    font-weight: 900;
+}
+
+.it-requisition-detail-page .it-action-section .enterprise-section-head h2::after {
+    content: "";
+    display: block;
+    width: 58px;
+    height: 2px;
+    margin-top: 8px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #1e5ea8, #0d4b8f);
+}
+
+.it-requisition-detail-page .enterprise-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 0 !important;
+}
+
+.it-requisition-detail-page .it-action-card {
+    min-height: 210px;
+    padding: 22px;
+    border-color: #d7e4f1;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, rgba(248, 252, 255, 0.98) 100%);
+    color: #142033;
+    box-shadow: 0 7px 20px rgba(11, 52, 88, 0.075);
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease,
+        border-color 180ms ease,
+        background 180ms ease;
+}
+
+.it-requisition-detail-page .it-action-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 5px;
+    border-radius: 18px 0 0 18px;
+    background: linear-gradient(180deg, #1e5ea8 0%, #0d4b8f 100%);
+    opacity: 0.78;
+}
+
+.it-requisition-detail-page .it-action-card:hover,
+.it-requisition-detail-page .it-action-card:focus-visible {
+    transform: translateY(-1.5px);
+    border-color: rgba(30, 94, 168, 0.45);
+    background: linear-gradient(180deg, #ffffff 0%, #f3f9ff 100%);
+    box-shadow: 0 16px 38px rgba(11, 52, 88, 0.14);
+}
+
+.it-requisition-detail-page .it-action-card:focus-visible {
+    outline: 3px solid rgba(30, 94, 168, 0.22);
+    outline-offset: 3px;
+}
+
+.it-requisition-detail-page .it-action-card .enterprise-card-icon {
+    width: 54px;
+    height: 54px;
+    border: 1px solid #d9e8f6;
+    border-radius: 15px;
+    background: linear-gradient(180deg, #f8fbff 0%, #e9f4ff 100%);
+    color: #1e5ea8;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 5px 14px rgba(11, 52, 88, 0.07);
+}
+
+.it-requisition-detail-page .it-action-card .enterprise-card-content {
+    gap: 8px;
+}
+
+.it-requisition-detail-page .it-action-card .enterprise-card-content strong {
+    color: #142033;
+    font-size: clamp(23px, 1.75vw, 28px);
+    line-height: 1.15;
+    font-weight: 900;
+}
+
+.it-requisition-detail-page .it-action-card .enterprise-card-content small {
+    max-width: 560px;
+    color: #5d6d80;
+    font-size: 15px;
+    line-height: 1.42;
+}
+
+.it-requisition-detail-page .it-action-card .enterprise-card-arrow {
+    background: linear-gradient(180deg, #1e5ea8 0%, #0d4b8f 100%);
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(7, 58, 103, 0.16);
+}
+
+.it-requisition-detail-page .it-action-card:hover .enterprise-card-arrow {
+    transform: translateX(2px);
+}
+
+@media (max-width: 980px) {
+    .it-requisition-detail-page .it-detail-back-row,
+    .it-requisition-detail-page .it-action-section {
+        width: calc(100% - 32px);
+    }
+
+    .it-requisition-detail-page .enterprise-action-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .it-requisition-detail-page .it-action-card {
+        min-height: 190px;
+    }
+}
+
+@media (max-width: 640px) {
+    .it-requisition-detail-page .it-requisition-banner {
+        padding-top: 16px;
+        padding-bottom: 16px;
+    }
+
+    .it-requisition-detail-page .it-requisition-banner h1 {
+        font-size: 26px;
+    }
+
+    .it-requisition-detail-page .it-detail-back-row,
+    .it-requisition-detail-page .it-action-section {
+        width: calc(100% - 24px);
+    }
+
+    .it-requisition-detail-page .detail-back-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .it-requisition-detail-page .it-action-card {
+        min-height: 0;
+        padding: 17px;
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .it-requisition-detail-page .it-action-card .enterprise-card-arrow {
+        grid-column: 1 / -1;
+        width: 100%;
+        height: 38px;
+        border-radius: 12px;
+    }
+}
+
+/* SLF navy accent correction */
+.enterprise-index-main .enterprise-section-head h2::after {
+    background: linear-gradient(90deg, #1e5ea8, #0d4b8f);
+}
+
+.enterprise-index-main .index-form-card::before {
+    background: linear-gradient(180deg, #1e5ea8 0%, #0d4b8f 100%);
+}
+
+/* =========================================================
+   IT Requisition Final Polish
+   Clean navy accent, compact cards, softer action arrow
+   ========================================================= */
+
+.it-requisition-detail-page .it-action-section .enterprise-eyebrow {
+    margin-bottom: 3px;
+    color: #5d6d80;
+    font-size: 12px;
+}
+
+.it-requisition-detail-page .it-action-section .enterprise-section-head {
+    margin-bottom: 12px;
+    padding-bottom: 9px;
+}
+
+.it-requisition-detail-page .it-action-section .enterprise-section-head h2 {
+    font-size: clamp(21px, 1.55vw, 25px);
+    line-height: 1.14;
+}
+
+.it-requisition-detail-page .it-action-card {
+    min-height: 176px;
+    grid-template-columns: 50px minmax(0, 1fr) 32px;
+    gap: 14px;
+    align-items: center;
+    padding: 18px 18px 18px 22px;
+    overflow: hidden;
+    border-color: #d9e6f2;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.it-requisition-detail-page .it-action-card::before {
+    inset: 0 auto 0 0;
+    width: 4px;
+    border-radius: 18px 0 0 18px;
+    background: #0d4b8f;
+    opacity: 1;
+}
+
+.it-requisition-detail-page .it-action-card:hover,
+.it-requisition-detail-page .it-action-card:focus-visible {
+    transform: translateY(-1px);
+    border-color: rgba(13, 75, 143, 0.42);
+    box-shadow: 0 12px 28px rgba(11, 52, 88, 0.12);
+}
+
+.it-requisition-detail-page .it-action-card .enterprise-card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+}
+
+.it-requisition-detail-page .it-action-card .enterprise-card-content {
+    gap: 6px;
+}
+
+.it-requisition-detail-page .it-action-card .enterprise-card-content strong {
+    font-size: clamp(22px, 1.55vw, 25px);
+    line-height: 1.14;
+}
+
+.it-requisition-detail-page .it-action-card .enterprise-card-content small {
+    font-size: 14px;
+    line-height: 1.34;
+}
+
+.it-requisition-detail-page .it-action-card .enterprise-card-arrow {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #d5e4f3;
+    background: #eef6ff;
+    color: #0d4b8f;
+    box-shadow: none;
+}
+
+.it-requisition-detail-page .it-action-card:hover .enterprise-card-arrow {
+    transform: translateX(1px);
+    border-color: rgba(13, 75, 143, 0.34);
+    background: #e5f1ff;
+    color: #073a67;
+}
+
+@media (max-width: 980px) {
+    .it-requisition-detail-page .it-action-card {
+        min-height: 160px;
+    }
+}
+
+@media (max-width: 640px) {
+    .it-requisition-detail-page .it-action-card {
+        grid-template-columns: 46px minmax(0, 1fr);
+        gap: 12px;
+        padding: 16px 16px 16px 20px;
+    }
+
+    .it-requisition-detail-page .it-action-card .enterprise-card-icon {
+        width: 46px;
+        height: 46px;
+    }
+
+    .it-requisition-detail-page .it-action-card .enterprise-card-arrow {
+        grid-column: 1 / -1;
+        width: 100%;
+        height: 36px;
+    }
+}

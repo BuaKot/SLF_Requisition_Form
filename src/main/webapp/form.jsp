@@ -15,9 +15,9 @@
     <title>ใบขอให้ดำเนินการ</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
 </head>
 
 <body>
@@ -29,10 +29,11 @@
     <!-- Sticky Bar with user info -->
     <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
-    <header class="form-page-header page-header">
-        <div>
-            <h1 class="page-title">ใบขอให้ดำเนินการ / Requisition Form</h1>
-            <p class="page-subtitle">ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</p>
+    <header class="form-page-header page-header" aria-labelledby="itRequestFormTitle">
+        <div class="form-hero-content">
+            <p class="page-kicker">IT Requisition Form</p>
+            <h1 class="page-title" id="itRequestFormTitle">ใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</h1>
+            <p class="page-subtitle">กรอกข้อมูลคำขอใหม่ ตรวจสอบรายละเอียด และส่งเข้าสู่กระบวนการอนุมัติ</p>
         </div>
     </header>
 
@@ -48,6 +49,7 @@
 
             <section class="form-section applicant-information panel" aria-labelledby="applicantInfoTitle">
                 <div class="section-heading">
+                    <span class="section-icon" aria-hidden="true"><i class="fa-solid fa-user-check"></i></span>
                     <div>
                         <h2 id="applicantInfoTitle">ข้อมูลผู้ขอ</h2>
                         <p>ข้อมูลผู้ใช้ถูกดึงจากระบบและล็อกไว้เพื่อป้องกันการส่งคำขอผิดหน่วยงาน</p>
@@ -92,6 +94,7 @@
 
             <section class="form-section request-information panel" aria-labelledby="requestInfoTitle">
                 <div class="section-heading">
+                    <span class="section-icon" aria-hidden="true"><i class="fa-solid fa-clipboard-list"></i></span>
                     <div>
                         <h2 id="requestInfoTitle">ข้อมูลคำขอ</h2>
                         <p>ระบุหัวข้อและกำหนดวันที่ต้องการใช้งาน เพื่อช่วยให้ทีม IT จัดลำดับงานได้ถูกต้อง</p>
@@ -120,6 +123,7 @@
 
             <section class="form-section requested-items panel" aria-labelledby="requestedItemsTitle">
                 <div class="section-heading">
+                    <span class="section-icon" aria-hidden="true"><i class="fa-solid fa-layer-group"></i></span>
                     <div>
                         <h2 id="requestedItemsTitle">รายการคำขอ</h2>
                         <p>เพิ่มรายการได้มากกว่าหนึ่งรายการ โดยควรอยู่ในกลุ่มผู้รับผิดชอบเดียวกัน</p>
@@ -228,7 +232,7 @@
                 <a class="btn btn-reject detail-back-button" href="<%= SecurityUtil.escapeHtml(formBackLink.getHref()) %>">
                     <i class="fa-solid fa-arrow-left"></i> <%= SecurityUtil.escapeHtml(formBackLink.getLabel()) %>
                 </a>
-                <button type="submit" class="btn btn-approve" id="submitBtn">ยืนยันการส่ง</button>
+                <button type="submit" class="btn btn-approve" id="submitBtn">ยืนยันการส่งคำขอ</button>
             </div>
         </form>
     </main>

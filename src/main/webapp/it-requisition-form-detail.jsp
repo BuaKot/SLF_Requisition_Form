@@ -1,4 +1,4 @@
-<%@ page isELIgnored="false" %>
+﻿<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.slf.util.AuthUtil, com.slf.util.NavigationUtil" %>
 <%
@@ -30,63 +30,59 @@
 <%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 <div id="main" class="enterprise-index-shell">
     <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
-    <main class="enterprise-index-main">
-        <section class="enterprise-hero index-banner it-requisition-banner">
+    <main class="enterprise-index-main it-requisition-detail-page">
+        <section class="enterprise-hero index-banner it-requisition-banner" aria-labelledby="itRequisitionTitle">
             <div class="enterprise-hero-copy index-banner-inner">
-                <h1>ใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</h1>
+                <p class="enterprise-eyebrow">IT Service Management Portal</p>
+                <h1 id="itRequisitionTitle">ใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</h1>
                 <p class="enterprise-hero-lead">
-                    ระบบศูนย์กลางสำหรับยื่นแบบฟอร์มขอสร้างคำขอด้านระบบสารสนเทศ อุปกรณ์ฮาร์ดแวร์ สิทธิ์การใช้งานซอฟต์แวร์ และงานบริการด้านเทคนิค IT ผ่านกระบวนการ Workflow อนุมัติขององค์กร
+                    เลือกการดำเนินการสำหรับใบ Request ฝ่ายเทคโนโลยีสารสนเทศ
                 </p>
             </div>
         </section>
 
-        
         <div class="detail-action-bar it-detail-back-row">
-            <a class="detail-back-button" href="<%= listBackLink.getHref() %>">
-                <i class="fa-solid fa-arrow-left"></i> <%= listBackLink.getLabel() %>
+            <a class="detail-back-button" href="${pageContext.request.contextPath}/index.jsp">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span><%= listBackLink.getLabel() %></span>
             </a>
         </div>
 
-        <section class="enterprise-menu-section">
+        <section class="enterprise-menu-section it-action-section" aria-label="รายการดำเนินการที่สามารถเลือกได้">
             <div class="enterprise-section-head">
-                <div class="enterprise-card-content">
-                    <strong style="color: var(--slf-color-primary); font-size: var(--slf-font-size-xl); font-family: var(--slf-font-family);">
-                        <i class="fa-solid fa-layer-group" style="color: var(--slf-color-accent); margin-right: var(--slf-space-2);"></i> รายการดำเนินการที่สามารถเลือกได้
-                    </strong>
-                    <small style="color: var(--slf-color-text-muted); font-family: var(--slf-font-family);">เลือกปฏิบัติการตามสิทธิ์การใช้งานของระบบปัจจุบันของคุณ</small>
+                <div>
+                    <h2>รายการดำเนินการที่สามารถเลือกได้</h2>
                 </div>
             </div>
 
-            <div class="enterprise-action-grid <%= approvalOnlyRole ? "approval-only-actions" : "" %>" style="margin-top: var(--slf-space-4);">
-                
+            <div class="enterprise-action-grid <%= approvalOnlyRole ? "approval-only-actions" : "" %>">
                 <% if (!approvalOnlyRole) { %>
-                <a class="enterprise-action-card primary" href="${pageContext.request.contextPath}/forms/select?code=IT_REQUISITION_REQUEST">
+                <a class="enterprise-action-card it-action-card" href="${pageContext.request.contextPath}/forms/select?code=IT_REQUISITION_REQUEST">
                     <div class="enterprise-card-icon">
                         <i class="fa-solid fa-file-circle-plus"></i>
                     </div>
                     <div class="enterprise-card-content">
                         <strong>สร้างฟอร์มใหม่</strong>
-                        <small>ลงทะเบียนยื่นใบคำขอด้านเทคโนโลยีสารสนเทศชิ้นใหม่</small>
+                        <small>เริ่มสร้างใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</small>
                     </div>
                     <div class="enterprise-card-arrow">
                         <i class="fa-solid fa-chevron-right"></i>
                     </div>
                 </a>
 
-                <a class="enterprise-action-card" href="${pageContext.request.contextPath}/submit">
+                <a class="enterprise-action-card it-action-card" href="${pageContext.request.contextPath}/submit">
                     <div class="enterprise-card-icon">
                         <i class="fa-solid fa-paper-plane"></i>
                     </div>
                     <div class="enterprise-card-content">
                         <strong>ดูฟอร์มที่ส่งแล้ว</strong>
-                        <small>ตรวจสอบรายละเอียดและสถานะของใบคำขอล่าสุดของคุณ</small>
+                        <small>ตรวจสอบรายละเอียดและสถานะล่าสุดของใบคำขอ</small>
                     </div>
                     <div class="enterprise-card-arrow">
                         <i class="fa-solid fa-chevron-right"></i>
                     </div>
                 </a>
                 <% } %>
-
             </div>
         </section>
     </main>

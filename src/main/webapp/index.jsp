@@ -84,9 +84,7 @@
             <div class="enterprise-hero-copy index-banner-inner">
                 <p class="enterprise-eyebrow">ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</p>
                 <h1 id="indexHeroTitle">เลือกประเภทแบบฟอร์ม</h1>
-                <p class="enterprise-hero-lead">
-                    เลือกแบบฟอร์มที่ต้องการสร้าง ระบบจะพาไปยังขั้นตอนการทำงานที่เกี่ยวข้องโดยใช้สิทธิ์และการตรวจสอบเดิม
-                </p>
+                <p class="enterprise-hero-lead">เลือกแบบฟอร์มที่ต้องการใช้งาน แล้วเข้าสู่ขั้นตอนดำเนินการตามสิทธิ์ของคุณ</p>
             </div>
         </section>
 
@@ -103,33 +101,29 @@
                 <a class="index-form-card index-form-card-link" href="${pageContext.request.contextPath}<%= requisitionWorkUrl %>">
                     <div class="form-type-icon"><i class="fa-solid fa-file-signature"></i></div>
                     <div class="index-form-card-body">
-                        <span class="form-status available">เปิดใช้งาน</span>
+                        <span class="form-status available">พร้อมใช้งาน</span>
                         <h3>ใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</h3>
-                        <p>เข้าสู่รายการคำขอและดำเนินงานตามขั้นตอนของตำแหน่ง <%= h(currentRole) %></p>
+                        <p>ตรวจสอบและดำเนินการคำขอตามบทบาท <%= h(currentRole) %></p>
                     </div>
-                    <span class="form-type-action secondary">เข้าสู่รายการงาน</span>
+                    <span class="form-type-action secondary">เปิดรายการงาน</span>
                 </a>
 
                 <% if (isTechnical || isItDirector || isInfrastructure) { %>
                 <a class="index-form-card index-form-card-link" href="${pageContext.request.contextPath}<%= isTechnical ? "/thirdParty/sectionHead" : isItDirector ? "/thirdParty/itDirector" : "/thirdParty/operator" %>">
                     <div class="form-type-icon"><i class="fa-solid fa-user-shield"></i></div>
                     <div class="index-form-card-body">
-                        <span class="form-status available">เปิดใช้งาน</span>
+                        <span class="form-status available">พร้อมใช้งาน</span>
                         <h3>Third-party Form</h3>
-                        <p><%= isTechnical
-                            ? "พิจารณาคำขอ ให้ความเห็น และมอบหมายผู้ดำเนินการ ผู้ยกเลิกสิทธิ์ และผู้ตรวจทาน"
-                            : isItDirector
-                                ? "ตรวจสอบความเห็นหัวหน้าส่วนและผู้รับผิดชอบ เพื่ออนุมัติหรือไม่อนุมัติคำขอ"
-                                : "ดำเนินการให้สิทธิ์ตามงานที่ได้รับมอบหมายและบันทึกรายละเอียดการดำเนินการ" %></p>
+                        <p>จัดการคำขอลงทะเบียนผู้ให้บริการภายนอกตามขั้นตอนอนุมัติ</p>
                     </div>
-                    <span class="form-type-action secondary">เข้าสู่รายการงาน</span>
+                    <span class="form-type-action secondary">เปิดรายการงาน</span>
                 </a>
                 <% } else { %>
                 <div class="index-form-card">
                     <div class="form-type-icon"><i class="fa-solid fa-user-shield"></i></div>
                     <div class="index-form-card-body">
                         <span class="form-status">ยังไม่เปิดใช้งาน</span>
-                        <h3>แบบฟอร์มการขอลงทะเบียนผู้ใช้ระบบงานสารสนเทศ สำหรับผู้ให้บริการภายนอก</h3>
+                        <h3>แบบฟอร์มผู้ให้บริการภายนอก</h3>
                         <p>ขั้นตอนสำหรับตำแหน่ง <%= h(currentRole) %> อยู่ระหว่างการพัฒนา</p>
                     </div>
                     <span class="form-type-action disabled">ยังไม่มีรายการงาน</span>
@@ -139,32 +133,26 @@
         </section>
         <% } else { %>
         <section class="enterprise-menu-section" aria-label="เลือกประเภทแบบฟอร์ม">
-            <div class="enterprise-section-head">
-                <div>
-                    <p class="enterprise-eyebrow">Form Selection</p>
-                    <h2>เลือกประเภทแบบฟอร์ม</h2>
-                </div>
-            </div>
 
             <div class="index-form-grid">
                 <a class="index-form-card index-form-card-link" href="${pageContext.request.contextPath}/it-requisition-form-detail.jsp">
                     <div class="form-type-icon"><i class="fa-solid fa-file-circle-plus"></i></div>
                     <div class="index-form-card-body">
-                        <span class="form-status available">เปิดใช้งาน</span>
+                        <span class="form-status available">พร้อมใช้งาน</span>
                         <h3>ใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</h3>
-                        <p>สร้างคำขอด้านระบบสารสนเทศ อุปกรณ์ สิทธิ์การใช้งาน และงานบริการ IT ผ่าน workflow เดิมของระบบ</p>
+                        <p>สำหรับขออุปกรณ์ สิทธิ์การใช้งาน ระบบสารสนเทศ และบริการ IT</p>
                     </div>
-                    <span class="form-type-action secondary">ดูรายละเอียด</span>
+                    <span class="form-type-action secondary">เริ่มใช้งาน</span>
                 </a>
 
                 <a class="index-form-card index-form-card-link" href="${pageContext.request.contextPath}<%= thirdPartyCreateUrl %>">
                     <div class="form-type-icon"><i class="fa-solid fa-user-shield"></i></div>
                     <div class="index-form-card-body">
-                        <span class="form-status available">เปิดใช้งาน</span>
-                        <h3>แบบฟอร์มการขอลงทะเบียนผู้ใช้ระบบงานสารสนเทศ สำหรับผู้ให้บริการภายนอก</h3>
-                        <p>สร้างลิงก์ให้ผู้ให้บริการภายนอกกรอกข้อมูล โดยใช้ token และ external link flow เดิมของระบบ</p>
+                        <span class="form-status available">พร้อมใช้งาน</span>
+                        <h3>แบบฟอร์มผู้ให้บริการภายนอก</h3>
+                        <p>สร้างลิงก์ Token ให้ผู้ให้บริการภายนอกกรอกข้อมูลและติดตามสถานะ</p>
                     </div>
-                    <span class="form-type-action secondary">ดูรายละเอียด</span>
+                    <span class="form-type-action secondary">เริ่มใช้งาน</span>
                 </a>
             </div>
         </section>

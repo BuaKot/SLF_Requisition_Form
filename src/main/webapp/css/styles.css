@@ -2,10 +2,20 @@
    Typography & Baseline Setup
    ========================================================================== */
 @font-face {
-    font-family: 'DBHelvethaica';
-    src: url("fonts/DB\ HelvethaicaMon\ X\ Bd\ v3.2.ttf") format('ttf');
-    font-weight: normal;
+    font-family: 'Anuphan';
+    src: url("fonts/Anuphan-VariableFont_wght.ttf") format('truetype');
+    font-weight: 100 700;
     font-style: normal;
+    font-display: swap;
+}
+
+/* Compatibility alias for legacy styles that still name the old project font. */
+@font-face {
+    font-family: 'DBHelvethaica';
+    src: url("fonts/Anuphan-VariableFont_wght.ttf") format('truetype');
+    font-weight: 100 700;
+    font-style: normal;
+    font-display: swap;
 }
 
 /* ==========================================================================
@@ -54,7 +64,7 @@
     --slf-shadow-lg: 0 8px 20px rgba(15, 23, 42, 0.10);
     --slf-focus-ring: 0 0 0 3px rgba(37, 99, 166, 0.22);
 
-    --slf-font-family: 'DBHelvethaica', 'Sarabun', Tahoma, Arial, sans-serif;
+    --slf-font-family: 'Anuphan', 'Sarabun', Tahoma, Arial, sans-serif;
     --slf-font-size-xs: 12px;
     --slf-font-size-sm: 14px;
     --slf-font-size-md: 16px;
@@ -85,6 +95,10 @@ html, body {
     background-color: var(--slf-color-bg);
     color: var(--slf-color-text);
     line-height: var(--slf-line-height-normal);
+}
+
+html body {
+    font-family: var(--slf-font-family) !important;
 }
 
 button,

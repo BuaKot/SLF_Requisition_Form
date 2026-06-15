@@ -1,8 +1,17 @@
 ﻿@font-face {
-    font-family: 'DBHelvethaica';
-    src: url("../fonts/DB\ HelvethaicaMon\ X\ Bd\ v3.2.ttf") format('ttf');
-    font-weight: normal;
+    font-family: 'Anuphan';
+    src: url("fonts/Anuphan-VariableFont_wght.ttf") format('truetype');
+    font-weight: 100 700;
     font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'DBHelvethaica';
+    src: url("fonts/Anuphan-VariableFont_wght.ttf") format('truetype');
+    font-weight: 100 700;
+    font-style: normal;
+    font-display: swap;
 }
 
 * {
@@ -13,7 +22,7 @@
 
 body {
     background-color: #f2f2f2;
-    font-family: 'DBHelvethaica', sans-serif;
+    font-family: var(--slf-font-family, 'Anuphan', sans-serif);
     width: 100%;
     height: 100%;
 }

@@ -96,7 +96,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * { box-sizing: border-box; }
-        body { margin: 0; background: #f4f8fc; color: #102a43; font-family: 'Sarabun', sans-serif; }
+        body { margin: 0; background: #f4f8fc; color: #102a43; font-family: var(--slf-font-family); }
         .page { max-width: 1160px; margin: 0 auto; padding: 26px 28px 44px; }
         .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin-bottom: 18px; }
         .page-title h1 { margin: 0; color: #003366; font-size: 28px; }

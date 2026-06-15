@@ -26,7 +26,8 @@
     <title>Third-party Form Result</title>
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <style>
-        body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f4f8fc; font-family: Tahoma, Arial, sans-serif; color: #102a43; }
+        @font-face { font-family: 'Anuphan'; src: url("${pageContext.request.contextPath}/css/fonts/Anuphan-VariableFont_wght.ttf") format('truetype'); font-weight: 100 700; font-display: swap; }
+        body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f4f8fc; font-family: 'Anuphan', Tahoma, Arial, sans-serif; color: #102a43; }
         .panel { width: min(640px, calc(100% - 32px)); background: #fff; border: 1px solid #d9e6f2; border-radius: 10px; padding: 28px; box-shadow: 0 8px 22px rgba(0, 51, 102, 0.08); }
         h1 { margin: 0 0 10px; color: <%= success ? "#137a42" : "#b42318" %>; }
         p { margin: 0; line-height: 1.6; }

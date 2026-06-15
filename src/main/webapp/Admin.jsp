@@ -335,7 +335,7 @@
             padding: 12px 22px;
             border-radius: var(--radius-full);
             font-size: 0.92rem;
-            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            font-family: var(--slf-font-family);
             font-weight: 600;
             box-shadow: 0 4px 18px rgba(0,51,102,0.25);
             transition: all var(--transition-base);

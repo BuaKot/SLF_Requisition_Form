@@ -169,20 +169,20 @@ public class ExportPDFServlet extends HttpServlet {
         }
 
         // ---- 4. HTML Layout Rendering Engine Design ----
-        String fontPath = getServletContext().getRealPath("/WEB-INF/classes/fonts/THSarabunNew.ttf");
+        String fontPath = getServletContext().getRealPath("/WEB-INF/classes/fonts/Anuphan-Regular.ttf");
         
         StringBuilder html = new StringBuilder();
         html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'/>");
         html.append("<style>");
         
         // Print-specific page properties (A4 setup)
-        html.append("@page { size: a4; margin: 15mm 15mm 20mm 15mm; @bottom-right { content: 'หน้า ' counter(page) ' จาก ' counter(pages); font-family: 'THSarabunNew'; font-size: 11pt; color: #666; } }");
+        html.append("@page { size: a4; margin: 15mm 15mm 20mm 15mm; @bottom-right { content: 'หน้า ' counter(page) ' จาก ' counter(pages); font-family: 'Anuphan'; font-size: 11pt; color: #666; } }");
         
         // Typography Registration
-        html.append("@font-face { font-family: 'THSarabunNew'; src: url('file:///").append(fontPath.replace("\\", "/")).append("'); -fs-pdf-font-embed: embed; -fs-pdf-font-encoding: Identity-H; }");
+        html.append("@font-face { font-family: 'Anuphan'; src: url('file:///").append(fontPath.replace("\\", "/")).append("'); -fs-pdf-font-embed: embed; -fs-pdf-font-encoding: Identity-H; }");
         
         // Styles matching document standard
-        html.append("body { font-family: 'THSarabunNew', sans-serif; font-size: 14pt; line-height: 1.3; color: #111; }")
+        html.append("body { font-family: 'Anuphan', sans-serif; font-size: 14pt; line-height: 1.3; color: #111; }")
             .append(".meta-header { width: 100%; font-size: 10.5pt; color: #555; margin-bottom: 5px; }")
             .append(".title-header { text-align: center; font-size: 18pt; font-weight: bold; margin: 10px 0 0 0; color: #002244; }")
             .append(".title-sub { text-align: center; font-size: 14pt; font-weight: bold; margin: 0 0 15px 0; color: #334466; }")

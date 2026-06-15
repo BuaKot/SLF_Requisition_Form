@@ -207,7 +207,7 @@
     <title>ใบขอให้ดำเนินการ #<%= formId %></title>
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
+        @font-face { font-family: 'Anuphan'; src: url('${pageContext.request.contextPath}/css/fonts/Anuphan-VariableFont_wght.ttf') format('truetype'); font-weight: 100 700; font-display: swap; }
 
         @page {
             size: A4;
@@ -215,7 +215,7 @@
         }
 
         body {
-            font-family: 'Sarabun', sans-serif;
+            font-family: 'Anuphan', sans-serif;
             margin: 0;
             padding: 0;
             font-size: 9.5pt;
@@ -371,7 +371,7 @@
         }
 
         .checkbox-char {
-            font-family: 'Sarabun', Arial, sans-serif;
+            font-family: 'Anuphan', Arial, sans-serif;
             font-size: 11pt;
             margin-right: 3px;
             font-weight: bold;

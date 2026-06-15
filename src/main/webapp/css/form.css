@@ -28,7 +28,7 @@ body {
     min-height: 100%;
     background: linear-gradient(180deg, #fbfdff 0%, var(--form-page) 48%, #f1f6fb 100%);
     color: var(--form-text);
-    font-family: 'DBHelvethaica', 'Sarabun', Arial, sans-serif;
+    font-family: var(--slf-font-family, 'Anuphan', 'Sarabun', Arial, sans-serif);
 }
 
 textarea,

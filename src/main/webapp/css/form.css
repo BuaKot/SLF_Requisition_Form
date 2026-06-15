@@ -339,6 +339,7 @@ button {
 }
 
 .it-request-form-page .form-group {
+    position: relative;
     display: flex;
     min-width: 0;
     flex-direction: column;
@@ -397,8 +398,14 @@ button {
     transition: border-color var(--form-ease), box-shadow var(--form-ease), background-color var(--form-ease);
 }
 
+.it-request-form-page .has-byte-counter input[type="text"],
+.it-request-form-page .has-byte-counter textarea {
+    padding-right: 112px;
+}
+
 .it-request-form-page textarea {
     min-height: 108px;
+    padding-bottom: 28px;
     resize: vertical;
 }
 
@@ -441,16 +448,22 @@ button {
 }
 
 .byte-counter {
-    display: block;
-    width: 100%;
-    margin-top: 1px;
+    position: absolute;
+    right: 12px;
+    bottom: 8px;
+    z-index: 1;
+    display: inline-flex;
+    width: auto;
+    margin: 0;
+    padding: 1px 5px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.86);
     color: var(--form-muted);
     font-size: 12px;
     font-weight: 700;
     line-height: 1.25;
     text-align: right;
-    order: 999;
-    flex-basis: 100%;
+    pointer-events: none;
 }
 
 .byte-counter.over-limit {
@@ -461,6 +474,22 @@ button {
 .input-over-limit {
     border-color: var(--form-danger) !important;
     box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.12) !important;
+}
+
+.has-field-error input,
+.has-field-error select,
+.has-field-error textarea {
+    border-color: var(--form-danger) !important;
+    box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.12) !important;
+}
+
+.field-error-message {
+    display: block;
+    margin-top: 4px;
+    color: var(--form-danger);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.35;
 }
 
 .date-input-wrapper {
@@ -660,6 +689,7 @@ button {
     grid-template-columns: 120px minmax(0, 1fr);
     gap: 10px;
     align-items: start;
+    position: relative;
 }
 
 .server-input-row label {
@@ -679,7 +709,11 @@ button {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin: 0 0 4px;
+    margin: -4px 0 6px 130px;
+    padding: 10px;
+    border: 1px solid #dfeaf5;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.7);
 }
 
 .permission-checkbox-row label {
@@ -697,6 +731,12 @@ button {
     font-weight: 800;
     cursor: pointer;
     transition: border-color var(--form-ease), background-color var(--form-ease);
+}
+
+.permission-checkbox-row.has-field-error,
+.has-field-error.permission-checkbox-row {
+    border-color: rgba(180, 35, 24, 0.55);
+    background: #fff7f6;
 }
 
 .permission-checkbox-row label:hover {
@@ -840,6 +880,10 @@ button {
 
     .server-input-row .byte-counter {
         grid-column: 1;
+    }
+
+    .permission-checkbox-row {
+        margin-left: 0;
     }
 }
 

@@ -231,7 +231,8 @@ public class SubmitRequestServlet extends HttpServlet {
     }
 
     private boolean hasItemDetail(RequestItem item) {
-        return !isBlank(item.getProgramName())
+        return !isBlank(item.getObjective())
+            || !isBlank(item.getProgramName())
             || !isBlank(item.getOtherRequest())
             || hasServerAccessDetail(item);
     }

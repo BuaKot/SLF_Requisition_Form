@@ -40,7 +40,7 @@
         <c:if test="${not empty error}">
             <div class="form-error-message alert alert-error"><c:out value="${error}" /></div>
         </c:if>
-        <form action="${pageContext.request.contextPath}/submitRequest" method="post">
+        <form action="${pageContext.request.contextPath}/submitRequest" method="post" novalidate>
             <input type="hidden" name="csrfToken" value="<%= SecurityUtil.escapeHtml(csrfToken) %>">
             <c:if test="${not empty editedFormId}">
                 <input type="hidden" name="editedFormId" value="${editedFormId}">
@@ -182,7 +182,7 @@
                                     <input type="text" name="serverFolder[]" placeholder="โปรดระบุ Folder" required data-maxbytes="500">
                                 </div>
                                 <p class="field-hint permission-hint">เลือกสิทธิ์ที่ต้องการสำหรับ Folder หลัก</p>
-                                <div class="permission-checkbox-row">
+                                <div class="permission-checkbox-row permission-group">
                                     <label><input type="checkbox" name="folderPermission[]" value="Full control"> Full control</label>
                                     <label><input type="checkbox" name="folderPermission[]" value="Modify"> Modify</label>
                                     <label><input type="checkbox" name="folderPermission[]" value="Read & Execute"> Read & Execute</label>
@@ -194,7 +194,7 @@
                                     <input type="text" name="subFolder[]" placeholder="โปรดระบุ Sub Folder" data-maxbytes="500">
                                 </div>
                                 <p class="field-hint permission-hint">กรอก Sub Folder เฉพาะกรณีต้องการสิทธิ์แยกจาก Folder หลัก</p>
-                                <div class="permission-checkbox-row">
+                                <div class="permission-checkbox-row permission-group sub-folder-permission-group">
                                     <label><input type="checkbox" name="subFolderPermission[]" value="Full control"> Full control</label>
                                     <label><input type="checkbox" name="subFolderPermission[]" value="Modify"> Modify</label>
                                     <label><input type="checkbox" name="subFolderPermission[]" value="Read & Execute"> Read & Execute</label>
@@ -278,10 +278,14 @@ function attachCounters(root) {
     (root || document).querySelectorAll("[data-maxbytes]").forEach(function (el) {
         if (el.dataset.counterAttached) return;
         el.dataset.counterAttached = "1";
+        var parent = el.parentNode;
+        if (parent) {
+            parent.classList.add("has-byte-counter");
+        }
         var max = parseInt(el.dataset.maxbytes);
         var counter = document.createElement("span");
         counter.className = "byte-counter";
-        el.parentNode.insertBefore(counter, el.nextSibling);
+        parent.insertBefore(counter, el.nextSibling);
         function update() {
             var used = getByteLength(el.value);
             counter.textContent = used + " / " + max + " bytes";
@@ -296,8 +300,88 @@ function attachCounters(root) {
             }
         }
         el.addEventListener("input", update);
+        el.addEventListener("input", function () { clearFieldError(el); });
         update();
     });
+}
+
+function getActiveRequestItems() {
+    return Array.prototype.filter.call(document.querySelectorAll(".request-item"), function (item) {
+        return item.offsetParent !== null;
+    });
+}
+
+function isVisibleElement(el) {
+    return !!(el && el.offsetParent !== null);
+}
+
+function isBlankValue(el) {
+    return !el || String(el.value || "").trim() === "";
+}
+
+function errorContainerFor(target) {
+    if (!target) return null;
+    return target.closest(".form-group, .server-input-row, .permission-group, .request-item-subsection, .request-item") || target;
+}
+
+function clearFieldError(target) {
+    var container = errorContainerFor(target);
+    if (!container) return;
+    container.classList.remove("has-field-error");
+    var message = container.querySelector(":scope > .field-error-message");
+    if (message) message.remove();
+    if (target && typeof target.setCustomValidity === "function") {
+        target.setCustomValidity("");
+    }
+}
+
+function showFieldError(target, message) {
+    var container = errorContainerFor(target);
+    if (!container) return;
+    clearFieldError(target);
+    container.classList.add("has-field-error");
+    var error = document.createElement("span");
+    error.className = "field-error-message";
+    error.textContent = message;
+    container.appendChild(error);
+    if (target && typeof target.setCustomValidity === "function") {
+        target.setCustomValidity(message);
+    }
+}
+
+function clearAllValidationErrors() {
+    document.querySelectorAll(".has-field-error").forEach(function (el) {
+        el.classList.remove("has-field-error");
+        var message = el.querySelector(":scope > .field-error-message");
+        if (message) message.remove();
+    });
+    document.querySelectorAll("input, select, textarea").forEach(function (field) {
+        field.setCustomValidity("");
+    });
+}
+
+function firstFocusableIn(target) {
+    if (!target) return null;
+    if (typeof target.focus === "function" && target.matches && target.matches("input, select, textarea, button")) {
+        return target;
+    }
+    return target.querySelector("input, select, textarea, button");
+}
+
+function focusFirstInvalidField(target) {
+    var field = firstFocusableIn(target);
+    if (!field) return;
+    field.focus({ preventScroll: true });
+    field.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (typeof field.reportValidity === "function") {
+        field.reportValidity();
+    }
+}
+
+function addValidationError(errors, target, message) {
+    if (!target) return;
+    showFieldError(target, message);
+    errors.push({ target: target, message: message });
 }
 
 // ---------- Deadline helpers ----------
@@ -420,6 +504,7 @@ function handleRequestTypeChange(select) {
             programNameBox.style.display = "none";
             programNameInput.required = false;
             programNameInput.value = "";
+            clearFieldError(programNameInput);
         }
     }
     if (otherRequestBox && otherRequestInput) {
@@ -430,6 +515,7 @@ function handleRequestTypeChange(select) {
             otherRequestBox.style.display = "none";
             otherRequestInput.required = false;
             otherRequestInput.value = "";
+            clearFieldError(otherRequestInput);
         }
     }
     if (serverPermissionBox && serverNameInput && serverFolderInput && subFolderInput) {
@@ -448,6 +534,11 @@ function handleRequestTypeChange(select) {
             subFolderInput.value = "";
             item.querySelectorAll('input[name^="folderPermission"]').forEach(function (cb) { cb.checked = false; });
             item.querySelectorAll('input[name^="subFolderPermission"]').forEach(function (cb) { cb.checked = false; });
+            clearFieldError(serverNameInput);
+            clearFieldError(serverFolderInput);
+            clearFieldError(subFolderInput);
+            clearFieldError(item.querySelector(".permission-group"));
+            clearFieldError(item.querySelector(".sub-folder-permission-group"));
         }
     }
 }
@@ -462,7 +553,7 @@ function getSelectedRequestSection(select) {
 
 function hasCheckedPermission(item, selector) {
     return Array.prototype.some.call(item.querySelectorAll(selector), function (checkbox) {
-        return checkbox.checked;
+        return isVisibleElement(checkbox) && checkbox.checked;
     });
 }
 
@@ -492,7 +583,7 @@ function validateSameRequestSection(showAlert, changedSelect) {
         var targetSelect = changedSelect || invalidSelect;
         if (targetSelect) {
             targetSelect.setCustomValidity(message);
-            targetSelect.reportValidity();
+            showFieldError(targetSelect, message);
         }
         if (changedSelect) {
             changedSelect.selectedIndex = 0;
@@ -523,6 +614,109 @@ function lockAutofillSelects() {
     var secDisplay = document.getElementById("sectionDisplay");
     if (deptDisplay) deptDisplay.readOnly = true;
     if (secDisplay) secDisplay.readOnly = true;
+}
+
+function validateRequiredField(errors, field, message) {
+    if (isVisibleElement(field) && isBlankValue(field)) {
+        addValidationError(errors, field, message);
+    }
+}
+
+function validateByteLimits(errors, root) {
+    (root || document).querySelectorAll("[data-maxbytes]").forEach(function (el) {
+        if (!isVisibleElement(el)) return;
+        var max = parseInt(el.dataset.maxbytes);
+        if (getByteLength(el.value) > max) {
+            addValidationError(errors, el, "ข้อมูลเกิน " + max + " bytes");
+        }
+    });
+}
+
+function validateDeadline(errors) {
+    var deadlineText = document.getElementById("deadlineText");
+    validateRequiredField(errors, deadlineText, "กรุณาระบุ Deadline");
+    if (!deadlineText || isBlankValue(deadlineText)) return;
+
+    var parsedDeadline = parseDisplayDate(deadlineText.value);
+    if (!parsedDeadline) {
+        addValidationError(errors, deadlineText, "กรุณากรอก Deadline เป็นรูปแบบ dd/mm/yyyy");
+        return;
+    }
+    var minIso = deadlineText.dataset.minIso;
+    if (minIso && parsedDeadline.iso < minIso) {
+        addValidationError(errors, deadlineText, "Deadline ต้องไม่ย้อนหลังจากวันที่ปัจจุบัน");
+        return;
+    }
+    document.getElementById("deadlineIso").value = parsedDeadline.iso;
+}
+
+function validateRequestItem(item, index, errors) {
+    var itemNumber = index + 1;
+    var typeSelect = item.querySelector('select[name="requestType[]"]');
+    var objective = item.querySelector('textarea[name="objective[]"]');
+    var currentMethod = item.querySelector('textarea[name="currentMethod[]"]');
+    var programNameInput = item.querySelector('input[name="programName[]"]');
+    var otherRequestInput = item.querySelector('input[name="otherRequest[]"]');
+    var serverPermissionBox = item.querySelector(".server-permission-box");
+    var serverNameInput = item.querySelector('input[name="serverName[]"]');
+    var serverFolderInput = item.querySelector('input[name="serverFolder[]"]');
+    var subFolderInput = item.querySelector('input[name="subFolder[]"]');
+    var folderPermissionGroup = item.querySelector(".permission-group");
+    var subFolderPermissionGroup = item.querySelector(".sub-folder-permission-group");
+
+    validateRequiredField(errors, typeSelect, "กรุณาเลือกประเภทคำขอ รายการที่ " + itemNumber);
+    validateRequiredField(errors, objective, "กรุณาระบุวัตถุประสงค์ / ความต้องการ รายการที่ " + itemNumber);
+
+    if (isVisibleElement(programNameInput)) {
+        validateRequiredField(errors, programNameInput, "กรุณาระบุชื่อโปรแกรม รายการที่ " + itemNumber);
+    }
+    if (isVisibleElement(otherRequestInput)) {
+        validateRequiredField(errors, otherRequestInput, "กรุณาระบุรายละเอียดคำขอ รายการที่ " + itemNumber);
+    }
+
+    if (isVisibleElement(serverPermissionBox)) {
+        validateRequiredField(errors, serverNameInput, "กรุณาระบุ Server รายการที่ " + itemNumber);
+        validateRequiredField(errors, serverFolderInput, "กรุณาระบุ Folder รายการที่ " + itemNumber);
+        if (!hasCheckedPermission(item, 'input[name^="folderPermission"]')) {
+            addValidationError(errors, folderPermissionGroup || serverFolderInput, "กรุณาเลือกสิทธิ์ Folder อย่างน้อย 1 รายการ");
+        }
+
+        var hasSubFolderName = !isBlankValue(subFolderInput);
+        var hasSubFolderPermission = hasCheckedPermission(item, 'input[name^="subFolderPermission"]');
+        if (hasSubFolderName && !hasSubFolderPermission) {
+            addValidationError(errors, subFolderPermissionGroup || subFolderInput, "กรุณาเลือกสิทธิ์ Sub Folder อย่างน้อย 1 รายการ หรือเว้น Sub Folder ว่างไว้");
+        }
+        if (!hasSubFolderName && hasSubFolderPermission) {
+            addValidationError(errors, subFolderInput, "กรุณาระบุชื่อ Sub Folder หรือยกเลิกการเลือกสิทธิ์ Sub Folder");
+        }
+    }
+
+    validateByteLimits(errors, item);
+    if (currentMethod && !isVisibleElement(currentMethod)) {
+        clearFieldError(currentMethod);
+    }
+}
+
+function validateFormClientSide() {
+    var errors = [];
+    clearAllValidationErrors();
+    validateRequiredField(errors, document.getElementById("requestTopic"), "กรุณาระบุชื่อหัวข้อความต้องการ");
+    validateDeadline(errors);
+
+    var items = getActiveRequestItems();
+    if (items.length === 0) {
+        addValidationError(errors, requestsContainer, "กรุณาเพิ่มรายการคำขออย่างน้อย 1 รายการ");
+    }
+    items.forEach(function (item, index) {
+        validateRequestItem(item, index, errors);
+    });
+
+    validateByteLimits(errors, document);
+    if (!validateSameRequestSection(false, null)) {
+        var invalidSelect = document.querySelector('select[name="requestType[]"]:invalid');
+        if (invalidSelect) errors.push({ target: invalidSelect });
+    }
+    return errors;
 }
 
 // ---------- Page initialisation ----------
@@ -587,11 +781,18 @@ if (addRequestBtn && requestsContainer) {
 
     requestsContainer.addEventListener("change", function (event) {
         if (event.target.matches('select[name="requestType[]"]')) {
+            clearFieldError(event.target);
             handleRequestTypeChange(event.target);
             validateSameRequestSection(true, event.target);
         }
         if (event.target.classList.contains("select-placeholder")) {
             updateSelectColor(event.target);
+        }
+    });
+
+    requestsContainer.addEventListener("input", function (event) {
+        if (event.target.matches("input, textarea, select")) {
+            clearFieldError(event.target);
         }
     });
 }
@@ -619,7 +820,7 @@ if (calendarBtn) {
 const deadlineDisplayInput = document.getElementById("deadlineText");
 if (deadlineDisplayInput) {
     deadlineDisplayInput.addEventListener("input", function () {
-        this.setCustomValidity("");
+        clearFieldError(this);
         formatDeadlineInput(this);
     });
 }
@@ -632,7 +833,7 @@ if (deadlinePickerInput) {
         var parts = this.value.split("-");
         if (parts.length === 3) {
             deadlineInput.value = parts[2] + "/" + parts[1] + "/" + parts[0];
-            deadlineInput.setCustomValidity("");
+            clearFieldError(deadlineInput);
         }
     });
 }
@@ -641,88 +842,10 @@ if (deadlinePickerInput) {
 const requisitionForm = document.querySelector("form");
 if (requisitionForm) {
     requisitionForm.addEventListener("submit", function (event) {
-        const deadlineText = document.getElementById("deadlineText");
-        if (deadlineText) deadlineText.setCustomValidity("");
-
-        document.querySelectorAll(".request-item").forEach(function (item) {
-            var serverFolderInput = item.querySelector('input[name="serverFolder[]"]');
-            if (serverFolderInput) serverFolderInput.setCustomValidity("");
-            var subFolderInput = item.querySelector('input[name="subFolder[]"]');
-            if (subFolderInput) subFolderInput.setCustomValidity("");
-            item.querySelectorAll('select[name="requestType[]"]').forEach(function (select) {
-                select.setCustomValidity("");
-            });
-        });
-
-        if (!requisitionForm.checkValidity()) {
-            return;
-        }
-
-        var firstInvalidControl = null;
-        document.querySelectorAll(".request-item").forEach(function (item, index) {
-            const serverPermissionBox = item.querySelector(".server-permission-box");
-            const serverFolderInput = item.querySelector('input[name="serverFolder[]"]');
-            const subFolderInput = item.querySelector('input[name="subFolder[]"]');
-            if (serverPermissionBox && serverPermissionBox.style.display !== "none") {
-                if (serverFolderInput && !hasCheckedPermission(item, 'input[name^="folderPermission"]')) {
-                    serverFolderInput.setCustomValidity("กรุณาเลือกสิทธิ์ Folder อย่างน้อย 1 รายการ");
-                    firstInvalidControl = firstInvalidControl || serverFolderInput;
-                }
-                var hasSubFolderName = subFolderInput && subFolderInput.value.trim() !== "";
-                var hasSubFolderPermission = hasCheckedPermission(item, 'input[name^="subFolderPermission"]');
-                if (subFolderInput && hasSubFolderName && !hasSubFolderPermission) {
-                    subFolderInput.setCustomValidity("กรุณาเลือกสิทธิ์ Sub Folder อย่างน้อย 1 รายการ หรือเว้น Sub Folder ว่างไว้");
-                    firstInvalidControl = firstInvalidControl || subFolderInput;
-                }
-                if (subFolderInput && !hasSubFolderName && hasSubFolderPermission) {
-                    subFolderInput.setCustomValidity("กรุณาระบุชื่อ Sub Folder หรือยกเลิกการเลือกสิทธิ์ Sub Folder");
-                    firstInvalidControl = firstInvalidControl || subFolderInput;
-                }
-            }
-        });
-
-        if (firstInvalidControl) {
+        var validationErrors = validateFormClientSide();
+        if (validationErrors.length > 0) {
             event.preventDefault();
-            firstInvalidControl.reportValidity();
-            return;
-        }
-
-        // Deadline validation
-        var parsedDeadline = parseDisplayDate(deadlineText.value);
-        if (!parsedDeadline) {
-            event.preventDefault();
-            deadlineText.setCustomValidity("กรุณากรอก Deadline เป็นรูปแบบ dd/mm/yyyy");
-            deadlineText.reportValidity();
-            return;
-        }
-        var minIso = deadlineText.dataset.minIso;
-        if (minIso && parsedDeadline.iso < minIso) {
-            event.preventDefault();
-            deadlineText.setCustomValidity("Deadline ต้องไม่ย้อนหลังจากวันที่ปัจจุบัน");
-            deadlineText.reportValidity();
-            return;
-        }
-        deadlineText.setCustomValidity("");
-        document.getElementById("deadlineIso").value = parsedDeadline.iso;
-
-        // Cross‑section check
-        if (!validateSameRequestSection(true, null)) {
-            event.preventDefault();
-            return;
-        }
-
-        // Byte limit check
-        var firstOverLimitField = null;
-        document.querySelectorAll("[data-maxbytes]").forEach(function (el) {
-            var max = parseInt(el.dataset.maxbytes);
-            if (getByteLength(el.value) > max) {
-                el.setCustomValidity("ข้อมูลเกิน " + max + " bytes");
-                firstOverLimitField = firstOverLimitField || el;
-            }
-        });
-        if (firstOverLimitField) {
-            event.preventDefault();
-            firstOverLimitField.reportValidity();
+            focusFirstInvalidField(validationErrors[0].target);
             return;
         }
 

@@ -143,7 +143,7 @@
                             <% if (publicLink != null && "ACTIVE".equals(item.getStatus())) { %>
                                 <div class="generated-link-box acceptance-generated-link">
                                     <input id="acceptanceLink<%= item.getAcceptanceTokenId() %>" type="text" value="<%= h(publicLink) %>" readonly>
-                                    <button class="btn btn-secondary" type="button" onclick="copyAcceptanceLink('acceptanceLink<%= item.getAcceptanceTokenId() %>')"><i class="fa-solid fa-copy"></i> คัดลอกลิงก์</button>
+                                    <button class="btn btn-secondary" type="button" onclick="copyAcceptanceLink('acceptanceLink<%= item.getAcceptanceTokenId() %>', this)"><i class="fa-solid fa-copy"></i> คัดลอกลิงก์</button>
                                 </div>
                             <% } %>
                         </div>
@@ -233,10 +233,26 @@
 function confirmCancelThirdPartyLink() {
     return window.confirm("ยืนยันยกเลิกลิงก์นี้หรือไม่? รายการที่ยังไม่ถูกใช้งานจะถูกลบออกจากประวัติและฐานข้อมูล");
 }
-function copyAcceptanceLink(id) {
+function copyAcceptanceLink(id, button) {
     var input = document.getElementById(id);
+    if (!input) return;
+    var original = button ? button.innerHTML : "";
+    var done = function () {
+        if (!button) return;
+        button.innerHTML = '<i class="fa-solid fa-check"></i> คัดลอกแล้ว';
+        window.setTimeout(function () { button.innerHTML = original; }, 1400);
+    };
     input.select();
-    navigator.clipboard.writeText(input.value);
+    input.setSelectionRange(0, input.value.length);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(input.value).then(done).catch(function () {
+            document.execCommand("copy");
+            done();
+        });
+    } else {
+        document.execCommand("copy");
+        done();
+    }
 }
 function toggleNav() {
     var sidebar = document.getElementById("mySidebar");

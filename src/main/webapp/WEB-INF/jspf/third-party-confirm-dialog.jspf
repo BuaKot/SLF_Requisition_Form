@@ -23,46 +23,154 @@
     var submitLabel = submitButton.querySelector("span");
     var pendingForm = null;
     var pendingTrigger = null;
+    var invalidTarget = null;
+
+    function fieldLabel(field) {
+        if (!field) return "ข้อมูลที่จำเป็น";
+        if (field.labels && field.labels.length) {
+            return field.labels[0].textContent.replace(/\s+/g, " ").trim();
+        }
+        if (field.id) {
+            var label = document.querySelector('label[for="' + field.id.replace(/"/g, '\\"') + '"]');
+            if (label) return label.textContent.replace(/\s+/g, " ").trim();
+        }
+        var wrapperLabel = field.closest("label");
+        if (wrapperLabel) return wrapperLabel.textContent.replace(/\s+/g, " ").trim();
+        return field.getAttribute("aria-label") || field.getAttribute("placeholder") || field.name || "ข้อมูลที่จำเป็น";
+    }
+
+    function validationMessage(field) {
+        var label = fieldLabel(field);
+        if (field.validity.valueMissing) {
+            var verb = field.tagName === "SELECT" || field.type === "checkbox" || field.type === "radio"
+                ? "กรุณาเลือก"
+                : "กรุณากรอก";
+            return verb + " " + label;
+        }
+        if (field.validity.typeMismatch && field.type === "email") return "กรุณาระบุอีเมลให้ถูกต้อง";
+        if (field.validity.patternMismatch) return "รูปแบบข้อมูลไม่ถูกต้อง: " + label;
+        if (field.validity.tooLong) return "ข้อมูลยาวเกินกำหนด: " + label;
+        if (field.validity.tooShort) return "ข้อมูลสั้นเกินกำหนด: " + label;
+        return "กรุณาตรวจสอบข้อมูลในช่อง " + label;
+    }
+
+    function clearValidation(form) {
+        form.querySelectorAll(".workflow-field-invalid").forEach(function (field) {
+            field.classList.remove("workflow-field-invalid");
+            field.removeAttribute("aria-invalid");
+        });
+        form.querySelectorAll(".workflow-inline-error").forEach(function (item) {
+            item.remove();
+        });
+    }
+
+    function showInlineError(field, text) {
+        field.classList.add("workflow-field-invalid");
+        field.setAttribute("aria-invalid", "true");
+        var error = document.createElement("div");
+        error.className = "workflow-inline-error";
+        error.textContent = text;
+        field.insertAdjacentElement("afterend", error);
+    }
+
+    function validateForm(form) {
+        clearValidation(form);
+        var fields = Array.prototype.slice.call(form.querySelectorAll("input, select, textarea"));
+        for (var i = 0; i < fields.length; i++) {
+            var field = fields[i];
+            if (field.disabled || field.type === "hidden" || field.type === "submit" || field.type === "button") continue;
+            if (!field.required && !field.value) continue;
+            if (!field.checkValidity()) {
+                var text = validationMessage(field);
+                showInlineError(field, text);
+                return { valid: false, field: field, message: text };
+            }
+        }
+        var requiredGroups = form.querySelectorAll("[data-required-group]");
+        for (var g = 0; g < requiredGroups.length; g++) {
+            var group = requiredGroups[g];
+            var checked = group.querySelector("input:checked");
+            if (!checked) {
+                var groupMessage = group.getAttribute("data-required-message") || "กรุณาเลือกข้อมูลให้ครบถ้วน";
+                var first = group.querySelector("input");
+                if (first) showInlineError(first, groupMessage);
+                return { valid: false, field: first || group, message: groupMessage };
+            }
+        }
+        return { valid: true };
+    }
+
+    function openDialog(options) {
+        title.textContent = options.title;
+        message.textContent = options.message || "";
+        message.hidden = !options.message;
+        submitButton.hidden = !!options.validation;
+        cancelButton.textContent = options.validation ? "กลับไปแก้ไข" : "ยกเลิก";
+        submitLabel.textContent = options.submitLabel || "ยืนยัน";
+        overlay.dataset.tone = options.tone || "primary";
+        icon.innerHTML = options.icon || '<i class="fa-solid fa-paper-plane"></i>';
+        overlay.hidden = false;
+        document.body.classList.add("workflow-confirm-open");
+        cancelButton.focus();
+    }
 
     function closeDialog() {
         overlay.hidden = true;
+        submitButton.hidden = false;
+        submitButton.disabled = false;
         message.hidden = false;
+        cancelButton.textContent = "ยกเลิก";
         document.body.classList.remove("workflow-confirm-open");
         pendingForm = null;
         pendingTrigger = null;
+        if (invalidTarget) {
+            invalidTarget.scrollIntoView({ block: "center", behavior: "smooth" });
+            if (typeof invalidTarget.focus === "function") invalidTarget.focus({ preventScroll: true });
+            invalidTarget = null;
+        }
     }
+
+    function showValidation(messageText, field) {
+        invalidTarget = field || null;
+        openDialog({
+            validation: true,
+            tone: "warning",
+            title: "กรุณาตรวจสอบข้อมูล",
+            message: messageText || "กรุณากรอกข้อมูลให้ครบถ้วนก่อนส่งงาน",
+            icon: '<i class="fa-solid fa-circle-exclamation"></i>'
+        });
+    }
+
+    window.showWorkflowValidation = showValidation;
 
     document.addEventListener("click", function (event) {
         var trigger = event.target.closest("[data-workflow-confirm]");
         if (!trigger) return;
         event.preventDefault();
+
         var form = trigger.form;
-        if (!form || !form.reportValidity()) return;
+        if (!form) return;
+        var validation = validateForm(form);
+        if (!validation.valid) {
+            showValidation(validation.message, validation.field);
+            return;
+        }
+
         var beforeConfirm = trigger.dataset.beforeConfirm;
         if (beforeConfirm && typeof window[beforeConfirm] === "function" && !window[beforeConfirm]()) return;
 
         pendingForm = form;
         pendingTrigger = trigger;
-        title.textContent = trigger.dataset.confirmTitle || "ยืนยันการส่งงาน";
         var confirmMessage = trigger.getAttribute("data-confirm-message");
-        if (confirmMessage === null) {
-            message.textContent = "โปรดตรวจสอบข้อมูลให้เรียบร้อยก่อนยืนยัน";
-            message.hidden = false;
-        } else if (confirmMessage === "") {
-            message.textContent = "";
-            message.hidden = true;
-        } else {
-            message.textContent = confirmMessage;
-            message.hidden = false;
-        }
-        submitLabel.textContent = trigger.dataset.confirmLabel || "ยืนยัน";
-        overlay.dataset.tone = trigger.dataset.confirmTone || "primary";
-        icon.innerHTML = trigger.dataset.confirmTone === "danger"
-            ? '<i class="fa-solid fa-triangle-exclamation"></i>'
-            : '<i class="fa-solid fa-paper-plane"></i>';
-        overlay.hidden = false;
-        document.body.classList.add("workflow-confirm-open");
-        cancelButton.focus();
+        openDialog({
+            tone: trigger.dataset.confirmTone || "primary",
+            title: trigger.dataset.confirmTitle || "ยืนยันการส่งงาน",
+            message: confirmMessage === null ? "โปรดตรวจสอบข้อมูลให้เรียบร้อยก่อนยืนยัน" : confirmMessage,
+            submitLabel: trigger.dataset.confirmLabel || "ยืนยัน",
+            icon: trigger.dataset.confirmTone === "danger"
+                ? '<i class="fa-solid fa-triangle-exclamation"></i>'
+                : '<i class="fa-solid fa-paper-plane"></i>'
+        });
     });
 
     cancelButton.addEventListener("click", closeDialog);

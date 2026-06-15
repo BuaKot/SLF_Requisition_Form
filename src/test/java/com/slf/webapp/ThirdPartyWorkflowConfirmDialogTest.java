@@ -25,15 +25,18 @@ public class ThirdPartyWorkflowConfirmDialogTest extends TestCase {
 
         String dialog = read("src/main/webapp/WEB-INF/jspf/third-party-confirm-dialog.jspf");
         assertTrue(dialog.contains("pageEncoding=\"UTF-8\""));
-        assertTrue(dialog.contains("form.reportValidity()"));
+        assertFalse(dialog.contains("form.reportValidity()"));
+        assertTrue(dialog.contains("validateForm(form)"));
+        assertTrue(dialog.contains("showWorkflowValidation"));
+        assertTrue(dialog.contains("workflow-inline-error"));
         assertTrue(dialog.contains("pendingTrigger.name"));
         assertTrue(dialog.contains("pendingForm.submit()"));
         assertTrue(dialog.contains("กำลังบันทึก..."));
         assertTrue(dialog.contains(">ยกเลิก</button>"));
 
         String sectionHead = read("src/main/webapp/WEB-INF/third-party-section-head-review.jsp");
-        assertTrue(sectionHead.contains("data-confirm-title=\"ยืนยันการส่งคำขอ\""));
-        assertTrue(sectionHead.contains("ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ พิจารณาต่อ"));
+        assertTrue(sectionHead.contains("data-before-confirm=\"validateAssignments\""));
+        assertFalse(sectionHead.contains("window.alert("));
     }
 
     private static String read(String path) throws Exception {

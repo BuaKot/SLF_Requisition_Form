@@ -67,7 +67,7 @@
                     <% } else { %>
                         <div class="copy-row">
                             <input id="generatedThirdPartyLink" type="text" readonly value="<%= h(publicLink) %>">
-                            <button class="btn btn-primary" type="button" onclick="copyGeneratedLink()">
+                            <button class="btn btn-primary" type="button" onclick="copyGeneratedLink(this)">
                                 <i class="fa-solid fa-copy"></i> คัดลอกลิงก์
                             </button>
                         </div>
@@ -83,15 +83,25 @@
     <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 <script>
-function copyGeneratedLink() {
+function copyGeneratedLink(button) {
     var input = document.getElementById("generatedThirdPartyLink");
     if (!input) return;
+    var original = button ? button.innerHTML : "";
+    var done = function () {
+        if (!button) return;
+        button.innerHTML = '<i class="fa-solid fa-check"></i> คัดลอกแล้ว';
+        window.setTimeout(function () { button.innerHTML = original; }, 1400);
+    };
     input.select();
     input.setSelectionRange(0, input.value.length);
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(input.value);
+        navigator.clipboard.writeText(input.value).then(done).catch(function () {
+            document.execCommand("copy");
+            done();
+        });
     } else {
         document.execCommand("copy");
+        done();
     }
 }
 function toggleNav() {

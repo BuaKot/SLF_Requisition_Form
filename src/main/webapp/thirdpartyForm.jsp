@@ -41,6 +41,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Third-party Requisition Form</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <style>
         * { box-sizing: border-box; }
@@ -103,6 +104,13 @@
     </div>
 
     <% if (!valid) { %>
+        <section class="external-link-warning-banner">
+            <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+            <div>
+                <h2>ลิงก์หรือแบบฟอร์มนี้หมดอายุแล้ว</h2>
+                <p>กรุณาติดต่อผู้ดูแลเพื่อสร้างลิงก์ใหม่ หรือสอบถามสถานะคำขอจากผู้ประสานงานภายใน</p>
+            </div>
+        </section>
         <section class="panel">
             <div class="alert"><%= h(invalidLinkMessage) %></div>
         </section>

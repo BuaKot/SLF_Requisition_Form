@@ -247,11 +247,16 @@ function toggleRevoker() {
 
 function validateAssignments() {
     var grant = document.getElementById("grantOperatorEmpId").value;
-    var reviewer = document.getElementById("revokeReviewerEmpId").value;
+    var reviewerSelect = document.getElementById("revokeReviewerEmpId");
+    var reviewer = reviewerSelect.value;
     var separate = document.getElementById("separateRevoker").checked;
-    var revoke = separate ? document.getElementById("revokeOperatorEmpId").value : grant;
+    var revokeSelect = document.getElementById("revokeOperatorEmpId");
+    var revoke = separate ? revokeSelect.value : grant;
     if (reviewer === grant || reviewer === revoke) {
-        window.alert("ผู้ตรวจทานต้องไม่ใช่ผู้ดำเนินการหรือผู้ยกเลิกสิทธิ์");
+        var message = "ผู้ตรวจทานต้องไม่ใช่ผู้ดำเนินการหรือผู้ยกเลิกสิทธิ์";
+        if (typeof window.showWorkflowValidation === "function") {
+            window.showWorkflowValidation(message, reviewerSelect);
+        }
         return false;
     }
     return true;

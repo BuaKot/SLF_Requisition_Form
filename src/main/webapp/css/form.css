@@ -154,11 +154,11 @@ button {
     overflow: hidden;
     width: 100%;
     margin: 0;
-    padding: clamp(22px, 2.6vw, 34px) max(clamp(24px, 5vw, 72px), calc((100vw - 1280px) / 2 + 24px));
+    padding: clamp(18px, 2.35vw, 30px) max(clamp(24px, 5vw, 72px), calc((100vw - 1280px) / 2 + 24px));
     border: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-    background: linear-gradient(135deg, rgba(7, 58, 103, 0.98) 0%, rgba(15, 86, 149, 0.96) 58%, rgba(5, 50, 91, 0.98) 100%);
-    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.12), 0 10px 30px rgba(11, 52, 88, 0.10);
+    background: linear-gradient(135deg, rgba(5, 50, 91, 0.99) 0%, rgba(13, 75, 143, 0.98) 58%, rgba(5, 50, 91, 0.99) 100%);
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.12), 0 8px 24px rgba(11, 52, 88, 0.10);
     color: #ffffff;
 }
 
@@ -167,11 +167,12 @@ button {
     position: absolute;
     inset: 0;
     background:
-        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-        linear-gradient(120deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 42%);
-    background-size: 54px 54px, 54px 54px, auto;
-    opacity: 0.22;
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1440' height='220' viewBox='0 0 1440 220'%3E%3Cpath d='M-80 150 C180 80 330 210 590 140 C860 68 1030 180 1260 112 C1360 82 1450 88 1530 120' fill='none' stroke='%23ffffff' stroke-opacity='.22' stroke-width='2'/%3E%3Cpath d='M-80 185 C200 118 420 218 690 165 C940 116 1080 164 1290 132 C1390 116 1470 122 1530 145' fill='none' stroke='%23ffffff' stroke-opacity='.12' stroke-width='2'/%3E%3C/svg%3E") center bottom / cover no-repeat,
+        linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(120deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 42%);
+    background-size: cover, 56px 56px, 56px 56px, auto;
+    opacity: 0.24;
     pointer-events: none;
 }
 
@@ -194,8 +195,8 @@ button {
 }
 
 .form-page-header .page-kicker {
-    margin: 0 0 5px;
-    color: rgba(255, 255, 255, 0.78);
+    margin: 0 0 4px;
+    color: rgba(255, 255, 255, 0.74);
     font-size: 13px;
     font-weight: 900;
     letter-spacing: 0;
@@ -205,15 +206,15 @@ button {
 .form-page-header .page-title {
     margin: 0;
     color: #ffffff;
-    font-size: clamp(30px, 2.75vw, 40px);
+    font-size: clamp(31px, 2.8vw, 42px);
     font-weight: 900;
     line-height: 1.08;
 }
 
 .form-page-header .page-subtitle {
     max-width: 860px;
-    margin: 8px 0 0;
-    color: rgba(255, 255, 255, 0.88);
+    margin: 7px 0 0;
+    color: rgba(255, 255, 255, 0.86);
     font-size: clamp(15px, 1.25vw, 18px);
     font-weight: 700;
     line-height: 1.45;
@@ -221,7 +222,7 @@ button {
 
 .it-request-form-page.form-container {
     width: min(1280px, calc(100% - 48px));
-    margin: 18px auto 46px;
+    margin: 14px auto 42px;
     padding: 0;
     border: 0;
     border-radius: 0;
@@ -231,7 +232,7 @@ button {
 
 .it-request-form-page form {
     display: grid;
-    gap: 16px;
+    gap: 14px;
 }
 
 .form-error-message {
@@ -246,10 +247,10 @@ button {
 
 .it-request-form-page .form-section {
     position: relative;
-    padding: clamp(18px, 2vw, 24px);
+    padding: clamp(16px, 1.75vw, 21px);
     border: 1px solid var(--form-border);
     border-radius: var(--form-radius-lg);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, rgba(249, 252, 255, 0.99) 100%);
+    background: #ffffff;
     box-shadow: var(--form-shadow-sm);
     transition: border-color var(--form-ease), box-shadow var(--form-ease), transform var(--form-ease);
 }
@@ -260,48 +261,57 @@ button {
 }
 
 .it-request-form-page .section-heading {
-    display: grid;
-    grid-template-columns: 44px minmax(0, 1fr);
-    gap: 13px;
-    align-items: start;
-    margin-bottom: 18px;
-    padding-bottom: 14px;
+    display: block;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
     border-bottom: 1px solid #e4edf6;
 }
 
 .it-request-form-page .section-heading::after {
     content: "";
-    grid-column: 2;
+    display: block;
     width: 62px;
     height: 3px;
-    margin-top: 10px;
+    margin-top: 9px;
     border-radius: 999px;
     background: linear-gradient(90deg, var(--form-blue-2), rgba(30, 94, 168, 0.16));
 }
 
+.section-title-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+}
+
+.section-heading-copy {
+    min-width: 0;
+}
+
 .section-icon {
     display: inline-grid;
-    width: 44px;
-    height: 44px;
+    width: 38px;
+    height: 38px;
     place-items: center;
     border: 1px solid #d9e8f6;
-    border-radius: 14px;
-    background: linear-gradient(180deg, #f8fbff 0%, #e9f4ff 100%);
+    border-radius: 12px;
+    background: #eef6ff;
     color: var(--form-blue-2);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76), 0 5px 14px rgba(11, 52, 88, 0.07);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+    flex: 0 0 auto;
 }
 
 .it-request-form-page .section-heading h2,
 .it-request-form-page .subsection-heading h3 {
     margin: 0;
     color: var(--form-navy);
-    font-size: clamp(21px, 1.7vw, 27px);
+    font-size: clamp(22px, 1.75vw, 28px);
     font-weight: 900;
     line-height: 1.15;
 }
 
 .it-request-form-page .section-heading p:not(.section-kicker) {
-    margin: 5px 0 0;
+    margin: 4px 0 0;
     color: var(--form-muted);
     font-size: 15px;
     font-weight: 700;
@@ -320,7 +330,7 @@ button {
 .it-request-form-page .form-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px 20px;
+    gap: 14px 18px;
     margin: 0;
 }
 
@@ -332,13 +342,13 @@ button {
     display: flex;
     min-width: 0;
     flex-direction: column;
-    gap: 7px;
+    gap: 5px;
 }
 
 .it-request-form-page .form-group label,
 .it-request-form-page .server-input-row label {
     margin: 0;
-    color: #12385e;
+    color: #0b2f54;
     font-size: 15px;
     font-weight: 900;
     line-height: 1.3;
@@ -357,9 +367,9 @@ button {
 .field-hint {
     display: block;
     margin: 0;
-    color: var(--form-muted);
+    color: #718195;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 650;
     line-height: 1.35;
 }
 
@@ -374,12 +384,12 @@ button {
 .it-request-form-page select,
 .it-request-form-page textarea {
     width: 100%;
-    min-height: 44px;
-    padding: 10px 13px;
+    min-height: 42px;
+    padding: 9px 12px;
     border: 1px solid var(--form-border-strong);
     border-radius: 12px;
     background: #ffffff;
-    color: var(--form-text);
+    color: #10233b;
     font-size: 15px;
     font-weight: 700;
     line-height: 1.35;
@@ -388,7 +398,7 @@ button {
 }
 
 .it-request-form-page textarea {
-    min-height: 118px;
+    min-height: 108px;
     resize: vertical;
 }
 
@@ -511,20 +521,20 @@ button {
 
 #requestsContainer {
     display: grid;
-    gap: 16px;
+    gap: 12px;
 }
 
 .it-request-form-page .request-item-card {
     position: relative;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px 18px;
+    gap: 14px 18px;
     width: 100%;
-    padding: 18px;
-    border: 1px solid var(--form-border);
-    border-radius: var(--form-radius-lg);
-    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-    box-shadow: 0 6px 18px rgba(11, 52, 88, 0.06);
+    padding: 15px 16px 16px 20px;
+    border: 1px solid #dfeaf5;
+    border-radius: 16px;
+    background: #f8fbff;
+    box-shadow: none;
     overflow: hidden;
     transition: border-color var(--form-ease), box-shadow var(--form-ease), transform var(--form-ease);
 }
@@ -534,14 +544,14 @@ button {
     position: absolute;
     inset: 0 auto 0 0;
     width: 4px;
-    border-radius: var(--form-radius-lg) 0 0 var(--form-radius-lg);
+    border-radius: 16px 0 0 16px;
     background: var(--form-blue-2);
 }
 
 .it-request-form-page .request-item-card:hover {
     transform: translateY(-1px);
     border-color: rgba(31, 95, 159, 0.36);
-    box-shadow: var(--form-shadow-md);
+    box-shadow: 0 10px 22px rgba(11, 52, 88, 0.08);
 }
 
 .request-item-header {
@@ -550,17 +560,18 @@ button {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin: -2px -2px 2px;
-    padding: 12px 12px 12px 16px;
-    border: 1px solid #e1ebf5;
-    border-radius: 14px;
-    background: linear-gradient(180deg, #f7fbff 0%, #eff7ff 100%);
+    margin: 0;
+    padding: 0 0 10px;
+    border: 0;
+    border-bottom: 1px solid #dce8f4;
+    border-radius: 0;
+    background: transparent;
 }
 
 .request-item-header h2 {
     margin: 0;
     color: var(--form-navy);
-    font-size: 23px;
+    font-size: 22px;
     font-weight: 900;
     line-height: 1.15;
 }
@@ -617,11 +628,12 @@ button {
 .it-request-form-page .request-item-subsection {
     grid-column: 1 / -1;
     min-width: 0;
-    padding: 16px;
-    border: 1px solid var(--form-border);
-    border-radius: var(--form-radius-md);
-    background: #ffffff;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+    padding: 14px 0 0;
+    border: 0;
+    border-top: 1px solid #dce8f4;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .it-request-form-page .server-permission-box,
@@ -638,7 +650,7 @@ button {
 .server-permission-title {
     margin: 0;
     color: var(--form-navy);
-    font-size: 19px;
+    font-size: 18px;
     font-weight: 900;
     line-height: 1.25;
 }
@@ -679,7 +691,7 @@ button {
     padding: 7px 11px;
     border: 1px solid var(--form-border);
     border-radius: 999px;
-    background: #f9fcff;
+    background: #ffffff;
     color: var(--form-text);
     font-size: 14px;
     font-weight: 800;
@@ -713,18 +725,18 @@ button {
 
 .add-request-wrap {
     justify-content: center;
-    margin-top: 14px;
+    margin-top: 12px;
 }
 
 .form-action-bar {
     justify-content: flex-end;
-    gap: 10px;
-    margin-top: 2px;
-    padding: 16px;
-    border: 1px solid var(--form-border);
+    gap: 12px;
+    margin-top: 4px;
+    padding: 14px;
+    border: 1px solid #cfe0f0;
     border-radius: var(--form-radius-lg);
-    background: rgba(255, 255, 255, 0.88);
-    box-shadow: var(--form-shadow-sm);
+    background: #ffffff;
+    box-shadow: 0 10px 26px rgba(11, 52, 88, 0.09);
 }
 
 .it-request-form-page .btn {
@@ -773,11 +785,12 @@ button {
 }
 
 .it-request-form-page .btn-approve {
-    min-width: 174px;
+    min-width: 210px;
+    min-height: 46px;
     border-color: var(--form-blue-2);
     background: linear-gradient(180deg, #1e67b4 0%, #0d4b8f 100%);
     color: #ffffff;
-    box-shadow: 0 10px 22px rgba(13, 75, 143, 0.22);
+    box-shadow: 0 12px 26px rgba(13, 75, 143, 0.28);
 }
 
 .it-request-form-page .btn-approve:hover {

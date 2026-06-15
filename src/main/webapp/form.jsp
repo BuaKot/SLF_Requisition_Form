@@ -31,7 +31,6 @@
 
     <header class="form-page-header page-header" aria-labelledby="itRequestFormTitle">
         <div class="form-hero-content">
-            <p class="page-kicker">IT Requisition Form</p>
             <h1 class="page-title" id="itRequestFormTitle">ใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</h1>
             <p class="page-subtitle">กรอกข้อมูลคำขอใหม่ ตรวจสอบรายละเอียด และส่งเข้าสู่กระบวนการอนุมัติ</p>
         </div>
@@ -49,10 +48,12 @@
 
             <section class="form-section applicant-information panel" aria-labelledby="applicantInfoTitle">
                 <div class="section-heading">
-                    <span class="section-icon" aria-hidden="true"><i class="fa-solid fa-user-check"></i></span>
-                    <div>
-                        <h2 id="applicantInfoTitle">ข้อมูลผู้ขอ</h2>
-                        <p>ข้อมูลผู้ใช้ถูกดึงจากระบบและล็อกไว้เพื่อป้องกันการส่งคำขอผิดหน่วยงาน</p>
+                    <div class="section-title-block">
+                        <span class="section-icon" aria-hidden="true"><i class="fa-solid fa-user-check"></i></span>
+                        <div class="section-heading-copy">
+                            <h2 id="applicantInfoTitle">ข้อมูลผู้ขอ</h2>
+                            <p>ข้อมูลผู้ใช้ถูกดึงจากระบบและล็อกไว้เพื่อป้องกันการส่งคำขอผิดหน่วยงาน</p>
+                        </div>
                     </div>
                 </div>
 
@@ -94,10 +95,12 @@
 
             <section class="form-section request-information panel" aria-labelledby="requestInfoTitle">
                 <div class="section-heading">
-                    <span class="section-icon" aria-hidden="true"><i class="fa-solid fa-clipboard-list"></i></span>
-                    <div>
-                        <h2 id="requestInfoTitle">ข้อมูลคำขอ</h2>
-                        <p>ระบุหัวข้อและกำหนดวันที่ต้องการใช้งาน เพื่อช่วยให้ทีม IT จัดลำดับงานได้ถูกต้อง</p>
+                    <div class="section-title-block">
+                        <span class="section-icon" aria-hidden="true"><i class="fa-solid fa-clipboard-list"></i></span>
+                        <div class="section-heading-copy">
+                            <h2 id="requestInfoTitle">ข้อมูลคำขอ</h2>
+                            <p>ระบุหัวข้อและกำหนดวันที่ต้องการใช้งาน เพื่อช่วยให้ทีม IT จัดลำดับงานได้ถูกต้อง</p>
+                        </div>
                     </div>
                 </div>
 
@@ -123,10 +126,12 @@
 
             <section class="form-section requested-items panel" aria-labelledby="requestedItemsTitle">
                 <div class="section-heading">
-                    <span class="section-icon" aria-hidden="true"><i class="fa-solid fa-layer-group"></i></span>
-                    <div>
-                        <h2 id="requestedItemsTitle">รายการคำขอ</h2>
-                        <p>เพิ่มรายการได้มากกว่าหนึ่งรายการ โดยควรอยู่ในกลุ่มผู้รับผิดชอบเดียวกัน</p>
+                    <div class="section-title-block">
+                        <span class="section-icon" aria-hidden="true"><i class="fa-solid fa-layer-group"></i></span>
+                        <div class="section-heading-copy">
+                            <h2 id="requestedItemsTitle">รายการคำขอ</h2>
+                            <p>เพิ่มรายการได้มากกว่าหนึ่งรายการ โดยควรอยู่ในกลุ่มผู้รับผิดชอบเดียวกัน</p>
+                        </div>
                     </div>
                 </div>
 

@@ -200,8 +200,13 @@ public class ThirdPartyWorkflowDAO {
                 new ArrayList<ThirdPartyWorkflowActionEntry>());
         }
         String sql =
-            "SELECT a.REQUEST_ID, a.ACTION_TYPE, a.ACTED_AT " +
+            "SELECT a.REQUEST_ID, a.ACTION_TYPE, a.ACTOR_TYPE, a.ACTOR_EMPID, " +
+            "CASE WHEN a.ACTOR_TYPE = 'EXTERNAL' THEN r.EXTERNAL_CONTACT_NAME ELSE e.EMPNAME END AS ACTOR_EMPNAME, " +
+            "CASE WHEN a.ACTOR_TYPE = 'EXTERNAL' THEN 'ผู้ขอใช้บริการ' ELSE e.POSITION END AS ACTOR_POSITION, " +
+            "a.ACTED_AT " +
             "FROM THIRD_PARTY_WORKFLOW_ACTION a " +
+            "JOIN THIRD_PARTY_REQUEST r ON r.REQUEST_ID = a.REQUEST_ID " +
+            "LEFT JOIN EMPLOYEE e ON e.EMPID = a.ACTOR_EMPID " +
             "WHERE a.REQUEST_ID IN (" + placeholders + ") AND a.ACTION_TYPE <> 'WORKFLOW_MIGRATED' " +
             "ORDER BY a.REQUEST_ID, a.ACTED_AT ASC, a.ACTION_ID ASC";
         try (Connection conn = DBConnection.getConnection();
@@ -215,6 +220,11 @@ public class ThirdPartyWorkflowDAO {
                     ThirdPartyWorkflowActionEntry entry = new ThirdPartyWorkflowActionEntry();
                     entry.setRequestId(rs.getLong("REQUEST_ID"));
                     entry.setActionType(rs.getString("ACTION_TYPE"));
+                    entry.setActorType(rs.getString("ACTOR_TYPE"));
+                    int actorEmpId = rs.getInt("ACTOR_EMPID");
+                    entry.setActorEmpId(rs.wasNull() ? null : Integer.valueOf(actorEmpId));
+                    entry.setActorEmpName(rs.getString("ACTOR_EMPNAME"));
+                    entry.setActorPosition(rs.getString("ACTOR_POSITION"));
                     entry.setActedAt(rs.getTimestamp("ACTED_AT"));
                     List<ThirdPartyWorkflowActionEntry> history =
                         historyByRequest.get(Long.valueOf(entry.getRequestId()));

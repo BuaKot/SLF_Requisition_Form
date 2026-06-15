@@ -162,7 +162,8 @@ public class ThirdPartyRequestDAO {
         boolean hasSearch = !normalizedSearch.isEmpty();
         String sql =
             "SELECT r.REQUEST_ID, r.INTERNAL_OWNER_EMPID, r.EXTERNAL_COMPANY_NAME, " +
-            "r.EXTERNAL_CONTACT_NAME, r.TARGET_SYSTEM, r.STATUS, r.SUBMITTED_AT, " +
+            "r.EXTERNAL_CONTACT_NAME, r.TARGET_SYSTEM, r.ACCESS_START_DATE, r.ACCESS_END_DATE, " +
+            "r.STATUS, r.SUBMITTED_AT, " +
             "(SELECT MAX(s.SUBMISSION_ID) FROM THIRD_PARTY_FORM_LINK l " +
             " JOIN THIRD_PARTY_FORM_SUBMISSION s ON s.LINK_ID = l.LINK_ID " +
             " WHERE l.REQUEST_ID = r.REQUEST_ID) AS SUBMISSION_ID " +
@@ -332,6 +333,8 @@ public class ThirdPartyRequestDAO {
         request.setExternalCompanyName(rs.getString("EXTERNAL_COMPANY_NAME"));
         request.setExternalContactName(rs.getString("EXTERNAL_CONTACT_NAME"));
         request.setTargetSystem(rs.getString("TARGET_SYSTEM"));
+        request.setAccessStartDate(getBangkokDate(rs, "ACCESS_START_DATE"));
+        request.setAccessEndDate(getBangkokDate(rs, "ACCESS_END_DATE"));
         request.setStatus(rs.getString("STATUS"));
         request.setSubmittedAt(rs.getTimestamp("SUBMITTED_AT"));
         long submissionId = rs.getLong("SUBMISSION_ID");

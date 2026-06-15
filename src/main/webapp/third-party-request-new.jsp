@@ -98,7 +98,7 @@
                 <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdParty/history">
                     <i class="fa-solid fa-clock-rotate-left"></i> ประวัติ
                 </a>
-                <a class="btn btn-secondary detail-back-button" href="<%= h(thirdPartyFormBack.getHref()) %>">
+                <a class="btn btn-secondary detail-back-button" href="<%= h(request.getContextPath() + "/index.jsp") %>">
                     <i class="fa-solid fa-arrow-left"></i> <%= h(thirdPartyFormBack.getLabel()) %>
                 </a>
                 <form method="post" action="${pageContext.request.contextPath}/thirdParty/request/new">

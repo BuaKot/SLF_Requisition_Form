@@ -36,7 +36,6 @@
     <!-- CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/submit.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/it-requisition-form-detail.jsp">
     <!-- ICON -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flaticon@3/flaticon.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -61,7 +60,11 @@
     <main class="work-queue-page submitted-queue">
 
     <!-- TITLE -->
-    <section class="queue-page-header">
+    <section class="queue-page-header" aria-labelledby="queuePageTitle">
+        <div class="queue-header-copy">
+            <h1 id="queuePageTitle">ฟอร์มที่ส่งแล้ว</h1>
+            <p>ตรวจสอบสถานะใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ ติดตามขั้นตอนอนุมัติ และดำเนินการยืนยันผลตรวจรับ</p>
+        </div>
     </section>
     <% if (alreadyProcessed) { %>
     <div class="submit-alert"><i class="fa-solid fa-circle-info"></i> ใบขอนี้ถูกดำเนินการแล้ว</div>

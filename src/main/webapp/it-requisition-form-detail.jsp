@@ -33,7 +33,6 @@
     <main class="enterprise-index-main">
         <section class="enterprise-hero index-banner it-requisition-banner">
             <div class="enterprise-hero-copy index-banner-inner">
-                <p class="enterprise-eyebrow"><i class="fa-solid fa-microchip"></i> IT SERVICE MANAGEMENT PORTAL</p>
                 <h1>ใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</h1>
                 <p class="enterprise-hero-lead">
                     ระบบศูนย์กลางสำหรับยื่นแบบฟอร์มขอสร้างคำขอด้านระบบสารสนเทศ อุปกรณ์ฮาร์ดแวร์ สิทธิ์การใช้งานซอฟต์แวร์ และงานบริการด้านเทคนิค IT ผ่านกระบวนการ Workflow อนุมัติขององค์กร

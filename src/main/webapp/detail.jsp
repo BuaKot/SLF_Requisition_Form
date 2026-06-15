@@ -1,4 +1,4 @@
-﻿<%@ include file="/WEB-INF/checkAuth.jsp" %>
+<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection, com.slf.util.SecurityUtil, com.slf.util.NavigationUtil" %>
@@ -104,12 +104,11 @@
     </a>
 </div>
 
-<section class="enterprise-hero">
+<section class="enterprise-hero requisition-detail-banner" aria-labelledby="detailHeroTitle">
     <div class="banner" hidden aria-hidden="true"></div>
-    <div class="enterprise-hero-copy">
-        <p class="enterprise-eyebrow"><i class="fa-solid fa-file-invoice"></i> REQUISITION REVIEWS</p>
-        <h1>ใบขอให้ดำเนินการ / Requisition Form</h1>
-        <p class="enterprise-hero-lead">ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินกู้ยืมเพื่อการศึกษา</p>
+    <div class="enterprise-hero-copy index-banner-inner">
+        <p class="enterprise-eyebrow">ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</p>
+        <h1 id="detailHeroTitle">ใบขอให้ดำเนินการ / Requisition Form (ใบที่: <%= formId %>)</h1>
     </div>
 </section>
 

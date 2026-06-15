@@ -1,4 +1,4 @@
-﻿<%@ include file="/WEB-INF/checkAuth.jsp" %>
+<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*" %>
@@ -188,30 +188,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: 'Sarabun', sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; overflow-x: hidden; }
+        body { font-family: var(--slf-font-family); background-color: var(--slf-color-bg); margin: 0; padding: 0; overflow-x: hidden; }
         .container { max-width: 1300px; margin: 25px auto; padding: 0 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 3px solid #3272BB; padding-bottom: 10px; }
-        .filter-container { background: white; border-radius: 15px; padding: 20px 25px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 15px; border: 1px solid #e0e0e0; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 3px solid var(--slf-color-accent); padding-bottom: 10px; }
+        .filter-container { background: var(--slf-color-surface); border-radius: var(--slf-radius-md); padding: 20px 25px; margin-bottom: 25px; box-shadow: var(--slf-shadow-md); display: flex; flex-direction: column; gap: 15px; border: 1px solid var(--slf-color-border); }
         .filter-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
-        .filter-title { font-weight: bold; color: #003366; display: flex; align-items: center; gap: 8px; }
+        .filter-title { font-weight: bold; color: var(--slf-color-primary); display: flex; align-items: center; gap: 8px; }
         .filter-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
-        .btn-filter { background: #f0f3f5; color: #555; border: 1px solid #ccc; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.2s ease; font-family: 'Sarabun', sans-serif; text-decoration: none; font-size: 0.9rem; }
-        .btn-filter:hover { background: #e2e6e9; color: #003366; }
-        .btn-filter.active { background: #3272BB; color: white; border-color: #3272BB; box-shadow: 0 3px 6px rgba(50,114,187,0.3); }
-        .date-picker-form { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 15px; border-radius: 10px; border: 1px dashed #3272BB; }
-        .date-input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.9rem; color: #333; outline: none; }
-        .date-input:focus { border-color: #3272BB; }
-        .btn-submit-date { background: #2ecc71; color: white; border: none; padding: 7px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 0.9rem; transition: background 0.2s; }
-        .btn-submit-date:hover { background: #27ae60; }
+        .btn-filter { background: var(--slf-color-surface-muted); color: var(--slf-color-text-muted); border: 1px solid var(--slf-color-border-strong); padding: 8px 16px; border-radius: var(--slf-radius-sm); cursor: pointer; font-weight: bold; transition: all 0.2s ease; font-family: inherit; text-decoration: none; font-size: 0.9rem; }
+        .btn-filter:hover { background: var(--slf-color-border); color: var(--slf-color-primary); }
+        .btn-filter.active { background: var(--slf-color-accent); color: white; border-color: var(--slf-color-accent); box-shadow: var(--slf-focus-ring); }
+        .date-picker-form { display: flex; align-items: center; gap: 10px; background: var(--slf-color-surface-muted); padding: 8px 15px; border-radius: var(--slf-radius-sm); border: 1px dashed var(--slf-color-accent); }
+        .date-input { padding: 6px 10px; border: 1px solid var(--slf-color-border); border-radius: var(--slf-radius-sm); font-family: inherit; font-size: 0.9rem; color: var(--slf-color-text); outline: none; }
+        .date-input:focus { border-color: var(--slf-color-accent); }
+        .btn-submit-date { background: var(--slf-color-success); color: white; border: none; padding: 7px 15px; border-radius: var(--slf-radius-sm); font-weight: bold; cursor: pointer; font-family: inherit; font-size: 0.9rem; transition: background 0.2s; }
+        .btn-submit-date:hover { filter: brightness(0.9); }
         .grid-kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        .kpi-card { background: #3272BB; color: white; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .kpi-card { background: var(--slf-color-accent); color: white; border-radius: var(--slf-radius-md); padding: 20px; text-align: center; box-shadow: var(--slf-shadow-sm); }
         .kpi-card h2 { margin: 10px 0 0 0; font-size: 2.5rem; }
         .grid-charts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin-bottom: 25px; }
         .full-chart { grid-column: span 2; }
-        .chart-card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
+        .chart-card { background: var(--slf-color-surface); border-radius: var(--slf-radius-md); padding: 25px; box-shadow: var(--slf-shadow-md); border: 1px solid var(--slf-color-border); }
         .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .chart-header h3 { color: #003366; margin: 0; font-size: 1.1rem; }
-        .btn-export { background: #f0f3f5; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; color: #555; }
+        .chart-header h3 { color: var(--slf-color-primary); margin: 0; font-size: 1.1rem; }
+        .btn-export { background: var(--slf-color-surface-muted); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; color: var(--slf-color-text-muted); }
     </style>
 </head>
 <body>

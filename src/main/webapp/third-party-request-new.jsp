@@ -93,7 +93,8 @@
                 <h1>ติดตามลิงก์ลงทะเบียนผู้ใช้ระบบงานสารสนเทศ</h1>
                 <p>สร้างลิงก์ใหม่ ดูสถานะ และยกเลิกลิงก์ที่ยังไม่ถูกส่งแบบฟอร์มได้จากหน้านี้</p>
             </div>
-            <div class="page-head-actions">
+        </section>
+        <div class="page-head-actions">
                 <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdParty/history">
                     <i class="fa-solid fa-clock-rotate-left"></i> ประวัติ
                 </a>
@@ -108,7 +109,6 @@
                     </button>
                 </form>
             </div>
-        </section>
 
         <section class="third-party-panel owner-acceptance-panel">
             <div class="third-party-list-head">

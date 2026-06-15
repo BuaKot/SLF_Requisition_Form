@@ -1,4 +1,4 @@
-﻿<%@ page isELIgnored="false" %>
+<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.slf.util.AuthUtil, com.slf.util.NavigationUtil" %>
 <%
@@ -51,14 +51,14 @@
         <section class="enterprise-menu-section">
             <div class="enterprise-section-head">
                 <div class="enterprise-card-content">
-                    <strong style="color: #003366; font-size: 24px;">
-                        <i class="fa-solid fa-layer-group" style="color: #3272BB; margin-right: 8px;"></i> รายการดำเนินการที่สามารถเลือกได้
+                    <strong style="color: var(--slf-color-primary); font-size: var(--slf-font-size-xl); font-family: var(--slf-font-family);">
+                        <i class="fa-solid fa-layer-group" style="color: var(--slf-color-accent); margin-right: var(--slf-space-2);"></i> รายการดำเนินการที่สามารถเลือกได้
                     </strong>
-                    <small style="color: #52677d;">เลือกปฏิบัติการตามสิทธิ์การใช้งานของระบบปัจจุบันของคุณ</small>
+                    <small style="color: var(--slf-color-text-muted); font-family: var(--slf-font-family);">เลือกปฏิบัติการตามสิทธิ์การใช้งานของระบบปัจจุบันของคุณ</small>
                 </div>
             </div>
 
-            <div class="enterprise-action-grid <%= approvalOnlyRole ? "approval-only-actions" : "" %>" style="margin-top: 18px;">
+            <div class="enterprise-action-grid <%= approvalOnlyRole ? "approval-only-actions" : "" %>" style="margin-top: var(--slf-space-4);">
                 
                 <% if (!approvalOnlyRole) { %>
                 <a class="enterprise-action-card primary" href="${pageContext.request.contextPath}/forms/select?code=IT_REQUISITION_REQUEST">

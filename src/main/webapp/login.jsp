@@ -49,15 +49,15 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
         :root {
-            --brand-blue: #0878c9;
-            --brand-blue-dark: #1e4694;
-            --brand-blue-deep: #173c83;
-            --text-main: #282f39;
-            --text-muted: #767f8d;
-            --line: #d7dde6;
-            --focus: #6cb8ff;
-            --danger: #ec5f62;
-            --white: #ffffff;
+            --brand-blue: var(--slf-color-accent);
+            --brand-blue-dark: var(--slf-color-accent-600, #2563a6);
+            --brand-blue-deep: var(--slf-color-primary);
+            --text-main: var(--slf-color-text);
+            --text-muted: var(--slf-color-text-muted);
+            --line: var(--slf-color-border);
+            --focus: var(--slf-color-accent);
+            --danger: var(--slf-color-danger);
+            --white: var(--slf-color-surface);
         }
 
         * {
@@ -67,7 +67,7 @@
         body {
             min-height: 100vh;
             margin: 0;
-            font-family: 'DBHelvethaica', 'Tahoma', 'Arial', sans-serif;
+            font-family: var(--slf-font-family);
             color: var(--text-main);
             background: var(--white);
         }

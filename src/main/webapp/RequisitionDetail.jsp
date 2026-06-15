@@ -1,4 +1,4 @@
-﻿<%@ include file="/WEB-INF/checkAuth.jsp" %>
+<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat, java.util.*, com.slf.util.SecurityUtil, com.slf.util.NavigationUtil" %>
@@ -166,30 +166,29 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
-        /* ... keep all the existing CSS from your friend's version ... */
         * { box-sizing: border-box; }
-        body { font-family: 'Sarabun', sans-serif; margin: 0; background-color: #f4f7f9; }
-        .banner { background: #C3EAFF; padding: clamp(20px, 6vw, 40px) 15px; text-align: center; color: #003366; }
-        .banner h1 { font-size: clamp(1.1rem, 4vw, 1.5rem); margin: 0; line-height: 1.2; }
-        .form-container { width: min(900px, calc(100% - 32px)); margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow-x: hidden; }
+        body { font-family: var(--slf-font-family); margin: 0; background-color: var(--slf-color-bg); color: var(--slf-color-text); }
+
+        .form-container { width: min(900px, calc(100% - 32px)); margin: 20px auto; background: var(--slf-color-surface); padding: 30px; border-radius: var(--slf-radius-md); box-shadow: var(--slf-shadow-md); overflow-x: hidden; border: 1px solid var(--slf-color-border); }
         .form-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; margin-bottom: 20px; }
         .form-group { display: flex; flex-direction: column; min-width: 0; }
-        .form-group label { font-weight: bold; margin-bottom: 8px; font-size: 0.9rem; color: #333; }
-        .form-group input, .form-group select, .form-group textarea { display: block; width: 100%; max-width: 100%; min-width: 0; padding: 10px; border: 1px solid #3272BB; border-radius: 5px; font-size: 14px; background-color: #ffffff; }
-        .form-group input[readonly], .form-group textarea[readonly], .form-group select[disabled] { background-color: #f8fafc; border-color: #cbd5e1; color: #475569; }
+        .form-group label { font-weight: bold; margin-bottom: 8px; font-size: 0.9rem; color: var(--slf-color-primary); }
+        .form-group input, .form-group select, .form-group textarea { display: block; width: 100%; max-width: 100%; min-width: 0; padding: 10px; border: 1px solid var(--slf-color-border-strong); border-radius: var(--slf-radius-sm); font-size: 14px; background-color: var(--slf-color-surface); color: var(--slf-color-text); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--slf-color-accent); box-shadow: var(--slf-focus-ring); }
+        .form-group input[readonly], .form-group textarea[readonly], .form-group select[disabled] { background-color: var(--slf-color-surface-muted); border-color: var(--slf-color-border); color: var(--slf-color-text-muted); }
         .full-width { grid-column: span 2; }
-        .form-id-note { color: #777; font-size: 0.9rem; margin-bottom: 14px; }
+        .form-id-note { color: var(--slf-color-text-muted); font-size: 0.9rem; margin-bottom: 14px; }
         form, .section-box-main, .item-block, .section-box, .server-permission-box { width: 100%; max-width: 100%; min-width: 0; }
-        .item-block { border: 1px solid #3272BB; border-radius: 10px; padding: 15px; margin-bottom: 16px; background: #ffffff; }
+        .item-block { border: 1px solid var(--slf-color-accent); border-radius: var(--slf-radius-md); padding: 15px; margin-bottom: 16px; background: var(--slf-color-surface); }
         .permission-checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
         .permission-checkbox-row label { display: inline-flex; align-items: center; gap: 5px; font-weight: normal; }
         .permission-checkbox-row input[type="checkbox"] { width: auto; }
-        .server-permission-box { border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; margin-top: 12px; background: #f8fafc; }
+        .server-permission-box { border: 1px solid var(--slf-color-border); border-radius: var(--slf-radius-sm); padding: 14px; margin-top: 12px; background: var(--slf-color-surface-muted); }
         .server-input-row { display: flex; flex-direction: column; margin-bottom: 10px; }
         .btn-group { display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 25px; width: 100%; }
-        .btn { padding: 12px 40px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.3s; color: white; }
-        .btn-reject { background-color: #CC0000; }
-        .btn-approve { background-color: #00A859; }
+        .btn { padding: 12px 40px; border: none; border-radius: var(--slf-radius-sm); cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.3s; color: white; }
+        .btn-reject { background-color: var(--slf-color-danger); }
+        .btn-approve { background-color: var(--slf-color-success); }
         .btn:hover { opacity: 0.8; transform: translateY(-2px); }
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; }
@@ -201,10 +200,12 @@
 <%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 <div id="main">
 <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
-<div class="banner">
-    <h1>ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</h1>
-    <h1 style="margin-top: 5px;">ใบขอให้ดำเนินการ / Requisition Form (ใบที่: <%= h((formId != null) ? formId : "-") %>)</h1>
-</div>
+<section class="enterprise-hero requisition-detail-banner" aria-labelledby="detailHeroTitle">
+    <div class="enterprise-hero-copy index-banner-inner">
+        <p class="enterprise-eyebrow">ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</p>
+        <h1 id="detailHeroTitle">ใบขอให้ดำเนินการ / Requisition Form (ใบที่: <%= h((formId != null) ? formId : "-") %>)</h1>
+    </div>
+</section>
 <div class="detail-action-bar"><a class="detail-back-button" href="<%= h(backLink.getHref()) %>"><i class="fa fa-arrow-left"></i> <%= h(backLink.getLabel()) %></a></div>
 
 <div class="form-container">

@@ -1,4 +1,4 @@
-﻿<%@ include file="/WEB-INF/checkAuth.jsp" %>
+<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.slf.util.AuthUtil" %>
@@ -74,33 +74,33 @@
 
     <style>
         :root {
-            --color-primary: #003366;
-            --color-primary-hover: #001f3f;
-            --color-accent: #3272BB;
-            --color-accent-light: #e6f0fa;
-            --color-banner-start: #C3EAFF;
-            --color-banner-end: #e6f4fc;
-            --color-white: #ffffff;
-            --color-bg: #f7f9fc;
-            --color-text: #1e293b;
-            --color-text-secondary: #475569;
-            --color-border: #e2e8f0;
-            --shadow-xs: 0 1px 2px rgba(0,0,0,0.03);
-            --shadow-sm: 0 4px 6px rgba(0,0,0,0.04);
-            --shadow-md: 0 6px 14px rgba(0,0,0,0.06);
-            --shadow-lg: 0 12px 24px rgba(0,0,0,0.08);
-            --shadow-hover: 0 16px 32px rgba(0,51,102,0.12);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-full: 999px;
-            --transition-base: 0.2s ease;
+            --color-primary: var(--slf-color-primary);
+            --color-primary-hover: var(--slf-color-primary-700);
+            --color-accent: var(--slf-color-accent);
+            --color-accent-light: var(--slf-color-accent-100);
+            --color-banner-start: var(--slf-color-accent-100);
+            --color-banner-end: var(--slf-color-bg);
+            --color-white: var(--slf-color-surface);
+            --color-bg: var(--slf-color-bg);
+            --color-text: var(--slf-color-text);
+            --color-text-secondary: var(--slf-color-text-muted);
+            --color-border: var(--slf-color-border);
+            --shadow-xs: var(--slf-shadow-sm);
+            --shadow-sm: var(--slf-shadow-sm);
+            --shadow-md: var(--slf-shadow-md);
+            --shadow-lg: var(--slf-shadow-lg);
+            --shadow-hover: var(--slf-shadow-lg);
+            --radius-sm: var(--slf-radius-sm);
+            --radius-md: var(--slf-radius-md);
+            --radius-lg: var(--slf-radius-lg);
+            --radius-full: var(--slf-radius-pill);
+            --transition-base: var(--transition-base, 0.2s ease);
         }
 
         * { box-sizing: border-box; }
 
         body {
-            font-family: 'Sarabun', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--slf-font-family);
             margin: 0;
             padding: 0;
             background-color: var(--color-bg);

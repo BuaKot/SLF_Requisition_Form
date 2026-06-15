@@ -1,4 +1,4 @@
-﻿<%@ page isELIgnored="false" %>
+<%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.*" %>
 <%!
@@ -32,41 +32,41 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/submit.css">
     <style>
         * { box-sizing: border-box; }
-        body { margin: 0; background: #f4f8fc; color: #17324d; font-family: 'DB Helvethaica X 55 Regular', 'DBHelvethaica', 'Sarabun', sans-serif; }
+        body { margin: 0; background: var(--slf-color-bg); color: var(--slf-color-text); font-family: var(--slf-font-family); }
         .approval-main { min-height: 100vh; }
-        .approval-header { border-bottom: 1px solid #c9dcee; background: #e8f3fb; padding: 30px 24px; }
+        .approval-header { border-bottom: 1px solid var(--slf-color-border); background: var(--slf-color-accent-100); padding: 30px 24px; }
         .approval-header-inner, .approval-list { width: min(1360px, calc(100% - 40px)); margin: 0 auto; }
         .approval-header-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
         .approval-title { display: flex; align-items: center; gap: 16px; }
-        .approval-title-icon { width: 58px; height: 58px; display: grid; place-items: center; border: 1px solid #c9dcee; border-radius: 8px; background: #fff; color: #1664a5; font-size: 25px; }
-        .approval-title h1 { margin: 0; color: #003f73; font-size: 29px; line-height: 1.2; }
-        .approval-title p { margin: 5px 0 0; color: #506c85; font-size: 17px; }
+        .approval-title-icon { width: 58px; height: 58px; display: grid; place-items: center; border: 1px solid var(--slf-color-border); border-radius: var(--slf-radius-md); background: var(--slf-color-surface); color: var(--slf-color-primary); font-size: 25px; }
+        .approval-title h1 { margin: 0; color: var(--slf-color-primary); font-size: var(--slf-font-size-2xl); line-height: 1.2; }
+        .approval-title p { margin: 5px 0 0; color: var(--slf-color-text-muted); font-size: var(--slf-font-size-sm); }
         .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .page-button { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 15px; border: 1px solid #b7d1e8; border-radius: 8px; background: #fff; color: #003f73; text-decoration: none; font-size: 16px; font-weight: 800; transition: .2s ease; }
-        .page-button:hover { background: #f1f7fc; border-color: #3272bb; }
-        .count-badge { min-width: 42px; min-height: 42px; display: grid; place-items: center; border-radius: 8px; background: #003f73; color: #fff; font-size: 18px; font-weight: 800; }
+        .page-button { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 15px; border: 1px solid var(--slf-color-border-strong); border-radius: var(--slf-radius-sm); background: var(--slf-color-surface); color: var(--slf-color-primary); text-decoration: none; font-size: 16px; font-weight: 800; transition: .2s ease; }
+        .page-button:hover { background: var(--slf-color-surface-muted); border-color: var(--slf-color-accent); }
+        .count-badge { min-width: 42px; min-height: 42px; display: grid; place-items: center; border-radius: var(--slf-radius-sm); background: var(--slf-color-primary); color: #fff; font-size: 18px; font-weight: 800; }
         .approval-list { padding: 24px 0 48px; }
-        .requisition-card { display: flex; align-items: center; gap: 20px; margin-bottom: 12px; padding: 16px 20px; border: 1px solid #ccdae7; border-left: 4px solid #3272bb; border-radius: 8px; background: #fff; color: inherit; text-decoration: none; box-shadow: 0 4px 12px rgba(0,51,102,.06); transition: .2s ease; }
-        .requisition-card:hover { border-color: #3272bb; box-shadow: 0 8px 20px rgba(0,51,102,.12); transform: translateY(-2px); }
-        .card-id-box { min-width: 174px; padding: 9px 12px; border: 1px solid #b7d1e8; border-radius: 6px; background: #f2f8fd; color: #003f73; text-align: center; font-size: 16px; font-weight: 800; }
+        .requisition-card { display: flex; align-items: center; gap: 20px; margin-bottom: 12px; padding: 16px 20px; border: 1px solid var(--slf-color-border); border-left: 4px solid var(--slf-color-accent); border-radius: var(--slf-radius-md); background: var(--slf-color-surface); color: inherit; text-decoration: none; box-shadow: var(--slf-shadow-sm); transition: .2s ease; }
+        .requisition-card:hover { border-color: var(--slf-color-accent); box-shadow: var(--slf-shadow-md); transform: translateY(-2px); }
+        .card-id-box { min-width: 174px; padding: 9px 12px; border: 1px solid var(--slf-color-border); border-radius: var(--slf-radius-sm); background: var(--slf-color-surface-muted); color: var(--slf-color-primary); text-align: center; font-size: 16px; font-weight: 800; }
         .card-info { flex: 1; min-width: 0; }
         .info-row { display: grid; grid-template-columns: repeat(3,minmax(145px,1fr)); gap: 8px 18px; margin-bottom: 8px; font-size: 16px; }
         .info-item, .detail-line { overflow-wrap: anywhere; }
-        .info-item b, .detail-line b { color: #1664a5; }
-        .detail-line { color: #405b73; font-size: 16px; }
+        .info-item b, .detail-line b { color: var(--slf-color-primary-600); }
+        .detail-line { color: var(--slf-color-text-muted); font-size: 16px; }
         .status-section { min-width: 170px; display: flex; align-items: center; justify-content: flex-end; gap: 12px; color: #8599aa; }
         .pending-group { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; }
-        .status-label { display: inline-flex; align-items: center; gap: 6px; color: #8a6400; font-size: 14px; font-weight: 800; }
+        .status-label { display: inline-flex; align-items: center; gap: 6px; color: var(--slf-color-warning); font-size: 14px; font-weight: 800; }
         .deadline-tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid; border-radius: 6px; white-space: nowrap; font-size: 13px; }
-        .deadline-tag.normal { color: #176900; background: #f0f9ec; border-color: #77bc63; }
-        .deadline-tag.soon { color: #8a6400; background: #fff8e5; border-color: #e2b943; }
-        .deadline-tag.urgent { color: #b42318; background: #fff1f0; border-color: #e58c85; }
-        .deadline-tag.overdue { color: #b42318; background: #fff1f0; border-color: #e58c85; }
-        .empty-state { padding: 62px 24px; border: 1px dashed #aac6de; border-radius: 8px; background: #fff; color: #526f88; text-align: center; }
-        .empty-state i { display: block; margin-bottom: 14px; color: #3272bb; font-size: 42px; }
-        .empty-state h2 { margin: 0 0 6px; color: #003f73; font-size: 23px; }
+        .deadline-tag.normal { color: var(--slf-color-success); background: var(--slf-color-success-bg); border-color: #77bc63; }
+        .deadline-tag.soon { color: var(--slf-color-warning); background: var(--slf-color-warning-bg); border-color: #e2b943; }
+        .deadline-tag.urgent { color: var(--slf-color-danger); background: var(--slf-color-danger-bg); border-color: #e58c85; }
+        .deadline-tag.overdue { color: var(--slf-color-danger); background: var(--slf-color-danger-bg); border-color: #e58c85; }
+        .empty-state { padding: 62px 24px; border: 1px dashed var(--slf-color-border-strong); border-radius: var(--slf-radius-md); background: var(--slf-color-surface); color: var(--slf-color-text-muted); text-align: center; }
+        .empty-state i { display: block; margin-bottom: 14px; color: var(--slf-color-accent); font-size: 42px; }
+        .empty-state h2 { margin: 0 0 6px; color: var(--slf-color-primary); font-size: 23px; }
         .empty-state p { margin: 0; font-size: 16px; }
-        .approval-alert { width: min(1360px, calc(100% - 40px)); margin: 16px auto 0; padding: 12px 16px; border: 1px solid #f0c36d; border-radius: 8px; background: #fff8e5; color: #7a4b00; font-size: 16px; font-weight: 800; }
+        .approval-alert { width: min(1360px, calc(100% - 40px)); margin: 16px auto 0; padding: 12px 16px; border: 1px solid var(--slf-color-warning); border-radius: var(--slf-radius-md); background: var(--slf-color-warning-bg); color: var(--slf-color-warning); font-size: 16px; font-weight: 800; }
         @media (max-width: 900px) {
             .approval-header-inner, .requisition-card { align-items: flex-start; flex-direction: column; }
             .header-actions { width: 100%; }

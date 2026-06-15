@@ -1,4 +1,4 @@
-﻿<%@ include file="/WEB-INF/checkAuth.jsp" %>
+<%@ include file="/WEB-INF/checkAuth.jsp" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection, java.text.SimpleDateFormat, com.slf.util.NavigationUtil" %>
@@ -78,25 +78,27 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background: #f2f2f2;
-            font-family: 'DB Helvethaica X 55 Regular', 'DBHelvethaica', 'Sarabun', sans-serif;
+            background: var(--slf-color-bg);
+            font-family: var(--slf-font-family);
+            color: var(--slf-color-text);
         }
 
         /* ─── BLUE TITLE ─── */
         .blue-title {
-            background: #d9ebf5;
+            background: var(--slf-color-accent-100);
             text-align: center;
             padding: 18px;
+            border-bottom: 1px solid var(--slf-color-border);
         }
         .blue-title h1 {
             font-size: clamp(18px, 3vw, 28px);
-            color: #003366;
+            color: var(--slf-color-primary);
             margin-block-start: 0.1em;
             margin-block-end: 0.1em;
         }
         .blue-title h2 {
             font-size: clamp(14px, 2.5vw, 22px);
-            color: #003366;
+            color: var(--slf-color-primary);
             margin-block-start: 0.1em;
             margin-block-end: 0.1em;
         }
@@ -107,25 +109,26 @@
             gap: 8px;
             min-height: 40px;
             padding: 8px 13px;
-            border: 1px solid #c5d4e2;
-            border-radius: 8px;
-            background: #f5f9fc;
-            color: #003f73;
+            border: 1px solid var(--slf-color-border-strong);
+            border-radius: var(--slf-radius-sm);
+            background: var(--slf-color-surface);
+            color: var(--slf-color-primary);
             text-decoration: none;
             font-size: 15px;
             font-weight: 800;
             white-space: nowrap;
+            transition: var(--transition-base, 0.2s ease);
         }
 
         .history-home-button:hover {
-            border-color: #3272bb;
-            background: #e8f3fb;
+            border-color: var(--slf-color-accent);
+            background: var(--slf-color-surface-muted);
         }
 
         .filter-separator {
             width: 1px;
             height: 30px;
-            background: #d8e2eb;
+            background: var(--slf-color-border);
             margin: 0 4px;
         }
 
@@ -134,9 +137,9 @@
             display: flex;
             align-items: center;
             padding: 14px 24px;
-            background: #fff;
-            border-bottom: 2px solid #e0e0e0;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+            background: var(--slf-color-surface);
+            border-bottom: 2px solid var(--slf-color-border);
+            box-shadow: var(--slf-shadow-sm);
             gap: 10px;
             flex-wrap: wrap;
         }

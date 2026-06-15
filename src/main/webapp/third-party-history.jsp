@@ -192,7 +192,9 @@
         .history-people-tooltip .history-person{max-width:none;margin:5px}
         .history-date{font-size:12px;font-weight:800;white-space:nowrap}
         .history-detail-cell{text-align:center;white-space:nowrap;overflow:hidden}
+        .history-action-stack{display:inline-flex;flex-direction:column;align-items:stretch;gap:6px;max-width:100%}
         .history-detail-button{display:inline-flex;max-width:100%;padding:5px 7px;font-size:12px;line-height:1;gap:4px;box-sizing:border-box;overflow:hidden}
+        .history-pdf-button{background:#003f73;color:#fff}
         .history-detail-button i{font-size:11px}
         .history-detail-button-text{white-space:nowrap}
         .history-pagination{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:20px}
@@ -207,6 +209,7 @@
             .history-detail-button{width:30px;height:30px;padding:0;justify-content:center;border-radius:8px}
             .history-detail-button i{font-size:12px}
             .history-detail-button-text{display:none}
+            .history-action-stack{align-items:center}
         }
     </style>
 </head>
@@ -322,9 +325,17 @@
                         </td>
                         <td class="history-detail-cell">
                             <% if (item.getSubmissionId() != null) { %>
+                            <div class="history-action-stack">
                             <a class="btn btn-secondary history-detail-button" href="${pageContext.request.contextPath}/thirdPartySubmission?id=<%= item.getSubmissionId() %>">
                                 <i class="fa-solid fa-file-lines"></i><span class="history-detail-button-text">รายละเอียด</span>
                             </a>
+                                <% if ("COMPLETED".equals(item.getStatus())) { %>
+                                <a class="btn history-detail-button history-pdf-button" target="_blank" rel="noopener"
+                                   href="${pageContext.request.contextPath}/thirdParty/exportPdf?submissionId=<%= item.getSubmissionId() %>">
+                                    <i class="fa-solid fa-file-pdf"></i><span class="history-detail-button-text">PDF</span>
+                                </a>
+                                <% } %>
+                            </div>
                             <% } else { %>-<% } %>
                         </td>
                     </tr>

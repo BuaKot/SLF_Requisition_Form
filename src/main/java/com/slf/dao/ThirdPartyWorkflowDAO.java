@@ -157,12 +157,13 @@ public class ThirdPartyWorkflowDAO {
         String sql =
             "SELECT a.ACTION_TYPE, a.ACTOR_TYPE, a.ACTOR_EMPID, " +
             "CASE WHEN a.ACTOR_TYPE = 'EXTERNAL' THEN r.EXTERNAL_CONTACT_NAME ELSE e.EMPNAME END AS ACTOR_EMPNAME, " +
+            "CASE WHEN a.ACTOR_TYPE = 'EXTERNAL' THEN 'เธเธนเนเธเธญเนเธเนเธเธฃเธดเธเธฒเธฃ' ELSE e.POSITION END AS ACTOR_POSITION, " +
             "a.COMMENT_TEXT, a.ACTED_AT " +
             "FROM THIRD_PARTY_WORKFLOW_ACTION a " +
             "JOIN THIRD_PARTY_REQUEST r ON r.REQUEST_ID = a.REQUEST_ID " +
             "LEFT JOIN EMPLOYEE e ON e.EMPID = a.ACTOR_EMPID " +
             "WHERE a.REQUEST_ID = ? AND a.ACTION_TYPE NOT IN ('WORKFLOW_MIGRATED', 'EXTERNAL_SUBMITTED') " +
-            "ORDER BY a.ACTED_AT ASC, a.ACTION_ID ASC";
+            "ORDER BY " + workflowActionOrderSql("a") + ", a.ACTED_AT ASC, a.ACTION_ID ASC";
         List<ThirdPartyWorkflowActionEntry> history = new ArrayList<ThirdPartyWorkflowActionEntry>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -175,6 +176,7 @@ public class ThirdPartyWorkflowDAO {
                     int actorEmpId = rs.getInt("ACTOR_EMPID");
                     entry.setActorEmpId(rs.wasNull() ? null : Integer.valueOf(actorEmpId));
                     entry.setActorEmpName(rs.getString("ACTOR_EMPNAME"));
+                    entry.setActorPosition(rs.getString("ACTOR_POSITION"));
                     entry.setCommentText(rs.getString("COMMENT_TEXT"));
                     entry.setActedAt(rs.getTimestamp("ACTED_AT"));
                     history.add(entry);
@@ -208,7 +210,7 @@ public class ThirdPartyWorkflowDAO {
             "JOIN THIRD_PARTY_REQUEST r ON r.REQUEST_ID = a.REQUEST_ID " +
             "LEFT JOIN EMPLOYEE e ON e.EMPID = a.ACTOR_EMPID " +
             "WHERE a.REQUEST_ID IN (" + placeholders + ") AND a.ACTION_TYPE <> 'WORKFLOW_MIGRATED' " +
-            "ORDER BY a.REQUEST_ID, a.ACTED_AT ASC, a.ACTION_ID ASC";
+            "ORDER BY a.REQUEST_ID, " + workflowActionOrderSql("a") + ", a.ACTED_AT ASC, a.ACTION_ID ASC";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             int index = 1;
@@ -526,6 +528,24 @@ public class ThirdPartyWorkflowDAO {
                 }
             }
         }
+    }
+
+    private static String workflowActionOrderSql(String alias) {
+        return "CASE " + alias + ".ACTION_TYPE " +
+            "WHEN 'EXTERNAL_SUBMITTED' THEN 1 " +
+            "WHEN 'SECTION_HEAD_SUBMITTED' THEN 2 " +
+            "WHEN 'IT_DIRECTOR_APPROVED' THEN 3 " +
+            "WHEN 'IT_DIRECTOR_REJECTED' THEN 3 " +
+            "WHEN 'OPERATOR_COMPLETED' THEN 4 " +
+            "WHEN 'EXTERNAL_ACCEPTED' THEN 5 " +
+            "WHEN 'EXTERNAL_REJECTED' THEN 5 " +
+            "WHEN 'EXTERNAL_ACCEPTANCE_EXPIRED' THEN 5 " +
+            "WHEN 'REVOKER_COMPLETED' THEN 6 " +
+            "WHEN 'REVOKE_REVIEWER_APPROVED' THEN 7 " +
+            "WHEN 'REVOKE_REVIEWER_REJECTED' THEN 7 " +
+            "WHEN 'SECTION_HEAD_REPORTED' THEN 8 " +
+            "WHEN 'FINAL_CERTIFIED' THEN 9 " +
+            "ELSE 99 END";
     }
 
     private static void requireItDirector(Connection conn, int empId) throws SQLException {

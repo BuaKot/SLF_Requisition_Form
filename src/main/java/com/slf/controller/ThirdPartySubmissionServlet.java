@@ -53,6 +53,7 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
                     ? java.util.Collections.emptyList()
                     : workflowDAO.findActionHistory(submission.getRequestId().longValue());
             request.setAttribute("approvalHistory", approvalHistory);
+            request.setAttribute("thirdPartyCompleted", Boolean.valueOf(hasFinalCertification(approvalHistory)));
             request.setAttribute("acceptanceScore",
                 submission.getRequestId() != null && hasExternalAcceptance(approvalHistory)
                     ? acceptanceDAO.findSatisfactionLevelByRequestId(submission.getRequestId().longValue())
@@ -85,6 +86,14 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
             java.util.List<ThirdPartyWorkflowActionEntry> approvalHistory) {
         for (ThirdPartyWorkflowActionEntry action : approvalHistory) {
             if ("EXTERNAL_ACCEPTED".equals(action.getActionType())) return true;
+        }
+        return false;
+    }
+
+    private static boolean hasFinalCertification(
+            java.util.List<ThirdPartyWorkflowActionEntry> approvalHistory) {
+        for (ThirdPartyWorkflowActionEntry action : approvalHistory) {
+            if ("FINAL_CERTIFIED".equals(action.getActionType())) return true;
         }
         return false;
     }

@@ -28,4 +28,21 @@ public class ThirdPartySubmissionBackLinkTest extends TestCase {
         assertFalse(page.contains("\"EXTERNAL_SUBMITTED\".equals(actionType)"));
         assertFalse(page.contains("href=\"${pageContext.request.contextPath}/thirdPartyLinks\""));
     }
+
+    public void testCompletedSubmissionShowsPdfExportActionOnlyWhenAllowed() throws Exception {
+        String page = new String(
+            Files.readAllBytes(Paths.get("src/main/webapp/ThirdPartySubmission.jsp")),
+            StandardCharsets.UTF_8
+        );
+        String servlet = new String(
+            Files.readAllBytes(Paths.get("src/main/java/com/slf/controller/ThirdPartySubmissionServlet.java")),
+            StandardCharsets.UTF_8
+        );
+
+        assertTrue(servlet.contains("thirdPartyCompleted"));
+        assertTrue(servlet.contains("FINAL_CERTIFIED"));
+        assertTrue(page.contains("thirdPartyCompleted"));
+        assertTrue(page.contains("/thirdParty/exportPdf?submissionId="));
+        assertTrue(page.contains("third-party-pdf-button"));
+    }
 }

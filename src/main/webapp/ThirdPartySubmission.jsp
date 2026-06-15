@@ -81,6 +81,7 @@
         (List<ThirdPartyWorkflowActionEntry>) request.getAttribute("approvalHistory");
     if (approvalHistory == null) approvalHistory = Collections.emptyList();
     Integer acceptanceScore = (Integer) request.getAttribute("acceptanceScore");
+    boolean thirdPartyCompleted = Boolean.TRUE.equals(request.getAttribute("thirdPartyCompleted"));
     SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     SimpleDateFormat dateOnly = new SimpleDateFormat("dd/MM/yyyy");
     SimpleDateFormat timeOnly = new SimpleDateFormat("HH:mm:ss");
@@ -99,6 +100,7 @@
         body { margin: 0; background: #f4f8fc; color: #102a43; font-family: var(--slf-font-family); }
         .page { max-width: 1160px; margin: 0 auto; padding: 26px 28px 44px; }
         .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin-bottom: 18px; }
+        .page-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px; }
         .page-title h1 { margin: 0; color: #003366; font-size: 28px; }
         .page-title p { margin: 6px 0 0; color: #5b6f82; }
         .panel { background: #fff; border: 1px solid #d9e6f2; border-radius: 10px; box-shadow: 0 8px 22px rgba(0, 51, 102, 0.08); padding: 20px; margin-bottom: 18px; }
@@ -110,6 +112,7 @@
         .value { color: #102a43; font-size: 16px; line-height: 1.55; overflow-wrap: anywhere; white-space: pre-wrap; }
         .btn { border: 0; border-radius: 7px; min-height: 40px; padding: 0 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-weight: 800; cursor: pointer; text-decoration: none; white-space: nowrap; }
         .btn-secondary { background: #e8f2fb; color: #003366; }
+        .third-party-pdf-button { background: #003f73; color: #fff; box-shadow: 0 8px 20px rgba(0,63,115,.16); }
         .access-item { border: 1px solid #d9e6f2; border-radius: 7px; padding: 16px; margin-top: 14px; }
         .access-item-title { color: #003366; font-weight: 900; margin-bottom: 14px; }
         .approval-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
@@ -128,6 +131,7 @@
         @media (max-width: 800px) {
             .page { padding: 18px 14px 34px; }
             .page-head { flex-direction: column; }
+            .page-actions { width: 100%; justify-content: flex-start; }
             .grid, .approval-list { grid-template-columns: 1fr; }
             .full { grid-column: auto; }
         }
@@ -144,9 +148,17 @@
                 <h1><i class="fa-solid fa-file-lines"></i> Submission #<%= submission.getSubmissionId() %></h1>
                 <p>เลขที่รับเอกสาร <strong><%= display(submission.getDocumentReceiveNo()) %></strong></p>
             </div>
-            <a class="btn btn-secondary detail-back-button" href="<%= h(backUrl) %>">
-                <i class="fa-solid fa-arrow-left"></i> <%= h(thirdPartyBackLink.getLabel()) %>
-            </a>
+            <div class="page-actions">
+                <% if (thirdPartyCompleted) { %>
+                <a class="btn third-party-pdf-button" target="_blank" rel="noopener"
+                   href="${pageContext.request.contextPath}/thirdParty/exportPdf?submissionId=<%= submission.getSubmissionId() %>">
+                    <i class="fa-solid fa-file-pdf"></i> Export PDF
+                </a>
+                <% } %>
+                <a class="btn btn-secondary detail-back-button" href="<%= h(backUrl) %>">
+                    <i class="fa-solid fa-arrow-left"></i> <%= h(thirdPartyBackLink.getLabel()) %>
+                </a>
+            </div>
         </div>
 
         <section class="panel">

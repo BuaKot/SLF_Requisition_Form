@@ -11,6 +11,7 @@ import com.slf.util.RequestMetadataUtil;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
@@ -212,9 +213,13 @@ public class ThirdPartySubmitServlet extends HttpServlet {
         }
     }
 
-    private static Date parseDate(String value, String label) {
+    static Date parseDate(String value, String label) {
         try {
-            return Date.valueOf(value);
+            LocalDate parsed = LocalDate.parse(value);
+            if (parsed.getYear() >= 2500) {
+                parsed = parsed.minusYears(543);
+            }
+            return Date.valueOf(parsed);
         } catch (Exception e) {
             throw new IllegalArgumentException(label + " ไม่ถูกต้อง");
         }

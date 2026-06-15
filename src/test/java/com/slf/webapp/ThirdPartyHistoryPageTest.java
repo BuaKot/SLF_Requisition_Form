@@ -25,7 +25,10 @@ public class ThirdPartyHistoryPageTest extends TestCase {
         assertTrue(page.contains("history-step-pill"));
         assertTrue(page.contains("history-mini-timeline"));
         assertTrue(page.contains("history-people-tooltip"));
-        assertTrue(page.contains("Math.min(2, people.size())"));
+        assertTrue(page.contains("history-person-item"));
+        assertTrue(page.contains("history-person-more"));
+        assertTrue(page.contains("function fitRelatedPeople()"));
+        assertFalse(page.contains("Math.min(2, people.size())"));
         assertTrue(page.contains("item.getAccessStartDate()"));
         assertTrue(page.contains("item.getAccessEndDate()"));
         assertTrue(page.contains("grid-template-columns:repeat(9,minmax(0,1fr))"));

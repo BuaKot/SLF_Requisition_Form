@@ -5,6 +5,7 @@ import com.slf.dao.ThirdPartyFormSubmissionDAO;
 import com.slf.model.ThirdPartyFormLink;
 import com.slf.model.ThirdPartyFormSubmission;
 import com.slf.model.ThirdPartyAccessRequest;
+import com.slf.notification.ThirdPartyNotificationService;
 import com.slf.util.ThirdPartyLinkToken;
 import com.slf.util.ThirdPartyConsentContent;
 import com.slf.util.RequestMetadataUtil;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ThirdPartySubmitServlet extends HttpServlet {
     private final ThirdPartyFormLinkDAO linkDAO = new ThirdPartyFormLinkDAO();
     private final ThirdPartyFormSubmissionDAO submissionDAO = new ThirdPartyFormSubmissionDAO();
+    private final ThirdPartyNotificationService notificationService = new ThirdPartyNotificationService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -46,6 +48,9 @@ public class ThirdPartySubmitServlet extends HttpServlet {
             ThirdPartyFormSubmission submission = buildSubmission(request, link.getLinkId(), ThirdPartyConsentContent.VERSION);
             validateSubmission(submission);
             submissionDAO.submitOnce(submission);
+            if (link.getRequestId() != null) {
+                notificationService.notifyExternalSubmitted(link.getRequestId().longValue(), link.getCreatedByEmpId());
+            }
             forwardResult(request, response, true, "ส่งแบบฟอร์มเรียบร้อยแล้ว เจ้าหน้าที่จะตรวจสอบข้อมูลก่อนนำเข้าสู่ workflow หลัก");
         } catch (SQLException e) {
             throw new ServletException("Unable to submit third-party form", e);

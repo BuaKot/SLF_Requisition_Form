@@ -2,6 +2,7 @@ package com.slf.controller;
 
 import com.slf.dao.ThirdPartyAcceptanceDAO;
 import com.slf.model.ThirdPartyAcceptanceToken;
+import com.slf.notification.ThirdPartyNotificationService;
 import com.slf.util.ThirdPartyLinkToken;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/thirdparty/accept/submit")
 public class ThirdPartyAcceptanceSubmitServlet extends HttpServlet {
     private final ThirdPartyAcceptanceDAO acceptanceDAO = new ThirdPartyAcceptanceDAO();
+    private final ThirdPartyNotificationService notificationService = new ThirdPartyNotificationService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -29,6 +31,7 @@ public class ThirdPartyAcceptanceSubmitServlet extends HttpServlet {
             int satisfactionLevel = parseSatisfaction(request.getParameter("satisfactionLevel"));
             acceptanceDAO.submitAcceptance(
                 token.getRequestId(), token.getAcceptanceTokenId(), comment, satisfactionLevel);
+            notificationService.notifyExternalAccepted(token.getRequestId());
             request.setAttribute("submitSuccess", Boolean.TRUE);
             request.setAttribute("submitMessage", "ส่งผลตรวจรับและประเมินเรียบร้อยแล้ว");
         } catch (SQLException e) {

@@ -16,4 +16,11 @@ public class MailLogServletTest extends TestCase {
         assertEquals(1, MailLogServlet.parsePage("-3"));
         assertEquals(4, MailLogServlet.parsePage("4"));
     }
+
+    public void testNormalizesSupportedFormTypes() {
+        assertEquals("REQUISITION", MailLogServlet.normalizeFormType(" requisition "));
+        assertEquals("THIRD_PARTY", MailLogServlet.normalizeFormType("third_party"));
+        assertNull(MailLogServlet.normalizeFormType("all"));
+        assertNull(MailLogServlet.normalizeFormType("unknown"));
+    }
 }

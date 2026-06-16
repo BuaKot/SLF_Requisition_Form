@@ -5,6 +5,7 @@ import com.slf.dao.ThirdPartyRequestDAO;
 import com.slf.dao.ThirdPartyWorkflowDAO;
 import com.slf.model.ThirdPartyFormSubmission;
 import com.slf.model.ThirdPartyRequest;
+import com.slf.notification.ThirdPartyNotificationService;
 import com.slf.util.ThirdPartyAccessPolicy;
 import com.slf.util.ThirdPartyLinkToken;
 import java.io.IOException;
@@ -25,6 +26,7 @@ public class ThirdPartyOperatorReviewServlet extends HttpServlet {
     private final ThirdPartyRequestDAO requestDAO = new ThirdPartyRequestDAO();
     private final ThirdPartyFormSubmissionDAO submissionDAO = new ThirdPartyFormSubmissionDAO();
     private final ThirdPartyWorkflowDAO workflowDAO = new ThirdPartyWorkflowDAO();
+    private final ThirdPartyNotificationService notificationService = new ThirdPartyNotificationService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -55,6 +57,7 @@ public class ThirdPartyOperatorReviewServlet extends HttpServlet {
                     "คำขอนี้ไม่ได้อยู่ในขั้นตอนของผู้ดำเนินการ หรือไม่ได้มอบหมายให้ผู้ใช้นี้");
                 return;
             }
+            notificationService.notifyOperatorCompleted(requestId, actorEmpId, detail, rawToken);
             response.sendRedirect(request.getContextPath() + "/thirdParty/operator");
         } catch (IllegalArgumentException e) {
             request.setAttribute("formError", e.getMessage());

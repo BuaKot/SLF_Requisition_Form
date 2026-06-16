@@ -1,7 +1,9 @@
 package com.slf.controller;
 
 import com.slf.dao.ThirdPartyAcceptanceDAO;
+import com.slf.notification.ThirdPartyNotificationService;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +32,13 @@ public class ThirdPartyAcceptanceExpiryListener implements ServletContextListene
 
     private void advanceExpiredAcceptances() {
         try {
-            new ThirdPartyAcceptanceDAO().advanceExpiredAcceptances();
+            List<Long> requestIds = new ThirdPartyAcceptanceDAO().advanceExpiredAcceptanceRequestIds();
+            ThirdPartyNotificationService notificationService = new ThirdPartyNotificationService();
+            for (Long requestId : requestIds) {
+                if (requestId != null) {
+                    notificationService.notifyExternalAcceptanceExpired(requestId.longValue());
+                }
+            }
         } catch (SQLException e) {
             System.err.println("Unable to advance expired third-party acceptances: " + e.getMessage());
         }

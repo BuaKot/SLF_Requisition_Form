@@ -13,7 +13,7 @@ public class ThirdPartyAcceptancePageTest extends TestCase {
         String acceptanceDao = read("src/main/java/com/slf/dao/ThirdPartyAcceptanceDAO.java");
         String publicPage = read("src/main/webapp/thirdpartyAcceptance.jsp");
         String ownerPage = read("src/main/webapp/third-party-request-new.jsp");
-        String styles = read("src/main/webapp/css/styles.css");
+        String styles = read("src/main/webapp/css/styles.css").replace("\r\n", "\n");
 
         assertTrue(migration.contains("CREATE TABLE THIRD_PARTY_ACCEPTANCE_TOKEN"));
         assertTrue(migration.contains("CREATE TABLE THIRD_PARTY_ACCEPTANCE_RESULT"));
@@ -34,9 +34,10 @@ public class ThirdPartyAcceptancePageTest extends TestCase {
         assertTrue(ownerPage.contains("blank-link-value"));
         assertTrue(ownerPage.contains("acceptanceTokensByRequestId"));
         assertTrue(ownerPage.contains("owner-request-list-panel"));
-        assertTrue(styles.contains("\"actions\""));
         assertTrue(styles.contains(".owner-link-dashboard .owner-request-list-panel"));
         assertTrue(styles.contains(".owner-link-dashboard .page-head-actions"));
+        assertTrue(styles.contains(".owner-link-dashboard {\n    display: block;"));
+        assertTrue(styles.contains("max-width: 1120px;"));
         assertTrue(styles.contains(".merged-link-grid"));
         assertTrue(styles.contains(".copy-link-text"));
         assertTrue(styles.contains("text-overflow: ellipsis"));

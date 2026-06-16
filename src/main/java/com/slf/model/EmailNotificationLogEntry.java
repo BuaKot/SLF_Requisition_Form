@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 
 public class EmailNotificationLogEntry {
     private long emailLogId;
+    private String formType;
+    private Long referenceId;
     private int formId;
     private String eventType;
     private String recipientEmail;
@@ -23,6 +25,10 @@ public class EmailNotificationLogEntry {
 
     public long getEmailLogId() { return emailLogId; }
     public void setEmailLogId(long emailLogId) { this.emailLogId = emailLogId; }
+    public String getFormType() { return formType; }
+    public void setFormType(String formType) { this.formType = formType; }
+    public Long getReferenceId() { return referenceId; }
+    public void setReferenceId(Long referenceId) { this.referenceId = referenceId; }
     public int getFormId() { return formId; }
     public void setFormId(int formId) { this.formId = formId; }
     public String getEventType() { return eventType; }

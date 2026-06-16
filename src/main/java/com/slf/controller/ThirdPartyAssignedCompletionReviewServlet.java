@@ -6,6 +6,7 @@ import com.slf.dao.ThirdPartyRequestDAO;
 import com.slf.dao.ThirdPartyWorkflowDAO;
 import com.slf.model.ThirdPartyFormSubmission;
 import com.slf.model.ThirdPartyRequest;
+import com.slf.notification.ThirdPartyNotificationService;
 import com.slf.util.ThirdPartyAccessPolicy;
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -23,6 +24,7 @@ abstract class ThirdPartyAssignedCompletionReviewServlet extends HttpServlet {
     private final ThirdPartyFormSubmissionDAO submissionDAO = new ThirdPartyFormSubmissionDAO();
     private final ThirdPartyWorkflowDAO workflowDAO = new ThirdPartyWorkflowDAO();
     private final ThirdPartyAcceptanceDAO acceptanceDAO = new ThirdPartyAcceptanceDAO();
+    private final ThirdPartyNotificationService notificationService = new ThirdPartyNotificationService();
 
     protected abstract String expectedStatus();
     protected abstract String assignmentRole();
@@ -59,6 +61,11 @@ abstract class ThirdPartyAssignedCompletionReviewServlet extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_CONFLICT,
                     "คำขอนี้ไม่ได้อยู่ในขั้นตอนที่กำหนด หรือไม่ได้มอบหมายให้ผู้ใช้นี้");
                 return;
+            }
+            if ("REVOKE_OPERATOR".equals(assignmentRole())) {
+                notificationService.notifyRevokerCompleted(requestId, actorEmpId, detail);
+            } else if ("REVOKE_REVIEWER".equals(assignmentRole())) {
+                notificationService.notifyRevokeReviewerCompleted(requestId, actorEmpId, detail);
             }
             response.sendRedirect(request.getContextPath() + "/thirdParty/operator");
         } catch (IllegalArgumentException e) {

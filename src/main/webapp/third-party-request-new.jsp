@@ -99,8 +99,7 @@
                 <h1>ติดตามลิงก์ลงทะเบียนผู้ใช้ระบบงานสารสนเทศ</h1>
                 <p>สร้างลิงก์ใหม่ ดูสถานะ และยกเลิกลิงก์ที่ยังไม่ถูกส่งแบบฟอร์มได้จากหน้านี้</p>
             </div>
-        </section>
-        <div class="page-head-actions">
+            <div class="page-head-actions">
                 <a class="btn btn-secondary" href="${pageContext.request.contextPath}/thirdParty/history">
                     <i class="fa-solid fa-clock-rotate-left"></i> ประวัติ
                 </a>
@@ -115,6 +114,7 @@
                     </button>
                 </form>
             </div>
+        </section>
 
         <% if (createdRequestId != null && !createdRequestId.trim().isEmpty()) { %>
             <div class="form-alert neutral owner-request-alert">สร้างลิงก์ใหม่เรียบร้อยแล้ว รายการ #<%= h(createdRequestId) %> พร้อมให้คัดลอกจากรายการด้านล่าง</div>

@@ -25,4 +25,22 @@ public class EmailNotificationLogDAOTest extends TestCase {
             new SQLIntegrityConstraintViolationException("not-null constraint", "23000", 1400)
         ));
     }
+
+    public void testSelectExpressionsFallbackForLegacySchema() {
+        assertEquals("'REQUISITION' AS FORM_TYPE", EmailNotificationLogDAO.formTypeSelectExpression(false));
+        assertEquals("l.FORMID AS REFERENCE_ID", EmailNotificationLogDAO.referenceIdSelectExpression(false));
+        assertEquals("l.FORM_TYPE", EmailNotificationLogDAO.formTypeSelectExpression(true));
+        assertEquals("l.REFERENCE_ID", EmailNotificationLogDAO.referenceIdSelectExpression(true));
+    }
+
+    public void testCountByStatusSqlKeepsSpaceBeforeGroupByWithoutFilters() {
+        assertEquals(
+            "SELECT STATUS, COUNT(*) AS TOTAL FROM EMAIL_NOTIFICATION_LOG GROUP BY STATUS",
+            EmailNotificationLogDAO.countByStatusSql(false)
+        );
+        assertEquals(
+            "SELECT STATUS, COUNT(*) AS TOTAL FROM EMAIL_NOTIFICATION_LOG WHERE FORM_TYPE = ? GROUP BY STATUS",
+            EmailNotificationLogDAO.countByStatusSql(true)
+        );
+    }
 }

@@ -5,6 +5,7 @@ import com.slf.dao.ThirdPartyRequestDAO;
 import com.slf.dao.ThirdPartyWorkflowDAO;
 import com.slf.model.ThirdPartyFormSubmission;
 import com.slf.model.ThirdPartyRequest;
+import com.slf.notification.ThirdPartyNotificationService;
 import com.slf.util.ThirdPartyAccessPolicy;
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -24,6 +25,7 @@ public class ThirdPartyItDirectorReviewServlet extends HttpServlet {
     private final ThirdPartyRequestDAO requestDAO = new ThirdPartyRequestDAO();
     private final ThirdPartyFormSubmissionDAO submissionDAO = new ThirdPartyFormSubmissionDAO();
     private final ThirdPartyWorkflowDAO workflowDAO = new ThirdPartyWorkflowDAO();
+    private final ThirdPartyNotificationService notificationService = new ThirdPartyNotificationService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -58,6 +60,7 @@ public class ThirdPartyItDirectorReviewServlet extends HttpServlet {
                     "คำขอนี้ไม่ได้อยู่ในขั้นตอนรอ IT Director พิจารณาแล้ว");
                 return;
             }
+            notificationService.notifyItDirectorDecision(requestId, actorEmpId, "approve".equals(decision), comment);
             response.sendRedirect(request.getContextPath() + "/thirdParty/itDirector");
         } catch (IllegalArgumentException e) {
             request.setAttribute("formError", e.getMessage());

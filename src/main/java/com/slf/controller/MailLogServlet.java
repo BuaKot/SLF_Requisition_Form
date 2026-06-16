@@ -29,14 +29,16 @@ public class MailLogServlet extends HttpServlet {
         }
 
         String status = normalizeStatus(request.getParameter("status"));
+        String formType = normalizeFormType(request.getParameter("formType"));
         int page = parsePage(request.getParameter("page"));
         try {
-            request.setAttribute("logs", logDAO.findLogs(status, page, PAGE_SIZE));
-            request.setAttribute("statusCounts", logDAO.countByStatus());
+            request.setAttribute("logs", logDAO.findLogs(status, formType, page, PAGE_SIZE));
+            request.setAttribute("statusCounts", logDAO.countByStatus(formType));
             request.setAttribute("selectedStatus", status == null ? "" : status);
+            request.setAttribute("selectedFormType", formType == null ? "" : formType);
             request.setAttribute("currentPage", Integer.valueOf(page));
             request.setAttribute("pageSize", Integer.valueOf(PAGE_SIZE));
-            request.setAttribute("totalRows", Integer.valueOf(logDAO.countLogs(status)));
+            request.setAttribute("totalRows", Integer.valueOf(logDAO.countLogs(status, formType)));
             RequestDispatcher dispatcher = request.getRequestDispatcher("/MailLog.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException e) {
@@ -51,6 +53,17 @@ public class MailLogServlet extends HttpServlet {
         String normalized = value.trim().toUpperCase();
         if ("READY".equals(normalized) || "PENDING".equals(normalized) || "SENDING".equals(normalized) || "SENT".equals(normalized)
                 || "FAILED".equals(normalized) || "SKIPPED".equals(normalized)) {
+            return normalized;
+        }
+        return null;
+    }
+
+    static String normalizeFormType(String value) {
+        if (value == null || value.trim().isEmpty() || "ALL".equalsIgnoreCase(value.trim())) {
+            return null;
+        }
+        String normalized = value.trim().toUpperCase();
+        if ("REQUISITION".equals(normalized) || "THIRD_PARTY".equals(normalized)) {
             return normalized;
         }
         return null;

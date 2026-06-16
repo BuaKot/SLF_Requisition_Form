@@ -20,6 +20,16 @@
         if (input == null || String.valueOf(input).trim().isEmpty()) return "-";
         return h(input);
     }
+
+    public String displayFormReference(EmailNotificationLogEntry log) {
+        if (log == null) return "-";
+        String formType = log.getFormType() == null ? "REQUISITION" : log.getFormType();
+        if ("THIRD_PARTY".equals(formType)) {
+            Long referenceId = log.getReferenceId();
+            return "Third Party #" + (referenceId == null ? log.getFormId() : referenceId.longValue());
+        }
+        return "Requisition #" + log.getFormId();
+    }
 %>
 <%
     String currentRole = (String) session.getAttribute("position");
@@ -36,6 +46,8 @@
     if (statusCounts == null) statusCounts = Collections.emptyMap();
 
     String selectedStatus = (String) request.getAttribute("selectedStatus");
+    String selectedFormType = (String) request.getAttribute("selectedFormType");
+    if (selectedFormType == null) selectedFormType = "";
     int currentPage = request.getAttribute("currentPage") == null
         ? 1 : ((Integer) request.getAttribute("currentPage")).intValue();
     int pageSize = request.getAttribute("pageSize") == null
@@ -120,7 +132,7 @@
         <section class="summary-grid">
             <% String[] summaryStatuses = {"READY", "PENDING", "SENDING", "SENT", "FAILED", "SKIPPED"};
                for (String summaryStatus : summaryStatuses) { %>
-                <a class="panel summary-card" href="${pageContext.request.contextPath}/mailLog?status=<%= summaryStatus %>">
+                <a class="panel summary-card" href="${pageContext.request.contextPath}/mailLog?status=<%= summaryStatus %>&formType=<%= h(selectedFormType) %>">
                     <span><%= summaryStatus %></span>
                     <strong><%= statusCounts.get(summaryStatus) == null ? 0 : statusCounts.get(summaryStatus) %></strong>
                 </a>
@@ -138,6 +150,14 @@
                         <% } %>
                     </select>
                 </div>
+                <div>
+                    <label for="formType">ประเภทฟอร์ม</label>
+                    <select id="formType" name="formType">
+                        <option value="">ทั้งหมด</option>
+                        <option value="REQUISITION" <%= "REQUISITION".equals(selectedFormType) ? "selected" : "" %>>Requisition</option>
+                        <option value="THIRD_PARTY" <%= "THIRD_PARTY".equals(selectedFormType) ? "selected" : "" %>>Third Party</option>
+                    </select>
+                </div>
                 <button class="btn btn-primary" type="submit"><i class="fa-solid fa-filter"></i> กรอง</button>
                 <a class="btn btn-secondary" href="${pageContext.request.contextPath}/mailLog">ล้าง</a>
             </form>
@@ -151,7 +171,7 @@
                     <thead>
                         <tr>
                             <th>สถานะ</th>
-                            <th>Form / Event</th>
+                            <th>Form Type / Event</th>
                             <th>ปลายทางเมล</th>
                             <th>ชื่อ-นามสกุล</th>
                             <th>ตำแหน่ง</th>
@@ -168,7 +188,7 @@
                         <tr>
                             <td><span class="status status-<%= h(log.getStatus()) %>"><%= h(log.getStatus()) %></span></td>
                             <td>
-                                <div class="recipient-name">#<%= log.getFormId() %></div>
+                                <div class="recipient-name"><%= h(displayFormReference(log)) %></div>
                                 <div class="muted"><%= display(log.getEventType()) %></div>
                             </td>
                             <td><%= display(log.getRecipientEmail()) %></td>
@@ -193,11 +213,11 @@
 
         <div class="pagination">
             <% if (currentPage > 1) { %>
-                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/mailLog?page=<%= currentPage - 1 %>&status=<%= h(selectedStatus) %>">ก่อนหน้า</a>
+                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/mailLog?page=<%= currentPage - 1 %>&status=<%= h(selectedStatus) %>&formType=<%= h(selectedFormType) %>">ก่อนหน้า</a>
             <% } %>
             <strong>หน้า <%= currentPage %> / <%= totalPages %></strong>
             <% if (currentPage < totalPages) { %>
-                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/mailLog?page=<%= currentPage + 1 %>&status=<%= h(selectedStatus) %>">ถัดไป</a>
+                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/mailLog?page=<%= currentPage + 1 %>&status=<%= h(selectedStatus) %>&formType=<%= h(selectedFormType) %>">ถัดไป</a>
             <% } %>
         </div>
     </main>

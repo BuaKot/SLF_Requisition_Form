@@ -17,38 +17,21 @@
     }
 
     private String display(Object input) {
-        return input == null || String.valueOf(input).trim().isEmpty() ? "-" : h(input);
+        return input == null || String.valueOf(input).trim().isEmpty() ? "" : h(input);
     }
 
     private String formatDate(java.util.Date value, SimpleDateFormat formatter) {
-        return value == null ? "-" : formatter.format(value);
+        return value == null ? "" : formatter.format(value);
     }
 
     private String actorName(ThirdPartyWorkflowActionEntry action) {
-        if (action == null) return "-";
+        if (action == null) return "";
         if (action.getActorEmpName() != null && !action.getActorEmpName().trim().isEmpty()) {
             return action.getActorEmpName();
         }
         if ("SYSTEM".equals(action.getActorType())) return "ระบบ";
         if ("EXTERNAL".equals(action.getActorType())) return "ผู้ขอใช้บริการ";
-        return action.getActorEmpId() == null ? "-" : "Employee #" + action.getActorEmpId();
-    }
-
-    private String workflowStepLabel(String actionType) {
-        if ("EXTERNAL_SUBMITTED".equals(actionType)) return "ส่งแบบฟอร์ม";
-        if ("SECTION_HEAD_SUBMITTED".equals(actionType)) return "หัวหน้ากลุ่มงานพิจารณา";
-        if ("IT_DIRECTOR_APPROVED".equals(actionType)) return "ผอ.IT อนุมัติ";
-        if ("IT_DIRECTOR_REJECTED".equals(actionType)) return "ผอ.IT ไม่อนุมัติ";
-        if ("OPERATOR_COMPLETED".equals(actionType)) return "ผู้ดำเนินการบันทึกงาน";
-        if ("EXTERNAL_ACCEPTED".equals(actionType)) return "ผู้ขอภายนอกตรวจรับ";
-        if ("EXTERNAL_REJECTED".equals(actionType)) return "ผู้ขอภายนอกไม่ตรวจรับ";
-        if ("EXTERNAL_ACCEPTANCE_EXPIRED".equals(actionType)) return "ลิงก์ตรวจรับหมดอายุ";
-        if ("REVOKER_COMPLETED".equals(actionType)) return "ผู้ยกเลิกสิทธิ์ดำเนินการ";
-        if ("REVOKE_REVIEWER_APPROVED".equals(actionType)) return "ผู้ตรวจทานอนุมัติ";
-        if ("REVOKE_REVIEWER_REJECTED".equals(actionType)) return "ผู้ตรวจทานไม่อนุมัติ";
-        if ("SECTION_HEAD_REPORTED".equals(actionType)) return "หัวหน้ากลุ่มงานสรุปรายงาน";
-        if ("FINAL_CERTIFIED".equals(actionType)) return "IT Director รับรอง";
-        return actionType == null ? "-" : actionType;
+        return action.getActorEmpId() == null ? "" : "Employee #" + action.getActorEmpId();
     }
 
     private ThirdPartyWorkflowActionEntry findAction(List<ThirdPartyWorkflowActionEntry> actions, String... actionTypes) {
@@ -65,28 +48,14 @@
 
     private String actionComment(ThirdPartyWorkflowActionEntry action) {
         if (action == null || action.getCommentText() == null || action.getCommentText().trim().isEmpty()) {
-            return "";
+            return "....................................................................................................................................";
         }
         return h(action.getCommentText());
     }
 
     private String actionDate(ThirdPartyWorkflowActionEntry action, SimpleDateFormat formatter) {
-        if (action == null || action.getActedAt() == null) return "............/............/............";
+        if (action == null || action.getActedAt() == null) return "......../......../........";
         return formatter.format(action.getActedAt());
-    }
-
-    private String statusText(String status) {
-        if ("COMPLETED".equals(status)) return "เสร็จสิ้น";
-        if ("REJECTED".equals(status)) return "ไม่อนุมัติ";
-        if ("PENDING_FINAL_CERTIFICATION".equals(status)) return "รอ IT Director รับรอง";
-        if ("PENDING_SECTION_HEAD_REPORT".equals(status)) return "รอหัวหน้ากลุ่มงานสรุปรายงาน";
-        if ("PENDING_REVOKE_REVIEWER".equals(status)) return "รอผู้ตรวจทาน";
-        if ("PENDING_REVOKER".equals(status)) return "รอผู้ยกเลิกสิทธิ์";
-        if ("PENDING_EXTERNAL_ACCEPTANCE".equals(status)) return "รอผู้ขอภายนอกตรวจรับ";
-        if ("PENDING_OPERATOR".equals(status)) return "รอผู้ดำเนินการ";
-        if ("PENDING_IT_DIRECTOR".equals(status)) return "รอ IT Director อนุมัติ";
-        if ("PENDING_SECTION_HEAD".equals(status)) return "รอหัวหน้ากลุ่มงานพิจารณา";
-        return status == null ? "-" : status;
     }
 %>
 <%
@@ -101,14 +70,18 @@
         return;
     }
     SimpleDateFormat dateOnly = new SimpleDateFormat("dd/MM/yyyy");
-    SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    
+    // Extract optional details safely
+    String fullNameEn = "";
+    if (submission.getAccessRequests() != null && !submission.getAccessRequests().isEmpty()) {
+        fullNameEn = display(submission.getAccessRequests().get(0).getFullNameEn());
+    }
 %>
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <title>Third-party Registration Form #<%= submission.getSubmissionId() %></title>
-    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <style>
         @font-face {
             font-family: 'Anuphan';
@@ -119,7 +92,7 @@
 
         @page {
             size: A4;
-            margin: 10mm 12mm 10mm 12mm;
+            margin: 12mm 15mm 12mm 15mm;
         }
 
         * {
@@ -127,11 +100,11 @@
         }
 
         body {
-            font-family: 'Anuphan', Arial, sans-serif;
+            font-family: 'Anuphan', Tahoma, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            font-size: 9.5pt;
-            line-height: 1.4;
+            font-size: 9.5pt; /* Slightly reduced base font */
+            line-height: 1.35; /* Reduced line-height to save vertical space */
             color: #000;
             background: #fff;
             -webkit-print-color-adjust: exact;
@@ -153,240 +126,172 @@
             cursor: pointer;
         }
 
-        .meta-top-right {
-            text-align: right;
-            font-size: 9.5pt;
-            margin-bottom: 4px;
-            color: #222;
+        @media print {
+            .btn-print { display: none; }
+            .page-break { page-break-before: always; }
         }
 
-        .meta-top-right span {
-            margin-left: 15px;
-            font-weight: 700;
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
         }
 
-        .head-table {
-            width: 100%;
-            table-layout: fixed;
-            border-collapse: collapse;
-            margin-bottom: 12px;
-        }
-
-        .head-table td {
-            border: 1px solid #000;
-            padding: 6px 8px;
-            vertical-align: middle;
-        }
-
-        .logo-cell {
-            width: 18%;
-            text-align: center;
-        }
-
-        .logo-cell img {
-            max-height: 45px;
-            max-width: 110px;
+        .logo-img {
+            height: 55px; /* Slightly scaled down */
             object-fit: contain;
         }
 
-        .title-cell {
-            width: 57%;
+        .form-title-right {
+            text-align: right;
+            font-size: 9.5pt;
+        }
+        
+        .form-title-right .th-title {
+            font-weight: bold;
+            color: #4a6fa5;
+        }
+
+        .doc-code {
+            font-weight: bold;
+            border-bottom: 1px solid #000;
+            display: inline-block;
+            padding-bottom: 2px;
+            margin-top: 5px;
+        }
+
+        .sub-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #000;
+            margin-bottom: 10px;
+        }
+
+        .form-table th, .form-table td {
+            border: 1px solid #000;
+            padding: 6px 8px; /* Reduced padding */
+            vertical-align: top;
+        }
+
+        .section-header {
+            background-color: #d9d9d9;
+            font-weight: bold;
+            text-align: left;
+            padding: 4px 10px !important;
+        }
+
+        .flex-row {
+            display: flex;
+            margin-bottom: 4px;
+            align-items: baseline;
+        }
+
+        .fill-line {
+            flex-grow: 1;
+            border-bottom: 1px dotted #000;
+            margin: 0 5px;
+            min-height: 16px;
+            color: #000;
+            padding-left: 5px;
+        }
+        
+        .fill-fixed {
+            border-bottom: 1px dotted #000;
+            display: inline-block;
+            min-width: 150px;
             text-align: center;
         }
 
-        .meta-cell {
-            width: 25%;
-            font-size: 9.5pt;
+        .long-text-block {
+            text-indent: 40px;
+            text-align: justify;
+            margin: 10px 0;
+            line-height: 1.5;
         }
 
-        .doc-title {
-            display: block;
-            margin-bottom: 2px;
-            font-size: 12pt;
-            font-weight: 800;
+        .signature-block {
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 10px;
         }
 
-        .doc-subtitle {
-            display: block;
-            font-size: 9.5pt;
-            font-weight: 700;
-        }
-
-        .section-title {
-            margin: 12px 0 6px;
-            padding-bottom: 2px;
-            border-bottom: 1.5px solid #000;
-            font-size: 9.5pt;
-            font-weight: 800;
-        }
-
-        .info-grid-table {
-            width: 100%;
-            border-collapse: collapse;
+        .sig-line {
+            display: inline-block;
+            width: 250px;
+            border-bottom: 1px dotted #000;
             margin-bottom: 4px;
         }
 
-        .info-grid-table td {
-            padding: 4px 2px;
-            vertical-align: baseline;
-        }
-
-        .info-label {
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .info-value {
-            border-bottom: 1px dotted #444;
-            padding-left: 4px;
-        }
-
-        .form-subject {
-            margin: 10px 0;
-            padding: 6px 10px;
-            border-left: 3px solid #000;
-            background: #f5f5f5;
-            font-size: 11pt;
-            font-weight: 800;
-        }
-
-        .request-card,
-        .data-table,
-        .approval-matrix {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .request-card {
-            margin-top: 8px;
-            border: 1px solid #000;
-        }
-
-        .request-card th,
-        .data-table th {
-            border-bottom: 1px solid #000;
-            background: #f5f5f5;
-            padding: 6px 10px;
-            text-align: left;
-            font-size: 9pt;
-            font-weight: 800;
-        }
-
-        .request-card td {
-            padding: 8px 10px;
-            font-size: 9pt;
-        }
-
-        .request-field {
-            margin-bottom: 6px;
-        }
-
-        .request-field:last-child {
-            margin-bottom: 0;
-        }
-
-        .data-table th,
-        .data-table td,
-        .approval-matrix td {
-            border: 1px solid #000;
-            padding: 5px 7px;
-            vertical-align: top;
-            font-size: 9pt;
-        }
-
-        .approval-matrix {
-            margin-top: 10px;
-        }
-
-        .approval-matrix td {
-            width: 50%;
-            min-height: 86px;
-        }
-
-        .workflow-form {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 8px;
-            page-break-inside: avoid;
-        }
-
-        .workflow-form th {
-            border: 1px solid #000;
-            background: #d9d9d9;
-            padding: 3px 6px;
-            text-align: left;
-            font-size: 9pt;
-            font-weight: 800;
-        }
-
-        .workflow-form td {
-            border: 1px solid #000;
-            width: 50%;
-            min-height: 110px;
-            padding: 6px 8px;
-            vertical-align: top;
-            font-size: 8.8pt;
-        }
-
-        .workflow-line {
-            min-height: 18px;
-            margin: 3px 0;
-            border-bottom: 1px dotted #555;
-        }
-
-        .workflow-checks {
-            display: flex;
-            justify-content: center;
-            gap: 28px;
-            margin: 12px 0;
-            font-weight: 700;
-        }
-
-        .workflow-sign {
-            margin-top: 12px;
-            text-align: center;
-        }
-
-        .workflow-date {
-            margin-top: 5px;
-            text-align: center;
-        }
-
-        .workflow-rev {
-            margin: 8px 0 0 38px;
+        .footnotes {
             font-size: 8pt;
-            font-weight: 700;
-        }
-
-        .signature-area {
             margin-top: 8px;
+            line-height: 1.2;
+        }
+
+        .checkbox-group {
+            margin: 8px 0;
+        }
+
+        .checkbox-group span {
+            margin-right: 20px;
+        }
+
+        .footer-line {
             text-align: center;
+            font-size: 8.5pt;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 4px 0;
+            margin-top: 15px;
+            margin-bottom: 8px;
         }
 
-        .signature-line {
-            display: inline-block;
-            width: 160px;
-            margin-top: 14px;
-            border-bottom: 1px dotted #000;
-        }
-
-        .status-badge {
-            display: inline-block;
-            border: 1px solid #000;
-            padding: 1px 5px;
-            background: #fff;
-            font-weight: 800;
-        }
-
-        .small {
-            color: #333;
+        .doc-rev {
+            display: flex;
+            justify-content: space-between;
             font-size: 8.5pt;
         }
+        
+        .doc-secret {
+            font-weight: bold;
+        }
 
-        @media print {
-            .btn-print {
-                display: none;
-            }
+        /* Page 2 specifics optimized for height */
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #000;
+        }
+        .matrix-table th, .matrix-table td {
+            border: 1px solid #000;
+            padding: 5px 6px; /* Tighter padding for page 2 */
+            vertical-align: top;
+            width: 50%;
+        }
+        .matrix-header {
+            background-color: #d9d9d9;
+            font-weight: bold;
+            padding: 3px 6px;
+        }
+        .action-box {
+            min-height: 85px; /* Reduced min-height */
+            position: relative;
+        }
+        .action-box .signature-block {
+            margin-top: 10px; /* Reduced to pull signatures up */
+            margin-bottom: 2px;
+        }
+        .action-box .sig-line {
+            width: 180px;
+            margin-bottom: 2px;
         }
     </style>
 </head>
@@ -394,82 +299,133 @@
 
 <button class="btn-print" onclick="window.print()">พิมพ์เอกสาร / Print</button>
 
-<div class="meta-top-right">
-    <span>แบบฟอร์มลงทะเบียนผู้ใช้ระบบงานสารสนเทศ / Third-party Registration Form</span>
-    <span>SLF-TP-001</span>
+<div class="header-container">
+    <div>
+        <img class="logo-img" src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
+    </div>
+    <div class="form-title-right">
+        <div class="th-title">แบบฟอร์มร้องขอสิทธิการเข้าถึง สำหรับผู้ให้บริการภายนอก</div>
+        <div>User Registration for Third Party Form</div>
+        <div class="doc-code">FR-ISMS-022</div>
+    </div>
 </div>
 
-<table class="head-table">
+<div class="sub-header">
+    <div>เรียน ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ</div>
+    <div>เลขที่รับเอกสาร...............................................................</div>
+</div>
+
+<table class="form-table">
     <tr>
-        <td class="logo-cell">
-            <img src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
+        <td class="section-header" style="width: 70%;">ส่วนที่ 1 ผู้ขอใช้บริการ</td>
+        <td class="section-header" style="width: 30%; text-align: right; font-weight: normal;">
+            วันที่ <span class="fill-fixed"><%= formatDate(submission.getFilledDate(), dateOnly) %></span>
         </td>
-        <td class="title-cell">
-            <span class="doc-title">ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</span>
-            <span class="doc-subtitle">แบบฟอร์มการขอลงทะเบียนผู้ใช้ระบบงานสารสนเทศ สำหรับผู้ให้บริการภายนอก</span>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div class="flex-row">
+                <span>ชื่อ - สกุล (ภาษาไทย)</span>
+                <span class="fill-line"><%= display(submission.getFullNameTh()) %></span>
+            </div>
+            <div class="flex-row">
+                <span>ชื่อ - สกุล (ภาษาอังกฤษ)</span>
+                <span class="fill-line"><%= fullNameEn %></span>
+            </div>
+            <div class="flex-row">
+                <span>บริษัท/หน่วยงาน</span>
+                <span class="fill-line"><%= display(submission.getOrganization()) %></span>
+            </div>
+            <div class="flex-row">
+                <span>เบอร์โทรศัพท์</span>
+                <span class="fill-line" style="flex: 0.4;"><%= display(submission.getPhone()) %></span>
+                <span>Email</span>
+                <span class="fill-line"><%= display(submission.getEmail()) %></span>
+            </div>
+            <div class="flex-row">
+                <span><strong>มีความประสงค์จะขอใช้ระบบ</strong></span>
+                <span class="fill-line"><%= display(submission.getProjectName()) %></span>
+            </div>
+            <div class="flex-row">
+                <span><strong>เหตุผลและวัตถุประสงค์การขอ</strong></span>
+                <span class="fill-line"><%= display(submission.getReasonObjective()) %></span>
+            </div>
+            <div class="flex-row">
+                <span class="fill-line"></span>
+            </div>
+            <div class="flex-row">
+                <span><strong>เพื่อใช้ในโครงการ</strong></span>
+                <span class="fill-line"></span>
+            </div>
+            <div class="flex-row">
+                <span><strong>ระยะเวลาที่ต้องการใช้ระบบงาน</strong> วันที่เริ่มต้น</span>
+                <span class="fill-line" style="flex: 0.3; text-align: center;"><%= formatDate(submission.getAccessStartDate(), dateOnly) %></span>
+                <span>ถึงวันที่</span>
+                <span class="fill-line" style="flex: 0.3; text-align: center;"><%= formatDate(submission.getAccessEndDate(), dateOnly) %></span>
+            </div>
+
+            <div class="long-text-block">
+                ข้าพเจ้าขอรับรองว่าข้อมูลข้างต้น เป็นความจริงทุกประการ โดยจะไม่ใช้ เปิดเผย หรือเอาไปซึ่งข้อมูลไม่ว่าทั้งหมดหรือบางส่วนอันเป็นความลับของทางราชการ หรืออนุญาตให้บุคคลอื่นกระทำการดังกล่าว โดยไม่ได้รับความยินยอมจากกองทุนเงินให้กู้ยืมเพื่อการศึกษา เป็นลายลักษณ์อักษรไม่ว่าข้อมูลนั้นจะอยู่ในรูปแบบใด และจะปฏิบัติตามระเบียบข้อกำหนด นโยบายการรักษาความมั่นคงปลอดภัยด้านเทคโนโลยีสารสนเทศ และยินยอมรับเงื่อนไขตามที่กำหนด นโยบายว่าด้วยการรักษาความลับระบบสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา ทั้งนี้ ยินดีจะรับผิดชอบต่อความเสียหายที่เกิดขึ้นตามพระราชบัญญัติว่าด้วยการกระทำความผิดเกี่ยวกับคอมพิวเตอร์ พ.ศ. 2560 ข้าพเจ้ายอมรับข้อตกลงดังกล่าว และจะปฏิบัติตาม อย่างเคร่งครัด ทุกประการ
+            </div>
+
+            <div class="signature-block">
+                ลงชื่อ<span class="sig-line"><%= display(submission.getFullNameTh()) %></span>ผู้ขอใช้บริการ<br>
+                (<span class="sig-line" style="width: 200px;"><%= display(submission.getFullNameTh()) %></span>)<br>
+                วันที่<span class="sig-line" style="width: 200px;"><%= formatDate(submission.getFilledDate(), dateOnly) %></span>
+            </div>
+
+            <div class="footnotes">
+                <u>*หมายเหตุ</u> ผู้ขอใช้บริการต้องลงนามในหนังสือยินยอมรับเงื่อนไข นโยบายว่าด้วยการรักษาความลับระบบสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา<br>
+                **กรณีที่ขอสิทธิ์การใช้งาน มากกว่า 1 คน ให้แนบเอกสารขอลงทะเบียนผู้ใช้ระบบงานสารสนเทศ (สำหรับบุคคลภายนอก)
+            </div>
         </td>
-        <td class="meta-cell">
-            <div><strong>เลขที่คำขอ:</strong> #<%= thirdPartyRequest.getRequestId() %></div>
-            <div><strong>เลขที่เอกสาร:</strong> #<%= submission.getSubmissionId() %></div>
+    </tr>
+    <tr>
+        <td colspan="2" class="section-header">ความเห็นของผู้บังคับบัญชาของผู้ขอใช้บริการ</td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div class="checkbox-group">
+                <span>&#9744; เห็นควรอนุมัติ</span><br>
+                <div class="flex-row" style="margin-top: 5px;">
+                    <span>&#9744; ไม่เห็นควรอนุมัติ เพราะ</span>
+                    <span class="fill-line"></span>
+                </div>
+            </div>
+            
+            <div class="signature-block" style="margin-left: 200px;">
+                ลงชื่อ<span class="sig-line"></span><br>
+                (<span class="sig-line" style="width: 200px;"></span>)<br>
+                ตำแหน่ง<span class="sig-line" style="width: 200px;"></span><br>
+                วันที่<span class="sig-line" style="width: 200px;"></span>
+            </div>
         </td>
     </tr>
 </table>
 
-<div class="section-title">1. ข้อมูลผู้ยื่นคำขอ / Requestor Information</div>
-<table class="info-grid-table">
-    <tr>
-        <td class="info-label" style="width: 14%;">ผู้ขอใช้บริการ:</td>
-        <td class="info-value" style="width: 36%;"><%= display(submission.getFullNameTh()) %></td>
-        <td class="info-label" style="width: 12%; text-align: right;">หน่วยงาน:</td>
-        <td class="info-value" style="width: 38%;"><%= display(submission.getOrganization()) %></td>
-    </tr>
-    <tr>
-        <td class="info-label">Email:</td>
-        <td class="info-value"><%= display(submission.getEmail()) %></td>
-        <td class="info-label" style="text-align: right;">โทรศัพท์:</td>
-        <td class="info-value"><%= display(submission.getPhone()) %></td>
-    </tr>
-    <tr>
-        <td class="info-label">วันที่กรอก:</td>
-        <td class="info-value"><%= formatDate(submission.getFilledDate(), dateOnly) %></td>
-        <td class="info-label" style="text-align: right;">สถานะ:</td>
-        <td class="info-value"><span class="status-badge"><%= h(statusText(thirdPartyRequest.getStatus())) %></span></td>
-    </tr>
-    <tr>
-        <td class="info-label">ช่วงเวลาใช้งาน:</td>
-        <td class="info-value" colspan="3">
-            <%= formatDate(submission.getAccessStartDate(), dateOnly) %> - <%= formatDate(submission.getAccessEndDate(), dateOnly) %>
-        </td>
-    </tr>
-</table>
-
-<div class="form-subject">
-    <strong>ระบบงานที่ต้องการใช้งาน:</strong> <%= display(submission.getProjectName()) %><br>
-    <strong>วัตถุประสงค์:</strong> <%= display(submission.getReasonObjective()) %>
+<div class="footer-line">
+    ติดต่อสอบถามรายละเอียดเพิ่มเติม ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา โทร 408-412
 </div>
 
-<div class="section-title">2. รายละเอียดผู้ขอใช้งาน / Access Users</div>
-<% if (submission.getAccessRequests().isEmpty()) { %>
-    <table class="request-card"><tr><td>-</td></tr></table>
-<% } else { %>
-    <% for (ThirdPartyAccessRequest item : submission.getAccessRequests()) { %>
-        <table class="request-card">
-            <tr>
-                <th>ผู้ขอใช้งานลำดับที่ <%= item.getDisplayOrder() %>: <%= display(item.getFullNameTh()) %></th>
-            </tr>
-            <tr>
-                <td>
-                    <div class="request-field"><strong>ชื่อผู้ใช้:</strong> <%= display(item.getUsername()) %></div>
-                    <div class="request-field"><strong>ชื่อ-สกุล (EN):</strong> <%= display(item.getFullNameEn()) %></div>
-                    <div class="request-field"><strong>ตำแหน่ง:</strong> <%= display(item.getPositionName()) %></div>
-                    <div class="request-field"><strong>ฝ่าย/กลุ่มงาน:</strong> <%= display(item.getDepartmentName()) %></div>
-                    <div class="request-field"><strong>Email:</strong> <%= display(item.getEmail()) %></div>
-                    <div class="request-field"><strong>ระบบงาน / Role:</strong> <%= display(item.getSystemName()) %> / <%= display(item.getRequestedRole()) %></div>
-                </td>
-            </tr>
-        </table>
-    <% } %>
-<% } %>
+<div class="doc-rev">
+    <div>
+        Rev. 01 (01/08/2566)<br>
+        <span class="doc-secret">ชั้นความลับเอกสาร : ใช้ภายในเท่านั้น</span>
+    </div>
+    <div style="text-align: right;">
+        หน้าที่ 1/3
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<div class="header-container" style="justify-content: flex-end; margin-bottom: 5px;">
+    <div class="form-title-right">
+        <div class="th-title">แบบฟอร์มร้องขอสิทธิการเข้าถึง สำหรับผู้ให้บริการภายนอก</div>
+        <div>User Registration for Third Party Form</div>
+        <div class="doc-code">FR-ISMS-022</div>
+    </div>
+</div>
 
 <%
     ThirdPartyWorkflowActionEntry sectionHeadAction = findAction(approvalHistory, "SECTION_HEAD_SUBMITTED");
@@ -480,89 +436,153 @@
     ThirdPartyWorkflowActionEntry reviewerAction = findAction(approvalHistory, "REVOKE_REVIEWER_APPROVED", "REVOKE_REVIEWER_REJECTED");
     ThirdPartyWorkflowActionEntry reportAction = findAction(approvalHistory, "SECTION_HEAD_REPORTED");
     ThirdPartyWorkflowActionEntry finalAction = findAction(approvalHistory, "FINAL_CERTIFIED");
+    
+    boolean isApproved = itDirectorAction != null && "IT_DIRECTOR_APPROVED".equals(itDirectorAction.getActionType());
+    boolean isRejected = itDirectorAction != null && "IT_DIRECTOR_REJECTED".equals(itDirectorAction.getActionType());
+    
+    boolean isAccSat = acceptanceScore != null && acceptanceScore == 3;
+    boolean isAccNeu = acceptanceScore != null && acceptanceScore == 2;
+    boolean isAccDis = acceptanceScore != null && acceptanceScore == 1;
 %>
 
-<table class="workflow-form">
-    <tr><th colspan="2">ส่วนที่ 2 สำหรับฝ่ายเทคโนโลยีสารสนเทศ</th></tr>
+<table class="matrix-table">
     <tr>
-        <td>
-            <strong>เรียน ผอ.ฝ่ายเทคโนโลยีสารสนเทศ</strong><br>
-            เพื่อโปรดพิจารณา
-            <div class="workflow-line"><%= actionComment(sectionHeadAction) %></div>
-            <div class="workflow-line"></div>
-            <div class="workflow-sign">ลงชื่อ <%= display(actorName(sectionHeadAction)) %> หัวหน้ากลุ่มงาน<br>(<%= display(sectionHeadAction == null ? null : sectionHeadAction.getActorPosition()) %>)</div>
-            <div class="workflow-date">วันที่ <%= actionDate(sectionHeadAction, dateOnly) %></div>
+        <td colspan="2" class="matrix-header" style="padding: 0; border: 0;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr><th class="matrix-header" style="border-bottom: 1px solid #000; text-align: left;">ส่วนที่ 2 สำหรับฝ่ายเทคโนโลยีสารสนเทศ</th></tr>
+            </table>
         </td>
-        <td>
-            <div class="workflow-checks">
-                <span>☐ อนุมัติ</span>
-                <span>☐ ไม่อนุมัติ</span>
+    </tr>
+    <tr>
+        <td class="action-box">
+            เรียน ผอ.ฝ่ายเทคโนโลยีสารสนเทศ<br>
+            เพื่อโปรดพิจารณา<span class="fill-line" style="display:inline-block; width: 80%;"><%= actionComment(sectionHeadAction).equals("....................................................................................................................................") ? "" : actionComment(sectionHeadAction) %></span>
+            <div class="flex-row"><span class="fill-line"></span></div>
+            
+            <div class="signature-block">
+                ลงชื่อ<span class="sig-line"><%= display(actorName(sectionHeadAction)) %></span>หัวหน้ากลุ่มงาน<br>
+                (<span class="sig-line"><%= display(sectionHeadAction == null ? "" : sectionHeadAction.getActorEmpName()) %></span>)<br>
+                วันที่<span class="sig-line"><%= actionDate(sectionHeadAction, dateOnly) %></span>
             </div>
-            คำสั่ง/ความเห็น(ถ้ามี)
-            <div class="workflow-line"><%= actionComment(itDirectorAction) %></div>
-            <div class="workflow-line"></div>
-            <div class="workflow-sign">ลงชื่อ <%= display(actorName(itDirectorAction)) %> ผู้อำนวยการฝ่าย<br>(<%= display(itDirectorAction == null ? null : itDirectorAction.getActorPosition()) %>)</div>
-            <div class="workflow-date">วันที่ <%= actionDate(itDirectorAction, dateOnly) %></div>
+        </td>
+        <td class="action-box">
+            <div style="text-align: center; font-weight: bold; margin-bottom: 5px;">
+                <span style="margin-right: 30px;"><%= isApproved ? "&#9745;" : "&#9744;" %> อนุมัติ</span>
+                <span><%= isRejected ? "&#9745;" : "&#9744;" %> ไม่อนุมัติ</span>
+            </div>
+            คำสั่ง/ความเห็น(ถ้ามี)<span class="fill-line" style="display:inline-block; width: 70%;"><%= actionComment(itDirectorAction).equals("....................................................................................................................................") ? "" : actionComment(itDirectorAction) %></span>
+            <div class="flex-row"><span class="fill-line"></span></div>
+
+            <div class="signature-block">
+                ลงชื่อ<span class="sig-line"><%= display(actorName(itDirectorAction)) %></span>ผู้อำนวยการฝ่าย<br>
+                (<span class="sig-line"><%= display(itDirectorAction == null ? "" : itDirectorAction.getActorEmpName()) %></span>)<br>
+                วันที่<span class="sig-line"><%= actionDate(itDirectorAction, dateOnly) %></span>
+            </div>
         </td>
     </tr>
     <tr>
-        <th>ส่วนที่ 3 การดำเนินการ</th>
-        <th>ขั้นตอน: <%= h(workflowStepLabel(acceptanceAction == null ? "EXTERNAL_ACCEPTED" : acceptanceAction.getActionType())) %></th>
+        <th class="matrix-header" style="text-align: left;">ส่วนที่ 3 การดำเนินการ</th>
+        <th class="matrix-header" style="text-align: left;">ส่วนที่ 4 ผลตรวจรับและประเมินความพึงพอใจ</th>
     </tr>
     <tr>
-        <td>
-            มอบหมาย/สั่งการ
-            <div class="workflow-line"><%= actionComment(operatorAction) %></div>
-            <div class="workflow-line"></div>
-            <div class="workflow-sign">ลงชื่อ <%= display(actorName(operatorAction)) %> ผู้ดำเนินการ<br>(<%= display(operatorAction == null ? null : operatorAction.getActorPosition()) %>)</div>
-            <div class="workflow-date">วันที่ <%= actionDate(operatorAction, dateOnly) %></div>
-            การดำเนินการ
-            <div class="workflow-line"><%= actionComment(operatorAction) %></div>
-            <div class="workflow-line"></div>
+        <td class="action-box">
+            มอบหมาย/สั่งการ<span class="fill-line" style="display:inline-block; width: 70%;"></span>
+            <div class="signature-block" style="margin-top: 8px;">
+                ลงชื่อ<span class="sig-line"></span>หัวหน้ากลุ่มงาน<br>
+                (<span class="sig-line"></span>)<br>
+                วันที่<span class="sig-line"></span>
+            </div>
+            การดำเนินการ<span class="fill-line" style="display:inline-block; width: 75%;"><%= actionComment(operatorAction).equals("....................................................................................................................................") ? "" : actionComment(operatorAction) %></span>
+            <div class="flex-row"><span class="fill-line"></span></div>
+            <div class="signature-block" style="margin-top: 8px;">
+                ลงชื่อ<span class="sig-line"><%= display(actorName(operatorAction)) %></span>ผู้ดำเนินการ<br>
+                (<span class="sig-line"><%= display(operatorAction == null ? "" : operatorAction.getActorEmpName()) %></span>)<br>
+                วันที่<span class="sig-line"><%= actionDate(operatorAction, dateOnly) %></span>
+            </div>
         </td>
-        <td>
-            <strong>ผลตรวจรับและประเมิน</strong><br>
-            ผลการตรวจรับ
-            <div class="workflow-line"><%= actionComment(acceptanceAction) %></div>
-            <div>คะแนนผลตรวจรับ: <%= acceptanceScore == null ? "-" : acceptanceScore %></div>
-            <div class="workflow-sign">ลงชื่อ <%= display(actorName(acceptanceAction)) %> ผู้ขอใช้บริการ<br>(<%= display(acceptanceAction == null ? null : acceptanceAction.getActorPosition()) %>)</div>
-            <div class="workflow-date">วันที่ <%= actionDate(acceptanceAction, dateOnly) %></div>
-        </td>
-    </tr>
-    <tr><th colspan="2">ส่วนที่ 5 ผู้ดูแลระบบยกเลิกสิทธิ์</th></tr>
-    <tr>
-        <td>
-            การดำเนินการ
-            <div class="workflow-line"><%= actionComment(revokerAction) %></div>
-            <div class="workflow-line"></div>
-            <div class="workflow-sign">ลงชื่อ <%= display(actorName(revokerAction)) %> ผู้ดำเนินการ<br>(<%= display(revokerAction == null ? null : revokerAction.getActorPosition()) %>)</div>
-            <div class="workflow-date">วันที่ <%= actionDate(revokerAction, dateOnly) %></div>
-        </td>
-        <td>
-            การดำเนินการ
-            <div class="workflow-line"><%= actionComment(reviewerAction) %></div>
-            <div class="workflow-line"></div>
-            <div class="workflow-sign">ลงชื่อ <%= display(actorName(reviewerAction)) %> ผู้ตรวจทาน<br>(<%= display(reviewerAction == null ? null : reviewerAction.getActorPosition()) %>)</div>
-            <div class="workflow-date">วันที่ <%= actionDate(reviewerAction, dateOnly) %></div>
+        <td class="action-box">
+            ผู้ขอใช้บริการ ตรวจรับและประเมินความพึงพอใจ<br>
+            ผลการตรวจรับ<span class="fill-line" style="display:inline-block; width: 75%;"><%= actionComment(acceptanceAction).equals("....................................................................................................................................") ? "" : actionComment(acceptanceAction) %></span>
+            <div class="flex-row"><span class="fill-line"></span></div>
+            
+            <div style="text-align: center; font-weight: bold; margin: 10px 0;">
+                <span style="margin-right: 15px;"><%= isAccDis ? "&#9745;" : "&#9744;" %> ไม่พอใจ</span>
+                <span style="margin-right: 15px;"><%= isAccNeu ? "&#9745;" : "&#9744;" %> ธรรมดา</span>
+                <span><%= isAccSat ? "&#9745;" : "&#9744;" %> พอใจ</span>
+            </div>
+
+            <div class="signature-block" style="margin-top: 20px;">
+                ลงชื่อ<span class="sig-line"><%= display(actorName(acceptanceAction)) %></span>ผู้ขอใช้บริการ<br>
+                (<span class="sig-line"><%= display(acceptanceAction == null ? "" : submission.getFullNameTh()) %></span>)<br>
+                ตำแหน่ง<span class="sig-line"></span><br>
+                วันที่<span class="sig-line"><%= actionDate(acceptanceAction, dateOnly) %></span>
+            </div>
         </td>
     </tr>
-    <tr><th colspan="2">ส่วนที่ 6 แจ้งผู้อำนวยการฝ่ายเจ้าของข้อมูล</th></tr>
     <tr>
-        <td>
+        <td colspan="2" class="matrix-header" style="padding: 0; border: 0;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr><th class="matrix-header" style="border-bottom: 1px solid #000; text-align: left;">ส่วนที่ 5 ผู้ดูแลระบบยกเลิกสิทธิ</th></tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td class="action-box">
+            การดำเนินการ<span class="fill-line" style="display:inline-block; width: 75%;"><%= actionComment(revokerAction).equals("....................................................................................................................................") ? "" : actionComment(revokerAction) %></span>
+            <div class="flex-row"><span class="fill-line"></span></div>
+            <div class="signature-block">
+                ลงชื่อ<span class="sig-line"><%= display(actorName(revokerAction)) %></span>ผู้ดำเนินการ<br>
+                (<span class="sig-line"><%= display(revokerAction == null ? "" : revokerAction.getActorEmpName()) %></span>)<br>
+                วันที่<span class="sig-line"><%= actionDate(revokerAction, dateOnly) %></span>
+            </div>
+        </td>
+        <td class="action-box">
+            การดำเนินการ<span class="fill-line" style="display:inline-block; width: 75%;"><%= actionComment(reviewerAction).equals("....................................................................................................................................") ? "" : actionComment(reviewerAction) %></span>
+            <div class="flex-row"><span class="fill-line"></span></div>
+            <div class="signature-block">
+                ลงชื่อ<span class="sig-line"><%= display(actorName(reviewerAction)) %></span>ผู้ตรวจทาน<br>
+                (<span class="sig-line"><%= display(reviewerAction == null ? "" : reviewerAction.getActorEmpName()) %></span>)<br>
+                วันที่<span class="sig-line"><%= actionDate(reviewerAction, dateOnly) %></span>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" class="matrix-header" style="padding: 0; border: 0;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr><th class="matrix-header" style="border-bottom: 1px solid #000; text-align: left;">ส่วนที่ 6 แจ้งผู้อำนวยการฝ่ายเจ้าของข้อมูล</th></tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td class="action-box">
             เรียน ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ<br>
-            เพื่อโปรดทราบ
-            <div class="workflow-line"><%= actionComment(reportAction) %></div>
-            <div class="workflow-line"></div>
-            <div class="workflow-sign">ลงชื่อ <%= display(actorName(reportAction)) %> หัวหน้ากลุ่มงาน<br>(<%= display(reportAction == null ? null : reportAction.getActorPosition()) %>)</div>
-            <div class="workflow-date">วันที่ <%= actionDate(reportAction, dateOnly) %></div>
+            เพื่อโปรดทราบ<span class="fill-line" style="display:inline-block; width: 75%;"><%= actionComment(reportAction).equals("....................................................................................................................................") ? "" : actionComment(reportAction) %></span>
+            <div class="flex-row"><span class="fill-line"></span></div>
+            <div class="signature-block">
+                ลงชื่อ<span class="sig-line"><%= display(actorName(reportAction)) %></span>หัวหน้ากลุ่มงาน<br>
+                (<span class="sig-line"><%= display(reportAction == null ? "" : reportAction.getActorEmpName()) %></span>)<br>
+                วันที่<span class="sig-line"><%= actionDate(reportAction, dateOnly) %></span>
+            </div>
         </td>
-        <td>
-            <br>
-            <div class="workflow-sign">ลงชื่อ <%= display(actorName(finalAction)) %> ผู้อำนวยการฝ่าย<br>(<%= display(finalAction == null ? null : finalAction.getActorPosition()) %>)</div>
-            <div class="workflow-date">วันที่ <%= actionDate(finalAction, dateOnly) %></div>
+        <td class="action-box">
+            <div class="signature-block" style="margin-top: 25px;">
+                ลงชื่อ<span class="sig-line"><%= display(actorName(finalAction)) %></span>ผู้อำนวยการฝ่าย<br>
+                (<span class="sig-line"><%= display(finalAction == null ? "" : finalAction.getActorEmpName()) %></span>)<br>
+                วันที่<span class="sig-line"><%= actionDate(finalAction, dateOnly) %></span>
+            </div>
         </td>
     </tr>
 </table>
-<div class="workflow-rev">Rev. 01 (01/08/2566)</div>
+
+<div class="doc-rev" style="margin-top: 10px;">
+    <div>
+        Rev. 01 (01/08/2566)<br>
+        <span class="doc-secret">ชั้นความลับเอกสาร : ใช้ภายในเท่านั้น</span>
+    </div>
+    <div style="text-align: right;">
+        หน้าที่ 2/3
+    </div>
+</div>
+
 </body>
 </html>

@@ -166,7 +166,9 @@ public class ThirdPartyRequestDAO {
             "r.STATUS, r.SUBMITTED_AT, " +
             "(SELECT MAX(s.SUBMISSION_ID) FROM THIRD_PARTY_FORM_LINK l " +
             " JOIN THIRD_PARTY_FORM_SUBMISSION s ON s.LINK_ID = l.LINK_ID " +
-            " WHERE l.REQUEST_ID = r.REQUEST_ID) AS SUBMISSION_ID " +
+            " WHERE l.REQUEST_ID = r.REQUEST_ID) AS SUBMISSION_ID, " +
+            "(SELECT MAX(a.ACTED_AT) FROM THIRD_PARTY_WORKFLOW_ACTION a " +
+            " WHERE a.REQUEST_ID = r.REQUEST_ID AND a.ACTION_TYPE <> 'WORKFLOW_MIGRATED') AS LATEST_ACTION_AT " +
             "FROM THIRD_PARTY_REQUEST r " +
             "WHERE r.STATUS <> 'CANCELLED' " +
             (hasOwner ? "AND r.INTERNAL_OWNER_EMPID = ? " : "") +
@@ -177,7 +179,9 @@ public class ThirdPartyRequestDAO {
                   "OR LOWER(NVL(r.EXTERNAL_COMPANY_NAME, '')) LIKE ? " +
                   "OR LOWER(NVL(r.TARGET_SYSTEM, '')) LIKE ?) "
                 : "") +
-            "ORDER BY r.UPDATED_AT DESC, r.REQUEST_ID DESC " +
+            "ORDER BY COALESCE((SELECT MAX(a.ACTED_AT) FROM THIRD_PARTY_WORKFLOW_ACTION a " +
+            "WHERE a.REQUEST_ID = r.REQUEST_ID AND a.ACTION_TYPE <> 'WORKFLOW_MIGRATED'), " +
+            "r.UPDATED_AT, r.SUBMITTED_AT, r.CREATED_AT) DESC, r.REQUEST_ID DESC " +
             "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
         List<ThirdPartyRequest> requests = new ArrayList<ThirdPartyRequest>();
         try (Connection conn = DBConnection.getConnection();

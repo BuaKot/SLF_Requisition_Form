@@ -125,7 +125,7 @@
         .approval-detail-label { color: #00509e; font-weight: 900; margin-bottom: 4px; }
         .approval-card.rejected .approval-detail-label { color: #b42318; }
         .approval-card-detail { color: #102a43; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
-        .approval-score { color: #087f23; font-size: 17px; font-weight: 900; margin-bottom: 5px; }
+        .approval-score { color: #102a43; font-size: 17px; font-weight: 900; margin-bottom: 5px; }
         .empty-approval-state { border: 1px dashed #bfd0df; border-radius: 10px; padding: 24px; text-align: center; color: #52606d; background: #fbfdff; }
         .table-note { color: #64748b; font-size: 13px; margin-top: 14px; }
         @media (max-width: 800px) {

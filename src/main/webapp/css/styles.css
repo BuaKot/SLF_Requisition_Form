@@ -2075,6 +2075,9 @@ textarea:focus-visible,
     justify-content: flex-end;
     gap: 10px;
     flex-wrap: nowrap;
+    width: 100%;
+    max-width: 1120px;
+    margin: -10px auto 18px;
 }
 
 .page-head-actions form {
@@ -2884,6 +2887,10 @@ main.page > .panel .value {
     margin-top: 4px;
 }
 
+.compact-note-requester {
+    white-space: nowrap;
+}
+
 .link-card-title-row {
     display: flex;
     align-items: flex-start;
@@ -2986,18 +2993,35 @@ main.page > .panel .value {
 .owner-link-dashboard {
     display: grid;
     grid-template-areas:
-        "intro intro"
-        "requests acceptance";
-    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+        "intro"
+        "actions"
+        "requests";
+    grid-template-columns: minmax(0, 1fr);
     gap: 18px;
 }
 
-.owner-link-dashboard .form-page-header {
+.owner-link-dashboard .third-party-toolbar-head {
     grid-area: intro;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    margin-bottom: 0;
+}
+
+.owner-link-dashboard .page-head-actions {
+    grid-area: actions;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .owner-link-dashboard .owner-request-list-panel {
     grid-area: requests;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
 }
 
 .owner-link-dashboard .owner-acceptance-panel {
@@ -3006,6 +3030,9 @@ main.page > .panel .value {
 
 .owner-request-card {
     border-color: var(--slf-color-border);
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .owner-request-card-actions {
@@ -3026,6 +3053,102 @@ main.page > .panel .value {
 
 .acceptance-generated-link {
     min-width: 0;
+}
+
+.merged-link-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.merged-link-box {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+    border: 1px solid #e1edf8;
+    border-radius: 8px;
+    background: #fbfdff;
+    padding: 12px;
+}
+
+.merged-link-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--slf-color-primary);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.merged-link-head span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+
+.merged-link-head strong,
+.merged-link-meta {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.merged-link-meta-grid {
+    display: flex;
+    gap: 8px 16px;
+    flex-wrap: wrap;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.merged-link-meta-grid strong {
+    color: var(--slf-color-primary);
+}
+
+.merged-generated-link {
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-width: 0;
+}
+
+.merged-generated-link input {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.blank-link-value {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    color: #94a3b8;
+    font-weight: 800;
+}
+
+.copy-link-text {
+    justify-self: flex-start;
+    align-self: center;
+    min-height: 42px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--slf-color-primary);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.copy-link-text:hover,
+.copy-link-text:focus-visible {
+    color: var(--slf-color-accent);
 }
 
 .third-party-request-page .btn-danger-soft {
@@ -3236,6 +3359,7 @@ main.page > .panel .value {
     .third-party-link-card.compact-card,
     .copy-row,
     .status-strip,
+    .merged-link-grid,
     .summary-grid {
         grid-template-columns: 1fr;
     }
@@ -3247,8 +3371,19 @@ main.page > .panel .value {
     .owner-link-dashboard {
         grid-template-areas:
             "intro"
-            "acceptance"
+            "actions"
             "requests";
+    }
+
+    .page-head-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .page-head-actions .btn,
+    .page-head-actions form,
+    .page-head-actions button {
+        width: 100%;
     }
 
     .admin-link-summary {

@@ -4,6 +4,7 @@ import com.slf.dao.ThirdPartyAuditLogDAO;
 import com.slf.dao.ThirdPartyFormLinkDAO;
 import com.slf.dao.ThirdPartyRequestDAO;
 import com.slf.dao.ThirdPartyAcceptanceDAO;
+import com.slf.model.ThirdPartyAcceptanceToken;
 import com.slf.model.ThirdPartyRequest;
 import com.slf.util.ThirdPartyLinkToken;
 import com.slf.util.ThirdPartyAccessPolicy;
@@ -11,7 +12,9 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.Base64;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -40,8 +43,11 @@ public class ThirdPartyRequestServlet extends HttpServlet {
             int ownerEmpId = allowedEmpId.intValue();
             List<ThirdPartyRequest> requests = requestDAO.findRecentForOwner(ownerEmpId, 100);
             acceptanceDAO.repairMissingTokensForOwner(ownerEmpId, 100);
+            List<ThirdPartyAcceptanceToken> acceptanceTokens = acceptanceDAO.findRecentForOwner(ownerEmpId, 100);
             request.setAttribute("thirdPartyRequests", requests);
-            request.setAttribute("acceptanceTokens", acceptanceDAO.findRecentForOwner(ownerEmpId, 100));
+            request.setAttribute("acceptanceTokens", acceptanceTokens);
+            request.setAttribute("acceptanceTokensByRequestId", tokensByRequestId(acceptanceTokens));
+            request.setAttribute("thirdPartyLinkPrefix", ThirdPartyLinksServlet.buildPublicLinkPrefix(request));
             request.setAttribute("acceptanceLinkPrefix", buildAcceptanceLinkPrefix(request));
             request.setAttribute("csrfToken", ensureCsrfToken(request));
             request.getRequestDispatcher("/third-party-request-new.jsp").forward(request, response);
@@ -153,5 +159,14 @@ public class ThirdPartyRequestServlet extends HttpServlet {
         return request.getScheme() + "://" + request.getServerName()
             + (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : ":" + request.getServerPort())
             + request.getContextPath() + "/thirdparty/accept?token=";
+    }
+
+    private static Map<Long, ThirdPartyAcceptanceToken> tokensByRequestId(List<ThirdPartyAcceptanceToken> tokens) {
+        Map<Long, ThirdPartyAcceptanceToken> byRequestId =
+            new LinkedHashMap<Long, ThirdPartyAcceptanceToken>();
+        for (ThirdPartyAcceptanceToken token : tokens) {
+            byRequestId.put(Long.valueOf(token.getRequestId()), token);
+        }
+        return byRequestId;
     }
 }

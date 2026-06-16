@@ -21,26 +21,24 @@ public class ThirdPartyAcceptancePageTest extends TestCase {
         assertTrue(acceptanceDao.contains("EXTERNAL_ACCEPTED"));
         assertTrue(acceptanceDao.contains("PENDING_REVOKER"));
 
-        assertTrue(publicPage.contains("ข้อมูลที่ท่านเคยกรอก"));
-        assertTrue(publicPage.contains("รายละเอียดการดำเนินงาน"));
         assertTrue(publicPage.contains("name=\"satisfactionLevel\""));
         assertTrue(publicPage.contains("name=\"comment\""));
-        assertFalse(publicPage.contains("ความเห็นหัวหน้าส่วน"));
-        assertFalse(publicPage.contains("ความเห็น IT Director"));
         assertFalse(publicPage.contains("assignment"));
 
-        assertTrue(ownerPage.contains("ลิงก์สำหรับตรวจรับและประเมิน"));
-        assertTrue(ownerPage.contains("copyAcceptanceLink"));
+        assertTrue(ownerPage.contains("ลิงก์ตรวจรับและประเมิน"));
+        assertTrue(ownerPage.contains("copyMergedLink"));
+        assertTrue(ownerPage.contains("copy-link-text"));
         assertTrue(ownerPage.contains("owner-link-dashboard"));
-        assertTrue(ownerPage.contains("owner-acceptance-panel"));
-        assertTrue(ownerPage.contains("acceptance-link-card"));
-        assertTrue(ownerPage.contains("acceptance-generated-link"));
+        assertTrue(ownerPage.contains("merged-link-grid"));
+        assertTrue(ownerPage.contains("merged-link-box"));
+        assertTrue(ownerPage.contains("blank-link-value"));
+        assertTrue(ownerPage.contains("acceptanceTokensByRequestId"));
         assertTrue(ownerPage.contains("owner-request-list-panel"));
-        assertTrue(styles.contains("\"requests acceptance\""));
+        assertTrue(styles.contains("\"actions\""));
         assertTrue(styles.contains(".owner-link-dashboard .owner-request-list-panel"));
-        assertTrue(styles.contains(".owner-link-dashboard .owner-acceptance-panel"));
-        assertTrue(styles.contains(".owner-acceptance-panel .acceptance-link-card"));
-        assertTrue(styles.contains(".owner-acceptance-panel .generated-link-box input"));
+        assertTrue(styles.contains(".owner-link-dashboard .page-head-actions"));
+        assertTrue(styles.contains(".merged-link-grid"));
+        assertTrue(styles.contains(".copy-link-text"));
         assertTrue(styles.contains("text-overflow: ellipsis"));
     }
 

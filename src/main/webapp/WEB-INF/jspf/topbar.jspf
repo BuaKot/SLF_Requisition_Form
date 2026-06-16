@@ -22,7 +22,7 @@
         </div>
         <div class="user-info index-info-pill topbar-role-pill">
             <i class="fa-solid fa-id-badge"></i>
-            <p>สถานะ: ${sessionScope.position}</p>
+            <p>ตำแหน่ง: ${sessionScope.position}</p>
         </div>
     </div>
 </header>

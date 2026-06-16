@@ -11,6 +11,7 @@ public class ThirdPartyPdfExportTest extends TestCase {
         String servlet = read("src/main/java/com/slf/controller/ThirdPartyExportPDFServlet.java");
         String page = read("src/main/webapp/third-party-pdf.jsp");
 
+        // Servlet Checks (Unchanged)
         assertTrue(servlet.contains("@WebServlet(\"/thirdParty/exportPdf\")"));
         assertTrue(servlet.contains("parseSubmissionId"));
         assertTrue(servlet.contains("canViewSubmission"));
@@ -22,21 +23,34 @@ public class ThirdPartyPdfExportTest extends TestCase {
         assertTrue(servlet.contains("ThirdPartyFormSubmissionDAO"));
         assertTrue(servlet.contains("ThirdPartyWorkflowDAO"));
         assertTrue(servlet.contains("ThirdPartyRequestDAO"));
+        assertFalse(servlet.contains("RAW_TOKEN"));
+
+        // JSP Page Checks (Updated to match the new exact-copy layout)
         assertTrue(page.contains("btn-print"));
         assertTrue(page.contains("window.print()"));
-        assertTrue(page.contains("SLF-TP-001"));
-        assertTrue(page.contains("workflow-form"));
+        
+        // We replaced "workflow-form" and "head-table" with "matrix-table" and "header-container"
+        assertTrue(page.contains("matrix-table"));
+        assertTrue(page.contains("header-container"));
+        
+        // Workflow actions check
         assertTrue(page.contains("findAction(approvalHistory"));
         assertTrue(page.contains("SECTION_HEAD_SUBMITTED"));
         assertTrue(page.contains("OPERATOR_COMPLETED"));
         assertTrue(page.contains("EXTERNAL_ACCEPTED"));
-        assertTrue(page.contains("acceptanceScore == null ? \"-\" : acceptanceScore"));
-        assertTrue(page.contains("workflowStepLabel(acceptanceAction == null ? \"EXTERNAL_ACCEPTED\""));
-        assertFalse(page.contains("ส่วนที่ 4 ผลตรวจรับและประเมินความพึงพอใจ"));
-        assertTrue(page.contains("workflow-rev"));
-        assertTrue(page.contains("head-table"));
+        
+        // We changed how acceptance score is rendered to use checkboxes
+        assertTrue(page.contains("acceptanceScore != null && acceptanceScore =="));
+        assertTrue(page.contains("isAccSat ? \"&#9745;\" : \"&#9744;\""));
+        
+        // Section 4 was added to the layout to match the document
+        assertTrue(page.contains("ส่วนที่ 4 ผลตรวจรับและประเมินความพึงพอใจ"));
+        
+        // Document revision text uses doc-rev now instead of workflow-rev
+        assertTrue(page.contains("doc-rev"));
+        
+        // Ensure old matrix styling is still gone
         assertFalse(page.contains("<table class=\"approval-matrix\">"));
-        assertFalse(servlet.contains("RAW_TOKEN"));
     }
 
     private static String read(String path) throws Exception {

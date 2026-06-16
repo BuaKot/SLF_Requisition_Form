@@ -42,9 +42,11 @@ public class ListQueueUxStructureTest extends TestCase {
 
     public void testSubmitQueueKeepsRoutesAndUsesScopedListUx() throws Exception {
         String jsp = read("src/main/webapp/submit.jsp");
-        String css = read("src/main/webapp/css/submit.css");
+        String css = read("src/main/webapp/css/styles.css");
 
         assertTrue(jsp.contains("SecurityUtil.ensureCsrfToken(request)"));
+        assertTrue(jsp.contains("${pageContext.request.contextPath}/css/styles.css"));
+        assertFalse(jsp.contains("${pageContext.request.contextPath}/css/submit.css"));
         assertTrue(jsp.contains("response.sendRedirect(request.getContextPath() + \"/login\")"));
         assertTrue(jsp.contains("form.action = contextPath + \"/SubmitApprovalServlet\""));
         assertTrue(jsp.contains("form.action = contextPath + \"/ExtendDeadlineServlet\""));

@@ -89,25 +89,31 @@ public class FormPageUxStructureTest extends TestCase {
     }
 
     public void testFormStylesExposeQuietEnterpriseFormComponents() throws IOException {
-        String css = read("src/main/webapp/css/form.css");
+        String css = read("src/main/webapp/css/styles.css");
 
         assertTrue(css.contains(".it-request-form-page"));
         assertTrue(css.contains(".form-section"));
         assertTrue(css.contains(".section-heading"));
         assertTrue(css.contains(".request-item-card"));
         assertTrue(css.contains(".form-action-bar"));
+        assertTrue(css.contains(".it-request-form-page.form-container"));
+        assertTrue(css.contains("width: min(1500px, calc(100% - 48px))"));
         assertTrue(css.contains(".readonly-field"));
         assertTrue(css.contains(".field-required"));
         assertTrue(css.contains(".request-alert-actions"));
+        assertTrue(css.contains(".it-request-form-page .form-group.has-byte-counter > input[type=\"text\"] + .byte-counter"));
+        assertTrue(css.contains("top: 33px"));
+        assertTrue(css.contains("bottom: auto"));
         assertTrue(css.contains("@media (max-width: 900px)"));
         assertTrue(css.contains("var(--slf-color-primary"));
     }
 
     public void testDetailPageKeepsLegacySafeFormCssSupport() throws IOException {
         String detail = read("src/main/webapp/detail.jsp");
-        String css = read("src/main/webapp/css/form.css");
+        String css = read("src/main/webapp/css/styles.css");
 
-        assertTrue(detail.contains("${pageContext.request.contextPath}/css/form.css"));
+        assertTrue(detail.contains("${pageContext.request.contextPath}/css/styles.css"));
+        assertFalse(detail.contains("${pageContext.request.contextPath}/css/form.css"));
         assertTrue(detail.contains("class=\"banner\""));
         assertTrue(detail.contains("class=\"form-container\""));
         assertTrue(detail.contains("class=\"form-grid\""));

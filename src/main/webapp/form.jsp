@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
 </head>
 
 <body>
@@ -233,7 +232,7 @@
                 </div>
             </section>
 
-            <div class="form-action-bar action-row">
+            <div class="form-action-bar action-row panel">
                 <a class="btn btn-reject detail-back-button" href="<%= SecurityUtil.escapeHtml(formBackLink.getHref()) %>">
                     <i class="fa-solid fa-arrow-left"></i> <%= SecurityUtil.escapeHtml(formBackLink.getLabel()) %>
                 </a>

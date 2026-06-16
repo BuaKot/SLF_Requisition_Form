@@ -6,6 +6,7 @@ import com.slf.dao.ThirdPartyRequestDAO;
 import com.slf.dao.ThirdPartyWorkflowDAO;
 import com.slf.model.ThirdPartyFormSubmission;
 import com.slf.model.ThirdPartyRequest;
+import com.slf.notification.ThirdPartyNotificationService;
 import com.slf.util.ThirdPartyAccessPolicy;
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -23,6 +24,7 @@ abstract class ThirdPartyFinalStageReviewServlet extends HttpServlet {
     private final ThirdPartyFormSubmissionDAO submissionDAO = new ThirdPartyFormSubmissionDAO();
     private final ThirdPartyWorkflowDAO workflowDAO = new ThirdPartyWorkflowDAO();
     private final ThirdPartyAcceptanceDAO acceptanceDAO = new ThirdPartyAcceptanceDAO();
+    private final ThirdPartyNotificationService notificationService = new ThirdPartyNotificationService();
 
     protected abstract boolean authorized(HttpSession session);
     protected abstract String expectedStatus();
@@ -58,6 +60,11 @@ abstract class ThirdPartyFinalStageReviewServlet extends HttpServlet {
             if (!submit(requestId, actorEmpId, report)) {
                 response.sendError(HttpServletResponse.SC_CONFLICT, "คำขอนี้ไม่ได้อยู่ในขั้นตอนที่กำหนด");
                 return;
+            }
+            if (showReportField()) {
+                notificationService.notifySectionHeadReported(requestId, actorEmpId, report);
+            } else {
+                notificationService.notifyFinalCertified(requestId, actorEmpId);
             }
             response.sendRedirect(request.getContextPath() + inboxPath());
         } catch (IllegalArgumentException e) {

@@ -3002,41 +3002,33 @@ main.page > .panel .value {
 }
 
 .owner-link-dashboard {
-    display: grid;
-    grid-template-areas:
-        "intro"
-        "actions"
-        "requests";
-    grid-template-columns: minmax(0, 1fr);
-    gap: 18px;
+    display: block;
 }
 
 .owner-link-dashboard .third-party-toolbar-head {
-    grid-area: intro;
     width: 100%;
-    max-width: none;
+    max-width: 1120px;
     box-sizing: border-box;
-    margin-bottom: 0;
+    margin: 0 auto 22px;
 }
 
 .owner-link-dashboard .page-head-actions {
-    grid-area: actions;
-    width: 100%;
+    width: auto;
     max-width: none;
     box-sizing: border-box;
-    margin-top: 0;
-    margin-bottom: 0;
+    margin: 0;
 }
 
 .owner-link-dashboard .owner-request-list-panel {
-    grid-area: requests;
     width: 100%;
-    max-width: none;
+    max-width: 1120px;
     box-sizing: border-box;
+    margin: 0 auto 18px;
 }
 
 .owner-link-dashboard .owner-acceptance-panel {
-    grid-area: acceptance;
+    max-width: 1120px;
+    margin: 0 auto 18px;
 }
 
 .owner-request-card {

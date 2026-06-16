@@ -34,7 +34,30 @@ public class ThirdPartyRequestActionsTest extends TestCase {
         assertTrue(styles.contains(".copy-link-text"));
         assertTrue(styles.contains(".compact-note-requester"));
         assertTrue(styles.contains(".merged-link-meta-grid"));
-        assertTrue(styles.contains("max-width: none"));
+        assertTrue(styles.contains("max-width: 1120px"));
+    }
+
+    public void testOwnerRequestPageKeepsClassicHeaderAndPanelWidth() throws Exception {
+        String page = read("src/main/webapp/third-party-request-new.jsp");
+        String styles = read("src/main/webapp/css/styles.css").replace("\r\n", "\n");
+
+        int headerStart = page.indexOf("<section class=\"third-party-page-head third-party-toolbar-head\">");
+        int actionsStart = page.indexOf("<div class=\"page-head-actions\">", headerStart);
+        int headerEnd = page.indexOf("</section>", headerStart);
+
+        assertTrue(headerStart >= 0);
+        assertTrue(actionsStart > headerStart);
+        assertTrue(actionsStart < headerEnd);
+        assertFalse(page.contains("</section>\r\n        <div class=\"page-head-actions\">"));
+        assertFalse(page.contains("</section>\n        <div class=\"page-head-actions\">"));
+
+        assertTrue(styles.contains(".owner-link-dashboard {\n    display: block;"));
+        assertTrue(styles.contains(".owner-link-dashboard .third-party-toolbar-head"));
+        assertTrue(styles.contains("margin: 0 auto 22px;"));
+        assertTrue(styles.contains(".owner-link-dashboard .page-head-actions"));
+        assertTrue(styles.contains("width: auto;"));
+        assertTrue(styles.contains(".owner-link-dashboard .owner-request-list-panel"));
+        assertTrue(styles.contains("max-width: 1120px;"));
     }
 
     private static String read(String path) throws Exception {

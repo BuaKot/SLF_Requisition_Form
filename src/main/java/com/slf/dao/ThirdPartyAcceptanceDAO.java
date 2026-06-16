@@ -114,6 +114,10 @@ public class ThirdPartyAcceptanceDAO {
     }
 
     public int advanceExpiredAcceptances() throws SQLException {
+        return advanceExpiredAcceptanceRequestIds().size();
+    }
+
+    public List<Long> advanceExpiredAcceptanceRequestIds() throws SQLException {
         Timestamp now = BangkokTimeUtil.nowTimestamp();
         String findSql =
             "SELECT r.REQUEST_ID, t.ACCEPTANCE_TOKEN_ID " +
@@ -147,7 +151,7 @@ public class ThirdPartyAcceptanceDAO {
                         }
                     }
                 }
-                int advanced = 0;
+                List<Long> advancedRequestIds = new ArrayList<Long>();
                 try (PreparedStatement expireToken = conn.prepareStatement(expireTokenSql);
                      PreparedStatement updateRequest = conn.prepareStatement(updateRequestSql);
                      PreparedStatement insertAction = conn.prepareStatement(insertActionSql)) {
@@ -165,11 +169,11 @@ public class ThirdPartyAcceptanceDAO {
                         insertAction.setLong(1, requestIds.get(i).longValue());
                         setTimestamp(insertAction, 2, now);
                         insertAction.executeUpdate();
-                        advanced++;
+                        advancedRequestIds.add(requestIds.get(i));
                     }
                 }
                 conn.commit();
-                return advanced;
+                return advancedRequestIds;
             } catch (SQLException | RuntimeException e) {
                 conn.rollback();
                 throw e;

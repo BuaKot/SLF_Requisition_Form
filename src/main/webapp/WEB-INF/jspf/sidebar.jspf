@@ -39,6 +39,7 @@
     boolean _sidebarApprovalOnlyRole = AuthUtil.isApprovalOnlyRole(_sidebarPosition);
     String _sidebarApprovalPage = AuthUtil.approvalPageForRole(_sidebarPosition);
     String _sidebarApprovalLabel = AuthUtil.approvalLabelForRole(_sidebarPosition);
+    boolean _sidebarCanAccessProcess = AuthUtil.isAllowedForPage(_sidebarPosition, "process");
 %>
 
 <div id="mySidebar" class="sidebar" role="navigation" aria-label="Primary navigation">
@@ -46,8 +47,9 @@
     <a href="${pageContext.request.contextPath}/"><i class="fa-solid fa-house"></i><span>&#3627;&#3609;&#3657;&#3634;&#3627;&#3621;&#3633;&#3585;</span></a>
     <a href="${pageContext.request.contextPath}/emailNotifications"><i class="fa-solid fa-circle-user"></i><span>&#3650;&#3611;&#3619;&#3652;&#3615;&#3621;&#3660;</span></a>
 
-    <% if ((_sidebarIsIndex || _sidebarIsProfile || (_sidebarIsFormDetail && !_sidebarIsItFlow)) 
-            && !(_sidebarShowAdmin || _sidebarShowDashboard)) { %>
+    <% if ((_sidebarIsIndex || _sidebarIsProfile || (_sidebarIsFormDetail && !_sidebarIsItFlow))
+            && !(_sidebarShowAdmin || _sidebarShowDashboard)
+            && !_sidebarCanAccessProcess) { %>
         <a href="${pageContext.request.contextPath}/logout" class="admin-tab">
             <i class="fa-solid fa-arrow-right-from-bracket"></i><span>&#3629;&#3629;&#3585;&#3592;&#3634;&#3585;&#3619;&#3632;&#3610;&#3610;</span>
         </a>
@@ -56,13 +58,18 @@
         <a href="${pageContext.request.contextPath}<%= _sidebarApprovalPage %>" class="approval-menu-link">
             <i class="fa-solid fa-file-signature"></i><span><%= _sidebarApprovalLabel %></span>
         </a>
+        <% if (_sidebarCanAccessProcess) { %>
+        <a href="${pageContext.request.contextPath}/process" class="approval-menu-link">
+            <i class="fa-solid fa-screwdriver-wrench"></i><span>รายการรอดำเนินการ</span>
+        </a>
+        <% } %>
         <% } else { %>
         <% if (_sidebarIsRequisitionApprovalDetail && AuthUtil.isAllowedForPage(_sidebarPosition, "technicalApprove")) { %>
         <a href="${pageContext.request.contextPath}/technicalApprove" class="approval-menu-link">
             <i class="fa-solid fa-file-signature"></i><span>ความเห็นและการอนุมัติเชิงเทคนิค</span>
         </a>
         <% } %>
-        <% if (_sidebarIsRequisitionApprovalDetail && AuthUtil.isAllowedForPage(_sidebarPosition, "process")) { %>
+        <% if ((_sidebarIsRequisitionApprovalDetail || _sidebarIsItFlow || _sidebarIsIndex) && _sidebarCanAccessProcess) { %>
         <a href="${pageContext.request.contextPath}/process" class="approval-menu-link">
             <i class="fa-solid fa-screwdriver-wrench"></i><span>รายการรอดำเนินการ</span>
         </a>

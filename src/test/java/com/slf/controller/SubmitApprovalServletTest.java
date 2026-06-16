@@ -38,6 +38,17 @@ public class SubmitApprovalServletTest extends TestCase {
         assertFalse(SubmitApprovalServlet.matchesRequester(678, 54));
     }
 
+    public void testOperationalStageAllowsAssignedDeveloperOrHeadsOnly() {
+        assertTrue(SubmitApprovalServlet.isOperationalStageReviewer(
+            Integer.valueOf(101), Integer.valueOf(201), Integer.valueOf(301), 101));
+        assertTrue(SubmitApprovalServlet.isOperationalStageReviewer(
+            Integer.valueOf(101), Integer.valueOf(201), Integer.valueOf(301), 201));
+        assertTrue(SubmitApprovalServlet.isOperationalStageReviewer(
+            Integer.valueOf(101), Integer.valueOf(201), Integer.valueOf(301), 301));
+        assertFalse(SubmitApprovalServlet.isOperationalStageReviewer(
+            Integer.valueOf(101), Integer.valueOf(201), Integer.valueOf(301), 999));
+    }
+
     public void testOracleMissingColumnDetectedForLegacySchemaFallback() {
         assertTrue(SubmitApprovalServlet.isMissingColumn(new SQLException("ORA-00904: invalid identifier", "42000", 904)));
     }

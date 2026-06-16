@@ -61,4 +61,18 @@ public class AuthUtilTest extends TestCase {
         assertTrue(AuthUtil.isAllowedForPage("Development", "history"));
         assertTrue(AuthUtil.isAllowedForPage("Employee", "history"));
     }
+
+    public void testTechnicalCanAccessOperationalStageButDirectorsCannot() {
+        assertTrue(AuthUtil.isAllowedForPage("Technical", "process"));
+        assertTrue(AuthUtil.isAllowedForPage("Development", "process"));
+        assertTrue(AuthUtil.isAllowedForPage("Data", "process"));
+        assertTrue(AuthUtil.isAllowedForPage("Infrastructure", "process"));
+        assertTrue(AuthUtil.isAllowedForPage("Cyber Security", "process"));
+        assertTrue(AuthUtil.isAllowedForPage("Research", "process"));
+        assertTrue(AuthUtil.isAllowedForPage("IT Planning", "process"));
+        assertFalse(AuthUtil.isAllowedForPage("Director", "process"));
+        assertFalse(AuthUtil.isAllowedForPage("ITDirector", "process"));
+        assertFalse(AuthUtil.isAllowedForPage("IT Director", "process"));
+        assertFalse(AuthUtil.isAllowedForPage("Employee", "process"));
+    }
 }

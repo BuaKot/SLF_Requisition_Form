@@ -30,19 +30,26 @@ public class LoadProcessServlet extends HttpServlet {
 
         String sql =
             "WITH latest_step AS ( " +
-            "    SELECT FORMID, STATE_STEP, DEV_EMPID, " +
+            "    SELECT FORMID, STATE_STEP, " +
             "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
             "    FROM APPROVALINFO " +
+            "), latest_dev AS ( " +
+            "    SELECT FORMID, DEV_EMPID, " +
+            "           ROW_NUMBER() OVER (PARTITION BY FORMID ORDER BY APPROVALID DESC) AS RN " +
+            "    FROM APPROVALINFO WHERE DEV_EMPID IS NOT NULL " +
             ") " +
             "SELECT r.FORMID, e.EMPNAME, r.TITLEFORM, r.DEADLINE, " +
             "s.SECNAME AS SECTION_NAME, d.DEPTNAME AS DEPARTMENT_NAME " +
             "FROM REQUISITIONFORM r " +
             "JOIN latest_step ls ON ls.FORMID = r.FORMID AND ls.RN = 1 " +
+            "LEFT JOIN latest_dev ld ON ld.FORMID = r.FORMID AND ld.RN = 1 " +
             "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
             "LEFT JOIN SECTION s ON e.SECID = s.SECID " +
             "LEFT JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+            "LEFT JOIN SECTION assigned_s ON r.ASSIGN_SECID = assigned_s.SECID " +
+            "LEFT JOIN DEPARTMENT assigned_d ON assigned_s.DEPTID = assigned_d.DEPTID " +
             "WHERE ls.STATE_STEP = 3 " +
-            "AND ls.DEV_EMPID = ? " +
+            "AND (ld.DEV_EMPID = ? OR assigned_s.SECTIONHEAD_EMPID = ? OR assigned_d.DEPTHEAD_EMPID = ?) " +
             "ORDER BY r.FORMID DESC";
 
         List<Map<String, Object>> formList = new ArrayList<>();
@@ -52,6 +59,8 @@ public class LoadProcessServlet extends HttpServlet {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, empId);
+            pstmt.setInt(2, empId);
+            pstmt.setInt(3, empId);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {

@@ -9,10 +9,7 @@
         return;
     }
     String approvalPage = AuthUtil.approvalPageForRole(currentRole);
-    if (approvalPage != null) {
-        response.sendRedirect(request.getContextPath() + approvalPage);
-        return;
-    }
+    boolean canAccessOperationalStage = AuthUtil.isAllowedForPage(currentRole, "process");
     boolean approvalOnlyRole = AuthUtil.isApprovalOnlyRole(currentRole);
     NavigationUtil.BackLink listBackLink = NavigationUtil.listPageBack(request.getContextPath());
 %>
@@ -75,8 +72,38 @@
                         <i class="fa-solid fa-paper-plane"></i>
                     </div>
                     <div class="enterprise-card-content">
-                        <strong>ดูฟอร์มที่ส่งแล้ว</strong>
+                        <strong>ฟอร์มที่ส่งแล้ว</strong>
                         <small>ตรวจสอบรายละเอียดและสถานะล่าสุดของใบคำขอ</small>
+                    </div>
+                    <div class="enterprise-card-arrow">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                </a>
+                <% } %>
+
+                <% if (approvalPage != null) { %>
+                <a class="enterprise-action-card it-action-card" href="${pageContext.request.contextPath}<%= approvalPage %>">
+                    <div class="enterprise-card-icon">
+                        <i class="fa-solid fa-file-signature"></i>
+                    </div>
+                    <div class="enterprise-card-content">
+                        <strong>รายการรออนุมัติ</strong>
+                        <small>ตรวจสอบและอนุมัติใบขอตามบทบาทของคุณ</small>
+                    </div>
+                    <div class="enterprise-card-arrow">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                </a>
+                <% } %>
+
+                <% if (canAccessOperationalStage) { %>
+                <a class="enterprise-action-card it-action-card" href="${pageContext.request.contextPath}/process">
+                    <div class="enterprise-card-icon">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                    </div>
+                    <div class="enterprise-card-content">
+                        <strong>รายการรอดำเนินการ</strong>
+                        <small>สลับไปทำงานขั้นดำเนินการสำหรับใบขอที่ได้รับมอบหมาย</small>
                     </div>
                     <div class="enterprise-card-arrow">
                         <i class="fa-solid fa-chevron-right"></i>

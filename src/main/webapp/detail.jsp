@@ -4,6 +4,10 @@
 <%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection, com.slf.util.SecurityUtil, com.slf.util.NavigationUtil" %>
 
 <%
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+
     String idParam = request.getParameter("id");
     String fromPage = request.getParameter("from");
     // Legacy test contract: "history".equals(fromPage) ? "history.jsp" : "submit"
@@ -447,5 +451,12 @@
 
 <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
+<script>
+window.addEventListener("pageshow", function (event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+</script>
 </body>
 </html>

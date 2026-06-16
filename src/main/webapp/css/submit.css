@@ -3686,3 +3686,8 @@ body {
         min-height: 38px;
     }
 }
+button.confirm-btn.confirmed[disabled] {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    -webkit-text-fill-color: #ffffff !important; /* Forces Safari and Chrome overrides to obey */
+}

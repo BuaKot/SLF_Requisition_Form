@@ -9,13 +9,24 @@ public class RoleWorkflowIndexTest extends TestCase {
 
     public void testIndexProvidesRoleWorkflowEntrances() throws Exception {
         String index = read("src/main/webapp/index.jsp");
+        String sidebar = read("src/main/webapp/WEB-INF/jspf/sidebar.jspf");
         String inbox = read("src/main/webapp/WEB-INF/third-party-section-head-inbox.jsp");
         String servlet = read("src/main/java/com/slf/controller/ThirdPartySectionHeadInboxServlet.java");
 
         assertTrue(index.contains("hasRoleWorkMenu"));
+        assertTrue(index.contains("canAccessOperationalStage"));
+        assertTrue(index.contains("boolean hasRoleWorkMenu = isDirector || isTechnical || isItDirector || canAccessOperationalStage;"));
+        assertTrue(index.contains("if (isDirector || isItDirector)"));
+        assertTrue(index.contains("if (isTechnical)"));
+        assertTrue(index.contains("technical-workflow-actions"));
+        assertTrue(index.contains("technical-approval-action"));
+        assertTrue(index.contains("technical-process-action"));
         assertTrue(index.contains("/technicalApprove"));
         assertTrue(index.contains("/itDirectorApprove"));
         assertTrue(index.contains("/process"));
+        assertTrue(index.contains("รายการรอดำเนินการ"));
+        assertTrue(sidebar.contains("_sidebarCanAccessProcess"));
+        assertTrue(sidebar.contains("&& !_sidebarCanAccessProcess"));
         assertTrue(index.contains("/thirdParty/sectionHead"));
         assertTrue(index.contains("/thirdParty/itDirector"));
         assertTrue(index.contains("/thirdParty/operator"));

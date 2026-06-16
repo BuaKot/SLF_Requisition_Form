@@ -28,7 +28,8 @@
     boolean isItDirector = "ITDirector".equalsIgnoreCase(currentRole)
         || "IT Director".equalsIgnoreCase(currentRole);
     boolean isInfrastructure = "Infrastructure".equalsIgnoreCase(currentRole);
-    boolean hasRoleWorkMenu = isDirector || isTechnical || isItDirector || isInfrastructure;
+    boolean canAccessOperationalStage = AuthUtil.isAllowedForPage(currentRole, "process");
+    boolean hasRoleWorkMenu = isDirector || isTechnical || isItDirector || canAccessOperationalStage;
     String requisitionWorkUrl = isDirector ? "/directorApprove"
         : isTechnical ? "/technicalApprove"
         : isItDirector ? "/itDirectorApprove" : "/process";
@@ -98,6 +99,22 @@
             </div>
 
             <div class="index-form-grid">
+                <% if (isTechnical) { %>
+                <div class="index-form-card technical-workflow-card">
+                    <div class="form-type-icon"><i class="fa-solid fa-file-signature"></i></div>
+                    <div class="index-form-card-body">
+                        <span class="form-status available">พร้อมใช้งาน</span>
+                        <h3>ใบขอให้ดำเนินการด้านเทคโนโลยีสารสนเทศ</h3>
+                        <p>จัดการงานอนุมัติเชิงเทคนิคและงานดำเนินการของฟอร์มเดียวกัน</p>
+                    </div>
+                    <div class="form-type-actions technical-workflow-actions">
+                        <a class="form-type-action secondary technical-approval-action" href="${pageContext.request.contextPath}/technicalApprove">งานรออนุมัติเชิงเทคนิค</a>
+                        <a class="form-type-action secondary technical-process-action" href="${pageContext.request.contextPath}/process">งานรอดำเนินการ</a>
+                    </div>
+                </div>
+                <% } %>
+
+                <% if (isDirector || isItDirector) { %>
                 <a class="index-form-card index-form-card-link" href="${pageContext.request.contextPath}<%= requisitionWorkUrl %>">
                     <div class="form-type-icon"><i class="fa-solid fa-file-signature"></i></div>
                     <div class="index-form-card-body">
@@ -107,6 +124,20 @@
                     </div>
                     <span class="form-type-action secondary">เปิดรายการงาน</span>
                 </a>
+
+                <% } %>
+
+                <% if (canAccessOperationalStage && !isTechnical) { %>
+                <a class="index-form-card index-form-card-link" href="${pageContext.request.contextPath}/process">
+                    <div class="form-type-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                    <div class="index-form-card-body">
+                        <span class="form-status available">พร้อมใช้งาน</span>
+                        <h3>รายการรอดำเนินการ</h3>
+                        <p>สลับไปทำงานขั้นดำเนินการสำหรับใบขอที่ได้รับมอบหมายหรืออยู่ในความรับผิดชอบของหัวหน้าส่วน</p>
+                    </div>
+                    <span class="form-type-action secondary">เปิดโหมดดำเนินการ</span>
+                </a>
+                <% } %>
 
                 <% if (isTechnical || isItDirector || isInfrastructure) { %>
                 <a class="index-form-card index-form-card-link" href="${pageContext.request.contextPath}<%= isTechnical ? "/thirdParty/sectionHead" : isItDirector ? "/thirdParty/itDirector" : "/thirdParty/operator" %>">

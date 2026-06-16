@@ -4081,6 +4081,24 @@ main.page > .panel .value {
         border-color var(--index-ease);
 }
 
+.enterprise-index-main .form-type-actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.enterprise-index-main .form-type-actions .form-type-action {
+    margin-top: 0;
+    text-decoration: none;
+}
+
+.enterprise-index-main .technical-workflow-card .form-type-action {
+    flex: 1 1 210px;
+}
+
 .enterprise-index-main .form-type-action::after {
     content: "\f061";
     font-family: "Font Awesome 6 Free";

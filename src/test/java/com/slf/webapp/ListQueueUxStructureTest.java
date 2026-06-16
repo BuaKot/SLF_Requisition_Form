@@ -53,6 +53,10 @@ public class ListQueueUxStructureTest extends TestCase {
         assertTrue(jsp.contains("id=\"searchInput\""));
         assertTrue(jsp.contains("id=\"sortAscBtn\""));
         assertTrue(jsp.contains("id=\"sortDescBtn\""));
+        assertTrue(jsp.contains("data-requestdate"));
+        assertTrue(jsp.contains("a.dataset.requestdate"));
+        assertTrue(jsp.contains("get('sortby') || 'formid'"));
+        assertTrue(jsp.contains("get('sort') || 'desc'"));
         assertTrue(jsp.contains("value=\"pending\""));
         assertTrue(jsp.contains("value=\"overdue\""));
         assertTrue(jsp.contains("value=\"rejected\""));

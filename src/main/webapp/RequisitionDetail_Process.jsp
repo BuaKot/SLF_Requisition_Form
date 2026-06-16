@@ -63,6 +63,8 @@
                          "     AND ai.DEV_EMPID IS NOT NULL " +
                          "     ORDER BY ai.APPROVALID DESC " +
                          "     FETCH FIRST 1 ROWS ONLY) AS LATEST_DEV_EMPID, " +
+                         "assigned_s.SECTIONHEAD_EMPID AS ASSIGNED_SECTION_HEAD_EMPID, " +
+                         "assigned_d.DEPTHEAD_EMPID AS ASSIGNED_DEPT_HEAD_EMPID, " +
                          "NVL((SELECT ai.STATE_STEP " +
                          "     FROM APPROVALINFO ai " +
                          "     WHERE ai.FORMID = r.FORMID " +
@@ -72,6 +74,8 @@
                          "LEFT JOIN EMPLOYEE e ON r.EMPID = e.EMPID " +
                          "LEFT JOIN SECTION requester_s ON e.SECID = requester_s.SECID " +
                          "LEFT JOIN DEPARTMENT requester_d ON requester_s.DEPTID = requester_d.DEPTID " +
+                         "LEFT JOIN SECTION assigned_s ON r.ASSIGN_SECID = assigned_s.SECID " +
+                         "LEFT JOIN DEPARTMENT assigned_d ON assigned_s.DEPTID = assigned_d.DEPTID " +
                          "WHERE r.FORMID = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, formId);
@@ -84,9 +88,10 @@
                 phone = nvl(rs.getString("PHONE"));
                 titleForm = nvl(rs.getString("TITLEFORM"));
                 String latestDevEmpId = rs.getString("LATEST_DEV_EMPID");
+                String assignedSectionHeadEmpId = rs.getString("ASSIGNED_SECTION_HEAD_EMPID");
+                String assignedDeptHeadEmpId = rs.getString("ASSIGNED_DEPT_HEAD_EMPID");
                 canApproveExpectedStep = rs.getInt("STATE_STEP") == EXPECTED_STEP
-                    && latestDevEmpId != null
-                    && latestDevEmpId.trim().equals(loggedInEmpId);
+                    && matchesAnyReviewer(loggedInEmpId, latestDevEmpId, assignedSectionHeadEmpId, assignedDeptHeadEmpId);
                 if (rs.getDate("DEADLINE") != null) {
                     deadlineDate = sdfDisplay.format(rs.getDate("DEADLINE"));
                 } else {
@@ -153,6 +158,13 @@
     }
     private String h(Object value) {
         return SecurityUtil.escapeHtml(value);
+    }
+    private boolean matchesAnyReviewer(String loggedInEmpId, String... candidateEmpIds) {
+        if (loggedInEmpId == null) return false;
+        for (String candidate : candidateEmpIds) {
+            if (candidate != null && candidate.trim().equals(loggedInEmpId)) return true;
+        }
+        return false;
     }
     private void closeQuietly(AutoCloseable... resources) {
         for (AutoCloseable r : resources) {

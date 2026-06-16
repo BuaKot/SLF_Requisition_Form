@@ -18,6 +18,7 @@ public class LoadSubmitServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        disableCaching(response);
 
         HttpSession session = request.getSession();
         Integer empId = (Integer) session.getAttribute("loggedInEmpId");
@@ -29,7 +30,7 @@ public class LoadSubmitServlet extends HttpServlet {
         String showParam = request.getParameter("show");
         if (showParam == null || showParam.trim().isEmpty()) showParam = "pending,overdue,rejected,approved";
         String sortParam = request.getParameter("sort");
-        if (!"desc".equals(sortParam)) sortParam = "asc";
+        if (!"asc".equals(sortParam)) sortParam = "desc";
 
         int currentPage = 1;
         String pageParam = request.getParameter("page");
@@ -74,7 +75,7 @@ public class LoadSubmitServlet extends HttpServlet {
 
         // zennnne แก้ — add step timestamps via conditional aggregation
         String sql = cteBase +
-            "SELECT RF.FORMID, RF.TITLEFORM, RF.DEADLINE, RF.IS_EDITED, " +
+            "SELECT RF.FORMID, RF.TITLEFORM, RF.REQUESTDATE, RF.DEADLINE, RF.IS_EDITED, " +
             "       NVL(ls.STATE_STEP, 0) AS STATE_STEP, " +
             "       MAX(CASE WHEN ABS(ai.STATE_STEP) = 1 THEN ai.APPROVED_DATE END) AS TS1, " +
             "       MAX(CASE WHEN ABS(ai.STATE_STEP) = 2 THEN ai.APPROVED_DATE END) AS TS2, " +
@@ -85,8 +86,8 @@ public class LoadSubmitServlet extends HttpServlet {
             "LEFT JOIN APPROVALINFO ai ON ai.FORMID = RF.FORMID " +
             "WHERE RF.EMPID = ? " +
             "AND " + statusWhere + " " +
-            "GROUP BY RF.FORMID, RF.TITLEFORM, RF.DEADLINE, RF.IS_EDITED, NVL(ls.STATE_STEP, 0) " +
-            "ORDER BY RF.DEADLINE " + orderDir + ", RF.FORMID DESC " +
+            "GROUP BY RF.FORMID, RF.TITLEFORM, RF.REQUESTDATE, RF.DEADLINE, RF.IS_EDITED, NVL(ls.STATE_STEP, 0) " +
+            "ORDER BY RF.REQUESTDATE " + orderDir + ", RF.FORMID DESC " +
             "OFFSET ? ROWS FETCH FIRST ? ROWS ONLY";
         // zennnne แก้
         // zennnne แก้
@@ -122,6 +123,7 @@ public class LoadSubmitServlet extends HttpServlet {
                         Map<String, Object> row = new HashMap<>();
                         row.put("FORMID",    rs.getInt("FORMID"));
                         row.put("TITLEFORM", rs.getString("TITLEFORM"));
+                        row.put("REQUESTDATE", rs.getDate("REQUESTDATE"));
                         row.put("DEADLINE",  rs.getDate("DEADLINE"));
                         row.put("IS_EDITED", rs.getInt("IS_EDITED"));
                         row.put("STATE_STEP", rs.getInt("STATE_STEP"));
@@ -153,6 +155,12 @@ public class LoadSubmitServlet extends HttpServlet {
         // zennnne แก้
 
         request.getRequestDispatcher("/submit.jsp").forward(request, response);
+    }
+
+    static void disableCaching(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
     }
 }
 // zennnne แก้

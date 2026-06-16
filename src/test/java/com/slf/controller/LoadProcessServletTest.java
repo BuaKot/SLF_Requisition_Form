@@ -7,14 +7,17 @@ import junit.framework.TestCase;
 
 public class LoadProcessServletTest extends TestCase {
 
-    public void testProcessInboxFiltersByAssignedDeveloper() throws Exception {
+    public void testProcessInboxFiltersByAssignedDeveloperOrAssignedHeads() throws Exception {
         String source = new String(
             Files.readAllBytes(Paths.get("src/main/java/com/slf/controller/LoadProcessServlet.java")),
             StandardCharsets.UTF_8
         );
 
-        assertTrue(source.contains("SELECT FORMID, STATE_STEP, DEV_EMPID"));
-        assertTrue(source.contains("AND ls.DEV_EMPID = ?"));
-        assertFalse(source.contains("AND d.DEPTHEAD_EMPID = ?"));
+        assertTrue(source.contains("latest_dev AS"));
+        assertTrue(source.contains("SELECT FORMID, DEV_EMPID"));
+        assertTrue(source.contains("LEFT JOIN latest_dev ld ON ld.FORMID = r.FORMID AND ld.RN = 1"));
+        assertTrue(source.contains("assigned_s.SECTIONHEAD_EMPID"));
+        assertTrue(source.contains("assigned_d.DEPTHEAD_EMPID"));
+        assertTrue(source.contains("(ld.DEV_EMPID = ? OR assigned_s.SECTIONHEAD_EMPID = ? OR assigned_d.DEPTHEAD_EMPID = ?)"));
     }
 }

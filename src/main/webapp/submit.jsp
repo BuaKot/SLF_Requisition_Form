@@ -4,6 +4,10 @@
 <%@ page import="com.slf.util.SecurityUtil, com.slf.util.NavigationUtil" %>
 
 <%
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+
     // zennnne แก้
     if (session.getAttribute("loggedInEmpId") == null) {
         response.sendRedirect(request.getContextPath() + "/login");
@@ -176,6 +180,7 @@
         int stateStep = (Integer) row.get("STATE_STEP");
         boolean isEdited = (Integer) row.get("IS_EDITED") == 1;
 
+        java.sql.Date requestDate = (java.sql.Date) row.get("REQUESTDATE");
         java.sql.Date deadlineDate = (java.sql.Date) row.get("DEADLINE");
         java.time.LocalDate today = java.time.LocalDate.now();
         boolean isOverdue = (deadlineDate != null &&
@@ -224,6 +229,7 @@
         else if (isOverdue)     { rowStatus = "overdue";  rowStatusLabel = "หมดเขต"; }
         else                    { rowStatus = "pending";  rowStatusLabel = "รอดำเนินการ"; }
 
+        String rowRequestDate = (requestDate != null) ? requestDate.toString() : "0001-01-01";
         String rowDeadline = (deadlineDate != null) ? deadlineDate.toString() : "9999-12-31";
         String deadlineDisplay = "-";
         if (deadlineDate != null) {
@@ -237,6 +243,7 @@
         <!-- zennnne แก้ — B: Two-column compact card -->
         <div class="request-card"
              data-status="<%= rowStatus %>"
+             data-requestdate="<%= rowRequestDate %>"
              data-deadline="<%= rowDeadline %>"
              data-formid="<%= formId %>"
              data-title="<%= titleEsc %>">
@@ -404,14 +411,20 @@ const contextPath = "<%= request.getContextPath() %>";
 const csrfToken = "<%= SecurityUtil.escapeHtml(csrfToken) %>";
 
 // zennnne แก้
-let sortOrder = (new URLSearchParams(window.location.search).get('sort') || 'asc');
-let sortField = (new URLSearchParams(window.location.search).get('sortby') || 'deadline');
+let sortOrder = (new URLSearchParams(window.location.search).get('sort') || 'desc');
+let sortField = (new URLSearchParams(window.location.search).get('sortby') || 'formid');
 
 function applySort() {
     const list = document.querySelector('.request-list');
     const cards = Array.from(list.querySelectorAll('.request-card'));
     cards.sort(function(a, b) {
         if (sortField === 'formid') {
+            const ra = a.dataset.requestdate || '0001-01-01';
+            const rb = b.dataset.requestdate || '0001-01-01';
+            if (ra !== rb) {
+                if (sortOrder === 'asc') return ra < rb ? -1 : 1;
+                return ra > rb ? -1 : 1;
+            }
             const ia = parseInt(a.dataset.formid) || 0;
             const ib = parseInt(b.dataset.formid) || 0;
             return sortOrder === 'asc' ? ia - ib : ib - ia;
@@ -627,6 +640,12 @@ function closeDeadlinePopup() {
     document.getElementById("deadlinePopup").style.display = "none";
     document.getElementById("popupNewDeadline").value = "";
 }
+
+window.addEventListener("pageshow", function (event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
 </script>
 
 <%@ include file="/WEB-INF/jspf/footer.jspf" %>

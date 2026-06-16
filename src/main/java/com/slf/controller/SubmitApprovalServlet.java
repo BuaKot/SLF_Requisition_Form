@@ -288,8 +288,10 @@ public class SubmitApprovalServlet extends HttpServlet {
         }
         if (currentStep == 3) {
             Integer devId = getLatestAssignedDeveloperId(conn, formId);
-            if (devId == null) return "not_found";
-            if (devId != reviewerEmpId) return "Only the assigned developer can approve this step";
+            Integer sectionHeadId = getAssignedSectionHeadEmpId(conn, formId);
+            Integer departmentHeadId = getAssignedDepartmentHeadEmpId(conn, formId);
+            if (!isOperationalStageReviewer(devId, sectionHeadId, departmentHeadId, reviewerEmpId))
+                return "Only the assigned developer or assigned head can approve this step";
         }
         if (currentStep == 4) {
             Integer requesterId = getRequesterEmpId(conn, formId);
@@ -350,6 +352,17 @@ public class SubmitApprovalServlet extends HttpServlet {
         return requesterEmpId == reviewerEmpId;
     }
 
+    static boolean isOperationalStageReviewer(Integer latestDevEmpId, Integer sectionHeadEmpId,
+                                              Integer departmentHeadEmpId, int reviewerEmpId) {
+        return matchesEmpId(latestDevEmpId, reviewerEmpId)
+            || matchesEmpId(sectionHeadEmpId, reviewerEmpId)
+            || matchesEmpId(departmentHeadEmpId, reviewerEmpId);
+    }
+
+    private static boolean matchesEmpId(Integer expectedEmpId, int reviewerEmpId) {
+        return expectedEmpId != null && expectedEmpId.intValue() == reviewerEmpId;
+    }
+
     private Integer getRequesterEmpId(Connection conn, int formId) throws SQLException {
         String sql = "SELECT EMPID FROM REQUISITIONFORM WHERE FORMID = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -378,6 +391,43 @@ public class SubmitApprovalServlet extends HttpServlet {
             ps.setInt(1, formId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) return rs.getInt("DEV_EMPID");
+            }
+        }
+        return null;
+    }
+
+    private Integer getAssignedSectionHeadEmpId(Connection conn, int formId) throws SQLException {
+        String sql =
+            "SELECT s.SECTIONHEAD_EMPID " +
+            "FROM REQUISITIONFORM r " +
+            "JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
+            "WHERE r.FORMID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, formId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int value = rs.getInt("SECTIONHEAD_EMPID");
+                    return rs.wasNull() ? null : Integer.valueOf(value);
+                }
+            }
+        }
+        return null;
+    }
+
+    private Integer getAssignedDepartmentHeadEmpId(Connection conn, int formId) throws SQLException {
+        String sql =
+            "SELECT d.DEPTHEAD_EMPID " +
+            "FROM REQUISITIONFORM r " +
+            "JOIN SECTION s ON r.ASSIGN_SECID = s.SECID " +
+            "JOIN DEPARTMENT d ON s.DEPTID = d.DEPTID " +
+            "WHERE r.FORMID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, formId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int value = rs.getInt("DEPTHEAD_EMPID");
+                    return rs.wasNull() ? null : Integer.valueOf(value);
+                }
             }
         }
         return null;

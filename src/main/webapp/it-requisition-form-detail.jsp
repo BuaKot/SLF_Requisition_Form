@@ -72,7 +72,7 @@
                         <i class="fa-solid fa-paper-plane"></i>
                     </div>
                     <div class="enterprise-card-content">
-                        <strong>ดูฟอร์มที่ส่งแล้ว</strong>
+                        <strong>ฟอร์มที่ส่งแล้ว</strong>
                         <small>ตรวจสอบรายละเอียดและสถานะล่าสุดของใบคำขอ</small>
                     </div>
                     <div class="enterprise-card-arrow">

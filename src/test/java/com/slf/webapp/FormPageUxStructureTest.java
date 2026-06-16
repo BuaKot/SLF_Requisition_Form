@@ -96,8 +96,12 @@ public class FormPageUxStructureTest extends TestCase {
         assertTrue(css.contains(".section-heading"));
         assertTrue(css.contains(".request-item-card"));
         assertTrue(css.contains(".form-action-bar"));
+        assertTrue(css.contains("--slf-page-content-width: calc(100% - 60px)"));
+        assertTrue(css.contains("--slf-page-content-width-md: calc(100% - 32px)"));
+        assertTrue(css.contains("--slf-page-content-width-sm: calc(100% - 24px)"));
         assertTrue(css.contains(".it-request-form-page.form-container"));
-        assertTrue(css.contains("width: min(1500px, calc(100% - 48px))"));
+        assertTrue(css.contains("width: var(--slf-page-content-width)"));
+        assertTrue(css.contains(".it-requisition-detail-page .it-action-section"));
         assertTrue(css.contains(".readonly-field"));
         assertTrue(css.contains(".field-required"));
         assertTrue(css.contains(".request-alert-actions"));
@@ -118,15 +122,20 @@ public class FormPageUxStructureTest extends TestCase {
         assertTrue(detail.contains("class=\"form-container\""));
         assertTrue(detail.contains("class=\"form-grid\""));
         assertTrue(detail.contains("class=\"form-group\""));
-        assertTrue(detail.contains("class=\"btn-group\""));
+        assertTrue(detail.contains("class=\"btn-group detail-action-footer\""));
+        assertTrue(detail.contains("class=\"action-row-btn detail-export-button\""));
+        assertFalse(detail.contains("background:#dc2626"));
         assertTrue(detail.contains("class=\"form-group full-width server-permission-box\""));
 
         assertTrue(css.contains("Detail page legacy compatibility"));
         assertTrue(css.contains("#main > .banner"));
         assertTrue(css.contains("#main > .form-container:not(.it-request-form-page)"));
+        assertTrue(css.contains("width: var(--slf-page-content-width)"));
         assertTrue(css.contains("#main > .form-container:not(.it-request-form-page) .form-grid"));
         assertTrue(css.contains("#main > .form-container:not(.it-request-form-page) .form-group"));
         assertTrue(css.contains("#main > .form-container:not(.it-request-form-page) .btn-group"));
+        assertTrue(css.contains("#main > .form-container:not(.it-request-form-page) .detail-action-footer"));
+        assertTrue(css.contains(".detail-export-button"));
         assertTrue(css.contains("#main > .form-container:not(.it-request-form-page) .server-permission-box"));
     }
 }

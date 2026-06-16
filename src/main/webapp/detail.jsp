@@ -437,11 +437,11 @@
             </div>
         </div>
 
-        <div class="btn-group" style="margin-top:40px; padding-top:20px; border-top:1px solid #d7e5f4;">
-            <a href="<%= h(backLink.getHref()) %>" class="action-row-btn secondary-action-btn detail-back-button" style="min-height:44px; padding: 10px 28px; font-size:16px;">
+        <div class="btn-group detail-action-footer">
+            <a href="<%= h(backLink.getHref()) %>" class="action-row-btn secondary-action-btn detail-back-button">
                 <i class="fa-solid fa-arrow-left-long"></i> <%= h(backLink.getLabel()) %>
             </a>
-            <a href="${pageContext.request.contextPath}/pdf.jsp?id=<%= formId %>" target="_blank" class="action-row-btn primary-action-btn" style="min-height:44px; padding: 10px 28px; font-size:16px; background:#dc2626; border-color:#dc2626;">
+            <a href="${pageContext.request.contextPath}/pdf.jsp?id=<%= formId %>" target="_blank" rel="noopener" class="action-row-btn detail-export-button">
                 <i class="fa-solid fa-file-pdf"></i> ส่งออกเอกสารสรุปผล PDF
             </a>
         </div>

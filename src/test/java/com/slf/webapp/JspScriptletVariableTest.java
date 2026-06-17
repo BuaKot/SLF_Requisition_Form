@@ -20,7 +20,7 @@ public class JspScriptletVariableTest extends TestCase {
 
     public void testSidebarUsesNamespacedVariablesToAvoidIncludeCollisions() throws Exception {
         String source = new String(
-            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/sidebar.jsp")),
+            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/jspf/sidebar.jspf")),
             StandardCharsets.UTF_8
         );
 

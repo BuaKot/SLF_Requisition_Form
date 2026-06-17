@@ -48,7 +48,7 @@ public class FormPageUxStructureTest extends TestCase {
     }
 
     public void testFormPageUsesEnterpriseSectionsWithoutChangingSubmitContract() throws IOException {
-        String jsp = read("src/main/webapp/form.jsp");
+        String jsp = read("src/main/webapp/WEB-INF/views/Form.jsp");
 
         assertHasClasses(jsp, "main", "it-request-form-page", "form-container");
         assertHasClasses(jsp, "section", "form-section", "applicant-information", "panel");
@@ -113,7 +113,7 @@ public class FormPageUxStructureTest extends TestCase {
     }
 
     public void testDetailPageKeepsLegacySafeFormCssSupport() throws IOException {
-        String detail = read("src/main/webapp/detail.jsp");
+        String detail = read("src/main/webapp/WEB-INF/views/Detail.jsp");
         String css = read("src/main/webapp/css/styles.css");
 
         assertTrue(detail.contains("${pageContext.request.contextPath}/css/styles.css"));

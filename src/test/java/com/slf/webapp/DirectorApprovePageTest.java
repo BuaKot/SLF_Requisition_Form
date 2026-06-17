@@ -9,16 +9,16 @@ public class DirectorApprovePageTest extends TestCase {
 
     public void testDirectorApprovalPageUsesHomeAndHistoryNavigation() throws Exception {
         String page = new String(
-            Files.readAllBytes(Paths.get("src/main/webapp/DirectorApprove.jsp")),
+            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/views/DirectorApprove.jsp")),
             StandardCharsets.UTF_8
         );
         String sharedPage = new String(
-            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/approvalList.jsp")),
+            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/views/ApprovalList.jsp")),
             StandardCharsets.UTF_8
         );
 
         assertFalse(page.contains("Admin.jsp"));
-        assertTrue(page.contains("/WEB-INF/approvalList.jsp"));
+        assertTrue(page.contains("/WEB-INF/views/ApprovalList.jsp"));
         assertTrue(sharedPage.contains("/history.jsp"));
         assertTrue(sharedPage.contains("ไม่มีรายการรอดำเนินการ"));
         assertTrue(sharedPage.contains("requisition-card"));

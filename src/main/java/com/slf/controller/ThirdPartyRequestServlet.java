@@ -50,7 +50,7 @@ public class ThirdPartyRequestServlet extends HttpServlet {
             request.setAttribute("thirdPartyLinkPrefix", ThirdPartyLinksServlet.buildPublicLinkPrefix(request));
             request.setAttribute("acceptanceLinkPrefix", buildAcceptanceLinkPrefix(request));
             request.setAttribute("csrfToken", ensureCsrfToken(request));
-            request.getRequestDispatcher("/third-party-request-new.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/ThirdPartyRequestNew.jsp").forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to load third-party links", e);
         }

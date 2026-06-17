@@ -31,7 +31,7 @@ public class ThirdPartyRequestLinkServlet extends HttpServlet {
         }
         request.setAttribute("thirdPartyRequest", thirdPartyRequest);
         request.setAttribute("publicLink", publicLinkForRequest(request, thirdPartyRequest));
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/third-party-request-link.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/ThirdPartyRequestLink.jsp");
         dispatcher.forward(request, response);
     }
 

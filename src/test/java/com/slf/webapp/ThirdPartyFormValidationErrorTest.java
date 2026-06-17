@@ -9,11 +9,11 @@ public class ThirdPartyFormValidationErrorTest extends TestCase {
 
     public void testValidationErrorReturnsToPopulatedFormWithPopup() throws Exception {
         String servlet = read("src/main/java/com/slf/controller/ThirdPartySubmitServlet.java");
-        String page = read("src/main/webapp/thirdpartyForm.jsp");
+        String page = read("src/main/webapp/WEB-INF/views/ThirdPartyForm.jsp");
 
         assertTrue(servlet.contains("forwardFormError(request, response, link, rawToken, e.getMessage())"));
         assertTrue(servlet.contains("request.setAttribute(\"formError\", message)"));
-        assertTrue(servlet.contains("request.getRequestDispatcher(\"/thirdpartyForm.jsp\")"));
+        assertTrue(servlet.contains("request.getRequestDispatcher(\"/WEB-INF/views/ThirdPartyForm.jsp\")"));
         assertTrue(page.contains("id=\"formErrorPopup\""));
         assertTrue(page.contains("กลับไปแก้ไขข้อมูล"));
         assertTrue(page.contains("value=\"<%= h(request.getParameter(\"fullNameTh\")) %>\""));

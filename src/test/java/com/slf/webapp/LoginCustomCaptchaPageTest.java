@@ -10,7 +10,7 @@ public class LoginCustomCaptchaPageTest extends TestCase {
 
     public void testLoginPageUsesConditionalJavaCaptchaChallenge() throws Exception {
         String source = new String(
-            Files.readAllBytes(Paths.get("src/main/webapp/login.jsp")),
+            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/views/Login.jsp")),
             StandardCharsets.UTF_8
         );
 

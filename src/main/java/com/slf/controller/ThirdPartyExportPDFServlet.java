@@ -71,7 +71,7 @@ public class ThirdPartyExportPDFServlet extends HttpServlet {
             request.setAttribute("thirdPartyRequest", thirdPartyRequest);
             request.setAttribute("approvalHistory", workflow);
             request.setAttribute("acceptanceScore", acceptanceScore);
-            request.getRequestDispatcher("/third-party-pdf.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/ThirdPartyPdf.jsp").forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to export third-party submission PDF", e);
         }

@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 // zennnne แก้
-@WebServlet("/technicalApprove")
+@WebServlet({"/technicalApprove", "/TechnicalApprove.jsp"})
 public class LoadTechnicalServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -78,7 +78,7 @@ public class LoadTechnicalServlet extends HttpServlet {
         }
 
         request.setAttribute("formList", formList);
-        request.getRequestDispatcher("/TechnicalApprove.jsp").forward(request, response); // zennnne แก้
+        request.getRequestDispatcher("/WEB-INF/views/TechnicalApprove.jsp").forward(request, response); // zennnne แก้
     }
 }
 // zennnne แก้

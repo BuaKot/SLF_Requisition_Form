@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet("/thirdPartyLinks")
+@WebServlet({"/thirdPartyLinks", "/ThirdPartyLinks.jsp"})
 public class ThirdPartyLinksServlet extends HttpServlet {
     private static final int LIST_LIMIT = 100;
     private static final String CSRF_SESSION_KEY = "thirdPartyLinksCsrfToken";
@@ -85,7 +85,7 @@ public class ThirdPartyLinksServlet extends HttpServlet {
             request.setAttribute("generatedLinks", generatedLinks(request));
             request.setAttribute("publicBaseUrl", buildPublicLinkPrefix(request));
             request.setAttribute("status", request.getParameter("status"));
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/ThirdPartyLinks.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/ThirdPartyLinks.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to load third-party links", e);

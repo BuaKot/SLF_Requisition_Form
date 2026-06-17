@@ -13,7 +13,7 @@ import java.sql.*;
 import java.util.*;
 
 // zennnne แก้
-@WebServlet("/submit")
+@WebServlet({"/submit", "/submit.jsp"})
 public class LoadSubmitServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -154,7 +154,7 @@ public class LoadSubmitServlet extends HttpServlet {
         request.setAttribute("cntApproved", cntApproved);
         // zennnne แก้
 
-        request.getRequestDispatcher("/submit.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/Submit.jsp").forward(request, response);
     }
 
     static void disableCaching(HttpServletResponse response) {

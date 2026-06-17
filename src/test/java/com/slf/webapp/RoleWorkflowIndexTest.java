@@ -10,7 +10,7 @@ public class RoleWorkflowIndexTest extends TestCase {
     public void testIndexProvidesRoleWorkflowEntrances() throws Exception {
         String index = read("src/main/webapp/index.jsp");
         String sidebar = read("src/main/webapp/WEB-INF/jspf/sidebar.jspf");
-        String inbox = read("src/main/webapp/WEB-INF/third-party-section-head-inbox.jsp");
+        String inbox = read("src/main/webapp/WEB-INF/views/ThirdPartySectionHeadInbox.jsp");
         String servlet = read("src/main/java/com/slf/controller/ThirdPartySectionHeadInboxServlet.java");
 
         assertTrue(index.contains("hasRoleWorkMenu"));
@@ -42,7 +42,7 @@ public class RoleWorkflowIndexTest extends TestCase {
         assertTrue(servlet.contains("ThirdPartySectionHeadReviewServlet.isTechnicalPosition"));
         assertTrue(servlet.contains("PENDING_SECTION_HEAD"));
         assertTrue(servlet.contains("PENDING_SECTION_HEAD_REPORT"));
-        assertTrue(servlet.contains("/WEB-INF/third-party-section-head-inbox.jsp"));
+        assertTrue(servlet.contains("/WEB-INF/views/ThirdPartySectionHeadInbox.jsp"));
     }
 
     private static String read(String path) throws Exception {

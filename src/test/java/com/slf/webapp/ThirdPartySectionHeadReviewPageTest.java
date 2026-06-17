@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 public class ThirdPartySectionHeadReviewPageTest extends TestCase {
 
     public void testReviewPageContainsAssignmentsAndIsNotLinkedFromNavigation() throws Exception {
-        String page = read("src/main/webapp/WEB-INF/third-party-section-head-review.jsp");
+        String page = read("src/main/webapp/WEB-INF/views/ThirdPartySectionHeadReview.jsp");
         String servlet = read("src/main/java/com/slf/controller/ThirdPartySectionHeadReviewServlet.java");
         String index = read("src/main/webapp/index.jsp");
         String sidebar = read("src/main/webapp/WEB-INF/jspf/sidebar.jspf");

@@ -9,7 +9,7 @@ public class DetailBackNavigationTest extends TestCase {
 
     public void testDetailReturnsToKnownSourcePage() throws Exception {
         String source = new String(
-            Files.readAllBytes(Paths.get("src/main/webapp/detail.jsp")),
+            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/views/Detail.jsp")),
             StandardCharsets.UTF_8
         );
 

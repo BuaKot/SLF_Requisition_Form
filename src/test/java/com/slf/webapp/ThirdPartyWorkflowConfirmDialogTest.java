@@ -9,11 +9,11 @@ public class ThirdPartyWorkflowConfirmDialogTest extends TestCase {
 
     public void testWorkflowReviewPagesUseSharedConfirmDialogInsteadOfBrowserConfirm() throws Exception {
         String[] pages = {
-            "src/main/webapp/WEB-INF/third-party-section-head-review.jsp",
-            "src/main/webapp/WEB-INF/third-party-it-director-review.jsp",
-            "src/main/webapp/WEB-INF/third-party-operator-review.jsp",
-            "src/main/webapp/WEB-INF/third-party-assigned-completion-review.jsp",
-            "src/main/webapp/WEB-INF/third-party-final-stage-review.jsp"
+            "src/main/webapp/WEB-INF/views/ThirdPartySectionHeadReview.jsp",
+            "src/main/webapp/WEB-INF/views/ThirdPartyItDirectorReview.jsp",
+            "src/main/webapp/WEB-INF/views/ThirdPartyOperatorReview.jsp",
+            "src/main/webapp/WEB-INF/views/ThirdPartyAssignedCompletionReview.jsp",
+            "src/main/webapp/WEB-INF/views/ThirdPartyFinalStageReview.jsp"
         };
         for (String pagePath : pages) {
             String page = read(pagePath);
@@ -34,7 +34,7 @@ public class ThirdPartyWorkflowConfirmDialogTest extends TestCase {
         assertTrue(dialog.contains("กำลังบันทึก..."));
         assertTrue(dialog.contains(">ยกเลิก</button>"));
 
-        String sectionHead = read("src/main/webapp/WEB-INF/third-party-section-head-review.jsp");
+        String sectionHead = read("src/main/webapp/WEB-INF/views/ThirdPartySectionHeadReview.jsp");
         assertTrue(sectionHead.contains("data-before-confirm=\"validateAssignments\""));
         assertFalse(sectionHead.contains("window.alert("));
     }

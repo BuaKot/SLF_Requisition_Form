@@ -96,7 +96,7 @@ public class SubmitRequestServlet extends HttpServlet {
             form.setSection(String.valueOf(assignedSecId));
         } catch (Exception e) {
             request.setAttribute("error", e.getMessage());
-            request.getRequestDispatcher("/form.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/Form.jsp").forward(request, response);
             return;
         }
 
@@ -110,7 +110,7 @@ public class SubmitRequestServlet extends HttpServlet {
                 request.setAttribute("error",
                         "ประเภทคำขอที่ระบุไม่ถูกต้อง (รายการที่ " + (i + 1) + "): \""
                         + types[i] + "\" ต้องเป็นตัวเลขเท่านั้น");
-                request.getRequestDispatcher("/form.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/views/Form.jsp").forward(request, response);
                 return;
             }
         }
@@ -157,11 +157,11 @@ public class SubmitRequestServlet extends HttpServlet {
             }
             approvalNotificationService.notifyFormSubmitted(form.getFormId(), empID, form.getRequestTopic());
             // 4. Redirect to success page so refresh does not resubmit the POST.
-            response.sendRedirect(request.getContextPath() + "/submit-success.jsp?formId=" + form.getFormId());
+            response.sendRedirect(request.getContextPath() + "/submit-success?formId=" + form.getFormId());
         } catch (Exception e) {
             getServletContext().log("Failed to submit requisition form", e);
             request.setAttribute("error", "ไม่สามารถบันทึกใบขอได้ กรุณาตรวจสอบข้อมูลและลองอีกครั้ง");
-            request.getRequestDispatcher("/form.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/Form.jsp").forward(request, response);
         }
     }
 
@@ -177,7 +177,7 @@ public class SubmitRequestServlet extends HttpServlet {
     private void forwardFormError(HttpServletRequest request, HttpServletResponse response, String message)
             throws ServletException, IOException {
         request.setAttribute("error", message);
-        request.getRequestDispatcher("/form.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/Form.jsp").forward(request, response);
     }
 
     private String validateHeader(RequisitionForm form, String[] types) {

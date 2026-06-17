@@ -13,7 +13,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 
-@WebServlet("/emailNotifications")
+@WebServlet({"/emailNotifications", "/EmailNotificationSettings.jsp"})
 public class EmailNotificationSettingsServlet extends HttpServlet {
     private final MemberDAO memberDAO = new MemberDAO();
 
@@ -37,7 +37,7 @@ public class EmailNotificationSettingsServlet extends HttpServlet {
             HttpSession session = request.getSession(false);
             request.setAttribute("message", consumeFlash(session, "emailNotificationMessage"));
             request.setAttribute("error", consumeFlash(session, "emailNotificationError"));
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/EmailNotificationSettings.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/EmailNotificationSettings.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to load email notification settings", e);

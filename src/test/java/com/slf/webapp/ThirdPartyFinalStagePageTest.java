@@ -8,9 +8,9 @@ import junit.framework.TestCase;
 public class ThirdPartyFinalStagePageTest extends TestCase {
 
     public void testSectionHeadReportAndFinalCertificationAreConnected() throws Exception {
-        String sectionInbox = read("src/main/webapp/WEB-INF/third-party-section-head-inbox.jsp");
-        String directorInbox = read("src/main/webapp/WEB-INF/third-party-it-director-inbox.jsp");
-        String review = read("src/main/webapp/WEB-INF/third-party-final-stage-review.jsp");
+        String sectionInbox = read("src/main/webapp/WEB-INF/views/ThirdPartySectionHeadInbox.jsp");
+        String directorInbox = read("src/main/webapp/WEB-INF/views/ThirdPartyItDirectorInbox.jsp");
+        String review = read("src/main/webapp/WEB-INF/views/ThirdPartyFinalStageReview.jsp");
         String workflowDao = read("src/main/java/com/slf/dao/ThirdPartyWorkflowDAO.java");
 
         assertTrue(sectionInbox.contains("/thirdParty/sectionHead/report?id="));

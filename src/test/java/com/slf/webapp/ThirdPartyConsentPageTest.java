@@ -9,7 +9,7 @@ public class ThirdPartyConsentPageTest extends TestCase {
 
     public void testPublicFormRequiresConsentAndCarriesDisplayedVersion() throws Exception {
         String jsp = new String(Files.readAllBytes(
-            Paths.get("src/main/webapp/thirdpartyForm.jsp")), StandardCharsets.UTF_8);
+            Paths.get("src/main/webapp/WEB-INF/views/ThirdPartyForm.jsp")), StandardCharsets.UTF_8);
 
         assertTrue(jsp.contains("name=\"consentVersion\""));
         assertTrue(jsp.contains("name=\"consentAccepted\""));

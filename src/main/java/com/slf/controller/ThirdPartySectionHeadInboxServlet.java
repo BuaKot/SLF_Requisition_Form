@@ -30,7 +30,7 @@ public class ThirdPartySectionHeadInboxServlet extends HttpServlet {
                 requestDAO.findByStatus("PENDING_SECTION_HEAD", 100));
             request.setAttribute("reportRequests",
                 requestDAO.findByStatus("PENDING_SECTION_HEAD_REPORT", 100));
-            request.getRequestDispatcher("/WEB-INF/third-party-section-head-inbox.jsp")
+            request.getRequestDispatcher("/WEB-INF/views/ThirdPartySectionHeadInbox.jsp")
                 .forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to load third-party section-head inbox", e);

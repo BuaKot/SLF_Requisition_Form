@@ -117,7 +117,7 @@ abstract class ThirdPartyAssignedCompletionReviewServlet extends HttpServlet {
             request.setAttribute("formAction", servletPath());
             request.setAttribute("showRevokerComment", "REVOKE_REVIEWER".equals(assignmentRole()));
             request.setAttribute("csrfToken", ensureCsrfToken(request));
-            request.getRequestDispatcher("/WEB-INF/third-party-assigned-completion-review.jsp")
+            request.getRequestDispatcher("/WEB-INF/views/ThirdPartyAssignedCompletionReview.jsp")
                 .forward(request, response);
         } catch (IllegalArgumentException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());

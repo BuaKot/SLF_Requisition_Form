@@ -10,7 +10,7 @@ public class MailLogFormReferenceTest extends TestCase {
 
     public void testMailLogDisplaysFormTypeAwareReference() throws Exception {
         String page = new String(
-            Files.readAllBytes(Paths.get("src/main/webapp/MailLog.jsp")),
+            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/views/MailLog.jsp")),
             StandardCharsets.UTF_8
         );
 

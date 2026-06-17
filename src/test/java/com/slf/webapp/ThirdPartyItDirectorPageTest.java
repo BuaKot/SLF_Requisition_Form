@@ -9,8 +9,8 @@ public class ThirdPartyItDirectorPageTest extends TestCase {
 
     public void testItDirectorWorkflowPagesAndTransitionAreConnected() throws Exception {
         String index = read("src/main/webapp/index.jsp");
-        String inbox = read("src/main/webapp/WEB-INF/third-party-it-director-inbox.jsp");
-        String review = read("src/main/webapp/WEB-INF/third-party-it-director-review.jsp");
+        String inbox = read("src/main/webapp/WEB-INF/views/ThirdPartyItDirectorInbox.jsp");
+        String review = read("src/main/webapp/WEB-INF/views/ThirdPartyItDirectorReview.jsp");
         String workflowDao = read("src/main/java/com/slf/dao/ThirdPartyWorkflowDAO.java");
 
         assertTrue(index.contains("/thirdParty/itDirector"));

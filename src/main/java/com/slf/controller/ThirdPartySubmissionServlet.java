@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet("/thirdPartySubmission")
+@WebServlet({"/thirdPartySubmission", "/ThirdPartySubmission.jsp"})
 public class ThirdPartySubmissionServlet extends HttpServlet {
     private final ThirdPartyAcceptanceDAO acceptanceDAO = new ThirdPartyAcceptanceDAO();
     private final ThirdPartyFormSubmissionDAO submissionDAO = new ThirdPartyFormSubmissionDAO();
@@ -64,7 +64,7 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
                 request.getContextPath() + (viewingOwnSubmission
                     ? "/thirdParty/request/new"
                     : "/thirdPartyLinks"));
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/ThirdPartySubmission.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/ThirdPartySubmission.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to load third-party submission", e);

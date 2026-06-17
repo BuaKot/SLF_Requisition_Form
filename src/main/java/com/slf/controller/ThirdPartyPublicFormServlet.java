@@ -37,7 +37,7 @@ public class ThirdPartyPublicFormServlet extends HttpServlet {
             request.setAttribute("thirdPartyLink", link);
             request.setAttribute("token", rawToken.trim());
             request.setAttribute("consentVersion", ThirdPartyConsentContent.VERSION);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/thirdpartyForm.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/ThirdPartyForm.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to load third-party form link", e);
@@ -50,7 +50,7 @@ public class ThirdPartyPublicFormServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         request.setAttribute("invalidLinkMessage", message);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/thirdpartyForm.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/ThirdPartyForm.jsp");
         dispatcher.forward(request, response);
     }
 

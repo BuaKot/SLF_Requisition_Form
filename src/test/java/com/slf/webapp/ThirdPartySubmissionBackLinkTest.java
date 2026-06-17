@@ -9,7 +9,11 @@ public class ThirdPartySubmissionBackLinkTest extends TestCase {
 
     public void testBackLinkUsesAuthorizedServletDestination() throws Exception {
         String page = new String(
-            Files.readAllBytes(Paths.get("src/main/webapp/ThirdPartySubmission.jsp")),
+            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/views/ThirdPartySubmission.jsp")),
+            StandardCharsets.UTF_8
+        );
+        String styles = new String(
+            Files.readAllBytes(Paths.get("src/main/webapp/css/styles.css")),
             StandardCharsets.UTF_8
         );
 
@@ -20,7 +24,7 @@ public class ThirdPartySubmissionBackLinkTest extends TestCase {
         assertTrue(page.contains("actionTitle(actionType)"));
         assertTrue(page.contains("actorLabel(action)"));
         assertTrue(page.contains("ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ ไม่อนุมัติ"));
-        assertTrue(page.contains(".approval-card.rejected"));
+        assertTrue(styles.contains(".approval-card.rejected"));
         assertTrue(page.contains("รายงานเพื่อโปรดทราบ"));
         assertTrue(page.contains("acceptanceScore"));
         assertFalse(page.contains("acceptanceResult.getSatisfactionLevel()"));
@@ -31,11 +35,15 @@ public class ThirdPartySubmissionBackLinkTest extends TestCase {
 
     public void testCompletedSubmissionShowsPdfExportActionOnlyWhenAllowed() throws Exception {
         String page = new String(
-            Files.readAllBytes(Paths.get("src/main/webapp/ThirdPartySubmission.jsp")),
+            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/views/ThirdPartySubmission.jsp")),
             StandardCharsets.UTF_8
         );
         String servlet = new String(
             Files.readAllBytes(Paths.get("src/main/java/com/slf/controller/ThirdPartySubmissionServlet.java")),
+            StandardCharsets.UTF_8
+        );
+        String styles = new String(
+            Files.readAllBytes(Paths.get("src/main/webapp/css/styles.css")),
             StandardCharsets.UTF_8
         );
 
@@ -47,11 +55,11 @@ public class ThirdPartySubmissionBackLinkTest extends TestCase {
         assertTrue(page.contains("<main class=\"page third-party-request-page\">"));
         assertTrue(page.contains("class=\"btn btn-primary primary-action\""));
         assertTrue(page.contains("class=\"btn btn-secondary detail-back-button\""));
-        assertTrue(page.contains(".page { width: 100%; max-width: none; padding: 26px 0 44px; }"));
-        assertTrue(page.contains(".page-head { display: flex;"));
-        assertTrue(page.contains("width: var(--slf-page-content-width); margin: 0 auto 18px;"));
-        assertTrue(page.contains("background: transparent; border: 0; box-shadow: none;"));
-        assertTrue(page.contains(".page { width: 100%; padding: 18px 0 34px; }"));
-        assertTrue(page.contains(".page-head { width: var(--slf-page-content-width-md); }"));
+        assertTrue(styles.contains("body.view-third-party-submission .page { width: 100%; max-width: none; padding: 26px 0 44px; }"));
+        assertTrue(styles.contains("body.view-third-party-submission .page-head { display: flex;"));
+        assertTrue(styles.contains("width: var(--slf-page-content-width); margin: 0 auto 18px;"));
+        assertTrue(styles.contains("background: transparent; border: 0; box-shadow: none;"));
+        assertTrue(styles.contains("body.view-third-party-submission .page { width: 100%; padding: 18px 0 34px; }"));
+        assertTrue(styles.contains("body.view-third-party-submission .page-head { width: var(--slf-page-content-width-md); }"));
     }
 }

@@ -23,8 +23,8 @@ public class ItRequisitionDataFreshnessTest extends TestCase {
     }
 
     public void testSubmitAndDetailPagesOptOutOfBackForwardCache() throws Exception {
-        String submit = read("src/main/webapp/submit.jsp");
-        String detail = read("src/main/webapp/detail.jsp");
+        String submit = read("src/main/webapp/WEB-INF/views/Submit.jsp");
+        String detail = read("src/main/webapp/WEB-INF/views/Detail.jsp");
         assertTrue(submit.contains("Cache-Control"));
         assertTrue(submit.contains("window.location.reload()"));
         assertTrue(detail.contains("Cache-Control"));

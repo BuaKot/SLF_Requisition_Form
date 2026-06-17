@@ -8,7 +8,8 @@ import junit.framework.TestCase;
 public class ThirdPartyHistoryPageTest extends TestCase {
 
     public void testHistoryPageHasFiltersSearchAndSubmissionLink() throws Exception {
-        String page = read("src/main/webapp/third-party-history.jsp");
+        String page = read("src/main/webapp/WEB-INF/views/ThirdPartyHistory.jsp");
+        String styles = read("src/main/webapp/css/styles.css");
         assertTrue(page.contains("historyUrl(request.getContextPath(), \"waiting\""));
         assertTrue(page.contains("historyUrl(request.getContextPath(), \"completed\""));
         assertTrue(page.contains("historyUrl(request.getContextPath(), \"rejected\""));
@@ -31,8 +32,8 @@ public class ThirdPartyHistoryPageTest extends TestCase {
         assertFalse(page.contains("Math.min(2, people.size())"));
         assertTrue(page.contains("item.getAccessStartDate()"));
         assertTrue(page.contains("item.getAccessEndDate()"));
-        assertTrue(page.contains("grid-template-columns:repeat(9,minmax(0,1fr))"));
-        assertTrue(page.contains("overflow-x:auto"));
+        assertTrue(styles.contains("grid-template-columns:repeat(9,minmax(0,1fr))"));
+        assertTrue(styles.contains("overflow-x:auto"));
         assertTrue(page.contains("timelineActionTypes"));
         assertTrue(page.contains("SECTION_HEAD_SUBMITTED"));
         assertTrue(page.contains("FINAL_CERTIFIED"));
@@ -51,7 +52,7 @@ public class ThirdPartyHistoryPageTest extends TestCase {
         assertTrue(servlet.contains("thirdPartyHistoryActions"));
         assertTrue(servlet.contains("PAGE_SIZE + 1"));
         assertTrue(servlet.contains("thirdPartyHistoryHasNextPage"));
-        assertTrue(servlet.contains("/third-party-history.jsp"));
+        assertTrue(servlet.contains("/WEB-INF/views/ThirdPartyHistory.jsp"));
         assertTrue(workflowDao.contains("a.REQUEST_ID IN ("));
         assertTrue(workflowDao.contains("a.ACTION_TYPE <> 'WORKFLOW_MIGRATED'"));
         assertTrue(workflowDao.contains("SELECT a.REQUEST_ID, a.ACTION_TYPE, a.ACTOR_TYPE, a.ACTOR_EMPID"));
@@ -62,7 +63,7 @@ public class ThirdPartyHistoryPageTest extends TestCase {
     }
 
     public void testHistoryUsesWorkflowSequenceAndKeepsPdfOnSubmissionPageOnly() throws Exception {
-        String page = read("src/main/webapp/third-party-history.jsp");
+        String page = read("src/main/webapp/WEB-INF/views/ThirdPartyHistory.jsp");
         String workflowDao = read("src/main/java/com/slf/dao/ThirdPartyWorkflowDAO.java");
 
         assertTrue(workflowDao.contains("workflowActionOrderSql"));

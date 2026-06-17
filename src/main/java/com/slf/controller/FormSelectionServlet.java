@@ -24,6 +24,6 @@ public class FormSelectionServlet extends HttpServlet {
         request.setAttribute("canCreateThirdPartyLinks",
             Boolean.valueOf(ThirdPartyAccessPolicy.canCreateOwnLinks(
                 ThirdPartyAccessPolicy.sessionEmpId(session))));
-        request.getRequestDispatcher("/form-selection.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/FormSelection.jsp").forward(request, response);
     }
 }

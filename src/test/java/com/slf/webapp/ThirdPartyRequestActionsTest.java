@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 public class ThirdPartyRequestActionsTest extends TestCase {
 
     public void testRequestActionsUseInlineCopyAndDescribeDeletion() throws Exception {
-        String page = read("src/main/webapp/third-party-request-new.jsp");
+        String page = read("src/main/webapp/WEB-INF/views/ThirdPartyRequestNew.jsp");
         String styles = read("src/main/webapp/css/styles.css");
 
         assertTrue(page.contains("fa-trash-can"));
@@ -38,7 +38,7 @@ public class ThirdPartyRequestActionsTest extends TestCase {
     }
 
     public void testOwnerRequestPageKeepsClassicHeaderAndPanelWidth() throws Exception {
-        String page = read("src/main/webapp/third-party-request-new.jsp");
+        String page = read("src/main/webapp/WEB-INF/views/ThirdPartyRequestNew.jsp");
         String styles = read("src/main/webapp/css/styles.css").replace("\r\n", "\n");
 
         int headerStart = page.indexOf("<section class=\"third-party-page-head third-party-toolbar-head\">");

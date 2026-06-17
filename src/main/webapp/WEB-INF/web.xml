@@ -15,6 +15,10 @@
     <servlet-name>LoadLoginServlet</servlet-name>
     <url-pattern>/login</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>LoadLoginServlet</servlet-name>
+    <url-pattern>/login.jsp</url-pattern>
+  </servlet-mapping>
 
   <servlet>
     <servlet-name>LoginProcessorServlet</servlet-name>

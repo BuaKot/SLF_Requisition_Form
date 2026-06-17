@@ -9,8 +9,9 @@ public class ThirdPartyOperatorPageTest extends TestCase {
 
     public void testOperatorWorkflowIsAssignedAndHasNoRejectButton() throws Exception {
         String index = read("src/main/webapp/index.jsp");
-        String inbox = read("src/main/webapp/WEB-INF/third-party-operator-inbox.jsp");
-        String review = read("src/main/webapp/WEB-INF/third-party-operator-review.jsp");
+        String inbox = read("src/main/webapp/WEB-INF/views/ThirdPartyOperatorInbox.jsp");
+        String review = read("src/main/webapp/WEB-INF/views/ThirdPartyOperatorReview.jsp");
+        String styles = read("src/main/webapp/css/styles.css");
         String requestDao = read("src/main/java/com/slf/dao/ThirdPartyRequestDAO.java");
         String workflowDao = read("src/main/java/com/slf/dao/ThirdPartyWorkflowDAO.java");
 
@@ -20,7 +21,7 @@ public class ThirdPartyOperatorPageTest extends TestCase {
         assertTrue(inbox.contains("/thirdParty/revokeReviewer/review?id="));
         assertTrue(inbox.contains("class=\"workflow-item <%= groupClasses[groupIndex] %>\""));
         assertTrue(inbox.contains("String[] groupClasses={\"grant\",\"revoke\",\"reviewer\"}"));
-        assertTrue(inbox.contains(".workflow-item.revoke"));
+        assertTrue(styles.contains(".workflow-item.revoke"));
         assertFalse(inbox.contains("class=\"btn btn-primary primary-action\""));
         assertFalse(inbox.contains("class=\"workflow-open\""));
         assertTrue(review.contains("ความเห็นหัวหน้าส่วน"));

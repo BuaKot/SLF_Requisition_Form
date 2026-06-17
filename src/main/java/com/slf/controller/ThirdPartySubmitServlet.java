@@ -247,7 +247,7 @@ public class ThirdPartySubmitServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setAttribute("submitSuccess", Boolean.valueOf(success));
         request.setAttribute("submitMessage", message);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/thirdpartySubmitResult.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/ThirdPartySubmitResult.jsp");
         dispatcher.forward(request, response);
     }
 
@@ -258,7 +258,7 @@ public class ThirdPartySubmitServlet extends HttpServlet {
         request.setAttribute("token", rawToken);
         request.setAttribute("consentVersion", ThirdPartyConsentContent.VERSION);
         request.setAttribute("formError", message);
-        request.getRequestDispatcher("/thirdpartyForm.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/ThirdPartyForm.jsp").forward(request, response);
     }
 
     private static void preventCaching(HttpServletResponse response) {

@@ -10,7 +10,7 @@ public class LoginPagePerformanceTest extends TestCase {
 
     public void testLoginPageDoesNotBlockOnExternalAssets() throws Exception {
         String source = new String(
-            Files.readAllBytes(Paths.get("src/main/webapp/login.jsp")),
+            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/views/Login.jsp")),
             StandardCharsets.UTF_8
         );
 

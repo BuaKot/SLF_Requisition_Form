@@ -8,15 +8,14 @@ import junit.framework.TestCase;
 public class ThirdPartyAcceptancePageTest extends TestCase {
 
     public void testAcceptanceFlowCreatesLinkAndHidesApprovalComments() throws Exception {
-        String migration = read("sql/2026-06-11_third_party_acceptance.sql");
+        String sqlRemovalLog = read("docs/sql-removal-log.md");
         String workflowDao = read("src/main/java/com/slf/dao/ThirdPartyWorkflowDAO.java");
         String acceptanceDao = read("src/main/java/com/slf/dao/ThirdPartyAcceptanceDAO.java");
-        String publicPage = read("src/main/webapp/thirdpartyAcceptance.jsp");
-        String ownerPage = read("src/main/webapp/third-party-request-new.jsp");
+        String publicPage = read("src/main/webapp/WEB-INF/views/ThirdPartyAcceptance.jsp");
+        String ownerPage = read("src/main/webapp/WEB-INF/views/ThirdPartyRequestNew.jsp");
         String styles = read("src/main/webapp/css/styles.css").replace("\r\n", "\n");
 
-        assertTrue(migration.contains("CREATE TABLE THIRD_PARTY_ACCEPTANCE_TOKEN"));
-        assertTrue(migration.contains("CREATE TABLE THIRD_PARTY_ACCEPTANCE_RESULT"));
+        assertTrue(sqlRemovalLog.contains("2026-06-11_third_party_acceptance.sql"));
         assertTrue(workflowDao.contains("INSERT INTO THIRD_PARTY_ACCEPTANCE_TOKEN"));
         assertTrue(acceptanceDao.contains("EXTERNAL_ACCEPTED"));
         assertTrue(acceptanceDao.contains("PENDING_REVOKER"));

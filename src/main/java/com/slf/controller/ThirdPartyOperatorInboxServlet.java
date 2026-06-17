@@ -31,7 +31,7 @@ public class ThirdPartyOperatorInboxServlet extends HttpServlet {
                 requestDAO.findAssignedByStatus("PENDING_REVOKER", "REVOKE_OPERATOR", empId, 100));
             request.setAttribute("revokeReviewerRequests",
                 requestDAO.findAssignedByStatus("PENDING_REVOKE_REVIEWER", "REVOKE_REVIEWER", empId, 100));
-            request.getRequestDispatcher("/WEB-INF/third-party-operator-inbox.jsp")
+            request.getRequestDispatcher("/WEB-INF/views/ThirdPartyOperatorInbox.jsp")
                 .forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to load third-party operator inbox", e);

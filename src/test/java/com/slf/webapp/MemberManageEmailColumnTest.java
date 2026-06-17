@@ -10,7 +10,7 @@ public class MemberManageEmailColumnTest extends TestCase {
 
     public void testMemberTableHidesEmailButEditButtonKeepsIt() throws Exception {
         String page = new String(
-            Files.readAllBytes(Paths.get("src/main/webapp/MemberManage.jsp")),
+            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/views/MemberManage.jsp")),
             StandardCharsets.UTF_8
         );
 

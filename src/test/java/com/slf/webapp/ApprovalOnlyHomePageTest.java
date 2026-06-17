@@ -9,8 +9,8 @@ public class ApprovalOnlyHomePageTest extends TestCase {
 
     public void testHomeUsesFormFirstNavigationWithoutWeakeningApprovalOnlyGuards() throws Exception {
         String index = read("src/main/webapp/index.jsp");
-        String itDetail = read("src/main/webapp/it-requisition-form-detail.jsp");
-        String thirdPartyDetail = read("src/main/webapp/third-party-form-detail.jsp");
+        String itDetail = read("src/main/webapp/WEB-INF/views/ItRequisitionFormDetail.jsp");
+        String thirdPartyDetail = read("src/main/webapp/WEB-INF/views/ThirdPartyFormDetail.jsp");
         String sidebar = read("src/main/webapp/WEB-INF/jspf/sidebar.jspf");
 
         assertTrue(index.contains("approvalOnlyRole"));

@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 public class ThirdPartyFormNavigationTest extends TestCase {
 
     public void testNewFormSelectionContainsBothRoutesAndGuardsThirdPartyCard() throws Exception {
-        String page = read("src/main/webapp/form-selection.jsp");
+        String page = read("src/main/webapp/WEB-INF/views/FormSelection.jsp");
 
         assertTrue(page.contains("IT_REQUISITION_REQUEST"));
         assertTrue(page.contains("THIRD_PARTY_USER_REGISTRATION"));
@@ -16,7 +16,7 @@ public class ThirdPartyFormNavigationTest extends TestCase {
     }
 
     public void testPublicFormRevalidatesWhenRestoredFromBrowserHistory() throws Exception {
-        String page = read("src/main/webapp/thirdpartyForm.jsp");
+        String page = read("src/main/webapp/WEB-INF/views/ThirdPartyForm.jsp");
 
         assertTrue(page.contains("no-store, no-cache, must-revalidate"));
         assertTrue(page.contains("event.persisted"));

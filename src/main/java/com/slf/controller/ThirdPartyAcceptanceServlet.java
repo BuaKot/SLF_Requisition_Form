@@ -41,7 +41,7 @@ public class ThirdPartyAcceptanceServlet extends HttpServlet {
                 submissionDAO.findById(thirdPartyRequest.getSubmissionId().longValue()));
             request.setAttribute("operationDetail",
                 workflowDAO.findLatestActionComment(token.getRequestId(), "OPERATOR_COMPLETED"));
-            request.getRequestDispatcher("/thirdpartyAcceptance.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/ThirdPartyAcceptance.jsp").forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to load third-party acceptance form", e);
         } catch (Exception e) {
@@ -53,7 +53,7 @@ public class ThirdPartyAcceptanceServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         request.setAttribute("invalidLinkMessage", "ลิงก์ตรวจรับหมดอายุ ถูกใช้แล้ว หรือไม่ถูกต้อง");
-        request.getRequestDispatcher("/thirdpartyAcceptance.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/ThirdPartyAcceptance.jsp").forward(request, response);
     }
 
     static void preventCaching(HttpServletResponse response) {

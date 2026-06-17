@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet("/memberManage")
+@WebServlet({"/memberManage", "/MemberManage.jsp"})
 public class MemberManageServlet extends HttpServlet {
     private final MemberDAO memberDAO = new MemberDAO();
 
@@ -48,11 +48,11 @@ public class MemberManageServlet extends HttpServlet {
             request.setAttribute("message", request.getParameter("message"));
             request.setAttribute("error", request.getParameter("error"));
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/MemberManage.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/MemberManage.jsp");
             dispatcher.forward(request, response);
         } catch (Exception e) {
             request.setAttribute("error", "ไม่สามารถโหลดข้อมูลสมาชิกได้: " + e.getMessage());
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/MemberManage.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/MemberManage.jsp");
             dispatcher.forward(request, response);
         }
     }

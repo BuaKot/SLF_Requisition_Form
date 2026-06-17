@@ -13,7 +13,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 
-@WebServlet("/mailLog")
+@WebServlet({"/mailLog", "/MailLog.jsp"})
 public class MailLogServlet extends HttpServlet {
     private static final int PAGE_SIZE = 50;
     private final EmailNotificationLogDAO logDAO = new EmailNotificationLogDAO();
@@ -39,7 +39,7 @@ public class MailLogServlet extends HttpServlet {
             request.setAttribute("currentPage", Integer.valueOf(page));
             request.setAttribute("pageSize", Integer.valueOf(PAGE_SIZE));
             request.setAttribute("totalRows", Integer.valueOf(logDAO.countLogs(status, formType)));
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/MailLog.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/MailLog.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to load email notification log", e);

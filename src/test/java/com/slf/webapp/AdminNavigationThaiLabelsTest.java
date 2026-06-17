@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 public class AdminNavigationThaiLabelsTest extends TestCase {
 
     public void testAdminPageUsesSharedNavigationFragments() throws Exception {
-        String page = read("src/main/webapp/Admin.jsp");
+        String page = read("src/main/webapp/WEB-INF/views/Admin.jsp");
         assertTrue(page.contains("/WEB-INF/jspf/sidebar.jspf"));
         assertTrue(page.contains("/WEB-INF/jspf/topbar.jspf"));
     }

@@ -9,7 +9,7 @@ public class SubmitSuccessPageTest extends TestCase {
 
     public void testCreateNewRequestLinkUsesFormSelectionRoute() throws Exception {
         String page = new String(
-            Files.readAllBytes(Paths.get("src/main/webapp/submit-success.jsp")),
+            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/views/SubmitSuccess.jsp")),
             StandardCharsets.UTF_8
         );
 

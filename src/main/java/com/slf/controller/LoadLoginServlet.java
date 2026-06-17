@@ -9,6 +9,6 @@ import java.io.IOException;
 public class LoadLoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
-    request.getRequestDispatcher("/login.jsp").forward(request, response);
+    request.getRequestDispatcher("/WEB-INF/views/Login.jsp").forward(request, response);
 }
 }

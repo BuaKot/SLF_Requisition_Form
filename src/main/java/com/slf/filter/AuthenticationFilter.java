@@ -20,6 +20,7 @@ public class AuthenticationFilter implements Filter {
         // ดักจับ: ถ้าสิ่งที่ขอมาคือหน้า login, พาร์ทล็อกอิน, หรือไฟล์ตกแต่ง
         // CSS/Images ให้ปล่อยผ่านฉลุย!
         if (path.equals("/login")
+                || path.equals("/login.jsp")
                 || path.equals("/processLogin")
                 || path.equals("/thirdparty/form")
                 || path.equals("/thirdparty/submit")

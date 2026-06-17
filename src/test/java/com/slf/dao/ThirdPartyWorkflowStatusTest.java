@@ -17,7 +17,7 @@ public class ThirdPartyWorkflowStatusTest extends TestCase {
     }
 
     public void testCoordinatorPageDisplaysWorkflowStatuses() throws Exception {
-        String page = read("src/main/webapp/third-party-request-new.jsp");
+        String page = read("src/main/webapp/WEB-INF/views/ThirdPartyRequestNew.jsp");
 
         assertTrue(page.contains("PENDING_SECTION_HEAD"));
         assertTrue(page.contains("PENDING_IT_DIRECTOR"));
@@ -32,19 +32,15 @@ public class ThirdPartyWorkflowStatusTest extends TestCase {
     }
 
     public void testWorkflowMigrationIncludesTablesStatusMigrationAndReadOnlyGrants() throws Exception {
-        String migration = read("sql/2026-06-11_third_party_workflow.sql");
+        String workflowDao = read("src/main/java/com/slf/dao/ThirdPartyWorkflowDAO.java");
+        String sqlRemovalLog = read("docs/sql-removal-log.md");
 
-        assertTrue(migration.contains("CREATE TABLE THIRD_PARTY_WORKFLOW_ASSIGNMENT"));
-        assertTrue(migration.contains("CREATE TABLE THIRD_PARTY_WORKFLOW_ACTION"));
-        assertTrue(migration.contains("WHERE STATUS IN ('SUBMITTED', 'PENDING_REVIEW')"));
-        assertTrue(migration.contains("'WORKFLOW_MIGRATED'"));
-        assertTrue(migration.contains("'EXTERNAL_SUBMITTED'"));
-        assertTrue(migration.contains("GRANT SELECT ON THIRD_PARTY_WORKFLOW_ASSIGNMENT TO SLF_READ_ROLE"));
-        assertTrue(migration.contains("GRANT SELECT ON THIRD_PARTY_WORKFLOW_ACTION TO SLF_READ_ROLE"));
-
-        String finalizeMigration = read("sql/2026-06-11_third_party_workflow_finalize.sql");
-        assertTrue(finalizeMigration.contains("WHERE STATUS = 'SUBMITTED'"));
-        assertFalse(finalizeMigration.contains("'SUBMITTED',"));
+        assertTrue(workflowDao.contains("THIRD_PARTY_WORKFLOW_ASSIGNMENT"));
+        assertTrue(workflowDao.contains("THIRD_PARTY_WORKFLOW_ACTION"));
+        assertTrue(workflowDao.contains("'EXTERNAL_SUBMITTED'"));
+        assertTrue(sqlRemovalLog.contains("2026-06-11_third_party_workflow.sql"));
+        assertTrue(sqlRemovalLog.contains("2026-06-11_third_party_workflow_finalize.sql"));
+        assertFalse(Files.exists(Paths.get("sql")));
     }
 
     private static String read(String path) throws Exception {

@@ -8,8 +8,8 @@ import junit.framework.TestCase;
 public class ThirdPartyRevocationWorkflowPageTest extends TestCase {
 
     public void testRevokerAndReviewerWorkflowPages() throws Exception {
-        String inbox = read("src/main/webapp/WEB-INF/third-party-operator-inbox.jsp");
-        String review = read("src/main/webapp/WEB-INF/third-party-assigned-completion-review.jsp");
+        String inbox = read("src/main/webapp/WEB-INF/views/ThirdPartyOperatorInbox.jsp");
+        String review = read("src/main/webapp/WEB-INF/views/ThirdPartyAssignedCompletionReview.jsp");
         String workflowDao = read("src/main/java/com/slf/dao/ThirdPartyWorkflowDAO.java");
         String acceptanceDao = read("src/main/java/com/slf/dao/ThirdPartyAcceptanceDAO.java");
 

@@ -1,8 +1,11 @@
 target/
+MyFirstJSP/target/
 *.war
 *.class
-.DS_Store"target/" 
-"MyFirstJSP/target/" 
+hs_err_pid*.log
+rust_captcha.dll
+lib/*.dll
+.DS_Store
 .aider*
 slf-secrets/
 gmail-service-account*.json

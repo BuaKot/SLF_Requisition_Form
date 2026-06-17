@@ -57,7 +57,7 @@ public class ThirdPartyHistoryServlet extends HttpServlet {
             request.setAttribute("thirdPartyHistorySearch", search);
             request.setAttribute("thirdPartyHistoryPage", Integer.valueOf(page));
             request.setAttribute("thirdPartyHistoryHasNextPage", Boolean.valueOf(hasNextPage));
-            request.getRequestDispatcher("/third-party-history.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/ThirdPartyHistory.jsp").forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to load third-party history", e);
         }

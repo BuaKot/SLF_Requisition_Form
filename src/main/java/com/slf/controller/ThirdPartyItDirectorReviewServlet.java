@@ -101,7 +101,7 @@ public class ThirdPartyItDirectorReviewServlet extends HttpServlet {
             request.setAttribute("sectionHeadComment",
                 workflowDAO.findLatestActionComment(requestId, "SECTION_HEAD_SUBMITTED"));
             request.setAttribute("csrfToken", ensureCsrfToken(request));
-            request.getRequestDispatcher("/WEB-INF/third-party-it-director-review.jsp")
+            request.getRequestDispatcher("/WEB-INF/views/ThirdPartyItDirectorReview.jsp")
                 .forward(request, response);
         } catch (IllegalArgumentException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());

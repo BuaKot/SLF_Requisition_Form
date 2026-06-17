@@ -103,7 +103,7 @@ public class ThirdPartySectionHeadReviewServlet extends HttpServlet {
             request.setAttribute("submission", submission);
             request.setAttribute("infrastructureEmployees", workflowDAO.findActiveInfrastructureEmployees());
             request.setAttribute("csrfToken", ensureCsrfToken(request));
-            request.getRequestDispatcher("/WEB-INF/third-party-section-head-review.jsp")
+            request.getRequestDispatcher("/WEB-INF/views/ThirdPartySectionHeadReview.jsp")
                 .forward(request, response);
         } catch (IllegalArgumentException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());

@@ -10,15 +10,15 @@ public class ApprovalListConsistencyTest extends TestCase {
     public void testApprovalPagesUseSharedTemplateWithoutAdminBackLinks() throws Exception {
         String[] pages = {"DirectorApprove.jsp", "ITDirectorApprove.jsp", "TechnicalApprove.jsp", "Process.jsp"};
         for (String page : pages) {
-            String source = read("src/main/webapp/" + page);
-            assertTrue(page + " should use shared template", source.contains("/WEB-INF/approvalList.jsp"));
+            String source = read("src/main/webapp/WEB-INF/views/" + page);
+            assertTrue(page + " should use shared template", source.contains("/WEB-INF/views/ApprovalList.jsp"));
             assertTrue(page + " should set history back target", source.contains("approvalHistoryBackPage"));
             assertFalse(page + " should not link to Admin.jsp", source.contains("Admin.jsp"));
         }
     }
 
     public void testHistoryUsesCurrentSharedNavigationFragments() throws Exception {
-        String history = read("src/main/webapp/history.jsp");
+        String history = read("src/main/webapp/WEB-INF/views/History.jsp");
         assertTrue(history.contains("<%@ include file=\"/WEB-INF/jspf/sidebar.jspf\" %>"));
         assertTrue(history.contains("<%@ include file=\"/WEB-INF/jspf/topbar.jspf\" %>"));
         assertFalse(history.contains("class=\"admin-tab\">"));

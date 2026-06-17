@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 // zennnne แก้
-@WebServlet("/directorApprove")
+@WebServlet({"/directorApprove", "/DirectorApprove.jsp"})
 public class LoadDirectorServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -77,7 +77,7 @@ public class LoadDirectorServlet extends HttpServlet {
         }
 
         request.setAttribute("formList", formList);
-        request.getRequestDispatcher("/DirectorApprove.jsp").forward(request, response); // zennnne แก้
+        request.getRequestDispatcher("/WEB-INF/views/DirectorApprove.jsp").forward(request, response); // zennnne แก้
     }
 }
 // zennnne แก้

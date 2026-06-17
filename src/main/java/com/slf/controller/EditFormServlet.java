@@ -93,7 +93,7 @@ public class EditFormServlet extends HttpServlet {
         }
         // zennnne แก้
 
-        request.getRequestDispatcher("/form.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/Form.jsp").forward(request, response);
     }
 
     // ---------------------------------------------------------------

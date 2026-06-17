@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet({"/itRequisition/new", "/newForm/requisition"})
+@WebServlet({"/itRequisition/new", "/newForm/requisition", "/form.jsp"})
 public class LoadFormServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -104,6 +104,6 @@ public class LoadFormServlet extends HttpServlet {
             throw new ServletException("Failed to load form", e);
         }
 
-        request.getRequestDispatcher("/form.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/Form.jsp").forward(request, response);
     }
 }

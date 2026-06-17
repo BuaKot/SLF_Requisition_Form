@@ -9,7 +9,7 @@ public class SubmitPageBackNavigationTest extends TestCase {
 
     public void testSubmitPageBackButtonReturnsToItRequisitionDetail() throws Exception {
         String source = new String(
-            Files.readAllBytes(Paths.get("src/main/webapp/submit.jsp")),
+            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/views/Submit.jsp")),
             StandardCharsets.UTF_8
         );
 

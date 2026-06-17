@@ -27,7 +27,7 @@ public class ThirdPartyItDirectorInboxServlet extends HttpServlet {
                 requestDAO.findByStatus("PENDING_IT_DIRECTOR", 100));
             request.setAttribute("certificationRequests",
                 requestDAO.findByStatus("PENDING_FINAL_CERTIFICATION", 100));
-            request.getRequestDispatcher("/WEB-INF/third-party-it-director-inbox.jsp")
+            request.getRequestDispatcher("/WEB-INF/views/ThirdPartyItDirectorInbox.jsp")
                 .forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Unable to load third-party IT Director inbox", e);

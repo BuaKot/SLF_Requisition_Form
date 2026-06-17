@@ -9,14 +9,14 @@ public class ThirdPartyPdfExportTest extends TestCase {
 
     public void testThirdPartyPdfExportHasOwnSecuredServlet() throws Exception {
         String servlet = read("src/main/java/com/slf/controller/ThirdPartyExportPDFServlet.java");
-        String page = read("src/main/webapp/third-party-pdf.jsp");
+        String page = read("src/main/webapp/WEB-INF/views/ThirdPartyPdf.jsp");
 
         // Servlet Checks (Unchanged)
         assertTrue(servlet.contains("@WebServlet(\"/thirdParty/exportPdf\")"));
         assertTrue(servlet.contains("parseSubmissionId"));
         assertTrue(servlet.contains("canViewSubmission"));
         assertTrue(servlet.contains("FINAL_CERTIFIED"));
-        assertTrue(servlet.contains("/third-party-pdf.jsp"));
+        assertTrue(servlet.contains("/WEB-INF/views/ThirdPartyPdf.jsp"));
         assertTrue(servlet.contains("request.setAttribute(\"submission\""));
         assertFalse(servlet.contains("application/pdf"));
         assertFalse(servlet.contains("ITextRenderer"));

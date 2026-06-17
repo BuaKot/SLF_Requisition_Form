@@ -40,7 +40,7 @@ public class ThirdPartyAcceptanceSubmitServlet extends HttpServlet {
             request.setAttribute("submitSuccess", Boolean.FALSE);
             request.setAttribute("submitMessage", e.getMessage());
         }
-        request.getRequestDispatcher("/thirdpartySubmitResult.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/ThirdPartySubmitResult.jsp").forward(request, response);
     }
 
     static String requireComment(String value) {

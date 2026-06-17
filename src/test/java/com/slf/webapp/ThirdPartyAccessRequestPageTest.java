@@ -9,7 +9,7 @@ public class ThirdPartyAccessRequestPageTest extends TestCase {
 
     public void testPublicFormSupportsMultipleAccessRequestsWithoutSignature() throws Exception {
         String jsp = new String(Files.readAllBytes(
-            Paths.get("src/main/webapp/thirdpartyForm.jsp")), StandardCharsets.UTF_8);
+            Paths.get("src/main/webapp/WEB-INF/views/ThirdPartyForm.jsp")), StandardCharsets.UTF_8);
 
         assertTrue(jsp.contains("id=\"addAccessRequest\""));
         assertTrue(jsp.contains("name=\"accessSystem\""));

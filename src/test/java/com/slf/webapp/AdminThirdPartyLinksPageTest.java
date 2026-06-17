@@ -9,7 +9,7 @@ public class AdminThirdPartyLinksPageTest extends TestCase {
 
     public void testAdminPageUsesUpgradedCardLayoutAndFilters() throws Exception {
         String page = new String(
-            Files.readAllBytes(Paths.get("src/main/webapp/ThirdPartyLinks.jsp")),
+            Files.readAllBytes(Paths.get("src/main/webapp/WEB-INF/views/ThirdPartyLinks.jsp")),
             StandardCharsets.UTF_8
         );
 

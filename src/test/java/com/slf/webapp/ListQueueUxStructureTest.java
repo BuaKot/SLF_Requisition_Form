@@ -41,7 +41,7 @@ public class ListQueueUxStructureTest extends TestCase {
     }
 
     public void testSubmitQueueKeepsRoutesAndUsesScopedListUx() throws Exception {
-        String jsp = read("src/main/webapp/submit.jsp");
+        String jsp = read("src/main/webapp/WEB-INF/views/Submit.jsp");
         String css = read("src/main/webapp/css/styles.css");
 
         assertTrue(jsp.contains("SecurityUtil.ensureCsrfToken(request)"));
@@ -77,7 +77,7 @@ public class ListQueueUxStructureTest extends TestCase {
     }
 
     public void testHistoryQueueKeepsQueryContractsAndAccessibleFilters() throws Exception {
-        String jsp = read("src/main/webapp/history.jsp");
+        String jsp = read("src/main/webapp/WEB-INF/views/History.jsp");
 
         assertTrue(jsp.contains("<%@ include file=\"/WEB-INF/checkAuth.jsp\" %>"));
         assertTrue(jsp.contains("allowedBackPaths.contains(backParam)"));
@@ -98,13 +98,14 @@ public class ListQueueUxStructureTest extends TestCase {
     }
 
     public void testApprovalQueueUsesSharedTemplateAndScopedStyles() throws Exception {
-        String shared = read("src/main/webapp/WEB-INF/approvalList.jsp");
+        String shared = read("src/main/webapp/WEB-INF/views/ApprovalList.jsp");
+        String css = read("src/main/webapp/css/styles.css");
         String[] wrappers = {"DirectorApprove.jsp", "ITDirectorApprove.jsp", "TechnicalApprove.jsp", "Process.jsp"};
 
         for (String wrapper : wrappers) {
-            String source = read("src/main/webapp/" + wrapper);
+            String source = read("src/main/webapp/WEB-INF/views/" + wrapper);
             assertTrue(source.contains("<%@ include file=\"/WEB-INF/checkAuth.jsp\" %>"));
-            assertTrue(source.contains("<jsp:include page=\"/WEB-INF/approvalList.jsp\" />"));
+            assertTrue(source.contains("<jsp:include page=\"/WEB-INF/views/ApprovalList.jsp\" />"));
             assertTrue(source.contains("approvalDetailPage"));
             assertTrue(source.contains("approvalHistoryBackPage"));
         }
@@ -118,6 +119,8 @@ public class ListQueueUxStructureTest extends TestCase {
         assertHasClasses(shared, "div", "queue-summary");
         assertHasClasses(shared, "a", "requisition-card");
         assertTrue(shared.contains("empty-state"));
-        assertTrue(shared.contains("@media (max-width: 900px)"));
+        assertFalse(shared.contains("<style"));
+        assertTrue(css.contains("body.view-approval-list"));
+        assertTrue(css.contains("@media (max-width: 900px)"));
     }
 }

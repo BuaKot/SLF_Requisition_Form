@@ -1,10 +1,15 @@
 package com.slf.notification;
 
 import com.slf.dao.DBConnection;
+import com.slf.model.ApprovalHistoryEntry;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApprovalNotificationService {
     private final ApprovalNotificationRecipientResolver recipientResolver;
@@ -29,8 +34,9 @@ public class ApprovalNotificationService {
     public void notifyFormSubmitted(int formId, int requesterEmpId, String requestTopic) {
         try {
             ApprovalNotificationRecipient director = recipientResolver.resolveInitialDirector(formId);
-            String directorSubject = buildPendingStepSubject(formId, 0);
-            String directorBody = buildPendingStepBody(formId, requesterEmpId, requestTopic, 0, null);
+            String directorSubject = EmailContentBuilder.buildITRequisitionSubject(formId, 0);
+            String directorBody = EmailContentBuilder.buildITRequisitionBody(
+                formId, requestTopic, requesterEmpId, 0, null, "DIRECTOR", loadApprovalHistory(formId));
             sendAndLog(formId, null, "FORM_SUBMITTED", director, directorSubject, directorBody, requesterEmpId,
                 "FORM_SUBMITTED:DIRECTOR:" + formId);
         } catch (Exception e) {
@@ -38,8 +44,9 @@ public class ApprovalNotificationService {
         }
         try {
             ApprovalNotificationRecipient requester = recipientResolver.resolveRequester(formId);
-            String requesterSubject = buildSubmittedRequesterSubject(formId);
-            String requesterBody = buildSubmittedRequesterBody(formId, requesterEmpId, requestTopic);
+            String requesterSubject = EmailContentBuilder.buildITRequisitionSubject(formId, 0);
+            String requesterBody = EmailContentBuilder.buildITRequisitionBody(
+                formId, requestTopic, requesterEmpId, 0, null, "REQUESTER", loadApprovalHistory(formId));
             sendAndLog(formId, null, "FORM_SUBMITTED", requester, requesterSubject, requesterBody, requesterEmpId,
                 "FORM_SUBMITTED:REQUESTER:" + formId);
         } catch (Exception e) {
@@ -57,6 +64,14 @@ public class ApprovalNotificationService {
             return;
         }
 
+        List<ApprovalHistoryEntry> approvalHistory;
+        try {
+            approvalHistory = loadApprovalHistory(formId);
+        } catch (Exception e) {
+            logEnqueueFailure("approval transition history load", formId, e);
+            approvalHistory = new ArrayList<>();
+        }
+
         ApprovalNotificationRecipient recipient = null;
         try {
             recipient = recipientResolver.resolveNextApprover(
@@ -66,12 +81,11 @@ public class ApprovalNotificationService {
             );
 
             String eventType = eventTypeForStep(newStep);
-            String subject = newStep < 0 || newStep >= 5
-                ? buildApprovalResultSubject(formId, newStep)
-                : buildPendingStepSubject(formId, newStep);
-            String body = newStep < 0 || newStep >= 5
-                ? buildApprovalResultBody(formId, summary.requesterEmpId, summary.title, newStep, comment)
-                : buildPendingStepBody(formId, summary.requesterEmpId, summary.title, newStep, comment);
+            String recipientRole = resolveRecipientRole(newStep);
+            String subject = EmailContentBuilder.buildITRequisitionSubject(formId, newStep);
+            String body = EmailContentBuilder.buildITRequisitionBody(
+                formId, summary.title, summary.requesterEmpId,
+                newStep, comment, recipientRole, approvalHistory);
 
             sendAndLog(formId, null, eventType, recipient, subject, body, reviewerEmpId,
                 eventType + ":" + formId + ":" + newStep);
@@ -82,10 +96,11 @@ public class ApprovalNotificationService {
         if (shouldNotifyRequesterSeparately(newStep, recipient, summary.requesterEmpId)) {
             try {
                 String eventType = eventTypeForStep(newStep);
-                String subject = buildApprovalResultSubject(formId, newStep);
-                String body = buildApprovalResultBody(
-                    formId, summary.requesterEmpId, summary.title, newStep, comment
-                );
+                String requesterRole = "REQUESTER";
+                String subject = EmailContentBuilder.buildITRequisitionSubject(formId, newStep);
+                String body = EmailContentBuilder.buildITRequisitionBody(
+                    formId, summary.title, summary.requesterEmpId,
+                    newStep, comment, requesterRole, approvalHistory);
                 ApprovalNotificationRecipient requester = recipientResolver.resolveRequester(formId);
                 sendAndLog(formId, null, eventType, requester, subject, body, reviewerEmpId,
                     eventType + ":REQUESTER:" + formId + ":" + newStep);
@@ -95,11 +110,113 @@ public class ApprovalNotificationService {
         }
     }
 
-    public static String buildApprovalResultSubject(int formId, int stateStep) {
-        return "[SLF] Requisition form #" + formId + " " + describeApprovalResult(stateStep);
+    /**
+     * Loads approval history from APPROVALINFO for the given form.
+     * Returns completed (non-negative) and rejected (negative) rows.
+     */
+    private List<ApprovalHistoryEntry> loadApprovalHistory(int formId) throws SQLException {
+        String sql =
+            "SELECT STATE_STEP, REVIEWER_EMPID, IT_COMMENT, APPROVED_DATE " +
+            "FROM APPROVALINFO WHERE FORMID = ? " +
+            "ORDER BY APPROVALID ASC";
+        List<ApprovalHistoryEntry> history = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, formId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int stateStep = rs.getInt("STATE_STEP");
+                    Integer reviewerEmpId = rs.getObject("REVIEWER_EMPID") != null
+                        ? Integer.valueOf(rs.getInt("REVIEWER_EMPID")) : null;
+                    String comment = rs.getString("IT_COMMENT");
+                    Timestamp approvedDate = rs.getTimestamp("APPROVED_DATE");
+                    String actionLabel = buildActionLabel(stateStep);
+                    history.add(new ApprovalHistoryEntry(
+                        stateStep, reviewerEmpId, comment, approvedDate, actionLabel));
+                }
+            }
+        }
+        return history;
     }
 
+    /**
+     * Builds a human-readable action label for an APPROVALINFO state step.
+     */
+    private static String buildActionLabel(int stateStep) {
+        switch (stateStep) {
+            case 0:
+                return "ส่งคำขอแล้ว (รอ Director)";
+            case 1:
+                return "Director อนุมัติแล้ว";
+            case 2:
+                return "Technical อนุมัติแล้ว";
+            case 3:
+                return "IT Director อนุมัติแล้ว";
+            case 4:
+                return "Technician ดำเนินการแล้ว";
+            case 5:
+                return "Requestor ยืนยันรับงานแล้ว";
+            case -1:
+                return "ถูกปฏิเสธโดย Director";
+            case -2:
+                return "ถูกปฏิเสธโดย Technical";
+            case -3:
+                return "ถูกปฏิเสธโดย IT Director";
+            case -4:
+                return "ถูกปฏิเสธโดย Technician";
+            case -5:
+                return "ถูกปฏิเสธโดย Requestor";
+            default:
+                return "มีการเปลี่ยนแปลง (สถานะ: " + stateStep + ")";
+        }
+    }
+
+    /**
+     * Maps a state step to a recipient role string understood by EmailContentBuilder.
+     */
+    private static String resolveRecipientRole(int stateStep) {
+        if (stateStep < 0) {
+            return "REQUESTER";
+        }
+        if (stateStep >= 5) {
+            return "REQUESTER";
+        }
+        switch (stateStep) {
+            case 0:
+                return "DIRECTOR";
+            case 1:
+                return "TECHNICAL";
+            case 2:
+                return "IT_DIRECTOR";
+            case 3:
+                return "TECHNICIAN";
+            case 4:
+                return "REQUESTER";
+            default:
+                return null;
+        }
+    }
+
+    // ---------------------------------------------------------------
+    //  Legacy static methods (kept for backward compatibility)
+    // ---------------------------------------------------------------
+
+    /**
+     * Legacy method kept for test compatibility.
+     * @deprecated Use {@link EmailContentBuilder#buildITRequisitionSubject(int, int)} instead.
+     */
+    @Deprecated
+    public static String buildApprovalResultSubject(int formId, int stateStep) {
+        return EmailContentBuilder.buildITRequisitionSubject(formId, stateStep);
+    }
+
+    /**
+     * Legacy method kept for test compatibility.
+     * @deprecated Use {@link EmailContentBuilder#resolveWorkflowStepLabel(int)} instead.
+     */
+    @Deprecated
     public static String describeApprovalResult(int stateStep) {
+        // Keep original English text for test compatibility
         switch (stateStep) {
             case 1:
                 return "approved by Director";
@@ -126,6 +243,11 @@ public class ApprovalNotificationService {
         }
     }
 
+    /**
+     * Legacy method kept for test compatibility.
+     * @deprecated Use {@link EmailContentBuilder#resolveNextActorLabel(int)} instead.
+     */
+    @Deprecated
     public static String describePendingStep(int stateStep) {
         switch (stateStep) {
             case 0:
@@ -145,52 +267,55 @@ public class ApprovalNotificationService {
         }
     }
 
+    /**
+     * Legacy method kept for backward compatibility.
+     * @deprecated Use {@link EmailContentBuilder#buildITRequisitionSubject(int, int)} instead.
+     */
+    @Deprecated
     static String buildPendingStepSubject(int formId, int stateStep) {
-        if (stateStep == 4) {
-            return "[SLF] Requisition form #" + formId + " waiting for requester confirmation";
-        }
-        return "[SLF] Requisition form #" + formId + " pending " + describePendingStep(stateStep) + " approval";
+        return EmailContentBuilder.buildITRequisitionSubject(formId, stateStep);
     }
 
+    /**
+     * Legacy method kept for backward compatibility.
+     */
     static String buildSubmittedRequesterSubject(int formId) {
-        return "[SLF] Requisition form #" + formId + " submitted successfully";
+        return EmailContentBuilder.buildITRequisitionSubject(formId, 0);
     }
+
+    // ---------------------------------------------------------------
+    //  Private body builders (delegate to EmailContentBuilder)
+    // ---------------------------------------------------------------
 
     private String buildSubmittedRequesterBody(int formId, int requesterEmpId, String requestTopic) {
-        StringBuilder body = new StringBuilder();
-        body.append("Your requisition form was submitted successfully.").append("\n\n");
-        body.append("Form ID: ").append(formId).append("\n");
-        body.append("Requester EMPID: ").append(requesterEmpId).append("\n");
-        appendTopic(body, requestTopic);
-        body.append("Current step: ").append(describeWaitingStep(0)).append("\n");
-        body.append("\nOpen the SLF Requisition Form system to view details.");
-        return body.toString();
+        return EmailContentBuilder.buildITRequisitionBody(
+            formId, requestTopic, requesterEmpId, 0, null, "REQUESTER", new ArrayList<>());
     }
 
     private String buildPendingStepBody(int formId, int requesterEmpId, String requestTopic,
                                         int stateStep, String comment) {
-        StringBuilder body = new StringBuilder();
-        body.append("A requisition form is waiting for your action.").append("\n\n");
-        body.append("Form ID: ").append(formId).append("\n");
-        body.append("Requester EMPID: ").append(requesterEmpId).append("\n");
-        appendTopic(body, requestTopic);
-        body.append("Current step: ").append(describeWaitingStep(stateStep)).append("\n");
-        appendComment(body, comment);
-        body.append("\nOpen the SLF Requisition Form system to review it.");
-        return body.toString();
+        String role = resolveRecipientRole(stateStep);
+        List<ApprovalHistoryEntry> history;
+        try {
+            history = loadApprovalHistory(formId);
+        } catch (Exception e) {
+            history = new ArrayList<>();
+        }
+        return EmailContentBuilder.buildITRequisitionBody(
+            formId, requestTopic, requesterEmpId, stateStep, comment, role, history);
     }
 
     private String buildApprovalResultBody(int formId, int requesterEmpId, String requestTopic,
                                            int stateStep, String comment) {
-        StringBuilder body = new StringBuilder();
-        body.append("A requisition form status was updated.").append("\n\n");
-        body.append("Form ID: ").append(formId).append("\n");
-        body.append("Requester EMPID: ").append(requesterEmpId).append("\n");
-        appendTopic(body, requestTopic);
-        body.append("Result: ").append(describeApprovalResult(stateStep)).append("\n");
-        appendComment(body, comment);
-        body.append("\nOpen the SLF Requisition Form system to view details.");
-        return body.toString();
+        String role = stateStep < 0 || stateStep >= 5 ? "REQUESTER" : resolveRecipientRole(stateStep);
+        List<ApprovalHistoryEntry> history;
+        try {
+            history = loadApprovalHistory(formId);
+        } catch (Exception e) {
+            history = new ArrayList<>();
+        }
+        return EmailContentBuilder.buildITRequisitionBody(
+            formId, requestTopic, requesterEmpId, stateStep, comment, role, history);
     }
 
     private void sendAndLog(int formId, Integer approvalId, String eventType,

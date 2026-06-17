@@ -32,14 +32,14 @@ public class ApprovalNotificationServiceTest extends TestCase {
     }
 
     public void testBuildsRequesterResultSubject() {
-        assertEquals(
-            "[SLF] Requisition form #42 approved by IT Director",
-            ApprovalNotificationService.buildApprovalResultSubject(42, 3)
-        );
-        assertEquals(
-            "[SLF] Requisition form #42 rejected by Technical",
-            ApprovalNotificationService.buildApprovalResultSubject(42, -2)
-        );
+        String subject1 = ApprovalNotificationService.buildApprovalResultSubject(42, 3);
+        assertTrue("Subject should contain form ID", subject1.contains("#42"));
+        assertTrue("Subject should contain Technician label for state 3", subject1.contains("Technician"));
+
+        String subject2 = ApprovalNotificationService.buildApprovalResultSubject(42, -2);
+        assertTrue("Subject should contain form ID", subject2.contains("#42"));
+        assertTrue("Subject should contain rejection label", subject2.contains("ถูกปฏิเสธ"));
+        assertTrue("Subject should mention Technical", subject2.contains("Technical"));
     }
 
     public void testSubmittedNotificationOnlyEnqueuesRecipients() {
@@ -65,6 +65,33 @@ public class ApprovalNotificationServiceTest extends TestCase {
         assertEquals("requester@example.com", logDAO.recipients.get(0));
     }
 
+    public void testSubmittedBodyContainsFormIdAndTimelineMarkers() {
+        FakeRecipientResolver resolver = new FakeRecipientResolver();
+        RecordingLogDAO logDAO = new RecordingLogDAO(false);
+        ApprovalNotificationService service = new ApprovalNotificationService(resolver, null, logDAO);
+
+        service.notifyFormSubmitted(42, 1001, "VPN access");
+
+        // Logs are enqueued: position 0 = director, position 1 = requester
+        assertNotNull(logDAO.lastSubject);
+        assertNotNull(logDAO.lastBody);
+        assertTrue("Body should contain form ID", logDAO.lastBody.contains("#42"));
+        assertTrue("Body should contain timeline markers", logDAO.lastBody.contains("[🔄]"));
+        assertTrue("Body should contain next action section", logDAO.lastBody.contains("Next Action"));
+    }
+
+    public void testSubmittedSubjectContainsFormId() {
+        FakeRecipientResolver resolver = new FakeRecipientResolver();
+        RecordingLogDAO logDAO = new RecordingLogDAO(false);
+        ApprovalNotificationService service = new ApprovalNotificationService(resolver, null, logDAO);
+
+        service.notifyFormSubmitted(42, 1001, "VPN access");
+
+        assertNotNull(logDAO.lastSubject);
+        assertTrue("Subject should contain form ID", logDAO.lastSubject.contains("#42"));
+        assertTrue("Subject should contain Thai status label", logDAO.lastSubject.contains("รอ Director อนุมัติ"));
+    }
+
     private static class FakeRecipientResolver extends ApprovalNotificationRecipientResolver {
         @Override
         public ApprovalNotificationRecipient resolveInitialDirector(int formId) {
@@ -81,6 +108,8 @@ public class ApprovalNotificationServiceTest extends TestCase {
         private final List<String> recipients = new ArrayList<>();
         private final boolean failFirst;
         private int calls;
+        private String lastSubject;
+        private String lastBody;
 
         RecordingLogDAO(boolean failFirst) {
             this.failFirst = failFirst;
@@ -95,6 +124,8 @@ public class ApprovalNotificationServiceTest extends TestCase {
                 throw new SQLException("simulated log failure");
             }
             recipients.add(recipientEmail);
+            lastSubject = subject;
+            lastBody = body;
             return true;
         }
     }

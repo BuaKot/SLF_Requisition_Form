@@ -219,15 +219,7 @@ public class ThirdPartyNotificationService {
     }
 
     private static String buildBody(long requestId, String bodyLead, String comment) {
-        StringBuilder body = new StringBuilder();
-        body.append(bodyLead).append("\n\n");
-        body.append("Third-party Request ID: ").append(requestId).append("\n");
-        String trimmedComment = GmailNotificationConfig.trimToNull(comment);
-        if (trimmedComment != null) {
-            body.append("Comment: ").append(trimmedComment).append("\n");
-        }
-        body.append("\nOpen the SLF Requisition Form system to view details.");
-        return body.toString();
+        return EmailContentBuilder.buildThirdPartyBody(requestId, bodyLead, comment, null);
     }
 
     private static String nullToDash(String value) {

@@ -3003,11 +3003,13 @@ main.page > .panel .value {
 
 .owner-link-dashboard {
     display: block;
+    padding-right: 0;
+    padding-left: 0;
 }
 
 .owner-link-dashboard .third-party-toolbar-head {
-    width: 100%;
-    max-width: 1120px;
+    width: var(--slf-page-content-width);
+    max-width: none;
     box-sizing: border-box;
     margin: 0 auto 22px;
 }
@@ -3020,14 +3022,15 @@ main.page > .panel .value {
 }
 
 .owner-link-dashboard .owner-request-list-panel {
-    width: 100%;
-    max-width: 1120px;
+    width: var(--slf-page-content-width);
+    max-width: none;
     box-sizing: border-box;
     margin: 0 auto 18px;
 }
 
 .owner-link-dashboard .owner-acceptance-panel {
-    max-width: 1120px;
+    width: var(--slf-page-content-width);
+    max-width: none;
     margin: 0 auto 18px;
 }
 
@@ -4767,7 +4770,7 @@ main.page > .panel .value {
     font-weight: 700;
 }
 
-#main > .form-container:not(.it-request-form-page) {
+:is(#main > .form-container:not(.it-request-form-page), .requisition-detail-page > .form-container:not(.it-request-form-page)) {
     width: var(--slf-page-content-width);
     margin: 20px auto 44px;
     padding: 24px;
@@ -4777,20 +4780,20 @@ main.page > .panel .value {
     box-shadow: var(--form-shadow-sm);
 }
 
-#main > .form-container:not(.it-request-form-page) .form-grid {
+:is(#main > .form-container:not(.it-request-form-page), .requisition-detail-page > .form-container:not(.it-request-form-page)) .form-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px 20px;
 }
 
-#main > .form-container:not(.it-request-form-page) .form-group {
+:is(#main > .form-container:not(.it-request-form-page), .requisition-detail-page > .form-container:not(.it-request-form-page)) .form-group {
     display: flex;
     min-width: 0;
     flex-direction: column;
     gap: 6px;
 }
 
-#main > .form-container:not(.it-request-form-page) .form-group label {
+:is(#main > .form-container:not(.it-request-form-page), .requisition-detail-page > .form-container:not(.it-request-form-page)) .form-group label {
     margin: 0;
     color: var(--form-text);
     font-size: 0.9rem;
@@ -4798,8 +4801,8 @@ main.page > .panel .value {
     line-height: 1.3;
 }
 
-#main > .form-container:not(.it-request-form-page) input[type="text"],
-#main > .form-container:not(.it-request-form-page) textarea {
+:is(#main > .form-container:not(.it-request-form-page), .requisition-detail-page > .form-container:not(.it-request-form-page)) input[type="text"],
+:is(#main > .form-container:not(.it-request-form-page), .requisition-detail-page > .form-container:not(.it-request-form-page)) textarea {
     width: 100%;
     min-height: 42px;
     padding: 9px 12px;
@@ -4811,12 +4814,12 @@ main.page > .panel .value {
     line-height: 1.35;
 }
 
-#main > .form-container:not(.it-request-form-page) textarea {
+:is(#main > .form-container:not(.it-request-form-page), .requisition-detail-page > .form-container:not(.it-request-form-page)) textarea {
     min-height: 104px;
     resize: vertical;
 }
 
-#main > .form-container:not(.it-request-form-page) .server-permission-box {
+:is(#main > .form-container:not(.it-request-form-page), .requisition-detail-page > .form-container:not(.it-request-form-page)) .server-permission-box {
     flex-direction: column;
     gap: 12px;
     min-width: 0;
@@ -4826,7 +4829,7 @@ main.page > .panel .value {
     background: #ffffff;
 }
 
-#main > .form-container:not(.it-request-form-page) .btn-group {
+:is(#main > .form-container:not(.it-request-form-page), .requisition-detail-page > .form-container:not(.it-request-form-page)) .btn-group {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -4834,13 +4837,13 @@ main.page > .panel .value {
     margin-top: 28px;
 }
 
-#main > .form-container:not(.it-request-form-page) .detail-action-footer {
+:is(#main > .form-container:not(.it-request-form-page), .requisition-detail-page > .form-container:not(.it-request-form-page)) .detail-action-footer {
     margin-top: 40px;
     padding-top: 20px;
     border-top: 1px solid #d7e5f4;
 }
 
-#main > .form-container:not(.it-request-form-page) .btn {
+:is(#main > .form-container:not(.it-request-form-page), .requisition-detail-page > .form-container:not(.it-request-form-page)) .btn {
     display: inline-flex;
     min-height: 40px;
     align-items: center;

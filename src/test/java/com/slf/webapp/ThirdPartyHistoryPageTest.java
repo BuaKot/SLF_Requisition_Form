@@ -61,7 +61,7 @@ public class ThirdPartyHistoryPageTest extends TestCase {
             "SELECT a.REQUEST_ID, a.ACTION_TYPE, a.FROM_STATUS, a.TO_STATUS"));
     }
 
-    public void testHistoryUsesWorkflowSequenceAndCompletedPdfExportOnly() throws Exception {
+    public void testHistoryUsesWorkflowSequenceAndKeepsPdfOnSubmissionPageOnly() throws Exception {
         String page = read("src/main/webapp/third-party-history.jsp");
         String workflowDao = read("src/main/java/com/slf/dao/ThirdPartyWorkflowDAO.java");
 
@@ -72,9 +72,8 @@ public class ThirdPartyHistoryPageTest extends TestCase {
         assertTrue(workflowDao.contains("WHEN 'FINAL_CERTIFIED' THEN 9"));
         assertTrue(workflowDao.contains("ACTOR_POSITION"));
         assertTrue(workflowDao.contains("entry.setActorPosition"));
-        assertTrue(page.contains("\"COMPLETED\".equals(item.getStatus())"));
-        assertTrue(page.contains("/thirdParty/exportPdf?submissionId="));
-        assertTrue(page.contains("history-pdf-button"));
+        assertFalse(page.contains("/thirdParty/exportPdf?submissionId="));
+        assertFalse(page.contains("history-pdf-button"));
     }
 
     public void testHistoryQueryUsesLeanProjectionAndDatabasePagination() throws Exception {

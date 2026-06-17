@@ -128,7 +128,6 @@
             <div class="third-party-list-head">
                 <div>
                     <div class="form-section-title">รายการลิงก์ที่สร้าง</div>
-                    <p class="muted-text">รวมลิงก์สำหรับกรอกแบบฟอร์ม และลิงก์ตรวจรับ/ประเมินไว้ในรายการเดียวกัน</p>
                 </div>
                 <span class="third-party-count"><%= thirdPartyRequests.size() %> รายการ</span>
             </div>

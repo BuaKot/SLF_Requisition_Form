@@ -101,19 +101,21 @@
 <div id="main" class="enterprise-index-shell">
 <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
 
-<div class="topbar-back-row">
-    <a href="<%= h(backLink.getHref()) %>" class="detail-back-button">
-        <i class="fa fa-arrow-left"></i> <%= h(backLink.getLabel()) %>
-    </a>
-</div>
+<main class="enterprise-index-main it-requisition-detail-page requisition-detail-page">
 
-<section class="enterprise-hero requisition-detail-banner" aria-labelledby="detailHeroTitle">
+<section class="enterprise-hero index-banner it-requisition-banner requisition-detail-banner" aria-labelledby="detailHeroTitle">
     <div class="banner" hidden aria-hidden="true"></div>
     <div class="enterprise-hero-copy index-banner-inner">
         <p class="enterprise-eyebrow">ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</p>
         <h1 id="detailHeroTitle">ใบขอให้ดำเนินการ / Requisition Form (ใบที่: <%= formId %>)</h1>
     </div>
 </section>
+
+<div class="detail-action-bar it-detail-back-row">
+    <a href="<%= h(backLink.getHref()) %>" class="detail-back-button">
+        <i class="fa fa-arrow-left"></i> <span><%= h(backLink.getLabel()) %></span>
+    </a>
+</div>
 
 <%
     boolean hasAnyApprovalLogged = false; // Tracks if any logs are displayed at all
@@ -448,6 +450,7 @@
     </form>
 </div>
 
+</main>
 <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 <script>

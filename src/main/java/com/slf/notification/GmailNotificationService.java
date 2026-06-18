@@ -4,11 +4,14 @@ import java.util.Properties;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 public class GmailNotificationService {
     private final GmailNotificationConfig config;
@@ -97,7 +100,29 @@ public class GmailNotificationService {
         message.setFrom(new InternetAddress(config.getFrom()));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient, false));
         message.setSubject(subject, "UTF-8");
-        message.setContent(body, "text/plain; charset=UTF-8");
+
+        String trimmed = body != null ? body.trim() : "";
+        boolean isHtml = trimmed.startsWith("<!DOCTYPE") || trimmed.startsWith("<html")
+            || trimmed.contains("<body");
+
+        if (isHtml) {
+            // Send as multipart/alternative: HTML + plain-text fallback
+            Multipart multipart = new MimeMultipart("alternative");
+
+            // Plain text part (stripped HTML)
+            MimeBodyPart textPart = new MimeBodyPart();
+            textPart.setText(HtmlEmailRenderer.stripHtml(body), "UTF-8");
+            multipart.addBodyPart(textPart);
+
+            // HTML part
+            MimeBodyPart htmlPart = new MimeBodyPart();
+            htmlPart.setContent(body, "text/html; charset=UTF-8");
+            multipart.addBodyPart(htmlPart);
+
+            message.setContent(multipart);
+        } else {
+            message.setContent(body, "text/plain; charset=UTF-8");
+        }
 
         Transport.send(message);
     }

@@ -20,9 +20,15 @@ public class GmailNotificationConfig {
     private final String password;
     private final String from;
     private final String recipient;
+    private final String appBaseUrl;
 
     public GmailNotificationConfig(boolean enabled, String host, int port, boolean sslEnabled, String username,
                                    String password, String from, String recipient) {
+        this(enabled, host, port, sslEnabled, username, password, from, recipient, null);
+    }
+
+    public GmailNotificationConfig(boolean enabled, String host, int port, boolean sslEnabled, String username,
+                                   String password, String from, String recipient, String appBaseUrl) {
         this.enabled = enabled;
         this.host = firstText(host, DEFAULT_SMTP_HOST);
         this.port = port > 0 ? port : DEFAULT_SMTP_PORT;
@@ -31,6 +37,7 @@ public class GmailNotificationConfig {
         this.password = trimToNull(password);
         this.from = firstText(from, username);
         this.recipient = trimToNull(recipient);
+        this.appBaseUrl = normalizeBaseUrl(appBaseUrl);
     }
 
     public static GmailNotificationConfig fromEnvironment() {
@@ -49,7 +56,8 @@ public class GmailNotificationConfig {
             setting("slf.mail.from", "SLF_MAIL_FROM", fileSettings,
                 setting("slf.gmail.sender", "SLF_GMAIL_SENDER", fileSettings, username)),
             setting("slf.mail.to", "SLF_MAIL_TO", fileSettings,
-                setting("slf.gmail.to", "SLF_GMAIL_TO", fileSettings, null))
+                setting("slf.gmail.to", "SLF_GMAIL_TO", fileSettings, null)),
+            setting("slf.app.baseUrl", "SLF_APP_BASE_URL", fileSettings, null)
         );
     }
 
@@ -83,6 +91,14 @@ public class GmailNotificationConfig {
 
     public String getRecipient() {
         return recipient;
+    }
+
+    /**
+     * Returns the configured application base URL (e.g. "http://localhost:8080/SLF_Requisition_Form").
+     * May be null if not configured.
+     */
+    public String getAppBaseUrl() {
+        return appBaseUrl;
     }
 
     public boolean isConfigured() {
@@ -172,5 +188,20 @@ public class GmailNotificationConfig {
     private static String firstText(String first, String second) {
         String value = trimToNull(first);
         return value != null ? value : trimToNull(second);
+    }
+
+    /**
+     * Normalizes a base URL by stripping trailing slashes.
+     * Returns null if the input is null or empty.
+     */
+    private static String normalizeBaseUrl(String url) {
+        String trimmed = trimToNull(url);
+        if (trimmed == null) {
+            return null;
+        }
+        while (trimmed.endsWith("/")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1);
+        }
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }

@@ -1,5 +1,6 @@
 package com.slf.notification;
 
+import com.slf.model.ApprovalHistoryEntry;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +45,8 @@ public class ApprovalNotificationServiceTest extends TestCase {
 
     public void testSubmittedNotificationOnlyEnqueuesRecipients() {
         FakeRecipientResolver resolver = new FakeRecipientResolver();
-        RecordingLogDAO logDAO = new RecordingLogDAO(false);
-        ApprovalNotificationService service = new ApprovalNotificationService(resolver, null, logDAO);
+        RecordingLogDAO logDAO = new RecordingLogDAO(false, false);
+        ApprovalNotificationService service = new FakeService(resolver, null, logDAO);
 
         service.notifyFormSubmitted(42, 1001, "VPN access");
 
@@ -56,8 +57,8 @@ public class ApprovalNotificationServiceTest extends TestCase {
 
     public void testRequesterStillEnqueuesWhenDirectorLogFails() {
         FakeRecipientResolver resolver = new FakeRecipientResolver();
-        RecordingLogDAO logDAO = new RecordingLogDAO(true);
-        ApprovalNotificationService service = new ApprovalNotificationService(resolver, null, logDAO);
+        RecordingLogDAO logDAO = new RecordingLogDAO(true, false);
+        ApprovalNotificationService service = new FakeService(resolver, null, logDAO);
 
         service.notifyFormSubmitted(42, 1001, "VPN access");
 
@@ -65,31 +66,49 @@ public class ApprovalNotificationServiceTest extends TestCase {
         assertEquals("requester@example.com", logDAO.recipients.get(0));
     }
 
-    public void testSubmittedBodyContainsFormIdAndTimelineMarkers() {
+    public void testSubmittedBodyContainsFormIdAndHtmlStructure() {
         FakeRecipientResolver resolver = new FakeRecipientResolver();
-        RecordingLogDAO logDAO = new RecordingLogDAO(false);
-        ApprovalNotificationService service = new ApprovalNotificationService(resolver, null, logDAO);
+        RecordingLogDAO logDAO = new RecordingLogDAO(false, false);
+        FakeService service = new FakeService(resolver, null, logDAO);
 
         service.notifyFormSubmitted(42, 1001, "VPN access");
 
-        // Logs are enqueued: position 0 = director, position 1 = requester
         assertNotNull(logDAO.lastSubject);
         assertNotNull(logDAO.lastBody);
+        assertTrue("Body should start with DOCTYPE for HTML", logDAO.lastBody.startsWith("<!DOCTYPE"));
         assertTrue("Body should contain form ID", logDAO.lastBody.contains("#42"));
-        assertTrue("Body should contain timeline markers", logDAO.lastBody.contains("[🔄]"));
+        assertTrue("Body should contain workflow timeline HTML class", logDAO.lastBody.contains("Workflow Timeline"));
         assertTrue("Body should contain next action section", logDAO.lastBody.contains("Next Action"));
     }
 
     public void testSubmittedSubjectContainsFormId() {
         FakeRecipientResolver resolver = new FakeRecipientResolver();
-        RecordingLogDAO logDAO = new RecordingLogDAO(false);
-        ApprovalNotificationService service = new ApprovalNotificationService(resolver, null, logDAO);
+        RecordingLogDAO logDAO = new RecordingLogDAO(false, false);
+        FakeService service = new FakeService(resolver, null, logDAO);
 
         service.notifyFormSubmitted(42, 1001, "VPN access");
 
         assertNotNull(logDAO.lastSubject);
         assertTrue("Subject should contain form ID", logDAO.lastSubject.contains("#42"));
         assertTrue("Subject should contain Thai status label", logDAO.lastSubject.contains("รอ Director อนุมัติ"));
+    }
+
+    // ---------------------------------------------------------------
+    //  Helper: FakeService that overrides loadApprovalHistory
+    //  to avoid real database access in tests.
+    // ---------------------------------------------------------------
+
+    private static class FakeService extends ApprovalNotificationService {
+        FakeService(ApprovalNotificationRecipientResolver resolver,
+                    GmailNotificationService mailService,
+                    EmailNotificationLogDAO logDAO) {
+            super(resolver, mailService, logDAO);
+        }
+
+        @Override
+        List<ApprovalHistoryEntry> loadApprovalHistory(int formId) throws SQLException {
+            return new ArrayList<>();
+        }
     }
 
     private static class FakeRecipientResolver extends ApprovalNotificationRecipientResolver {
@@ -107,12 +126,14 @@ public class ApprovalNotificationServiceTest extends TestCase {
     private static class RecordingLogDAO extends EmailNotificationLogDAO {
         private final List<String> recipients = new ArrayList<>();
         private final boolean failFirst;
+        private final boolean overrideCalls;
         private int calls;
         private String lastSubject;
         private String lastBody;
 
-        RecordingLogDAO(boolean failFirst) {
+        RecordingLogDAO(boolean failFirst, boolean overrideCalls) {
             this.failFirst = failFirst;
+            this.overrideCalls = overrideCalls;
         }
 
         @Override

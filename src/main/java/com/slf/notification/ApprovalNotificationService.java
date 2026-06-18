@@ -32,11 +32,19 @@ public class ApprovalNotificationService {
     }
 
     public void notifyFormSubmitted(int formId, int requesterEmpId, String requestTopic) {
+        List<ApprovalHistoryEntry> approvalHistory;
+        try {
+            approvalHistory = loadApprovalHistory(formId);
+        } catch (Exception e) {
+            logEnqueueFailure("submitted history load", formId, e);
+            approvalHistory = new ArrayList<>();
+        }
+
         try {
             ApprovalNotificationRecipient director = recipientResolver.resolveInitialDirector(formId);
             String directorSubject = EmailContentBuilder.buildITRequisitionSubject(formId, 0);
-            String directorBody = EmailContentBuilder.buildITRequisitionBody(
-                formId, requestTopic, requesterEmpId, 0, null, "DIRECTOR", loadApprovalHistory(formId));
+            String directorBody = buildEmailBody(
+                formId, requestTopic, requesterEmpId, 0, null, "DIRECTOR", approvalHistory);
             sendAndLog(formId, null, "FORM_SUBMITTED", director, directorSubject, directorBody, requesterEmpId,
                 "FORM_SUBMITTED:DIRECTOR:" + formId);
         } catch (Exception e) {
@@ -45,8 +53,8 @@ public class ApprovalNotificationService {
         try {
             ApprovalNotificationRecipient requester = recipientResolver.resolveRequester(formId);
             String requesterSubject = EmailContentBuilder.buildITRequisitionSubject(formId, 0);
-            String requesterBody = EmailContentBuilder.buildITRequisitionBody(
-                formId, requestTopic, requesterEmpId, 0, null, "REQUESTER", loadApprovalHistory(formId));
+            String requesterBody = buildEmailBody(
+                formId, requestTopic, requesterEmpId, 0, null, "REQUESTER", approvalHistory);
             sendAndLog(formId, null, "FORM_SUBMITTED", requester, requesterSubject, requesterBody, requesterEmpId,
                 "FORM_SUBMITTED:REQUESTER:" + formId);
         } catch (Exception e) {
@@ -83,7 +91,7 @@ public class ApprovalNotificationService {
             String eventType = eventTypeForStep(newStep);
             String recipientRole = resolveRecipientRole(newStep);
             String subject = EmailContentBuilder.buildITRequisitionSubject(formId, newStep);
-            String body = EmailContentBuilder.buildITRequisitionBody(
+            String body = buildEmailBody(
                 formId, summary.title, summary.requesterEmpId,
                 newStep, comment, recipientRole, approvalHistory);
 
@@ -98,7 +106,7 @@ public class ApprovalNotificationService {
                 String eventType = eventTypeForStep(newStep);
                 String requesterRole = "REQUESTER";
                 String subject = EmailContentBuilder.buildITRequisitionSubject(formId, newStep);
-                String body = EmailContentBuilder.buildITRequisitionBody(
+                String body = buildEmailBody(
                     formId, summary.title, summary.requesterEmpId,
                     newStep, comment, requesterRole, approvalHistory);
                 ApprovalNotificationRecipient requester = recipientResolver.resolveRequester(formId);
@@ -113,8 +121,9 @@ public class ApprovalNotificationService {
     /**
      * Loads approval history from APPROVALINFO for the given form.
      * Returns completed (non-negative) and rejected (negative) rows.
+     * Package-private to allow test subclasses to override.
      */
-    private List<ApprovalHistoryEntry> loadApprovalHistory(int formId) throws SQLException {
+    List<ApprovalHistoryEntry> loadApprovalHistory(int formId) throws SQLException {
         String sql =
             "SELECT STATE_STEP, REVIEWER_EMPID, IT_COMMENT, APPROVED_DATE " +
             "FROM APPROVALINFO WHERE FORMID = ? " +
@@ -288,8 +297,7 @@ public class ApprovalNotificationService {
     // ---------------------------------------------------------------
 
     private String buildSubmittedRequesterBody(int formId, int requesterEmpId, String requestTopic) {
-        return EmailContentBuilder.buildITRequisitionBody(
-            formId, requestTopic, requesterEmpId, 0, null, "REQUESTER", new ArrayList<>());
+        return buildEmailBody(formId, requestTopic, requesterEmpId, 0, null, "REQUESTER", new ArrayList<>());
     }
 
     private String buildPendingStepBody(int formId, int requesterEmpId, String requestTopic,
@@ -301,8 +309,7 @@ public class ApprovalNotificationService {
         } catch (Exception e) {
             history = new ArrayList<>();
         }
-        return EmailContentBuilder.buildITRequisitionBody(
-            formId, requestTopic, requesterEmpId, stateStep, comment, role, history);
+        return buildEmailBody(formId, requestTopic, requesterEmpId, stateStep, comment, role, history);
     }
 
     private String buildApprovalResultBody(int formId, int requesterEmpId, String requestTopic,
@@ -314,8 +321,36 @@ public class ApprovalNotificationService {
         } catch (Exception e) {
             history = new ArrayList<>();
         }
-        return EmailContentBuilder.buildITRequisitionBody(
-            formId, requestTopic, requesterEmpId, stateStep, comment, role, history);
+        return buildEmailBody(formId, requestTopic, requesterEmpId, stateStep, comment, role, history);
+    }
+
+    /**
+     * Builds email body trying HTML first, falling back to plain text on failure.
+     */
+    private String buildEmailBody(int formId, String title, int requesterEmpId,
+                                  int stateStep, String comment, String role,
+                                  List<ApprovalHistoryEntry> history) {
+        try {
+            String appBaseUrl = getAppBaseUrl();
+            return HtmlEmailRenderer.renderITRequisitionEmail(
+                formId, title, requesterEmpId, stateStep, comment, role, history, appBaseUrl);
+        } catch (Exception e) {
+            // Fallback to plain text
+            return EmailContentBuilder.buildITRequisitionBody(
+                formId, title, requesterEmpId, stateStep, comment, role, history);
+        }
+    }
+
+    /**
+     * Resolves the application base URL from mail config.
+     */
+    private String getAppBaseUrl() {
+        try {
+            GmailNotificationConfig config = GmailNotificationConfig.fromEnvironment();
+            return config.getAppBaseUrl();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private void sendAndLog(int formId, Integer approvalId, String eventType,

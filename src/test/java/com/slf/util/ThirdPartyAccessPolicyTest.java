@@ -11,6 +11,8 @@ public class ThirdPartyAccessPolicyTest extends TestCase {
     }
 
     public void testSubmissionVisibleOnlyToAdminOrMatchingOwner() {
+        assertTrue(ThirdPartyAccessPolicy.canViewAllSubmissions("Admin"));
+        assertFalse(ThirdPartyAccessPolicy.canViewAllSubmissions("Director"));
         assertTrue(ThirdPartyAccessPolicy.canViewSubmission("Admin", Integer.valueOf(1001), null));
         assertTrue(ThirdPartyAccessPolicy.canViewSubmission("User", Integer.valueOf(678), Integer.valueOf(678)));
         assertFalse(ThirdPartyAccessPolicy.canViewSubmission("User", Integer.valueOf(678), Integer.valueOf(1001)));

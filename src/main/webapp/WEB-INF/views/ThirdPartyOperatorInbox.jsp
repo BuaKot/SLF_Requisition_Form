@@ -10,13 +10,13 @@
     if(grantRequests==null)grantRequests=Collections.emptyList();
     if(revokeRequests==null)revokeRequests=Collections.emptyList();
     if(reviewerRequests==null)reviewerRequests=Collections.emptyList();
-    SimpleDateFormat dateTime=new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    SimpleDateFormat dateOnly=new SimpleDateFormat("dd/MM/yyyy");
 %>
 <!DOCTYPE html>
 <html lang="th"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>งาน Third-party ที่ได้รับมอบหมาย</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css?v=20260618-2">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></head><body class="view-third-party-operator-inbox">
 <%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
 <div id="main"><%@ include file="/WEB-INF/jspf/topbar.jspf" %>
@@ -34,8 +34,7 @@
 <section class="workflow-section <%= groupClasses[groupIndex] %>"><h2><%= headings[groupIndex] %> (<%= items.size() %>)</h2><div class="workflow-list">
 <% if(items.isEmpty()){ %><div class="workflow-empty">ขณะนี้ไม่มี<%= headings[groupIndex] %>ที่รอดำเนินการ</div><% } %>
 <% for(ThirdPartyRequest item:items){ %>
-<a class="workflow-item <%= groupClasses[groupIndex] %>" href="${pageContext.request.contextPath}<%= routes[groupIndex] %><%= item.getRequestId() %>" aria-label="<%= actions[groupIndex] %> คำขอ #<%= item.getRequestId() %>"><span class="role-badge"><%= roles[groupIndex] %></span><h3>คำขอ #<%= item.getRequestId() %></h3>
-<div class="workflow-meta"><span><strong>ผู้ขอ:</strong> <%= h(item.getExternalContactName()) %></span><span><strong>หน่วยงาน:</strong> <%= h(item.getExternalCompanyName()) %></span><span><strong>อัปเดต:</strong> <%= item.getUpdatedAt()==null?"-":dateTime.format(item.getUpdatedAt()) %></span></div></a>
+<a class="workflow-item <%= groupClasses[groupIndex] %>" href="${pageContext.request.contextPath}<%= routes[groupIndex] %><%= item.getRequestId() %>" aria-label="<%= actions[groupIndex] %> คำขอ #<%= item.getRequestId() %>"><div class="workflow-row"><span class="role-badge"><%= roles[groupIndex] %></span><h3>คำขอ #<%= item.getRequestId() %></h3><span><strong>ผู้ขอ:</strong> <%= h(item.getExternalContactName()) %></span><span><strong>หน่วยงาน:</strong> <%= h(item.getExternalCompanyName()) %></span><span><strong>โครงการ:</strong> <%= h(item.getTargetSystem()) %></span><span><strong>วันที่เริ่มต้น:</strong> <%= item.getAccessStartDate()==null?"-":dateOnly.format(item.getAccessStartDate()) %></span><span><strong>ถึงวันที่:</strong> <%= item.getAccessEndDate()==null?"-":dateOnly.format(item.getAccessEndDate()) %></span></div></a>
 <% } %></div></section><% } %>
 </main><%@ include file="/WEB-INF/jspf/footer.jspf" %></div>
 <script>function toggleNav(){var s=document.getElementById("mySidebar"),m=document.getElementById("main"),o=s.style.width==="250px";s.style.width=o?"0":"250px";m.style.marginLeft=o?"0":"250px";m.style.width=o?"100%":"calc(100% - 250px)";}</script>

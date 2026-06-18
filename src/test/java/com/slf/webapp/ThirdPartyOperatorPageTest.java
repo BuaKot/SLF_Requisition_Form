@@ -20,6 +20,11 @@ public class ThirdPartyOperatorPageTest extends TestCase {
         assertTrue(inbox.contains("/thirdParty/revoker/review?id="));
         assertTrue(inbox.contains("/thirdParty/revokeReviewer/review?id="));
         assertTrue(inbox.contains("class=\"workflow-item <%= groupClasses[groupIndex] %>\""));
+        assertTrue(inbox.contains("class=\"workflow-row\""));
+        assertTrue(inbox.contains("<strong>โครงการ:</strong>"));
+        assertTrue(inbox.contains("<strong>วันที่เริ่มต้น:</strong>"));
+        assertTrue(inbox.contains("<strong>ถึงวันที่:</strong>"));
+        assertFalse(inbox.contains("<strong>อัปเดต:</strong>"));
         assertTrue(inbox.contains("String[] groupClasses={\"grant\",\"revoke\",\"reviewer\"}"));
         assertTrue(styles.contains(".workflow-item.revoke"));
         assertFalse(inbox.contains("class=\"btn btn-primary primary-action\""));

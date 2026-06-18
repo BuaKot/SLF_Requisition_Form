@@ -3763,6 +3763,11 @@ main.page > .panel .value {
     transform: translate(-50%, -8px);
 }
 
+.owner-request-toast {
+    width: max-content;
+    max-width: min(620px, calc(100vw - 32px));
+}
+
 .slf-table-wrap {
     overflow-x: auto;
 }
@@ -4859,7 +4864,7 @@ main.page > .panel .value {
     overflow: hidden;
     width: 100%;
     margin: 0;
-    padding: clamp(18px, 2.35vw, 30px) max(clamp(24px, 5vw, 72px), calc((100vw - 1280px) / 2 + 24px));
+    padding: clamp(18px, 2.35vw, 30px) max(clamp(26px, 7.5vw, 150px), calc((100vw - 1240px) / 2 + 24px));
     border: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.14);
     background: linear-gradient(135deg, rgba(5, 50, 91, 0.99) 0%, rgba(13, 75, 143, 0.98) 58%, rgba(5, 50, 91, 0.99) 100%);
@@ -10644,3 +10649,225 @@ body.view-third-party-submission * { box-sizing: border-box; }body.view-third-pa
 
 /* Migrated from WEB-INF/views/ThirdPartySubmitResult.jsp style block 1. */
 body.view-third-party-submit-result { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f4f8fc; font-family: 'Anuphan', Tahoma, Arial, sans-serif; color: #102a43; }body.view-third-party-submit-result .panel { width: min(640px, calc(100% - 32px)); background: #fff; border: 1px solid #d9e6f2; border-radius: 10px; padding: 28px; box-shadow: 0 8px 22px rgba(0, 51, 102, 0.08); }body.view-third-party-submit-result h1 { margin: 0 0 10px; }body.view-third-party-submit-result.result-success h1 { color: #137a42; }body.view-third-party-submit-result.result-error h1 { color: #b42318; }body.view-third-party-submit-result p { margin: 0; line-height: 1.6; }
+
+/* ===========================================================================
+   Shared page geometry
+   Keep equivalent banners and workflow pages on one visual grid.
+   ========================================================================== */
+.form-page-header,
+.it-requisition-detail-page .it-requisition-banner,
+.it-requisition-detail-page .requisition-detail-banner {
+    min-height: 170px;
+    display: flex;
+    align-items: center;
+    padding: 24px max(clamp(26px, 7.5vw, 150px), calc((100vw - 1240px) / 2 + 24px));
+}
+
+.form-page-header .page-title {
+    font-size: clamp(28px, 2.45vw, 36px);
+    line-height: 1.1;
+}
+
+.form-page-header .page-subtitle {
+    max-width: 760px;
+    margin-top: 5px;
+    font-size: clamp(14px, 1.15vw, 16px);
+    line-height: 1.36;
+}
+
+/* Match third-party workflow content to the near-full-width index sections. */
+body[class*="view-third-party-"] :is(
+    main.inbox,
+    main.workflow-inbox,
+    main.director-review,
+    main.operator-review,
+    main.assigned-review,
+    main.section-head-review-page,
+    main.page
+) {
+    width: var(--slf-page-content-width);
+    max-width: none;
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.third-party-request-page {
+    width: var(--slf-page-content-width);
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.third-party-request-page > :is(
+    .third-party-page-head,
+    .page-head-actions,
+    .third-party-panel,
+    .form-alert
+),
+body[class*="view-third-party-"] :is(
+    .third-party-page-head,
+    .third-party-panel,
+    .review-panel,
+    main.page > .panel
+) {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+}
+
+@media (max-width: 800px) {
+    .form-page-header,
+    .it-requisition-detail-page .it-requisition-banner,
+    .it-requisition-detail-page .requisition-detail-banner {
+        min-height: 150px;
+        padding: 22px 24px;
+    }
+
+    body[class*="view-third-party-"] :is(
+        main.inbox,
+        main.workflow-inbox,
+        main.director-review,
+        main.operator-review,
+        main.assigned-review,
+        main.section-head-review-page,
+        main.page
+    ) {
+        width: var(--slf-page-content-width-md);
+    }
+
+    .third-party-request-page {
+        width: var(--slf-page-content-width-md);
+        margin-right: auto;
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 640px) {
+    body[class*="view-third-party-"] :is(
+        main.inbox,
+        main.workflow-inbox,
+        main.director-review,
+        main.operator-review,
+        main.assigned-review,
+        main.section-head-review-page,
+        main.page
+    ),
+    .third-party-request-page {
+        width: var(--slf-page-content-width-sm);
+    }
+}
+
+/* Wide list pages use the same near-full-width content measure as the index. */
+body.view-third-party-history .third-party-history-page,
+body.view-approval-list .approval-header-inner,
+body.view-approval-list .approval-list,
+body.view-approval-list .approval-alert,
+body.view-history .history-list {
+    width: var(--slf-page-content-width);
+    max-width: none;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+body.view-history .history-list {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+/* Compact third-party inbox cards: one information row on desktop. */
+body.view-third-party-section-head-inbox .item,
+body.view-third-party-operator-inbox .workflow-item {
+    padding: 11px 14px;
+}
+
+body.view-third-party-section-head-inbox .inbox-row,
+body.view-third-party-operator-inbox .workflow-row {
+    display: grid;
+    align-items: center;
+    gap: 10px 16px;
+    min-width: 0;
+    color: #526b80;
+    font-size: 13px;
+}
+
+body.view-third-party-section-head-inbox .inbox-row {
+    grid-template-columns: max-content minmax(110px, .8fr) minmax(120px, .9fr) minmax(130px, 1fr) max-content max-content;
+}
+
+body.view-third-party-operator-inbox .workflow-row {
+    grid-template-columns: max-content max-content minmax(95px, .75fr) minmax(105px, .85fr) minmax(120px, 1fr) max-content max-content;
+}
+
+body.view-third-party-section-head-inbox .inbox-row h3,
+body.view-third-party-operator-inbox .workflow-row h3,
+body.view-third-party-operator-inbox .workflow-row .role-badge {
+    margin: 0;
+    white-space: nowrap;
+}
+
+body.view-third-party-section-head-inbox .inbox-row h3,
+body.view-third-party-operator-inbox .workflow-row h3 {
+    color: #102a43;
+    font-size: 15px;
+}
+
+body.view-third-party-section-head-inbox .inbox-row > span,
+body.view-third-party-operator-inbox .workflow-row > span:not(.role-badge) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.view-third-party-operator-inbox .workflow-row .role-badge {
+    padding: 3px 8px;
+    font-size: 12px;
+}
+
+/* Keep byte counters inside their corresponding text controls. */
+body.view-requisition-detail-comment .form-group.has-byte-counter {
+    position: relative;
+}
+
+body.view-requisition-detail-comment .form-group.has-byte-counter input[type="text"],
+body.view-requisition-detail-comment .form-group.has-byte-counter textarea {
+    padding-right: 112px;
+}
+
+body.view-requisition-detail-comment .form-group.has-byte-counter > input[type="text"] + .byte-counter {
+    top: 33px;
+    bottom: auto;
+}
+
+body.view-requisition-detail-comment .form-group.has-byte-counter > textarea + .byte-counter {
+    right: 12px;
+    bottom: 8px;
+}
+
+@media (max-width: 1100px) {
+    body.view-third-party-section-head-inbox .inbox-row,
+    body.view-third-party-operator-inbox .workflow-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 800px) {
+    body.view-approval-list .approval-header-inner,
+    body.view-approval-list .approval-list,
+    body.view-approval-list .approval-alert,
+    body.view-history .history-list {
+        width: var(--slf-page-content-width-md);
+    }
+}
+
+@media (max-width: 640px) {
+    body.view-approval-list .approval-header-inner,
+    body.view-approval-list .approval-list,
+    body.view-approval-list .approval-alert,
+    body.view-history .history-list {
+        width: var(--slf-page-content-width-sm);
+    }
+}

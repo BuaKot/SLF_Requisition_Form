@@ -15,7 +15,7 @@ public class ThirdPartyHistoryPageTest extends TestCase {
         assertTrue(page.contains("historyUrl(request.getContextPath(), \"rejected\""));
         assertTrue(page.contains("name=\"q\""));
         assertTrue(page.contains("history-pagination"));
-        assertTrue(page.contains("thirdPartySubmission?id="));
+        assertTrue(page.contains("thirdPartySubmission?requestId="));
         assertTrue(page.contains("history-filter-panel"));
         assertTrue(page.contains("third-party-panel history-table-panel"));
         assertTrue(page.contains("class=\"history-table\""));

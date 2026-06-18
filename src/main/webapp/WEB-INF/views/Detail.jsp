@@ -4,6 +4,11 @@
 <%@ page import="java.sql.*, java.util.*, com.slf.dao.DBConnection, com.slf.util.SecurityUtil, com.slf.util.NavigationUtil" %>
 
 <%
+    if (!Boolean.TRUE.equals(request.getAttribute("requisitionDetailAuthorized"))) {
+        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        return;
+    }
+
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setHeader("Pragma", "no-cache");
     response.setDateHeader("Expires", 0);

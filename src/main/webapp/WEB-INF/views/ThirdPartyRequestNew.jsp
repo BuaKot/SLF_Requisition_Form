@@ -117,11 +117,20 @@
         </section>
 
         <% if (createdRequestId != null && !createdRequestId.trim().isEmpty()) { %>
-            <div class="form-alert neutral owner-request-alert">สร้างลิงก์ใหม่เรียบร้อยแล้ว รายการ #<%= h(createdRequestId) %> พร้อมให้คัดลอกจากรายการด้านล่าง</div>
+            <div class="slf-toast slf-toast-ok owner-request-toast" role="status" aria-live="polite">
+                <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                <span>สร้างลิงก์ใหม่เรียบร้อยแล้ว รายการ #<%= h(createdRequestId) %> พร้อมให้คัดลอกจากรายการด้านล่าง</span>
+            </div>
         <% } else if ("cancelled".equals(status)) { %>
-            <div class="form-alert neutral owner-request-alert">ยกเลิกและลบลิงก์ที่ยังไม่ถูกใช้งานเรียบร้อยแล้ว</div>
+            <div class="slf-toast slf-toast-ok owner-request-toast" role="status" aria-live="polite">
+                <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                <span>ยกเลิกและลบลิงก์ที่ยังไม่ถูกใช้งานเรียบร้อยแล้ว</span>
+            </div>
         <% } else if ("not_cancelled".equals(status)) { %>
-            <div class="form-alert owner-request-alert">ไม่สามารถยกเลิกได้ อาจถูกส่งฟอร์มแล้ว หมดอายุ หรือถูกยกเลิกไปก่อนหน้า</div>
+            <div class="slf-toast slf-toast-error owner-request-toast" role="alert" aria-live="assertive">
+                <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                <span>ไม่สามารถยกเลิกได้ อาจถูกส่งฟอร์มแล้ว หมดอายุ หรือถูกยกเลิกไปก่อนหน้า</span>
+            </div>
         <% } %>
 
         <section class="third-party-panel owner-request-list-panel">
@@ -221,6 +230,14 @@
     <%@ include file="/WEB-INF/jspf/footer.jspf" %>
 </div>
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+    var toast = document.querySelector(".owner-request-toast");
+    if (!toast) return;
+    window.setTimeout(function () {
+        toast.classList.add("is-hiding");
+        window.setTimeout(function () { toast.remove(); }, 200);
+    }, 5000);
+});
 function confirmCancelThirdPartyLink() {
     return window.confirm("ยืนยันยกเลิกลิงก์นี้หรือไม่? รายการที่ยังไม่ถูกใช้งานจะถูกลบออกจากประวัติและฐานข้อมูล");
 }

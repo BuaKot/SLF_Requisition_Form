@@ -15,6 +15,9 @@ public class ThirdPartyPdfExportTest extends TestCase {
         assertTrue(servlet.contains("@WebServlet(\"/thirdParty/exportPdf\")"));
         assertTrue(servlet.contains("parseSubmissionId"));
         assertTrue(servlet.contains("canViewSubmission"));
+        assertTrue(servlet.contains("canViewAllSubmissions"));
+        assertTrue(servlet.contains("submissionDAO.isOwnedBy"));
+        assertTrue(servlet.indexOf("submissionDAO.isOwnedBy") < servlet.indexOf("submissionDAO.findById"));
         assertTrue(servlet.contains("FINAL_CERTIFIED"));
         assertTrue(servlet.contains("/WEB-INF/views/ThirdPartyPdf.jsp"));
         assertTrue(servlet.contains("request.setAttribute(\"submission\""));

@@ -25,25 +25,38 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        long submissionId;
+        String requestIdValue = request.getParameter("requestId");
+        boolean requestIdLookup = requestIdValue != null && !requestIdValue.trim().isEmpty();
+        long recordId;
         try {
-            submissionId = parseSubmissionId(request.getParameter("id"));
+            recordId = requestIdLookup
+                ? parseRequestId(requestIdValue)
+                : parseSubmissionId(request.getParameter("id"));
         } catch (IllegalArgumentException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
             return;
         }
 
         try {
-            ThirdPartyFormSubmission submission = submissionDAO.findDetailById(submissionId);
+            HttpSession session = request.getSession(false);
+            String position = session == null ? null : (String) session.getAttribute("position");
+            Integer empId = ThirdPartyAccessPolicy.sessionEmpId(session);
+            boolean canViewAll = ThirdPartyAccessPolicy.canViewAllSubmissions(position);
+            if (!canViewAll && !ThirdPartyAccessPolicy.canCreateOwnLinks(empId)) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+            ThirdPartyFormSubmission submission = requestIdLookup
+                ? submissionDAO.findDetailByRequestId(recordId)
+                : submissionDAO.findDetailById(recordId);
             if (submission == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
-            HttpSession session = request.getSession(false);
-            String position = session == null ? null : (String) session.getAttribute("position");
-            Integer empId = ThirdPartyAccessPolicy.sessionEmpId(session);
             if (!ThirdPartyAccessPolicy.canViewSubmission(position, empId, submission.getInternalOwnerEmpId())) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                response.sendError(canViewAll
+                    ? HttpServletResponse.SC_FORBIDDEN
+                    : HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
             request.setAttribute("thirdPartySubmissionAuthorized", Boolean.TRUE);
@@ -80,6 +93,21 @@ public class ThirdPartySubmissionServlet extends HttpServlet {
             throw new IllegalArgumentException("Invalid submission id.");
         }
         return id;
+    }
+
+    static long parseRequestId(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException("Missing request id.");
+        }
+        try {
+            long id = Long.parseLong(value.trim());
+            if (id <= 0) {
+                throw new IllegalArgumentException("Invalid request id.");
+            }
+            return id;
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid request id.");
+        }
     }
 
     private static boolean hasExternalAcceptance(

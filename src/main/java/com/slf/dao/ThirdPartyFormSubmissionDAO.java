@@ -15,6 +15,24 @@ import java.sql.Timestamp;
 
 public class ThirdPartyFormSubmissionDAO {
 
+    public boolean isOwnedBy(long submissionId, int ownerEmpId) throws SQLException {
+        String sql =
+            "SELECT 1 " +
+            "FROM THIRD_PARTY_FORM_SUBMISSION s " +
+            "JOIN THIRD_PARTY_FORM_LINK l ON l.LINK_ID = s.LINK_ID " +
+            "JOIN THIRD_PARTY_REQUEST r ON r.REQUEST_ID = l.REQUEST_ID " +
+            "WHERE s.SUBMISSION_ID = ? AND r.INTERNAL_OWNER_EMPID = ? " +
+            "FETCH FIRST 1 ROW ONLY";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, submissionId);
+            ps.setInt(2, ownerEmpId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
     public ThirdPartyFormSubmission findById(long submissionId) throws SQLException {
         String sql =
             "SELECT s.SUBMISSION_ID, s.LINK_ID, s.DOCUMENT_RECEIVE_NO, s.FILLED_AT, " +
@@ -61,6 +79,31 @@ public class ThirdPartyFormSubmissionDAO {
                 }
                 ThirdPartyFormSubmission submission = mapDetailSubmission(rs);
                 submission.setAccessRequests(findDetailAccessRequests(conn, submissionId));
+                return submission;
+            }
+        }
+    }
+
+    public ThirdPartyFormSubmission findDetailByRequestId(long requestId) throws SQLException {
+        String sql =
+            "SELECT s.SUBMISSION_ID, s.DOCUMENT_RECEIVE_NO, s.REASON_OBJECTIVE, s.PROJECT_NAME, " +
+            "s.ACCESS_START_DATE, s.ACCESS_END_DATE, s.CONSENT_ACCEPTED, s.CONSENT_VERSION, s.CONSENT_ACCEPTED_AT, " +
+            "s.CONSENT_IP_ADDRESS, s.CONSENT_USER_AGENT, l.REQUEST_ID, r.INTERNAL_OWNER_EMPID " +
+            "FROM THIRD_PARTY_REQUEST r " +
+            "JOIN THIRD_PARTY_FORM_LINK l ON l.REQUEST_ID = r.REQUEST_ID " +
+            "JOIN THIRD_PARTY_FORM_SUBMISSION s ON s.LINK_ID = l.LINK_ID " +
+            "WHERE r.REQUEST_ID = ? " +
+            "ORDER BY s.SUBMISSION_ID DESC FETCH FIRST 1 ROW ONLY";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, requestId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                ThirdPartyFormSubmission submission = mapDetailSubmission(rs);
+                submission.setAccessRequests(findDetailAccessRequests(
+                    conn, submission.getSubmissionId()));
                 return submission;
             }
         }

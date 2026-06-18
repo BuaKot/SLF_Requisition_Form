@@ -21,6 +21,13 @@ public class ThirdPartyRequestActionsTest extends TestCase {
         assertTrue(page.contains("merged-link-meta-grid"));
         assertTrue(page.contains("item.getLinkExpiresAt()"));
         assertTrue(page.contains("item.getSubmittedAt()"));
+        assertTrue(page.contains("slf-toast slf-toast-ok owner-request-toast"));
+        assertTrue(page.contains("slf-toast slf-toast-error owner-request-toast"));
+        assertTrue(page.contains("aria-live=\"polite\""));
+        assertTrue(page.contains("aria-live=\"assertive\""));
+        assertTrue(page.contains("toast.classList.add(\"is-hiding\")"));
+        assertTrue(page.contains("}, 5000);"));
+        assertFalse(page.contains("owner-request-alert"));
         assertTrue(page.contains("คัดลอกลิ้งก์"));
         assertFalse(page.contains("/thirdParty/request/link?requestId="));
         assertFalse(page.contains("thirdPartySubmission?id="));
@@ -34,6 +41,7 @@ public class ThirdPartyRequestActionsTest extends TestCase {
         assertTrue(styles.contains(".copy-link-text"));
         assertTrue(styles.contains(".compact-note-requester"));
         assertTrue(styles.contains(".merged-link-meta-grid"));
+        assertTrue(styles.contains(".owner-request-toast"));
         assertTrue(styles.contains("width: var(--slf-page-content-width);"));
     }
 

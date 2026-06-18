@@ -121,7 +121,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ประวัติ Third-party Form</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css?v=20260618-2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="view-third-party-history">
@@ -237,7 +237,7 @@
                         <td class="history-detail-cell">
                             <% if (item.getSubmissionId() != null) { %>
                             <div class="history-action-stack">
-                            <a class="btn btn-secondary history-detail-button" href="${pageContext.request.contextPath}/thirdPartySubmission?id=<%= item.getSubmissionId() %>">
+                            <a class="btn btn-secondary history-detail-button" href="${pageContext.request.contextPath}/thirdPartySubmission?requestId=<%= item.getRequestId() %>">
                                 <i class="fa-solid fa-file-lines"></i><span class="history-detail-button-text">รายละเอียด</span>
                             </a>
                             </div>

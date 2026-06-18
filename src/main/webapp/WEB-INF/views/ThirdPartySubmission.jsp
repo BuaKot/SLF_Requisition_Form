@@ -91,8 +91,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Third-party Submission #<%= submission.getSubmissionId() %></title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <title>คำขอ Third-party #<%= submission.getRequestId() %></title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css?v=20260618-2">
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -104,7 +104,7 @@
     <main class="page third-party-request-page">
         <div class="page-head">
             <div class="page-title">
-                <h1><i class="fa-solid fa-file-lines"></i> Submission #<%= submission.getSubmissionId() %></h1>
+                <h1><i class="fa-solid fa-file-lines"></i> คำขอ #<%= submission.getRequestId() %></h1>
                 <p>เลขที่รับเอกสาร <strong><%= display(submission.getDocumentReceiveNo()) %></strong></p>
             </div>
             <div class="page-actions">

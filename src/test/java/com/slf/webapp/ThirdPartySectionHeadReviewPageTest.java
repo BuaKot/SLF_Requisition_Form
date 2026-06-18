@@ -9,6 +9,7 @@ public class ThirdPartySectionHeadReviewPageTest extends TestCase {
 
     public void testReviewPageContainsAssignmentsAndIsNotLinkedFromNavigation() throws Exception {
         String page = read("src/main/webapp/WEB-INF/views/ThirdPartySectionHeadReview.jsp");
+        String inbox = read("src/main/webapp/WEB-INF/views/ThirdPartySectionHeadInbox.jsp");
         String servlet = read("src/main/java/com/slf/controller/ThirdPartySectionHeadReviewServlet.java");
         String index = read("src/main/webapp/index.jsp");
         String sidebar = read("src/main/webapp/WEB-INF/jspf/sidebar.jspf");
@@ -23,6 +24,11 @@ public class ThirdPartySectionHeadReviewPageTest extends TestCase {
         assertTrue(page.contains("workflowStatusText(thirdPartyRequest.getStatus())"));
         assertTrue(page.contains("event.persisted"));
         assertTrue(page.contains("window.location.replace"));
+        assertTrue(inbox.contains("class=\"inbox-row\""));
+        assertTrue(inbox.contains("<strong>โครงการ:</strong>"));
+        assertTrue(inbox.contains("<strong>วันที่เริ่มต้น:</strong>"));
+        assertTrue(inbox.contains("<strong>ถึงวันที่:</strong>"));
+        assertFalse(inbox.contains("<strong>อัปเดต:</strong>"));
         assertTrue(servlet.contains("no-store, no-cache, must-revalidate, max-age=0"));
         assertTrue(servlet.contains("if (!\"PENDING_SECTION_HEAD\".equals(thirdPartyRequest.getStatus()))"));
         assertTrue(servlet.contains("response.sendRedirect(request.getContextPath() + \"/thirdParty/sectionHead\")"));

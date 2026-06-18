@@ -2187,11 +2187,6 @@ main.page > .panel {
     font-weight: 600;
 }
 
-.sidebar .approval-menu-link {
-    background: var(--slf-color-accent-50);
-    border-left-color: var(--slf-color-accent);
-    color: var(--slf-color-primary);
-}
 
 .third-party-request-page .btn {
     min-height: 42px;

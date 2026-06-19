@@ -15,11 +15,29 @@ import java.sql.Timestamp;
 
 public class ThirdPartyFormSubmissionDAO {
 
+    public boolean isOwnedBy(long submissionId, int ownerEmpId) throws SQLException {
+        String sql =
+            "SELECT 1 " +
+            "FROM THIRD_PARTY_FORM_SUBMISSION s " +
+            "JOIN THIRD_PARTY_FORM_LINK l ON l.LINK_ID = s.LINK_ID " +
+            "JOIN THIRD_PARTY_REQUEST r ON r.REQUEST_ID = l.REQUEST_ID " +
+            "WHERE s.SUBMISSION_ID = ? AND r.INTERNAL_OWNER_EMPID = ? " +
+            "FETCH FIRST 1 ROW ONLY";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, submissionId);
+            ps.setInt(2, ownerEmpId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
     public ThirdPartyFormSubmission findById(long submissionId) throws SQLException {
         String sql =
             "SELECT s.SUBMISSION_ID, s.LINK_ID, s.DOCUMENT_RECEIVE_NO, s.FILLED_AT, " +
             "s.FULL_NAME_TH, s.FULL_NAME_EN, s.ORGANIZATION, s.PHONE, s.EMAIL, " +
-            "s.REASON_OBJECTIVE, s.PROJECT_NAME, s.ACCESS_START_DATE, s.ACCESS_END_DATE, " +
+            "s.REQUESTED_SYSTEM, s.REASON_OBJECTIVE, s.PROJECT_NAME, s.ACCESS_START_DATE, s.ACCESS_END_DATE, " +
             "s.CREATED_AT, s.REVIEWED_BY, s.REVIEWED_AT, s.IMPORTED_FORMID, s.INTERNAL_NOTE, " +
             "s.CONSENT_ACCEPTED, s.CONSENT_VERSION, s.CONSENT_ACCEPTED_AT, s.CONSENT_IP_ADDRESS, s.CONSENT_USER_AGENT, " +
             "CASE WHEN l.STATUS = 'ACTIVE' AND l.EXPIRES_AT < ? THEN 'EXPIRED' ELSE l.STATUS END AS LINK_STATUS, " +
@@ -45,7 +63,7 @@ public class ThirdPartyFormSubmissionDAO {
 
     public ThirdPartyFormSubmission findDetailById(long submissionId) throws SQLException {
         String sql =
-            "SELECT s.SUBMISSION_ID, s.DOCUMENT_RECEIVE_NO, s.REASON_OBJECTIVE, s.PROJECT_NAME, " +
+            "SELECT s.SUBMISSION_ID, s.DOCUMENT_RECEIVE_NO, s.REQUESTED_SYSTEM, s.REASON_OBJECTIVE, s.PROJECT_NAME, " +
             "s.ACCESS_START_DATE, s.ACCESS_END_DATE, s.CONSENT_ACCEPTED, s.CONSENT_VERSION, s.CONSENT_ACCEPTED_AT, " +
             "s.CONSENT_IP_ADDRESS, s.CONSENT_USER_AGENT, l.REQUEST_ID, r.INTERNAL_OWNER_EMPID " +
             "FROM THIRD_PARTY_FORM_SUBMISSION s " +
@@ -66,14 +84,39 @@ public class ThirdPartyFormSubmissionDAO {
         }
     }
 
+    public ThirdPartyFormSubmission findDetailByRequestId(long requestId) throws SQLException {
+        String sql =
+            "SELECT s.SUBMISSION_ID, s.DOCUMENT_RECEIVE_NO, s.REQUESTED_SYSTEM, s.REASON_OBJECTIVE, s.PROJECT_NAME, " +
+            "s.ACCESS_START_DATE, s.ACCESS_END_DATE, s.CONSENT_ACCEPTED, s.CONSENT_VERSION, s.CONSENT_ACCEPTED_AT, " +
+            "s.CONSENT_IP_ADDRESS, s.CONSENT_USER_AGENT, l.REQUEST_ID, r.INTERNAL_OWNER_EMPID " +
+            "FROM THIRD_PARTY_REQUEST r " +
+            "JOIN THIRD_PARTY_FORM_LINK l ON l.REQUEST_ID = r.REQUEST_ID " +
+            "JOIN THIRD_PARTY_FORM_SUBMISSION s ON s.LINK_ID = l.LINK_ID " +
+            "WHERE r.REQUEST_ID = ? " +
+            "ORDER BY s.SUBMISSION_ID DESC FETCH FIRST 1 ROW ONLY";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, requestId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                ThirdPartyFormSubmission submission = mapDetailSubmission(rs);
+                submission.setAccessRequests(findDetailAccessRequests(
+                    conn, submission.getSubmissionId()));
+                return submission;
+            }
+        }
+    }
+
     public void submitOnce(ThirdPartyFormSubmission submission) throws SQLException {
         Timestamp eventTimestamp = BangkokTimeUtil.nowTimestamp();
         String insertSql =
             "INSERT INTO THIRD_PARTY_FORM_SUBMISSION " +
             "(LINK_ID, DOCUMENT_RECEIVE_NO, FILLED_AT, FULL_NAME_TH, FULL_NAME_EN, ORGANIZATION, PHONE, EMAIL, " +
-            "REASON_OBJECTIVE, PROJECT_NAME, ACCESS_START_DATE, ACCESS_END_DATE, CREATED_AT, " +
+            "REQUESTED_SYSTEM, REASON_OBJECTIVE, PROJECT_NAME, ACCESS_START_DATE, ACCESS_END_DATE, CREATED_AT, " +
             "CONSENT_ACCEPTED, CONSENT_VERSION, CONSENT_ACCEPTED_AT, CONSENT_IP_ADDRESS, CONSENT_USER_AGENT) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?)";
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?)";
         String documentNoSql =
             "UPDATE THIRD_PARTY_FORM_SUBMISSION SET DOCUMENT_RECEIVE_NO = ? WHERE SUBMISSION_ID = ?";
         String updateSql =
@@ -119,15 +162,16 @@ public class ThirdPartyFormSubmissionDAO {
                     insert.setString(6, submission.getOrganization());
                     insert.setString(7, submission.getPhone());
                     insert.setString(8, submission.getEmail());
-                    insert.setString(9, submission.getReasonObjective());
-                    insert.setString(10, trimToNull(submission.getProjectName()));
-                    setBangkokDate(insert, 11, submission.getAccessStartDate());
-                    setBangkokDate(insert, 12, submission.getAccessEndDate());
-                    setBangkokTimestamp(insert, 13, eventTimestamp);
-                    insert.setString(14, submission.getConsentVersion());
-                    setBangkokTimestamp(insert, 15, eventTimestamp);
-                    insert.setString(16, submission.getConsentIpAddress());
-                    insert.setString(17, submission.getConsentUserAgent());
+                    insert.setString(9, submission.getRequestedSystem());
+                    insert.setString(10, submission.getReasonObjective());
+                    insert.setString(11, trimToNull(submission.getProjectName()));
+                    setBangkokDate(insert, 12, submission.getAccessStartDate());
+                    setBangkokDate(insert, 13, submission.getAccessEndDate());
+                    setBangkokTimestamp(insert, 14, eventTimestamp);
+                    insert.setString(15, submission.getConsentVersion());
+                    setBangkokTimestamp(insert, 16, eventTimestamp);
+                    insert.setString(17, submission.getConsentIpAddress());
+                    insert.setString(18, submission.getConsentUserAgent());
                     insert.executeUpdate();
                     submissionId = generatedSubmissionId(insert);
                 }
@@ -163,7 +207,7 @@ public class ThirdPartyFormSubmissionDAO {
                     updateRequest.setString(3, submission.getEmail());
                     updateRequest.setString(4, submission.getPhone());
                     updateRequest.setString(5, submission.getReasonObjective());
-                    updateRequest.setString(6, trimToNull(submission.getProjectName()));
+                    updateRequest.setString(6, submission.getRequestedSystem());
                     setBangkokDate(updateRequest, 7, submission.getAccessStartDate());
                     setBangkokDate(updateRequest, 8, submission.getAccessEndDate());
                     setBangkokTimestamp(updateRequest, 9, eventTimestamp);
@@ -206,6 +250,7 @@ public class ThirdPartyFormSubmissionDAO {
         submission.setOrganization(rs.getString("ORGANIZATION"));
         submission.setPhone(rs.getString("PHONE"));
         submission.setEmail(rs.getString("EMAIL"));
+        submission.setRequestedSystem(rs.getString("REQUESTED_SYSTEM"));
         submission.setReasonObjective(rs.getString("REASON_OBJECTIVE"));
         submission.setProjectName(rs.getString("PROJECT_NAME"));
         submission.setAccessStartDate(getBangkokDate(rs, "ACCESS_START_DATE"));
@@ -237,6 +282,7 @@ public class ThirdPartyFormSubmissionDAO {
         int internalOwnerEmpId = rs.getInt("INTERNAL_OWNER_EMPID");
         submission.setInternalOwnerEmpId(rs.wasNull() ? null : Integer.valueOf(internalOwnerEmpId));
         submission.setDocumentReceiveNo(rs.getString("DOCUMENT_RECEIVE_NO"));
+        submission.setRequestedSystem(rs.getString("REQUESTED_SYSTEM"));
         submission.setReasonObjective(rs.getString("REASON_OBJECTIVE"));
         submission.setProjectName(rs.getString("PROJECT_NAME"));
         submission.setAccessStartDate(getBangkokDate(rs, "ACCESS_START_DATE"));

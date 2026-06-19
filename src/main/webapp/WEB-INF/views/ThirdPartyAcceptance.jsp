@@ -29,6 +29,7 @@
 <section class="panel"><h2>ข้อมูลที่ท่านเคยกรอก</h2><div class="grid">
 <div class="field"><div class="label">ชื่อ-สกุล</div><div class="value"><%= display(submission.getFullNameTh()) %></div></div>
 <div class="field"><div class="label">หน่วยงาน</div><div class="value"><%= display(submission.getOrganization()) %></div></div>
+<div class="field full"><div class="label">มีความประสงค์จะขอใช้ระบบ</div><div class="value"><%= display(submission.getRequestedSystem()) %></div></div>
 <div class="field full"><div class="label">เหตุผลและวัตถุประสงค์</div><div class="value"><%= display(submission.getReasonObjective()) %></div></div>
 <div class="field"><div class="label">วันที่เริ่มต้น</div><div class="value"><%= submission.getAccessStartDate()==null?"-":dateOnly.format(submission.getAccessStartDate()) %></div></div>
 <div class="field"><div class="label">วันที่สิ้นสุด</div><div class="value"><%= submission.getAccessEndDate()==null?"-":dateOnly.format(submission.getAccessEndDate()) %></div></div>

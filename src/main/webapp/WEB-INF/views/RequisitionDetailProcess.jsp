@@ -105,6 +105,11 @@
             }
             closeQuietly(rs, pstmt);
 
+            if (hasData && !canApproveExpectedStep) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
             // ----- Request items -----
             if (hasData) {
                 String itemSql =

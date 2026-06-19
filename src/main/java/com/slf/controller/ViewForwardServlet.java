@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
     "/Admin.jsp",
     "/Dashboard.jsp",
     "/history.jsp",
-    "/detail.jsp",
     "/pdf.jsp",
     "/it-requisition-form-detail.jsp",
     "/third-party-form-detail.jsp",
@@ -33,7 +32,6 @@ public class ViewForwardServlet extends HttpServlet {
         views.put("/Admin.jsp", "/WEB-INF/views/Admin.jsp");
         views.put("/Dashboard.jsp", "/WEB-INF/views/Dashboard.jsp");
         views.put("/history.jsp", "/WEB-INF/views/History.jsp");
-        views.put("/detail.jsp", "/WEB-INF/views/Detail.jsp");
         views.put("/pdf.jsp", "/WEB-INF/views/Pdf.jsp");
         views.put("/it-requisition-form-detail.jsp", "/WEB-INF/views/ItRequisitionFormDetail.jsp");
         views.put("/third-party-form-detail.jsp", "/WEB-INF/views/ThirdPartyFormDetail.jsp");

@@ -58,13 +58,14 @@ public class RoleBasedAccessFilter implements Filter {
             pageKey = "itDirectorApprove";
         } else if (path.equals("/process") || path.equals("/Process.jsp")) {
             pageKey = "process";
-        } else if (path.startsWith("/RequisitionDetail")) {
-            // RequisitionDetail pages are accessible to the same roles that can see the
-            // corresponding approve lists. You might want to map them individually or
-            // use a generic key that allows any "admin" role. I'll default to the same
-            // admin set, but you can refine.
-            pageKey = "requisitionDetail";  // you'd need to add this to PAGE_ROLES
-            // Or just use isAdmin() if all admin roles can view any detail.
+        } else if (path.equals("/RequisitionDetail.jsp")) {
+            pageKey = "directorApprove";
+        } else if (path.equals("/RequisitionDetail_Comment.jsp")) {
+            pageKey = "technicalApprove";
+        } else if (path.equals("/RequisitionDetail_ITDirector.jsp")) {
+            pageKey = "itDirectorApprove";
+        } else if (path.equals("/RequisitionDetail_Process.jsp")) {
+            pageKey = "process";
         } else if (path.equals("/Admin.jsp")) {
             pageKey = "adminPage";   // add to PAGE_ROLES if needed
         } else if (path.equals("/history.jsp")) {

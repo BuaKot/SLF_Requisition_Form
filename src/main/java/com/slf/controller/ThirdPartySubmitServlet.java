@@ -71,6 +71,7 @@ public class ThirdPartySubmitServlet extends HttpServlet {
         submission.setOrganization(trimToNull(request.getParameter("organization")));
         submission.setPhone(trimToNull(request.getParameter("phone")));
         submission.setEmail(trimToNull(request.getParameter("email")));
+        submission.setRequestedSystem(trimToNull(request.getParameter("requestedSystem")));
         submission.setReasonObjective(trimToNull(request.getParameter("reasonObjective")));
         submission.setProjectName(trimToNull(request.getParameter("projectName")));
         submission.setAccessStartDate(parseDate(request.getParameter("accessStartDate"), "วันที่เริ่มต้นใช้ระบบงาน"));
@@ -89,7 +90,10 @@ public class ThirdPartySubmitServlet extends HttpServlet {
         requireText(submission.getOrganization(), "หน่วยงาน");
         requireText(submission.getPhone(), "เบอร์โทรศัพท์");
         requireText(submission.getEmail(), "Email");
+        requireText(submission.getRequestedSystem(), "มีความประสงค์จะขอใช้ระบบ");
         requireText(submission.getReasonObjective(), "เหตุผลและวัตถุประสงค์การขอ");
+        requireMax(submission.getRequestedSystem(), 500, "มีความประสงค์จะขอใช้ระบบ");
+        requireMax(submission.getProjectName(), 500, "เพื่อใช้ในโครงการ");
         if (!submission.isConsentAccepted()) {
             throw new IllegalArgumentException("Consent must be accepted before submitting the form.");
         }

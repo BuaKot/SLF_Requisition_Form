@@ -27,3 +27,20 @@ Generated on 2026-06-17 as part of project cleanup. These SQL migration snippets
 | `2026-06-12_fix_third_party_gregorian_dates.sql` | 1939 | 2026-06-12 11:43:34 | `44BADA89C44586C4F3A50E37C3EECA020EA1032BFA731556E455E301B25C424C` |
 | `2026-06-12_third_party_history_indexes.sql` | 722 | 2026-06-12 15:31:02 | `0E552CAC7EC075271EA84564ACA8183B7BECD97764C86A4674DB61A009A2D828` |
 | `2026-06-16_email_notification_form_reference.sql` | 903 | 2026-06-16 16:23:44 | `589D6E8E958D86C839E859A2C20CBC7B63CE16DB76FD6C6A5549DE832F04A762` |
+
+## Manual schema change log after SQL cleanup
+
+### 2026-06-18 — Add the requested system to third-party submissions
+
+- Suggested script name: `2026-06-18_third_party_requested_system.sql`
+- Table: `THIRD_PARTY_FORM_SUBMISSION`
+- Column: `REQUESTED_SYSTEM VARCHAR2(500 CHAR)`
+- Purpose: Store the value entered in “มีความประสงค์จะขอใช้ระบบ” separately from `PROJECT_NAME`, and use it as `THIRD_PARTY_REQUEST.TARGET_SYSTEM` for new submissions.
+
+```sql
+ALTER TABLE THIRD_PARTY_FORM_SUBMISSION
+    ADD (REQUESTED_SYSTEM VARCHAR2(500 CHAR));
+
+COMMENT ON COLUMN THIRD_PARTY_FORM_SUBMISSION.REQUESTED_SYSTEM IS
+    'System requested by the external requester';
+```

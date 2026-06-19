@@ -99,6 +99,11 @@
             }
             closeQuietly(rs, pstmt);
 
+            if (hasData && !canApproveExpectedStep) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
             // ----- Request items -----
             if (hasData) {
                 if (assignedSecId > 0) {
@@ -189,19 +194,21 @@
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/cropped-logo-192x192.png">
     <title>รายละเอียดใบขอให้ดำเนินการ (ID: <%= h((formId != null) ? formId : "-") %>)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css?v=20260618-2">
 </head>
 <body class="view-requisition-detail-comment">
 <%@ include file="/WEB-INF/jspf/sidebar.jspf" %>
-<div id="main">
+<div id="main" class="enterprise-index-shell">
 <%@ include file="/WEB-INF/jspf/topbar.jspf" %>
-<section class="enterprise-hero requisition-detail-banner" aria-labelledby="detailHeroTitle">
+<main class="enterprise-index-main it-requisition-detail-page requisition-detail-page">
+<section class="enterprise-hero index-banner it-requisition-banner requisition-detail-banner" aria-labelledby="detailHeroTitle">
+    <div class="banner" hidden aria-hidden="true"></div>
     <div class="enterprise-hero-copy index-banner-inner">
         <p class="enterprise-eyebrow">ฝ่ายเทคโนโลยีสารสนเทศ กองทุนเงินให้กู้ยืมเพื่อการศึกษา</p>
         <h1 id="detailHeroTitle">ใบขอให้ดำเนินการ / Requisition Form (ใบที่: <%= h((formId != null) ? formId : "-") %>)</h1>
     </div>
 </section>
-<div class="detail-action-bar"><a class="detail-back-button" href="<%= h(backLink.getHref()) %>"><i class="fa fa-arrow-left"></i> <%= h(backLink.getLabel()) %></a></div>
+<div class="detail-action-bar it-detail-back-row"><a class="detail-back-button" href="<%= h(backLink.getHref()) %>"><i class="fa fa-arrow-left"></i> <span><%= h(backLink.getLabel()) %></span></a></div>
 
 <div class="form-container">
     <% if (!hasData) { %>
@@ -248,7 +255,7 @@
                 </div>
                 <div class="form-group full-width">
                     <label>ชื่อหัวข้อความต้องการ :</label>
-                    <input type="text" value="<%= titleForm %>" readonly>
+                    <input type="text" value="<%= titleForm %>" readonly data-maxbytes="255" aria-label="ชื่อหัวข้อความต้องการ">
                 </div>
             </div>
 
@@ -382,6 +389,7 @@
         </form>
     <% } %>
 </div>
+</main>
 <!-- Byte counter script (unchanged) -->
 <script>
 function toggleNav() {
@@ -404,6 +412,7 @@ function attachCounters() {
     document.querySelectorAll("[data-maxbytes]").forEach(function (el) {
         if (el.dataset.counterAttached) return;
         el.dataset.counterAttached = "1";
+        if (el.parentNode) el.parentNode.classList.add("has-byte-counter");
         var max = parseInt(el.dataset.maxbytes);
         var counter = document.createElement("span");
         counter.className = "byte-counter";

@@ -31,8 +31,12 @@ public final class ThirdPartyAccessPolicy {
     }
 
     public static boolean canViewSubmission(String position, Integer empId, Integer ownerEmpId) {
-        return AuthUtil.isAllowedForPage(position, "thirdPartySubmission")
+        return canViewAllSubmissions(position)
             || (canCreateOwnLinks(empId) && empId.equals(ownerEmpId));
+    }
+
+    public static boolean canViewAllSubmissions(String position) {
+        return AuthUtil.isAllowedForPage(position, "thirdPartySubmission");
     }
 
     public static boolean canViewHistory(String position, Integer empId) {

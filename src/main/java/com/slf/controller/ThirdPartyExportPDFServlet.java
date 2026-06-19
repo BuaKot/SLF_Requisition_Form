@@ -45,6 +45,16 @@ public class ThirdPartyExportPDFServlet extends HttpServlet {
         }
 
         try {
+            boolean canViewAll = ThirdPartyAccessPolicy.canViewAllSubmissions(position);
+            if (!canViewAll && !ThirdPartyAccessPolicy.canCreateOwnLinks(empId)) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+            if (!canViewAll && !submissionDAO.isOwnedBy(submissionId, empId.intValue())) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+
             ThirdPartyFormSubmission submission = submissionDAO.findById(submissionId);
             if (submission == null || submission.getRequestId() == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);

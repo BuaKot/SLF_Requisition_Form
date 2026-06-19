@@ -3763,6 +3763,11 @@ main.page > .panel .value {
     transform: translate(-50%, -8px);
 }
 
+.owner-request-toast {
+    width: max-content;
+    max-width: min(620px, calc(100vw - 32px));
+}
+
 .slf-table-wrap {
     overflow-x: auto;
 }
@@ -4859,7 +4864,7 @@ main.page > .panel .value {
     overflow: hidden;
     width: 100%;
     margin: 0;
-    padding: clamp(18px, 2.35vw, 30px) max(clamp(24px, 5vw, 72px), calc((100vw - 1280px) / 2 + 24px));
+    padding: clamp(18px, 2.35vw, 30px) max(clamp(26px, 7.5vw, 150px), calc((100vw - 1240px) / 2 + 24px));
     border: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.14);
     background: linear-gradient(135deg, rgba(5, 50, 91, 0.99) 0%, rgba(13, 75, 143, 0.98) 58%, rgba(5, 50, 91, 0.99) 100%);
@@ -10488,6 +10493,10 @@ body.view-third-party-pdf { page: page-third-party-pdf; }
             size: A4;
             margin: 12mm 15mm 12mm 15mm;
         }
+@page page-third-party-access-list {
+            size: A4 landscape;
+            margin: 8mm 10mm;
+        }
 body.view-third-party-pdf * {
             box-sizing: border-box;
         }body.view-third-party-pdf {
@@ -10630,6 +10639,85 @@ body.view-third-party-pdf * {
             width: 180px;
             margin-bottom: 2px;
         }
+body.view-third-party-pdf .access-list-page {
+            page: page-third-party-access-list;
+            page-break-before: always;
+            break-before: page;
+            font-size: 7pt;
+        }
+body.view-third-party-pdf .access-list-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            min-height: 58px;
+        }
+body.view-third-party-pdf .access-list-logo {
+            width: 105px;
+            height: auto;
+            object-fit: contain;
+        }
+body.view-third-party-pdf .access-list-title {
+            text-align: right;
+            font-size: 9pt;
+            line-height: 1.35;
+        }
+body.view-third-party-pdf .access-list-rule {
+            height: 4px;
+            margin: 0 0 12px;
+            border-top: 1px solid #8b8b8b;
+            border-bottom: 2px solid #8b8b8b;
+        }
+body.view-third-party-pdf .access-list-page h2 {
+            margin: 0 0 7px;
+            font-size: 11pt;
+            font-weight: 500;
+        }
+body.view-third-party-pdf .access-list-table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            border: 1px solid #000;
+        }
+body.view-third-party-pdf .access-list-table th,
+body.view-third-party-pdf .access-list-table td {
+            border: 1px solid #000;
+            padding: 2px 3px;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 1.15;
+            overflow-wrap: anywhere;
+        }
+body.view-third-party-pdf .access-list-table th {
+            height: 52px;
+            font-size: 6.2pt;
+            font-weight: 700;
+        }
+body.view-third-party-pdf .access-list-table th small {
+            font-size: 5.2pt;
+            font-style: italic;
+            font-weight: 500;
+        }
+body.view-third-party-pdf .access-list-table .access-list-table-title {
+            height: 20px;
+            padding: 2px;
+            background: #ededed;
+            font-size: 7.5pt;
+            text-decoration: underline;
+        }
+body.view-third-party-pdf .access-list-table tbody td {
+            height: 21px;
+            font-size: 5.8pt;
+        }
+body.view-third-party-pdf .access-list-note {
+            margin-top: 8px;
+            font-size: 6.5pt;
+            font-style: italic;
+            line-height: 1.35;
+        }
+body.view-third-party-pdf .access-list-rev {
+            margin-top: 6px;
+            font-size: 6.5pt;
+        }
 
 /* Migrated from WEB-INF/views/ThirdPartySectionHeadInbox.jsp style block 1. */
 body.view-third-party-section-head-inbox .inbox {max-width:1180px;margin:0 auto;padding:28px 28px 48px}body.view-third-party-section-head-inbox .group {margin-top:28px}body.view-third-party-section-head-inbox .group h2 {color:#003366}body.view-third-party-section-head-inbox .list {display:grid;gap:14px}body.view-third-party-section-head-inbox .item {display:block;padding:20px;background:#fff;border:2px solid #d9e6f2;border-radius:12px;box-shadow:0 8px 22px rgba(0,51,102,.06);text-decoration:none;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}body.view-third-party-section-head-inbox .item:hover, body.view-third-party-section-head-inbox .item:focus-visible {transform:translateY(-2px);border-color:#3272bb;box-shadow:0 12px 26px rgba(0,51,102,.14);outline:none}body.view-third-party-section-head-inbox .item h3 {margin:0 0 8px;color:#003366}body.view-third-party-section-head-inbox .meta {display:flex;flex-wrap:wrap;gap:8px 20px;color:#526b80}body.view-third-party-section-head-inbox .empty {padding:24px;text-align:center;background:#fff;border:1px dashed #bfd0df;border-radius:10px;color:#526b80}@media(max-width:720px){body.view-third-party-section-head-inbox .inbox {padding:20px 14px}}
@@ -10644,3 +10732,334 @@ body.view-third-party-submission * { box-sizing: border-box; }body.view-third-pa
 
 /* Migrated from WEB-INF/views/ThirdPartySubmitResult.jsp style block 1. */
 body.view-third-party-submit-result { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f4f8fc; font-family: 'Anuphan', Tahoma, Arial, sans-serif; color: #102a43; }body.view-third-party-submit-result .panel { width: min(640px, calc(100% - 32px)); background: #fff; border: 1px solid #d9e6f2; border-radius: 10px; padding: 28px; box-shadow: 0 8px 22px rgba(0, 51, 102, 0.08); }body.view-third-party-submit-result h1 { margin: 0 0 10px; }body.view-third-party-submit-result.result-success h1 { color: #137a42; }body.view-third-party-submit-result.result-error h1 { color: #b42318; }body.view-third-party-submit-result p { margin: 0; line-height: 1.6; }
+
+/* ===========================================================================
+   Shared page geometry
+   Keep equivalent banners and workflow pages on one visual grid.
+   ========================================================================== */
+.form-page-header,
+.it-requisition-detail-page .it-requisition-banner,
+.it-requisition-detail-page .requisition-detail-banner {
+    min-height: 170px;
+    display: flex;
+    align-items: center;
+    padding: 24px max(clamp(26px, 7.5vw, 150px), calc((100vw - 1240px) / 2 + 24px));
+}
+
+.form-page-header .page-title {
+    font-size: clamp(28px, 2.45vw, 36px);
+    line-height: 1.1;
+}
+
+.form-page-header .page-subtitle {
+    max-width: 760px;
+    margin-top: 5px;
+    font-size: clamp(14px, 1.15vw, 16px);
+    line-height: 1.36;
+}
+
+/* Match third-party workflow content to the near-full-width index sections. */
+body[class*="view-third-party-"] :is(
+    main.inbox,
+    main.workflow-inbox,
+    main.director-review,
+    main.operator-review,
+    main.assigned-review,
+    main.section-head-review-page,
+    main.page
+) {
+    width: var(--slf-page-content-width);
+    max-width: none;
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.third-party-request-page {
+    width: var(--slf-page-content-width);
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.third-party-request-page > :is(
+    .third-party-page-head,
+    .page-head-actions,
+    .third-party-panel,
+    .form-alert
+),
+body[class*="view-third-party-"] :is(
+    .third-party-page-head,
+    .third-party-panel,
+    .review-panel,
+    main.page > .panel
+) {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+}
+
+@media (max-width: 800px) {
+    .form-page-header,
+    .it-requisition-detail-page .it-requisition-banner,
+    .it-requisition-detail-page .requisition-detail-banner {
+        min-height: 150px;
+        padding: 22px 24px;
+    }
+
+    body[class*="view-third-party-"] :is(
+        main.inbox,
+        main.workflow-inbox,
+        main.director-review,
+        main.operator-review,
+        main.assigned-review,
+        main.section-head-review-page,
+        main.page
+    ) {
+        width: var(--slf-page-content-width-md);
+    }
+
+    .third-party-request-page {
+        width: var(--slf-page-content-width-md);
+        margin-right: auto;
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 640px) {
+    body[class*="view-third-party-"] :is(
+        main.inbox,
+        main.workflow-inbox,
+        main.director-review,
+        main.operator-review,
+        main.assigned-review,
+        main.section-head-review-page,
+        main.page
+    ),
+    .third-party-request-page {
+        width: var(--slf-page-content-width-sm);
+    }
+}
+
+/* Wide list pages use the same near-full-width content measure as the index. */
+body.view-third-party-history .third-party-history-page,
+body.view-approval-list .approval-header-inner,
+body.view-approval-list .approval-list,
+body.view-approval-list .approval-alert,
+body.view-history .history-list {
+    width: var(--slf-page-content-width);
+    max-width: none;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+body.view-history .history-list {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+/* Compact third-party inbox cards: one information row on desktop. */
+body.view-third-party-section-head-inbox .item,
+body.view-third-party-operator-inbox .workflow-item {
+    padding: 11px 14px;
+}
+
+body.view-third-party-section-head-inbox .inbox-row,
+body.view-third-party-operator-inbox .workflow-row {
+    display: grid;
+    align-items: center;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
+    gap: 10px 22px;
+    min-width: 0;
+    color: #526b80;
+    font-size: 13px;
+}
+
+body.view-third-party-section-head-inbox .request-number,
+body.view-third-party-operator-inbox .request-number,
+body.view-third-party-operator-inbox .workflow-row .role-badge {
+    margin: 0;
+    white-space: nowrap;
+}
+
+body.view-third-party-section-head-inbox .request-number,
+body.view-third-party-operator-inbox .request-number {
+    color: #082f52;
+    font-size: 17px;
+    font-weight: 900;
+    line-height: 1.25;
+}
+
+body.view-third-party-section-head-inbox .request-secondary-info,
+body.view-third-party-operator-inbox .request-secondary-info {
+    display: flex;
+    align-items: center;
+    gap: 7px 16px;
+    min-width: 0;
+}
+
+body.view-third-party-section-head-inbox .request-meta,
+body.view-third-party-operator-inbox .request-meta,
+body.view-third-party-section-head-inbox .request-date,
+body.view-third-party-operator-inbox .request-date {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    min-width: 0;
+}
+
+body.view-third-party-section-head-inbox .request-meta,
+body.view-third-party-operator-inbox .request-meta {
+    max-width: 210px;
+}
+
+body.view-third-party-section-head-inbox .request-project,
+body.view-third-party-operator-inbox .request-project {
+    flex: 1 1 180px;
+    max-width: 280px;
+}
+
+body.view-third-party-section-head-inbox .request-meta > strong,
+body.view-third-party-operator-inbox .request-meta > strong,
+body.view-third-party-section-head-inbox .request-date::before,
+body.view-third-party-operator-inbox .request-date::before {
+    flex: 0 0 auto;
+    color: #365a78;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+body.view-third-party-section-head-inbox .request-date::before,
+body.view-third-party-operator-inbox .request-date::before {
+    content: "วันที่:";
+}
+
+body.view-third-party-section-head-inbox .request-date-start,
+body.view-third-party-section-head-inbox .request-date-end,
+body.view-third-party-operator-inbox .request-date-start,
+body.view-third-party-operator-inbox .request-date-end {
+    display: contents;
+}
+
+body.view-third-party-section-head-inbox .request-date-start > strong,
+body.view-third-party-section-head-inbox .request-date-end > strong,
+body.view-third-party-operator-inbox .request-date-start > strong,
+body.view-third-party-operator-inbox .request-date-end > strong {
+    display: none;
+}
+
+body.view-third-party-section-head-inbox .request-date-separator,
+body.view-third-party-operator-inbox .request-date-separator {
+    color: #8a99a8;
+}
+
+body.view-third-party-section-head-inbox .request-value,
+body.view-third-party-operator-inbox .request-value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #667b8e;
+    font-weight: 500;
+}
+
+body.view-third-party-section-head-inbox .request-date,
+body.view-third-party-operator-inbox .request-date {
+    justify-self: end;
+    color: #667b8e;
+    font-size: 12.5px;
+    white-space: nowrap;
+}
+
+body.view-third-party-operator-inbox .workflow-row .role-badge {
+    flex: 0 0 auto;
+    padding: 3px 8px;
+    font-size: 12px;
+}
+
+/* Keep byte counters inside their corresponding text controls. */
+body.view-requisition-detail-comment .form-group.has-byte-counter {
+    position: relative;
+}
+
+body.view-requisition-detail-comment .form-group.has-byte-counter input[type="text"],
+body.view-requisition-detail-comment .form-group.has-byte-counter textarea {
+    padding-right: 112px;
+}
+
+body.view-requisition-detail-comment .form-group.has-byte-counter > input[type="text"] + .byte-counter {
+    top: 33px;
+    bottom: auto;
+}
+
+body.view-requisition-detail-comment .form-group.has-byte-counter > textarea + .byte-counter {
+    right: 12px;
+    bottom: 8px;
+}
+
+@media (max-width: 1100px) {
+    body.view-third-party-section-head-inbox .inbox-row,
+    body.view-third-party-operator-inbox .workflow-row {
+        grid-template-columns: max-content minmax(0, 1fr);
+        gap: 8px 16px;
+    }
+
+    body.view-third-party-section-head-inbox .request-secondary-info,
+    body.view-third-party-operator-inbox .request-secondary-info {
+        flex-wrap: wrap;
+    }
+
+    body.view-third-party-section-head-inbox .request-date,
+    body.view-third-party-operator-inbox .request-date {
+        grid-column: 2;
+        justify-self: start;
+    }
+}
+
+@media (max-width: 720px) {
+    body.view-third-party-section-head-inbox .inbox-row,
+    body.view-third-party-operator-inbox .workflow-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    body.view-third-party-section-head-inbox .request-secondary-info,
+    body.view-third-party-operator-inbox .request-secondary-info,
+    body.view-third-party-section-head-inbox .request-date,
+    body.view-third-party-operator-inbox .request-date {
+        grid-column: 1;
+    }
+
+    body.view-third-party-section-head-inbox .request-meta,
+    body.view-third-party-operator-inbox .request-meta,
+    body.view-third-party-section-head-inbox .request-project,
+    body.view-third-party-operator-inbox .request-project {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+
+    body.view-third-party-section-head-inbox .request-value,
+    body.view-third-party-operator-inbox .request-value {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 800px) {
+    body.view-approval-list .approval-header-inner,
+    body.view-approval-list .approval-list,
+    body.view-approval-list .approval-alert,
+    body.view-history .history-list {
+        width: var(--slf-page-content-width-md);
+    }
+}
+
+@media (max-width: 640px) {
+    body.view-approval-list .approval-header-inner,
+    body.view-approval-list .approval-list,
+    body.view-approval-list .approval-alert,
+    body.view-history .history-list {
+        width: var(--slf-page-content-width-sm);
+    }
+}

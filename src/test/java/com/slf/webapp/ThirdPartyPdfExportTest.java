@@ -15,6 +15,9 @@ public class ThirdPartyPdfExportTest extends TestCase {
         assertTrue(servlet.contains("@WebServlet(\"/thirdParty/exportPdf\")"));
         assertTrue(servlet.contains("parseSubmissionId"));
         assertTrue(servlet.contains("canViewSubmission"));
+        assertTrue(servlet.contains("canViewAllSubmissions"));
+        assertTrue(servlet.contains("submissionDAO.isOwnedBy"));
+        assertTrue(servlet.indexOf("submissionDAO.isOwnedBy") < servlet.indexOf("submissionDAO.findById"));
         assertTrue(servlet.contains("FINAL_CERTIFIED"));
         assertTrue(servlet.contains("/WEB-INF/views/ThirdPartyPdf.jsp"));
         assertTrue(servlet.contains("request.setAttribute(\"submission\""));
@@ -48,6 +51,11 @@ public class ThirdPartyPdfExportTest extends TestCase {
         
         // Document revision text uses doc-rev now instead of workflow-rev
         assertTrue(page.contains("doc-rev"));
+
+        // Page 3 lists every access request submitted with the form.
+        assertTrue(page.contains("access-list-table"));
+        assertTrue(page.contains("รายชื่อเพื่อขอรับสิทธิการเข้าถึง สำหรับผู้ให้บริการภายนอก (เพิ่มเติม)"));
+        assertTrue(page.contains("item.getRequestedRole()"));
         
         // Ensure old matrix styling is still gone
         assertFalse(page.contains("<table class=\"approval-matrix\">"));

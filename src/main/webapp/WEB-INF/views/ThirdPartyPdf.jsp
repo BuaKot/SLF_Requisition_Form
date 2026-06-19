@@ -252,12 +252,6 @@
     </tr>
     <tr>
         <td class="action-box">
-            มอบหมาย/สั่งการ<span class="fill-line" style="display:inline-block; width: 70%;"></span>
-            <div class="signature-block" style="margin-top: 8px;">
-                ลงชื่อ<span class="sig-line"></span>หัวหน้ากลุ่มงาน<br>
-                (<span class="sig-line"></span>)<br>
-                วันที่<span class="sig-line"></span>
-            </div>
             การดำเนินการ<span class="fill-line" style="display:inline-block; width: 75%;"><%= actionComment(operatorAction).equals("....................................................................................................................................") ? "" : actionComment(operatorAction) %></span>
             <div class="flex-row"><span class="fill-line"></span></div>
             <div class="signature-block" style="margin-top: 8px;">

@@ -56,6 +56,7 @@ public class ThirdPartyPdfExportTest extends TestCase {
         assertTrue(page.contains("access-list-table"));
         assertTrue(page.contains("รายชื่อเพื่อขอรับสิทธิการเข้าถึง สำหรับผู้ให้บริการภายนอก (เพิ่มเติม)"));
         assertTrue(page.contains("item.getRequestedRole()"));
+        assertFalse(page.contains("มอบหมาย/สั่งการ"));
         
         // Ensure old matrix styling is still gone
         assertFalse(page.contains("<table class=\"approval-matrix\">"));

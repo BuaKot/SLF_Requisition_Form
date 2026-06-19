@@ -75,10 +75,6 @@ public final class HtmlEmailRenderer {
         String routePath = FORM_DETAIL_PATH + formId;
         String fullUrl = buildFullUrl(appBaseUrl, routePath);
 
-        // Logo image URL (only if base URL is configured)
-        String logoUrl = appBaseUrl != null && !appBaseUrl.trim().isEmpty()
-            ? buildFullUrl(appBaseUrl.trim(), "/images/SLF_logo.png") : null;
-
         html.append("<!DOCTYPE html>\n");
         html.append("<html lang=\"th\">\n");
         html.append("<head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\"></head>\n");
@@ -100,13 +96,9 @@ public final class HtmlEmailRenderer {
         html.append("<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\">\n");
         html.append("<tr>\n");
 
-        // Left: Logo
+        // Left: Logo — CID inline image with alt text fallback (no duplicate text div)
         html.append("<td width=\"60\" valign=\"middle\" style=\"text-align:left;\">\n");
-        if (logoUrl != null) {
-            html.append("<img src=\"").append(escapeHtml(logoUrl)).append("\" alt=\"\u0E01\u0E22\u0E28 | Student Loan Fund\" width=\"48\" height=\"48\" style=\"display:block;border:0;\" />\n");
-        }
-        // Always show text logo fallback
-        html.append("<div style=\"color:#ffffff;font-size:13px;font-weight:bold;line-height:1.3;\">\u0E01\u0E22\u0E28<br><span style=\"font-weight:normal;font-size:10px;\">Student Loan Fund</span></div>\n");
+        html.append("<img src=\"cid:slf-logo\" alt=\"\u0E01\u0E22\u0E28 | Student Loan Fund\" style=\"display:block;border:0;width:auto;height:auto;max-width:90px;max-height:70px;\" />\n");
         html.append("</td>\n");
 
         // Center: Title + subtitle
@@ -378,13 +370,8 @@ public final class HtmlEmailRenderer {
 
             html.append("<tr style=\"").append(rowStyle).append("\">");
             html.append("<td style=\"padding:8px;\">").append(escapeHtml(entry.getActionLabel())).append("</td>");
-            html.append("<td style=\"padding:8px;\">");
-            if (entry.getReviewerEmpId() != null) {
-                html.append("EMP ").append(entry.getReviewerEmpId());
-            } else {
-                html.append("-");
-            }
-            html.append("</td>");
+            html.append("<td style=\"padding:8px;\">")
+                .append(escapeHtml(entry.getReviewerDisplayName())).append("</td>");
             html.append("<td style=\"padding:8px;\">");
             if (entry.getApprovedDate() != null) {
                 html.append(DATE_FORMAT.format(new Date(entry.getApprovedDate().getTime())));

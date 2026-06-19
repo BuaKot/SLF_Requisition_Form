@@ -92,6 +92,10 @@
                         <input id="email" name="email" type="email" maxlength="320" value="<%= h(request.getParameter("email")) %>" required>
                     </div>
                     <div class="full">
+                        <label for="requestedSystem">มีความประสงค์จะขอใช้ระบบ</label>
+                        <input id="requestedSystem" name="requestedSystem" type="text" maxlength="500" value="<%= h(request.getParameter("requestedSystem")) %>" required>
+                    </div>
+                    <div class="full">
                         <label for="reasonObjective">เหตุผลและวัตถุประสงค์การขอ</label>
                         <textarea id="reasonObjective" name="reasonObjective" required><%= h(request.getParameter("reasonObjective")) %></textarea>
                     </div>

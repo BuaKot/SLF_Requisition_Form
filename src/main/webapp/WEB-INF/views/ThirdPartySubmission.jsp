@@ -105,7 +105,7 @@
         <div class="page-head">
             <div class="page-title">
                 <h1><i class="fa-solid fa-file-lines"></i> คำขอ #<%= submission.getRequestId() %></h1>
-                <p>เลขที่รับเอกสาร <strong><%= display(submission.getDocumentReceiveNo()) %></strong></p>
+                <p>เลขที่รับเอกสาร <strong><%= submission.getRequestId() %></strong></p>
             </div>
             <div class="page-actions">
                 <% if (thirdPartyCompleted) { %>
@@ -123,6 +123,10 @@
         <section class="panel">
             <h2 class="section-title">รายละเอียดการขอใช้งาน</h2>
             <div class="grid">
+                <div class="field full">
+                    <div class="label">มีความประสงค์จะขอใช้ระบบ</div>
+                    <div class="value"><%= display(submission.getRequestedSystem()) %></div>
+                </div>
                 <div class="field full">
                     <div class="label">เหตุผลและวัตถุประสงค์การขอ</div>
                     <div class="value"><%= display(submission.getReasonObjective()) %></div>

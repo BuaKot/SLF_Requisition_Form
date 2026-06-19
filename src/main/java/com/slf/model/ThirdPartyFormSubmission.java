@@ -17,6 +17,7 @@ public class ThirdPartyFormSubmission {
     private String organization;
     private String phone;
     private String email;
+    private String requestedSystem;
     private String reasonObjective;
     private String projectName;
     private Date accessStartDate;
@@ -59,6 +60,8 @@ public class ThirdPartyFormSubmission {
     public void setPhone(String phone) { this.phone = phone; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    public String getRequestedSystem() { return requestedSystem; }
+    public void setRequestedSystem(String requestedSystem) { this.requestedSystem = requestedSystem; }
     public String getReasonObjective() { return reasonObjective; }
     public void setReasonObjective(String reasonObjective) { this.reasonObjective = reasonObjective; }
     public String getProjectName() { return projectName; }

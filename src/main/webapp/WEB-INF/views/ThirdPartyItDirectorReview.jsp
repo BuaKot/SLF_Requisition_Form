@@ -61,13 +61,14 @@
         <section class="review-panel">
             <h2 class="form-section-title">ข้อมูลผู้ขอภายนอก</h2>
             <div class="review-grid">
-                <div class="review-field"><div class="review-label">เลขที่รับเอกสาร</div><div class="review-value"><%= display(submission.getDocumentReceiveNo()) %></div></div>
+                <div class="review-field"><div class="review-label">เลขที่รับเอกสาร</div><div class="review-value"><%= thirdPartyRequest.getRequestId() %></div></div>
                 <div class="review-field"><div class="review-label">วันที่ส่งฟอร์ม</div><div class="review-value"><%= submission.getCreatedAt()==null?"-":dateTime.format(submission.getCreatedAt()) %></div></div>
                 <div class="review-field"><div class="review-label">ชื่อ-สกุล ภาษาไทย</div><div class="review-value"><%= display(submission.getFullNameTh()) %></div></div>
                 <div class="review-field"><div class="review-label">ชื่อ-สกุล ภาษาอังกฤษ</div><div class="review-value"><%= display(submission.getFullNameEn()) %></div></div>
                 <div class="review-field"><div class="review-label">หน่วยงาน</div><div class="review-value"><%= display(submission.getOrganization()) %></div></div>
                 <div class="review-field"><div class="review-label">เบอร์โทรศัพท์</div><div class="review-value"><%= display(submission.getPhone()) %></div></div>
                 <div class="review-field full"><div class="review-label">Email</div><div class="review-value"><%= display(submission.getEmail()) %></div></div>
+                <div class="review-field full"><div class="review-label">มีความประสงค์จะขอใช้ระบบ</div><div class="review-value"><%= display(submission.getRequestedSystem()) %></div></div>
                 <div class="review-field full"><div class="review-label">เหตุผลและวัตถุประสงค์</div><div class="review-value"><%= display(submission.getReasonObjective()) %></div></div>
                 <div class="review-field full"><div class="review-label">โครงการ</div><div class="review-value"><%= display(submission.getProjectName()) %></div></div>
                 <div class="review-field"><div class="review-label">วันที่เริ่มต้น</div><div class="review-value"><%= submission.getAccessStartDate()==null?"-":dateOnly.format(submission.getAccessStartDate()) %></div></div>

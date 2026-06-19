@@ -70,18 +70,15 @@
         return;
     }
     SimpleDateFormat dateOnly = new SimpleDateFormat("dd/MM/yyyy");
-    
-    // Extract optional details safely
-    String fullNameEn = "";
-    if (submission.getAccessRequests() != null && !submission.getAccessRequests().isEmpty()) {
-        fullNameEn = display(submission.getAccessRequests().get(0).getFullNameEn());
-    }
+    List<ThirdPartyAccessRequest> accessRequests = submission.getAccessRequests() == null
+        ? Collections.<ThirdPartyAccessRequest>emptyList()
+        : submission.getAccessRequests();
 %>
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>Third-party Registration Form #<%= submission.getSubmissionId() %></title>
+    <title>Third-party Registration Form — คำขอ #<%= thirdPartyRequest.getRequestId() %></title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
 </head>
 <body class="view-third-party-pdf">
@@ -101,7 +98,7 @@
 
 <div class="sub-header">
     <div>เรียน ผู้อำนวยการฝ่ายเทคโนโลยีสารสนเทศ</div>
-    <div>เลขที่รับเอกสาร...............................................................</div>
+    <div>เลขที่รับเอกสาร <span class="fill-fixed"><%= thirdPartyRequest.getRequestId() %></span></div>
 </div>
 
 <table class="form-table">
@@ -119,7 +116,7 @@
             </div>
             <div class="flex-row">
                 <span>ชื่อ - สกุล (ภาษาอังกฤษ)</span>
-                <span class="fill-line"><%= fullNameEn %></span>
+                <span class="fill-line"><%= display(submission.getFullNameEn()) %></span>
             </div>
             <div class="flex-row">
                 <span>บริษัท/หน่วยงาน</span>
@@ -133,7 +130,7 @@
             </div>
             <div class="flex-row">
                 <span><strong>มีความประสงค์จะขอใช้ระบบ</strong></span>
-                <span class="fill-line"><%= display(submission.getProjectName()) %></span>
+                <span class="fill-line"><%= display(submission.getRequestedSystem()) %></span>
             </div>
             <div class="flex-row">
                 <span><strong>เหตุผลและวัตถุประสงค์การขอ</strong></span>
@@ -144,7 +141,7 @@
             </div>
             <div class="flex-row">
                 <span><strong>เพื่อใช้ในโครงการ</strong></span>
-                <span class="fill-line"></span>
+                <span class="fill-line"><%= display(submission.getProjectName()) %></span>
             </div>
             <div class="flex-row">
                 <span><strong>ระยะเวลาที่ต้องการใช้ระบบงาน</strong> วันที่เริ่มต้น</span>
@@ -169,27 +166,7 @@
             </div>
         </td>
     </tr>
-    <tr>
-        <td colspan="2" class="section-header">ความเห็นของผู้บังคับบัญชาของผู้ขอใช้บริการ</td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <div class="checkbox-group">
-                <span>&#9744; เห็นควรอนุมัติ</span><br>
-                <div class="flex-row" style="margin-top: 5px;">
-                    <span>&#9744; ไม่เห็นควรอนุมัติ เพราะ</span>
-                    <span class="fill-line"></span>
-                </div>
-            </div>
-            
-            <div class="signature-block" style="margin-left: 200px;">
-                ลงชื่อ<span class="sig-line"></span><br>
-                (<span class="sig-line" style="width: 200px;"></span>)<br>
-                ตำแหน่ง<span class="sig-line" style="width: 200px;"></span><br>
-                วันที่<span class="sig-line" style="width: 200px;"></span>
-            </div>
-        </td>
-    </tr>
+
 </table>
 
 <div class="footer-line">
@@ -372,6 +349,75 @@
         หน้าที่ 2/3
     </div>
 </div>
+
+<section class="access-list-page">
+    <div class="access-list-header">
+        <img class="access-list-logo" src="${pageContext.request.contextPath}/images/SLF_logo.png" alt="SLF Logo">
+        <div class="access-list-title">
+            <div>แบบฟอร์มร้องขอสิทธิการเข้าถึง สำหรับผู้ให้บริการภายนอก</div>
+            <div>User Registration for Third Party Form</div>
+            <div>FR-ISMS-022</div>
+        </div>
+    </div>
+    <div class="access-list-rule"></div>
+    <h2>รายชื่อเพื่อขอรับสิทธิการเข้าถึง สำหรับผู้ให้บริการภายนอก (เพิ่มเติม)</h2>
+    <table class="access-list-table">
+        <colgroup>
+            <col style="width:3.5%"><col style="width:6%"><col style="width:7%"><col style="width:10%">
+            <col style="width:9%"><col style="width:9%"><col style="width:6%"><col style="width:7%">
+            <col style="width:7%"><col style="width:9%"><col style="width:7.5%"><col style="width:19%">
+        </colgroup>
+        <thead>
+            <tr>
+                <th colspan="12" class="access-list-table-title">เอกสารรายชื่อเพื่อขอรับสิทธิ/เปลี่ยนแปลง/ยกเลิก/ระงับสิทธิ การใช้ระบบสารสนเทศ</th>
+            </tr>
+            <tr>
+                <th>ลำดับ</th>
+                <th>รหัสพนักงาน</th>
+                <th>ชื่อผู้ใช้งาน</th>
+                <th>เลขที่บัตรประชาชน<br><small>*กรณีขอใช้ระบบงาน (DSL) โปรดระบุ</small></th>
+                <th>ชื่อ-สกุล (TH)</th>
+                <th>ชื่อ-สกุล (EN)</th>
+                <th>ตำแหน่ง</th>
+                <th>เบอร์โทร (มือถือ)</th>
+                <th>ฝ่าย/กลุ่มงาน</th>
+                <th>อีเมล</th>
+                <th>ระบบงาน</th>
+                <th>สิทธิ์การใช้งาน (Role)<br><small>*โปรดระบุ เช่น ชื่อโปรแกรมย่อย, ชื่อเมนู, ชื่อรายงาน</small></th>
+            </tr>
+        </thead>
+        <tbody>
+        <%
+            int accessListRowCount = Math.max(13, accessRequests.size());
+            for (int i = 0; i < accessListRowCount; i++) {
+                ThirdPartyAccessRequest item = i < accessRequests.size() ? accessRequests.get(i) : null;
+        %>
+            <tr>
+                <td><%= i + 1 %></td>
+                <td><%= item == null ? "" : display(item.getEmployeeCode()) %></td>
+                <td><%= item == null ? "" : display(item.getUsername()) %></td>
+                <td><%= item == null ? "" : display(item.getNationalId()) %></td>
+                <td><%= item == null ? "" : display(item.getFullNameTh()) %></td>
+                <td><%= item == null ? "" : display(item.getFullNameEn()) %></td>
+                <td><%= item == null ? "" : display(item.getPositionName()) %></td>
+                <td><%= item == null ? "" : display(item.getMobilePhone()) %></td>
+                <td><%= item == null ? "" : display(item.getDepartmentName()) %></td>
+                <td><%= item == null ? "" : display(item.getEmail()) %></td>
+                <td><%= item == null ? "" : display(item.getSystemName()) %></td>
+                <td><%= item == null ? "" : display(item.getRequestedRole()) %></td>
+            </tr>
+        <% } %>
+        </tbody>
+    </table>
+    <div class="access-list-note">
+        <strong>หมายเหตุ*</strong><br>
+        *โปรดระบุเลขที่บัตรประชาชนหากขอใช้ระบบงานกองทุนเงินให้กู้ยืมเพื่อการศึกษาแบบดิจิทัล (DSL)
+    </div>
+    <div class="doc-rev access-list-rev">
+        <div>Rev. 01 (01/08/2566)<br><span class="doc-secret">ชั้นความลับเอกสาร : ใช้ภายในเท่านั้น</span></div>
+        <div>หน้าที่ 3/3</div>
+    </div>
+</section>
 
 </body>
 </html>

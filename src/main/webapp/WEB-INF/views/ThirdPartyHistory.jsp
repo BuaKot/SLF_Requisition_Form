@@ -186,8 +186,8 @@
                     <tr>
                         <td><span class="history-status <%= serviceStatusClass(item.getStatus()) %>"><%= serviceStatusText(item.getStatus()) %></span></td>
                         <td class="history-requester">
-                            <strong><%= display(item.getExternalContactName()) %></strong>
-                            <span>คำขอ #<%= item.getRequestId() %><%= adminView ? " · Owner #" + item.getInternalOwnerEmpId() : "" %></span>
+                            <strong>คำขอ #<%= item.getRequestId() %></strong>
+                            <span><%= display(item.getExternalContactName()) %><%= adminView ? " · Owner #" + item.getInternalOwnerEmpId() : "" %></span>
                         </td>
                         <td class="history-people-cell">
                             <div class="history-step-wrap" tabindex="0">

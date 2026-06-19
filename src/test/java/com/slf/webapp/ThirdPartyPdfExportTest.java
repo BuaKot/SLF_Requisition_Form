@@ -51,6 +51,11 @@ public class ThirdPartyPdfExportTest extends TestCase {
         
         // Document revision text uses doc-rev now instead of workflow-rev
         assertTrue(page.contains("doc-rev"));
+
+        // Page 3 lists every access request submitted with the form.
+        assertTrue(page.contains("access-list-table"));
+        assertTrue(page.contains("รายชื่อเพื่อขอรับสิทธิการเข้าถึง สำหรับผู้ให้บริการภายนอก (เพิ่มเติม)"));
+        assertTrue(page.contains("item.getRequestedRole()"));
         
         // Ensure old matrix styling is still gone
         assertFalse(page.contains("<table class=\"approval-matrix\">"));

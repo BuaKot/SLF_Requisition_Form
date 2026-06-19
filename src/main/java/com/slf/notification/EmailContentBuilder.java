@@ -320,14 +320,12 @@ public final class EmailContentBuilder {
 
         for (ApprovalHistoryEntry entry : history) {
             section.append("- ").append(entry.getActionLabel());
-            if (entry.getReviewerEmpId() != null) {
-                section.append(" (โดย: ").append(entry.getReviewerEmpId());
-                if (entry.getApprovedDate() != null) {
-                    section.append(" เมื่อ: ").append(dateFormat.format(
-                        new Date(entry.getApprovedDate().getTime())));
-                }
-                section.append(")");
+            section.append(" (โดย: ").append(entry.getReviewerDisplayName());
+            if (entry.getApprovedDate() != null) {
+                section.append(" เมื่อ: ").append(dateFormat.format(
+                    new Date(entry.getApprovedDate().getTime())));
             }
+            section.append(")");
             section.append("\n");
             if (entry.getComment() != null && !entry.getComment().trim().isEmpty()) {
                 section.append("  หมายเหตุ: ").append(entry.getComment().trim()).append("\n");

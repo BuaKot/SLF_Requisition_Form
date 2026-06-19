@@ -125,9 +125,11 @@ public class ApprovalNotificationService {
      */
     List<ApprovalHistoryEntry> loadApprovalHistory(int formId) throws SQLException {
         String sql =
-            "SELECT STATE_STEP, REVIEWER_EMPID, IT_COMMENT, APPROVED_DATE " +
-            "FROM APPROVALINFO WHERE FORMID = ? " +
-            "ORDER BY APPROVALID ASC";
+            "SELECT a.STATE_STEP, a.REVIEWER_EMPID, a.IT_COMMENT, a.APPROVED_DATE, e.EMPNAME " +
+            "FROM APPROVALINFO a " +
+            "LEFT JOIN EMPLOYEE e ON e.EMPID = a.REVIEWER_EMPID " +
+            "WHERE a.FORMID = ? " +
+            "ORDER BY a.APPROVALID ASC";
         List<ApprovalHistoryEntry> history = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -137,11 +139,12 @@ public class ApprovalNotificationService {
                     int stateStep = rs.getInt("STATE_STEP");
                     Integer reviewerEmpId = rs.getObject("REVIEWER_EMPID") != null
                         ? Integer.valueOf(rs.getInt("REVIEWER_EMPID")) : null;
+                    String reviewerName = rs.getString("EMPNAME");
                     String comment = rs.getString("IT_COMMENT");
                     Timestamp approvedDate = rs.getTimestamp("APPROVED_DATE");
                     String actionLabel = buildActionLabel(stateStep);
                     history.add(new ApprovalHistoryEntry(
-                        stateStep, reviewerEmpId, comment, approvedDate, actionLabel));
+                        stateStep, reviewerEmpId, reviewerName, comment, approvedDate, actionLabel));
                 }
             }
         }

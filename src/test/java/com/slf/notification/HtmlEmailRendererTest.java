@@ -31,22 +31,24 @@ public class HtmlEmailRendererTest extends TestCase {
         assertTrue("HTML should contain SLF Requisition Form name", html.contains("SLF Requisition Form"));
     }
 
-    public void testHtmlLogoImageIncludedWithBaseUrl() {
+    public void testHtmlLogoUsesCidInline() {
         String html = HtmlEmailRenderer.renderITRequisitionEmail(
             42, "Test", 1001, 0, null, "DIRECTOR", emptyHistory(),
             "http://localhost:8080/SLF_Requisition_Form");
-        assertTrue("HTML should include logo img tag when base URL set",
+        assertTrue("HTML should use CID inline image",
+            html.contains("cid:slf-logo"));
+        assertTrue("HTML should include img tag",
             html.contains("<img src="));
-        assertTrue("HTML should reference SLF_logo.png",
-            html.contains("SLF_logo.png"));
     }
 
-    public void testHtmlLogoImageNotIncludedWithoutBaseUrl() {
+    public void testHtmlLogoUsesAltTextFallback() {
         String html = HtmlEmailRenderer.renderITRequisitionEmail(
             42, "Test", 1001, 0, null, "DIRECTOR", emptyHistory(), null);
-        // Image may still appear if baseUrl is null, but the src should not contain broken path
-        // The text fallback should always be present
-        assertTrue("HTML should always have text fallback", html.contains("กยศ"));
+        // Alt text fallback should be present in img alt attribute
+        assertTrue("HTML should have alt text with branding", html.contains("กยศ"));
+        // No separate text fallback div (removed to avoid crowding)
+        assertFalse("HTML should not have separate text fallback div with styling",
+            html.contains("font-size:13px;font-weight:bold;line-height:1.3"));
     }
 
     // ---------------------------------------------------------------

@@ -1,6 +1,9 @@
 package com.slf.notification;
 
+import java.io.InputStream;
 import java.util.Properties;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -12,8 +15,12 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 
 public class GmailNotificationService {
+    private static final String LOGO_CID = "slf-logo";
+    private static final String LOGO_RESOURCE = "/SLF_logo.png";
+
     private final GmailNotificationConfig config;
 
     public GmailNotificationService() {
@@ -106,25 +113,82 @@ public class GmailNotificationService {
             || trimmed.contains("<body");
 
         if (isHtml) {
-            // Send as multipart/alternative: HTML + plain-text fallback
-            Multipart multipart = new MimeMultipart("alternative");
+            // Build multipart/alternative: plain-text + HTML-with-image
+            Multipart alternative = new MimeMultipart("alternative");
 
             // Plain text part (stripped HTML)
             MimeBodyPart textPart = new MimeBodyPart();
             textPart.setText(HtmlEmailRenderer.stripHtml(body), "UTF-8");
-            multipart.addBodyPart(textPart);
+            alternative.addBodyPart(textPart);
+
+            // HTML + inline image: wrap in multipart/related
+            Multipart related = new MimeMultipart("related");
 
             // HTML part
             MimeBodyPart htmlPart = new MimeBodyPart();
             htmlPart.setContent(body, "text/html; charset=UTF-8");
-            multipart.addBodyPart(htmlPart);
+            related.addBodyPart(htmlPart);
 
-            message.setContent(multipart);
+            // Inline logo image (if available)
+            MimeBodyPart imagePart = createLogoImagePart();
+            if (imagePart != null) {
+                related.addBodyPart(imagePart);
+            }
+
+            // Wrap related as a single body part inside alternative
+            MimeBodyPart wrappedRelated = new MimeBodyPart();
+            wrappedRelated.setContent(related);
+            alternative.addBodyPart(wrappedRelated);
+
+            message.setContent(alternative);
         } else {
             message.setContent(body, "text/plain; charset=UTF-8");
         }
 
         Transport.send(message);
+    }
+
+    /**
+     * Creates an inline MIME body part for the SLF logo image.
+     * Returns null if the logo resource cannot be found.
+     */
+    private MimeBodyPart createLogoImagePart() {
+        try {
+            InputStream logoStream = getClass().getResourceAsStream(LOGO_RESOURCE);
+            if (logoStream == null) {
+                // Fallback: try class loader
+                logoStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("SLF_logo.png");
+            }
+            if (logoStream == null) {
+                return null;
+            }
+            byte[] logoBytes = readAllBytes(logoStream);
+            logoStream.close();
+
+            DataSource dataSource = new ByteArrayDataSource(logoBytes, "image/png");
+            MimeBodyPart imagePart = new MimeBodyPart();
+            imagePart.setDataHandler(new DataHandler(dataSource));
+            imagePart.setContentID("<" + LOGO_CID + ">");
+            imagePart.setDisposition(MimeBodyPart.INLINE);
+            imagePart.setFileName("SLF_logo.png");
+            return imagePart;
+        } catch (Exception e) {
+            System.err.println("Unable to attach SLF logo image: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Reads all bytes from an InputStream (Java 8 compatible).
+     */
+    private static byte[] readAllBytes(InputStream stream) throws java.io.IOException {
+        java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
+        byte[] data = new byte[8192];
+        int n;
+        while ((n = stream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, n);
+        }
+        return buffer.toByteArray();
     }
 
     private Session mailSession() {

@@ -200,7 +200,7 @@
                                         <% if (formPublicLink == null || formPublicLink.trim().isEmpty()) { %>
                                             <div class="blank-link-value">-</div>
                                         <% } else { %>
-                                            <button class="copy-link-text" type="button" data-link="<%= h(formPublicLink) %>" onclick="copyMergedLink(this)">คัดลอกลิ้งก์</button>
+                                            <button class="copy-link-text" type="button" data-link="<%= h(formPublicLink) %>" onclick="copyMergedLink(this)">คัดลอกลิงก์</button>
                                         <% } %>
                                         <div class="merged-link-meta-grid">
                                             <span>หมดอายุ: <strong><%= item.getLinkExpiresAt() == null ? "-" : dateTime.format(item.getLinkExpiresAt()) %></strong></span>
@@ -215,7 +215,7 @@
                                         <% if (acceptancePublicLink == null || acceptancePublicLink.trim().isEmpty()) { %>
                                             <div class="blank-link-value">-</div>
                                         <% } else { %>
-                                            <button class="copy-link-text" type="button" data-link="<%= h(acceptancePublicLink) %>" onclick="copyMergedLink(this)">คัดลอกลิ้งก์</button>
+                                            <button class="copy-link-text" type="button" data-link="<%= h(acceptancePublicLink) %>" onclick="copyMergedLink(this)">คัดลอกลิงก์</button>
                                         <% } %>
                                         <div class="merged-link-meta">หมดอายุ: <%= acceptance == null || acceptance.getExpiresAt() == null ? "-" : dateTime.format(acceptance.getExpiresAt()) %></div>
                                     </div>

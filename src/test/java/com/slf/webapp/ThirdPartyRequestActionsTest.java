@@ -28,7 +28,7 @@ public class ThirdPartyRequestActionsTest extends TestCase {
         assertTrue(page.contains("toast.classList.add(\"is-hiding\")"));
         assertTrue(page.contains("}, 5000);"));
         assertFalse(page.contains("owner-request-alert"));
-        assertTrue(page.contains("คัดลอกลิ้งก์"));
+        assertTrue(page.contains("คัดลอกลิงก์"));
         assertFalse(page.contains("/thirdParty/request/link?requestId="));
         assertFalse(page.contains("thirdPartySubmission?id="));
 

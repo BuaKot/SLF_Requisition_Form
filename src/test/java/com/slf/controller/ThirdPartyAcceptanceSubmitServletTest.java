@@ -13,5 +13,11 @@ public class ThirdPartyAcceptanceSubmitServletTest extends TestCase {
         } catch (IllegalArgumentException expected) {
             assertTrue(expected.getMessage().contains("คะแนน"));
         }
+        try {
+            ThirdPartyAcceptanceSubmitServlet.parseSatisfaction("abc");
+            fail("Expected invalid satisfaction");
+        } catch (IllegalArgumentException expected) {
+            assertFalse(expected.getMessage().contains("For input string"));
+        }
     }
 }

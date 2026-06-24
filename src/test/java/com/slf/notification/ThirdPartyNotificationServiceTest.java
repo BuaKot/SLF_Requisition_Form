@@ -31,13 +31,13 @@ public class ThirdPartyNotificationServiceTest extends TestCase {
         RecordingLogDAO logDAO = new RecordingLogDAO();
         ThirdPartyNotificationService service = new ThirdPartyNotificationService(resolver, logDAO);
 
-        service.notifyOperatorCompleted(77L, 3001, "user created", "abc-token");
+        service.notifyOperatorCompleted(77L, 3001, "user created", "https://example.test/thirdparty/accept?token=abc-token");
 
         assertEquals(1, logDAO.records.size());
         Record record = logDAO.records.get(0);
         assertEquals("external@example.com", record.recipientEmail);
         assertEquals("THIRD_PARTY_OPERATOR_COMPLETED", record.eventType);
-        assertTrue(record.body.contains("abc-token"));
+        assertTrue(record.body.contains("https://example.test/thirdparty/accept?token=abc-token"));
         assertTrue(record.subject.contains("#77"));
         assertEquals(Integer.valueOf(3001), record.createdBy);
     }

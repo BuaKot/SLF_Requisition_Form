@@ -22,6 +22,7 @@ public class ThirdPartyAcceptancePageTest extends TestCase {
 
         assertTrue(publicPage.contains("name=\"satisfactionLevel\""));
         assertTrue(publicPage.contains("name=\"comment\""));
+        assertTrue(publicPage.contains("styles.css?v=third-party-accept-width"));
         assertFalse(publicPage.contains("assignment"));
 
         assertTrue(ownerPage.contains("ลิงก์ตรวจรับและประเมิน"));
@@ -36,6 +37,8 @@ public class ThirdPartyAcceptancePageTest extends TestCase {
         assertTrue(styles.contains(".owner-link-dashboard .owner-request-list-panel"));
         assertTrue(styles.contains(".owner-link-dashboard .page-head-actions"));
         assertTrue(styles.contains(".owner-link-dashboard {\n    display: block;"));
+        assertTrue(styles.contains("body.view-third-party-acceptance .accept-page {\n    width: var(--slf-page-content-width);"));
+        assertTrue(styles.contains("body.view-third-party-acceptance .accept-page {\n        width: var(--slf-page-content-width-md);"));
         assertTrue(styles.contains("max-width: 1120px;"));
         assertTrue(styles.contains(".merged-link-grid"));
         assertTrue(styles.contains(".copy-link-text"));

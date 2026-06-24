@@ -51,13 +51,14 @@ public class ThirdPartyOperatorReviewServlet extends HttpServlet {
             String detail = requireDetail(request.getParameter("operationDetail"));
             int actorEmpId = ThirdPartyAccessPolicy.sessionEmpId(request.getSession(false)).intValue();
             String rawToken = ThirdPartyLinkToken.generateRawToken();
+            String acceptanceLink = buildAcceptanceLink(request, rawToken);
             if (!workflowDAO.submitOperatorCompletion(requestId, actorEmpId, detail,
                     ThirdPartyLinkToken.sha256Hex(rawToken), rawToken)) {
                 response.sendError(HttpServletResponse.SC_CONFLICT,
                     "คำขอนี้ไม่ได้อยู่ในขั้นตอนของผู้ดำเนินการ หรือไม่ได้มอบหมายให้ผู้ใช้นี้");
                 return;
             }
-            notificationService.notifyOperatorCompleted(requestId, actorEmpId, detail, rawToken);
+            notificationService.notifyOperatorCompleted(requestId, actorEmpId, detail, acceptanceLink);
             response.sendRedirect(request.getContextPath() + "/thirdParty/operator");
         } catch (IllegalArgumentException e) {
             request.setAttribute("formError", e.getMessage());
@@ -110,6 +111,11 @@ public class ThirdPartyOperatorReviewServlet extends HttpServlet {
         }
     }
 
+    static String buildAcceptanceLink(HttpServletRequest request, String rawToken) {
+        return request.getScheme() + "://" + request.getServerName()
+            + (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : ":" + request.getServerPort())
+            + request.getContextPath() + "/thirdparty/accept?token=" + rawToken;
+    }
     static String requireDetail(String value) {
         String detail = value == null ? "" : value.trim();
         if (detail.isEmpty()) throw new IllegalArgumentException("กรุณากรอกรายละเอียดการดำเนินการ");

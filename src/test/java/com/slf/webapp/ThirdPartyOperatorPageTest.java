@@ -14,6 +14,7 @@ public class ThirdPartyOperatorPageTest extends TestCase {
         String styles = read("src/main/webapp/css/styles.css");
         String requestDao = read("src/main/java/com/slf/dao/ThirdPartyRequestDAO.java");
         String workflowDao = read("src/main/java/com/slf/dao/ThirdPartyWorkflowDAO.java");
+        String operatorServlet = read("src/main/java/com/slf/controller/ThirdPartyOperatorReviewServlet.java");
 
         assertTrue(index.contains("/thirdParty/operator"));
         assertTrue(inbox.contains("/thirdParty/operator/review?id="));
@@ -40,6 +41,8 @@ public class ThirdPartyOperatorPageTest extends TestCase {
         assertTrue(workflowDao.contains("OPERATOR_COMPLETED"));
         assertTrue(workflowDao.contains("PENDING_EXTERNAL_ACCEPTANCE"));
         assertTrue(workflowDao.contains("INSERT INTO THIRD_PARTY_ACCEPTANCE_TOKEN"));
+        assertTrue(operatorServlet.contains("buildAcceptanceLink(request, rawToken)"));
+        assertTrue(operatorServlet.contains("/thirdparty/accept?token="));
         assertTrue(workflowDao.contains("a.ASSIGNMENT_ROLE = 'GRANT_OPERATOR' AND a.ASSIGNED_EMPID = ?"));
     }
 

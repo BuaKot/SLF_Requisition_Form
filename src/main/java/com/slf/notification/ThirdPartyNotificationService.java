@@ -76,9 +76,9 @@ public class ThirdPartyNotificationService {
             Integer.valueOf(actorEmpId), comment);
     }
 
-    public void notifyOperatorCompleted(long requestId, int actorEmpId, String detail, String rawToken) {
+    public void notifyOperatorCompleted(long requestId, int actorEmpId, String detail, String acceptanceLink) {
         String body = "Access setup for the third-party request was completed."
-            + "\n\nAcceptance link token: " + nullToDash(rawToken);
+            + "\n\nAcceptance link: " + nullToDash(acceptanceLink);
         enqueueOneFromResolver(requestId, "THIRD_PARTY_OPERATOR_COMPLETED", "EXTERNAL",
             "[SLF] Third-party request #" + requestId + " waiting for acceptance",
             body, Integer.valueOf(actorEmpId), detail, new SingleRecipientSupplier() {

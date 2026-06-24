@@ -51,7 +51,12 @@ public class ThirdPartyAcceptanceSubmitServlet extends HttpServlet {
     }
 
     static int parseSatisfaction(String value) {
-        int level = Integer.parseInt(value == null ? "" : value.trim());
+        int level;
+        try {
+            level = Integer.parseInt(value == null ? "" : value.trim());
+        } catch (NumberFormatException e) {
+            level = 0;
+        }
         if (level < 1 || level > 5) throw new IllegalArgumentException("กรุณาเลือกคะแนนความพึงพอใจ");
         return level;
     }

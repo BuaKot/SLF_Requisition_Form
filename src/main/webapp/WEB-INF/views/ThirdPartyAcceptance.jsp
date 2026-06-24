@@ -14,7 +14,7 @@
     SimpleDateFormat dateOnly=new SimpleDateFormat("dd/MM/yyyy");
 %>
 <!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>ตรวจรับและประเมินการดำเนินงาน</title><link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+<title>ตรวจรับและประเมินการดำเนินงาน</title><link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css?v=third-party-accept-width">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></head><body class="view-third-party-acceptance"><main class="accept-page">
 <% if(invalidLinkMessage!=null){ %>
 <section class="external-link-warning-banner">
